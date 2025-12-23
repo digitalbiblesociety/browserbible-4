@@ -1,0 +1,226 @@
+.up-arrow {
+	position: absolute;
+	top: -10px;
+	left: 20px;
+	z-index: 102;
+	width: 0;
+	height: 0;
+	display: block;
+	border-bottom: 10px solid var(--color-background-active);
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+}
+
+.up-arrow-border {
+	position: absolute;
+	top: -11px;
+	left: 20px;
+	z-index: 101;
+	width: 0;
+	height: 0;
+	display: block;
+	border-bottom: 10px solid var(--color-border);
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+}
+
+/* NAV */
+.text-navigator {
+	width: 320px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	background: var(--color-background);
+	padding: 0;
+	font-family: var(--font-family-sans);
+	font-size: 14px;
+	box-shadow: var(--shadow-popup);
+}
+
+/* Popover API overrides */
+.text-navigator[popover] {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: none;
+	overflow: visible;
+	inset: unset;
+}
+
+.text-navigator::backdrop {
+	background: transparent;
+}
+
+.text-navigator .up-arrow {
+	position: absolute;
+	top: -10px;
+	left: 20px;
+	z-index: 102;
+	width: 0;
+	height: 0;
+	display: block;
+	border-bottom: 10px solid var(--color-background-active);
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+}
+
+.text-navigator .up-arrow-border {
+	display: none;
+	position: absolute;
+	top: -11px;
+	left: 20px;
+	z-index: 101;
+	width: 0;
+	height: 0;
+	display: block;
+	border-bottom: 10px solid var(--color-border);
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+}
+
+.text-navigator .text-navigator-header {
+	padding: 8px;
+	color: var(--color-text);
+	position: relative;
+	background: var(--color-background-active);
+}
+
+.text-navigator .text-navigator-close {
+	cursor: pointer;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+
+.text-navigator .text-navigator-divisions,
+.text-navigator .text-navigator-sections {
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	padding: 4px;
+}
+
+.text-navigator .text-navigator-sections {
+	padding: 4px 1px;
+}
+
+.text-navigator .text-navigator-division-header {
+	clear: both;
+	height: 30px;
+	padding: 10px 0 0 5px;
+	font-weight: bold;
+}
+
+.text-navigator .text-navigator-division {
+	float: left;
+	width: 38px;
+	height: 38px;
+	margin: 1px 1px 0 0;
+	-border: solid 1px transparent;
+	background: var(--color-background-alt);
+	color: var(--color-text);
+	text-align: center;
+	padding: 10px 0 0;
+	cursor: pointer;
+	border-style: solid;
+	border-width: 0 0 0 10px;
+
+}
+
+
+.text-navigator .text-navigator-division.selected {
+	float: none;
+	width: auto;
+	height: auto;
+	clear: both;
+	text-align: left;
+	margin: 1px 0;
+	padding-left: 4px;
+}
+.text-navigator .text-navigator-division.selected > span  {
+	font-weight: bold;
+}
+
+.text-navigator .text-navigator-division:hover > span {
+	-border-bottom-color: #ccc;
+	font-weight: bold;
+}
+
+.text-navigator .text-navigator-section:hover {
+	-outline: solid 1px #2a85e8;
+}
+
+.text-navigator-divisions-full .text-navigator-division {
+	float: none;
+	display: block;
+	text-align: left;
+	width: auto;
+	min-height: 30px;
+	height: auto;
+	overflow: auto;
+	padding: 5px 0 0 10px;
+}
+.text-navigator-divisions-full  .text-navigator-division.selected {
+	padding: 5px 0 0 10px;
+}
+
+.text-navigator-divisions-full[dir=rtl] .text-navigator-division {
+	text-align: right;
+	border-width: 0 5px 0 0;
+	padding: 5px 10px 0 0;
+}
+
+.text-navigator-fullname {
+	position: absolute;
+	z-index: 110;
+	border-bottom-color: var(--color-border);
+	height: 38px;
+	margin: 1px 1px 0 0;
+	border: solid 1px var(--color-border);
+	background: var(--color-background-hover);
+	color: var(--color-text);
+	text-align: left;
+	padding: 10px 10px 0;
+	cursor: pointer;
+	pointer-events: none;
+	font-size: 14px;
+}
+
+
+/* Division section colors - border indicates category, selected uses hover background */
+.text-navigator .division-section-penta { border-color: var(--color-division-pentateuch); }
+.text-navigator .division-section-hist { border-color: var(--color-division-historical); }
+.text-navigator .division-section-poet { border-color: var(--color-division-wisdom); }
+.text-navigator .division-section-majorp { border-color: var(--color-division-major-prophets); }
+.text-navigator .division-section-minorp { border-color: var(--color-division-minor-prophets); }
+.text-navigator .division-section-gospel { border-color: var(--color-division-gospels); }
+.text-navigator .division-section-acts { border-color: var(--color-division-acts); }
+.text-navigator .division-section-paul { border-color: var(--color-division-paul-epistles); }
+.text-navigator .division-section-general { border-color: var(--color-division-general-epistles); }
+.text-navigator .division-section-rev { border-color: var(--color-division-revelation); }
+
+.text-navigator .text-navigator-division.selected {
+	background: var(--color-background-hover);
+}
+
+.text-navigator .text-navigator-section {
+	float: left;
+	width: 36px;
+	height: 36px;
+	margin: 1px 1px 0 0;
+	-x-background: rgba(210,210,210,0.5);
+	color: var(--color-text);
+	text-align: center;
+	padding: 10px 0 0;
+	cursor: pointer;
+}
+
+.text-navigator .text-navigator-section:hover,
+.text-navigator .text-navigator-section.selected {
+
+	font-weight: bold;
+}
+
+.text-navigator-divisions[dir=rtl] .text-navigator-section {
+	float: right;
+}

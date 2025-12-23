@@ -1,0 +1,213 @@
+#add-BibleWindow, .BibleWindow-tab {
+	background-image: url(../../css/images/bible1.svg);
+}
+
+#add-CommentaryWindow, .CommentaryWindow-tab {
+	background-image: url(../../css/images/commentary.svg);
+}
+
+/* Scroller Container */
+.window .scroller-container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+/* Scroller Main */
+.window .scroller-main {
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	position: absolute;
+	font-size: 18px;
+	padding: 0 30px;
+	background: var(--color-background);
+	z-index: 2;
+}
+
+.compact-ui .window .scroller-main {
+	padding: 0 15px;
+}
+
+/* Scroller Info Popover */
+.window .scroller-info {
+	position: absolute;
+	left: 0;
+	background: var(--color-background);
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	margin: 0;
+	box-shadow: none;
+	display: none;
+	flex-direction: column;
+	overflow: hidden;
+	z-index: 3;
+}
+
+.window .scroller-info:popover-open {
+	display: flex;
+}
+
+.window .scroller-info::backdrop {
+	background: transparent;
+}
+
+/* Popover Header */
+.window .scroller-info-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	border-bottom: 1px solid var(--color-border);
+	background: var(--color-background);
+	height: 50px;
+	box-sizing: border-box;
+	flex-shrink: 0;
+}
+
+.window .scroller-info-title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--color-text);
+}
+
+.window .scroller-info-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	line-height: 1;
+	color: var(--color-text-light);
+	cursor: pointer;
+	padding: 0;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.window .scroller-info-close:hover {
+	background: var(--color-background);
+	color: var(--color-text);
+}
+
+.window .scroller-info-close:active {
+	transform: scale(0.95);
+}
+
+/* Popover Content */
+.window .scroller-info-content {
+	flex: 1;
+	overflow-y: auto;
+	padding: 30px;
+	line-height: 1.6;
+	font-size: 18px;
+}
+
+.compact-ui .window .scroller-info-content {
+	padding: 15px;
+}
+
+.window .scroller-info-content h1,
+.window .scroller-info-content h2,
+.window .scroller-info-content h3 {
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+	color: var(--color-text);
+}
+
+.window .scroller-info-content h1:first-child,
+.window .scroller-info-content h2:first-child,
+.window .scroller-info-content h3:first-child {
+	margin-top: 0;
+}
+
+.window .scroller-info-content p {
+	margin: 0.8em 0;
+}
+
+.window .scroller-info-content ul,
+.window .scroller-info-content ol {
+	margin: 0.8em 0;
+	padding-left: 1.5em;
+}
+
+.window .scroller-info-content li {
+	margin: 0.4em 0;
+}
+
+.window .scroller-info-content a {
+	color: var(--color-link, #0066cc);
+	text-decoration: none;
+}
+
+.window .scroller-info-content a:hover {
+	text-decoration: underline;
+}
+
+/* Empty State */
+.window .scroller-info-empty {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--color-text-light);
+}
+
+.window .scroller-info-empty p {
+	margin: 0.5em 0;
+}
+
+.window .scroller-info-version-name {
+	font-weight: 600;
+	font-size: 16px;
+	color: var(--color-text);
+	margin-top: 1em !important;
+}
+
+/* Loading Indicator in Popover */
+.window .scroller-info-content .loading-indicator {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--color-text-light);
+	font-style: italic;
+}
+
+.scroller-text-wrapper {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 50px 0;
+}
+
+.config-font-size-14 .scroller-text-wrapper {
+	max-width: 460px;
+}
+
+.config-font-size-16 .scroller-text-wrapper {
+	max-width: 526px;
+}
+
+.config-font-size-18 .scroller-text-wrapper {
+	max-width: 591px;
+}
+
+.config-font-size-20 .scroller-text-wrapper {
+	max-width: 657px;
+}
+
+.config-font-size-22 .scroller-text-wrapper {
+	max-width: 723px;
+}
+
+.config-font-size-24 .scroller-text-wrapper {
+	max-width: 789px;
+}
+
+.config-font-size-26 .scroller-text-wrapper {
+	max-width: 854px;
+}
+
+.config-font-size-28 .scroller-text-wrapper {
+	max-width: 920px;
+}

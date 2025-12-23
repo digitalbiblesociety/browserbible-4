@@ -1,0 +1,42 @@
+.info-window {
+	position: absolute;
+	background: var(--color-background);
+	border: solid 1px var(--color-border);
+	box-shadow: var(--shadow-popup);
+	z-index: 100;
+	top: 100px;
+	left: 100px;
+	font-size: 14px;
+	color: var(--color-text-dark);
+	font-family: var(--font-family-sans);
+	padding: 15px 0 15px 15px;
+}
+
+/* Popover API overrides */
+.info-window[popover] {
+	position: absolute;
+	margin: 0;
+	inset: unset;
+}
+
+.info-window::backdrop {
+	background: transparent;
+}
+
+.info-window .info-body {
+	width: 300px;
+	max-height: 200px;
+	overflow: auto;
+	padding: 0 15px 0 0;
+}
+
+.info-window .close-button {
+	top: 5px;
+	right: 5px;
+}
+
+.info-window .close-button:hover {
+	background-color: var(--color-error);
+	background-position: 0 -20px;
+	color: var(--color-text-inverse);
+}

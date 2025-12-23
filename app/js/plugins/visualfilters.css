@@ -1,0 +1,264 @@
+/* Visual Filters Plugin Styles */
+
+/* Button in config panel */
+#config-visualfilters-button {
+	background: url(../../css/images/morphology.svg) left center no-repeat;
+	background-size: 20px 20px;
+	padding: 5px 0 5px 25px;
+}
+
+/* Main container */
+#visualfilters-config {
+	padding: var(--spacing-md);
+	font-size: var(--font-size-sm);
+}
+
+/* New Filter button */
+#visualfilters-config input[type="button"] {
+	background: var(--color-button-primary-background);
+	color: var(--color-button-primary-text);
+	border: none;
+	padding: var(--spacing-sm) var(--spacing-md);
+	border-radius: 4px;
+	font-size: var(--font-size-sm);
+	cursor: pointer;
+	margin-bottom: var(--spacing-md);
+	transition: background var(--transition-fast);
+}
+
+#visualfilters-config input[type="button"]:hover {
+	background: var(--color-primary-hover);
+}
+
+/* Table styling */
+#visualfilters-config table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#visualfilters-config thead th {
+	padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 0;
+	text-align: left;
+	font-size: var(--font-size-xs);
+	font-weight: normal;
+	color: var(--color-text-muted);
+	border-bottom: 1px solid var(--color-border-light);
+}
+
+#visualfilters-config tbody td {
+	padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 0;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--color-border-lighter);
+}
+
+#visualfilters-config tbody tr:last-child td {
+	border-bottom: none;
+}
+
+/* Active checkbox */
+.visualfilters-active {
+	width: 30px;
+}
+
+.visualfilters-active input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	accent-color: var(--color-primary);
+}
+
+/* Strong's number input */
+.visualfilters-strongs {
+	width: 100px;
+}
+
+.visualfilters-strongs input[type="text"] {
+	width: 90px;
+	padding: 6px 8px;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	transition: border-color var(--transition-fast);
+}
+
+.visualfilters-strongs input[type="text"]:focus {
+	outline: none;
+	border-color: var(--color-input-focus-border);
+}
+
+.visualfilters-strongs input[type="text"]::placeholder {
+	color: var(--color-input-placeholder);
+}
+
+/* Morphology column */
+.visualfilters-morph {
+	white-space: nowrap;
+}
+
+.visualfilters-morph select {
+	width: 80px;
+	padding: 6px 8px;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	cursor: pointer;
+	margin-right: var(--spacing-xs);
+}
+
+.visualfilters-morph select:focus {
+	outline: none;
+	border-color: var(--color-input-focus-border);
+}
+
+.visualfilters-morph input[type="text"] {
+	width: 70px;
+	padding: 6px 8px;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	cursor: pointer;
+}
+
+.visualfilters-morph input[type="text"]:focus {
+	outline: none;
+	border-color: var(--color-input-focus-border);
+}
+
+/* Style column */
+.visualfilters-style {
+	white-space: nowrap;
+}
+
+.visualfilters-style .style-type {
+	width: 100px;
+	padding: 6px 8px;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	cursor: pointer;
+	margin-right: var(--spacing-xs);
+}
+
+.visualfilters-style .style-type:focus {
+	outline: none;
+	border-color: var(--color-input-focus-border);
+}
+
+.visualfilters-style .style-color {
+	width: 40px;
+	height: 32px;
+	padding: 2px;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.visualfilters-style .style-color::-webkit-color-swatch-wrapper {
+	padding: 2px;
+}
+
+.visualfilters-style .style-color::-webkit-color-swatch {
+	border: none;
+	border-radius: 2px;
+}
+
+.visualfilters-style .style-color::-moz-color-swatch {
+	border: none;
+	border-radius: 2px;
+}
+
+/* Remove button */
+.visualfilters-remove {
+	width: 30px;
+	text-align: center;
+}
+
+#visualfilters-config .close-button {
+	position: relative;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	opacity: 0.5;
+	cursor: pointer;
+	transition: opacity var(--transition-fast);
+}
+
+#visualfilters-config .close-button:hover {
+	opacity: 1;
+}
+
+/* Morphology Selector Popup */
+.morph-selector {
+	position: absolute;
+	top: 0;
+	left: 0;
+	min-width: 200px;
+	max-height: 300px;
+	overflow: auto;
+	z-index: 1100;
+	background: var(--color-background);
+	border: 1px solid var(--color-border);
+	border-radius: 6px;
+	box-shadow: var(--shadow-popup);
+	font-size: var(--font-size-sm);
+	padding: var(--spacing-sm);
+}
+
+.morph-selector table {
+	border-collapse: collapse;
+}
+
+.morph-selector th,
+.morph-selector td {
+	vertical-align: top;
+	padding: var(--spacing-xs);
+}
+
+.morph-selector thead th {
+	padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm) var(--spacing-xs);
+	font-weight: 600;
+	text-align: left;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.morph-selector tbody span {
+	display: block;
+	padding: var(--spacing-xs) var(--spacing-sm);
+	margin: 0 var(--spacing-xs) var(--spacing-xs) 0;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background var(--transition-fast);
+}
+
+.morph-selector tbody span:hover {
+	background: var(--color-background-hover);
+}
+
+.morph-selector tbody span.selected {
+	background: var(--color-primary);
+	color: var(--color-text-inverse);
+}
+
+/* Empty state message */
+#visualfilters-config tbody:empty::after {
+	content: "Click 'New Filter' to add a filter";
+	display: block;
+	padding: var(--spacing-lg);
+	text-align: center;
+	color: var(--color-text-muted);
+	font-style: italic;
+}

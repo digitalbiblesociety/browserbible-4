@@ -1,0 +1,65 @@
+/* Config URL - Shareable URL Input */
+
+#config-global-url {
+	margin: 5px 0 0 0;
+	display: flex;
+	align-items: center;
+}
+
+#main-menu-dropdown #config-global-url {
+	margin: 0;
+	padding: 10px 0 10px 15px;
+}
+
+#config-global-url .url-copy-button {
+	background-image: url(../../css/images/link.svg);
+	width: 20px;
+	height: 20px;
+	min-width: 20px;
+	display: inline-block;
+	background-size: 20px 20px;
+	margin: 0 8px 0 0;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: opacity var(--transition-fast);
+}
+
+#config-global-url .url-copy-button:hover {
+	opacity: 1;
+}
+
+#config-global-url input {
+	flex: 1;
+	min-width: 0;
+	max-width: 250px;
+	height: 28px;
+	padding: 6px 8px;
+	margin: 0;
+	border: 1px solid var(--color-input-border);
+	border-radius: 4px;
+	background: var(--color-input-background);
+	color: var(--color-text-muted);
+	font-size: var(--font-size-xs);
+	-webkit-appearance: none;
+	cursor: pointer;
+	transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+#config-global-url input:hover {
+	border-color: var(--color-primary);
+}
+
+#config-global-url input:focus {
+	outline: none;
+	border-color: var(--color-input-focus-border);
+}
+
+#config-global-url input.copied {
+	background: var(--color-success);
+	border-color: var(--color-success-dark);
+}
+
+#config-global-url input::placeholder {
+	color: var(--color-input-placeholder);
+	font-style: italic;
+}

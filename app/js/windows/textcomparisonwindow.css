@@ -1,0 +1,119 @@
+#add-TextComparisonWindow {
+	background-image: url(../../css/images/comparison.svg);
+}
+
+.comparison-select-group {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0 5px 0 0;
+}
+
+.comparison-select-group .text-list-title {
+	display: inline-block;
+	width: 100px;
+	padding: 7px 24px 6px 10px;
+	border: solid 1px var(--color-border-light);
+	background: var(--color-input-background);
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right 4px center;
+	background-size: 16px;
+	color: var(--color-text-light);
+	cursor: pointer;
+	font-size: 90%;
+	height: 30px;
+	box-sizing: border-box;
+	vertical-align: top;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.comparison-select-group .text-list-title:hover {
+	border-color: var(--color-border);
+}
+
+.comparison-select-group .text-list-title:first-child {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: none;
+}
+
+.comparison-select-group .text-list-title:last-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.comparison-target-select {
+	display: inline-block;
+	width: 100px;
+	padding: 7px 24px 6px 10px;
+	border: solid 1px var(--color-border-light);
+	background: var(--color-input-background);
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right 4px center;
+	background-size: 16px;
+	color: var(--color-text-light);
+	font-size: 90%;
+	height: 30px;
+	box-sizing: border-box;
+	vertical-align: top;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-left: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+.comparison-target-select:hover {
+	border-color: var(--color-border);
+	border-left: none;
+}
+
+.comparison-target-select:focus {
+	outline: none;
+	border-color: var(--color-primary);
+	border-left: none;
+}
+
+.comparison-nav-input {
+	cursor: pointer;
+}
+
+.comparison-main {
+	overflow: auto;
+	background: var(--color-background);
+	-webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+	margin: 15px;
+}
+
+.comparison-table td,
+.comparison-table th {
+	vertical-align: top;
+}
+
+.comparison-table td {
+	padding: 0 2px 5px 2px;
+}
+
+.comparison-table ins {
+	color: var(--color-primary);
+	text-decoration: none;
+}
+
+.comparison-table del {
+	color: var(--color-text-muted);
+	text-decoration: line-through;
+}
+
+.comparison-error {
+	padding: 20px;
+	text-align: center;
+	color: var(--color-text-light);
+	font-style: italic;
+}

@@ -1,0 +1,11 @@
+tests/
+app/content/texts/*.*
+dist/
+app/content/texts/
+!app/content/texts/README.md
+
+downloads/*
+
+**/node_modules/
+playwright-report/*
+test-results/*

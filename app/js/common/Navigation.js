@@ -1,0 +1,134 @@
+/**
+ * Navigation
+ * Handles browser history and location tracking
+ */
+
+import { mixinEventEmitter } from './EventEmitter.js';
+import { getApp } from '../core/registry.js';
+
+class PlaceKeeperClass {
+  constructor() {
+    this.currentWindow = null;
+    this.currentData = null;
+  }
+
+  storePlace() {
+    this.currentData = this.getFirstLocation();
+  }
+
+  getFirstLocation() {
+    const app = getApp();
+    this.currentWindow = app?.windowManager?.getWindows().find(w => w.className === 'BibleWindow') ?? null;
+
+    return this.currentWindow?.getData() ?? null;
+  }
+
+  restorePlace() {
+    this.currentWindow?.trigger('globalmessage', {
+      type: 'globalmessage',
+      target: this.currentWindow,
+      data: {
+        messagetype: 'nav',
+        type: 'bible',
+        locationInfo: this.currentData
+      }
+    });
+  }
+}
+
+export const PlaceKeeper = new PlaceKeeperClass();
+
+class TextNavigationClass {
+  constructor() {
+    this.locations = [];
+    this.locationIndex = -1;
+
+    mixinEventEmitter(this);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', this._handleBrowserNavigation.bind(this));
+    }
+  }
+
+  _handleBrowserNavigation(e) {
+    console.log('handleNavigation', e, e.state);
+
+    if (e.state?.locationid !== undefined) {
+      const newlocationid = e.state.locationid;
+      let type = '';
+
+      if (this.locationIndex - 1 > -1 && this.locations[this.locationIndex - 1] === newlocationid) {
+        this.locationIndex--;
+        type = 'back';
+      } else if (this.locationIndex + 1 < this.locations.length && this.locations[this.locationIndex + 1] === newlocationid) {
+        this.locationIndex++;
+        type = 'forward';
+      }
+
+      this._setLocation(newlocationid);
+      this.trigger('locationchange', { type });
+    }
+  }
+
+  firstState(locationid) {
+    console.log('firststate', locationid);
+
+    this.locations.push(locationid);
+    this.locationIndex = 0;
+
+    window.history.replaceState({ locationid }, null, window.location.href);
+  }
+
+  locationChange(locationid, type) {
+    while (this.locationIndex > this.locations.length - 1) {
+      this.locations.pop();
+    }
+
+    this.locations.push(locationid);
+    this.locationIndex++;
+
+    window.history.pushState({ locationid }, null, window.location.href);
+
+    this.trigger('locationchange', { type });
+  }
+
+  _setLocation(locationid) {
+    const fragmentid = locationid.includes('_') ? locationid : `${locationid}_1`;
+    const sectionid = fragmentid.split('_')[0];
+
+    const app = getApp();
+    app?.handleGlobalMessage({
+      type: 'globalmessage',
+      target: this,
+      data: {
+        messagetype: 'nav',
+        type: 'bible',
+        locationInfo: {
+          fragmentid,
+          sectionid,
+          offset: 0
+        }
+      }
+    });
+  }
+
+  back() {
+    window.history.go(-1);
+  }
+
+  forward() {
+    window.history.go(1);
+  }
+
+  getLocations() {
+    return this.locations;
+  }
+
+  getLocationIndex() {
+    return this.locationIndex;
+  }
+}
+
+export const TextNavigation = new TextNavigationClass();
+
+export default { PlaceKeeper, TextNavigation };

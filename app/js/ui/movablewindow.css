@@ -1,0 +1,38 @@
+.movable-window {
+	position: absolute;
+	z-index: 1000;
+	box-shadow: var(--shadow-popup);
+}
+
+/* Popover API overrides */
+.movable-window[popover] {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: none;
+	overflow: visible;
+	inset: unset;
+}
+
+.movable-window::backdrop {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.movable-header {
+	background: var(--color-header-background);
+	height: 30px;
+	padding: 5px;
+}
+
+.movable-body {
+	overflow: auto;
+	background: var(--color-background);
+}
+
+.movable-window .close-button {
+	top: 5px;
+	right: 5px;
+}
+
+.movable-window .close-button:hover {
+}

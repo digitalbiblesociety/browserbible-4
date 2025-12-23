@@ -1,0 +1,388 @@
+/**
+ * CSS Custom Properties (Variables)
+ * Central source of truth for colors and design tokens
+ */
+
+:root {
+  /* ============================================
+   * Primary Brand Colors
+   * ============================================ */
+  --color-primary: #2a85e8;
+  --color-primary-light: #d9e8ef;
+  --color-primary-dark: #1a5fb4;
+  --color-primary-hover: #3a95f8;
+
+  /* ============================================
+   * Text Colors
+   * ============================================ */
+  --color-text: #333;
+  --color-text-dark: #111;
+  --color-text-muted: #666;
+  --color-text-light: #888;
+  --color-text-lighter: #999;
+  --color-text-inverse: #fff;
+
+  /* ============================================
+   * Background Colors
+   * ============================================ */
+  --color-background: #fff;
+  --color-background-alt: #f8f8f8;
+  --color-background-hover: #efefef;
+  --color-background-active: #e8e8e8;
+  --color-background-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ============================================
+   * Border Colors
+   * ============================================ */
+  --color-border: #ccc;
+  --color-border-light: #ddd;
+  --color-border-lighter: #eee;
+  --color-border-dark: #999;
+
+  /* ============================================
+   * UI State Colors
+   * ============================================ */
+  --color-highlight: #ffff99;
+  --color-highlight-alt: #ff9;
+  --color-success: #b7dbb4;
+  --color-success-dark: #6ba865;
+  --color-error: #d5998b;
+  --color-error-dark: #a00;
+  --color-warning: #f0ad4e;
+  --color-info: #5bc0de;
+
+  /* ============================================
+   * Bible-Specific Colors
+   * ============================================ */
+  --color-red-letter: #a00;
+  --color-footnote: #7491ce;
+  --color-cross-reference: #7491ce;
+  --color-verse-number: #999;
+  --color-chapter-number: #666;
+
+  /* ============================================
+   * Lemma/Greek-Hebrew Colors
+   * ============================================ */
+  --color-lemma-match: #2a85e8;
+  --color-lemma-highlight: #d9e8ef;
+  --color-location-match: #b7dbb4;
+  --color-location-border: #6ba865;
+
+  /* ============================================
+   * Search Result Book Division Colors
+   * ============================================ */
+  --color-division-pentateuch: #9bd79b;
+  --color-division-historical: #8c8cca;
+  --color-division-wisdom: #c580c5;
+  --color-division-major-prophets: #d38c8c;
+  --color-division-minor-prophets: #d1d16a;
+  --color-division-gospels: #ffa2a2;
+  --color-division-acts: #c476aa;
+  --color-division-paul-epistles: #9c9ce1;
+  --color-division-general-epistles: #8cc9c9;
+  --color-division-revelation: #9575a1;
+
+  /* ============================================
+   * Window/UI Chrome Colors
+   * ============================================ */
+  --color-header-background: #f8f8f8;
+  --color-header-text: #333;
+  --color-footer-background: #f8f8f8;
+  --color-footer-text: #666;
+  --color-toolbar-background: #111;
+  --color-toolbar-text: #fff;
+  --color-menu-background: #fff;
+  --color-menu-hover: #f0f0f0;
+  --color-menu-active: #e0e0e0;
+
+  /* ============================================
+   * Selection/State Background Colors
+   * ============================================ */
+  --color-selection-background: #666;
+  --color-divider-background: #888;
+  --color-badge-background: #666;
+
+  /* ============================================
+   * Input/Form Colors
+   * ============================================ */
+  --color-input-background: #fff;
+  --color-input-border: #ccc;
+  --color-input-focus-border: #2a85e8;
+  --color-input-placeholder: #999;
+
+  /* ============================================
+   * Button Colors
+   * ============================================ */
+  --color-button-background: #f8f8f8;
+  --color-button-text: #333;
+  --color-button-border: #ccc;
+  --color-button-hover-background: #e8e8e8;
+  --color-button-primary-background: #2a85e8;
+  --color-button-primary-text: #fff;
+
+  /* ============================================
+   * Scrollbar Colors
+   * ============================================ */
+  --color-scrollbar-track: #f1f1f1;
+  --color-scrollbar-thumb: #c1c1c1;
+  --color-scrollbar-thumb-hover: #a1a1a1;
+
+  /* ============================================
+   * Shadow Colors
+   * ============================================ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-popup: 0 2px 10px rgba(0, 0, 0, 0.25);
+
+  /* ============================================
+   * Spacing (for future use)
+   * ============================================ */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* ============================================
+   * Typography (for future use)
+   * ============================================ */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-serif: "Gentium Plus", "Linux Libertine", Georgia, serif;
+  --font-family-hebrew: "Ezra SIL", "SBL Hebrew", serif;
+  --font-family-greek: "Gentium Plus", "SBL Greek", serif;
+
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+
+  /* ============================================
+   * Transitions
+   * ============================================ */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ============================================
+ * Dark Theme
+ * ============================================ */
+.theme-dark,
+html.dark {
+  --color-primary: #4a9df8;
+  --color-primary-light: #2a4a6a;
+  --color-primary-dark: #2a85e8;
+
+  --color-text: #e0e0e0;
+  --color-text-dark: #fff;
+  --color-text-muted: #aaa;
+  --color-text-light: #888;
+  --color-text-lighter: #666;
+  --color-text-inverse: #111;
+
+  --color-background: #111;
+  --color-background-alt: #1a1a1a;
+  --color-background-hover: #222;
+  --color-background-active: #333;
+  --color-background-overlay: rgba(0, 0, 0, 0.7);
+
+  --color-border: #444;
+  --color-border-light: #333;
+  --color-border-lighter: #222;
+  --color-border-dark: #555;
+
+  --color-highlight: #665500;
+  --color-highlight-alt: #554400;
+  --color-success: #2d5a2a;
+  --color-success-dark: #4a8a45;
+  --color-error: #6a3030;
+  --color-error-dark: #cc6666;
+
+  --color-red-letter: #ff6666;
+  --color-footnote: #8aa4d8;
+  --color-cross-reference: #8aa4d8;
+  --color-verse-number: #777;
+  --color-chapter-number: #888;
+
+  --color-lemma-match: #4a9df8;
+  --color-lemma-highlight: #2a4a6a;
+  --color-location-match: #2d5a2a;
+  --color-location-border: #4a8a45;
+
+  --color-header-background: #1a1a1a;
+  --color-header-text: #e0e0e0;
+  --color-footer-background: #1a1a1a;
+  --color-footer-text: #aaa;
+  --color-toolbar-background: #000;
+  --color-toolbar-text: #fff;
+  --color-menu-background: #222;
+  --color-menu-hover: #333;
+  --color-menu-active: #444;
+
+  --color-selection-background: #444;
+  --color-divider-background: #555;
+  --color-badge-background: #444;
+
+  --color-input-background: #222;
+  --color-input-border: #444;
+  --color-input-focus-border: #4a9df8;
+  --color-input-placeholder: #666;
+
+  --color-button-background: #333;
+  --color-button-text: #e0e0e0;
+  --color-button-border: #444;
+  --color-button-hover-background: #444;
+  --color-button-primary-background: #4a9df8;
+  --color-button-primary-text: #fff;
+
+  --color-scrollbar-track: #222;
+  --color-scrollbar-thumb: #444;
+  --color-scrollbar-thumb-hover: #555;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-popup: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================
+ * Sepia Theme
+ * ============================================ */
+.theme-sepia,
+html.sepia {
+  --color-primary: #8b6914;
+  --color-primary-light: #f5e6c8;
+  --color-primary-dark: #6b4914;
+
+  --color-text: #5f4b32;
+  --color-text-dark: #3f2b12;
+  --color-text-muted: #7f6b52;
+  --color-text-light: #9f8b72;
+  --color-text-lighter: #af9b82;
+  --color-text-inverse: #fbf0d9;
+
+  --color-background: #fbf0d9;
+  --color-background-alt: #f5e6c8;
+  --color-background-hover: #efe0c0;
+  --color-background-active: #e5d6b0;
+  --color-background-overlay: rgba(95, 75, 50, 0.5);
+
+  --color-border: #d6bd9d;
+  --color-border-light: #e6d0b0;
+  --color-border-lighter: #f0e0c0;
+  --color-border-dark: #c6ad8d;
+
+  --color-highlight: #f0d870;
+  --color-highlight-alt: #e0c860;
+
+  --color-red-letter: #8b2020;
+  --color-footnote: #7a6a4a;
+  --color-cross-reference: #7a6a4a;
+  --color-verse-number: #9f8b72;
+  --color-chapter-number: #7f6b52;
+
+  --color-header-background: #f5e6c8;
+  --color-header-text: #5f4b32;
+  --color-footer-background: #f5e6c8;
+  --color-footer-text: #7f6b52;
+  --color-toolbar-background: #3f2b12;
+  --color-toolbar-text: #fbf0d9;
+  --color-menu-background: #fbf0d9;
+  --color-menu-hover: #f5e6c8;
+  --color-menu-active: #efe0c0;
+
+  --color-selection-background: #d6bd9d;
+  --color-divider-background: #c6ad8d;
+  --color-badge-background: #c6ad8d;
+
+  --color-input-background: #fbf0d9;
+  --color-input-border: #d6bd9d;
+  --color-input-focus-border: #8b6914;
+  --color-input-placeholder: #9f8b72;
+
+  --color-button-background: #f5e6c8;
+  --color-button-text: #5f4b32;
+  --color-button-border: #d6bd9d;
+  --color-button-hover-background: #efe0c0;
+  --color-button-primary-background: #8b6914;
+  --color-button-primary-text: #fbf0d9;
+
+  --color-scrollbar-track: #f5e6c8;
+  --color-scrollbar-thumb: #d6bd9d;
+  --color-scrollbar-thumb-hover: #c6ad8d;
+}
+
+/* ============================================
+ * System Preference Detection
+ * ============================================ */
+@media (prefers-color-scheme: dark) {
+  html.auto {
+    --color-primary: #4a9df8;
+    --color-primary-light: #2a4a6a;
+    --color-primary-dark: #2a85e8;
+
+    --color-text: #e0e0e0;
+    --color-text-dark: #fff;
+    --color-text-muted: #aaa;
+    --color-text-light: #888;
+    --color-text-lighter: #666;
+    --color-text-inverse: #111;
+
+    --color-background: #111;
+    --color-background-alt: #1a1a1a;
+    --color-background-hover: #222;
+    --color-background-active: #333;
+    --color-background-overlay: rgba(0, 0, 0, 0.7);
+
+    --color-border: #444;
+    --color-border-light: #333;
+    --color-border-lighter: #222;
+    --color-border-dark: #555;
+
+    --color-highlight: #665500;
+    --color-highlight-alt: #554400;
+
+    --color-red-letter: #ff6666;
+    --color-footnote: #8aa4d8;
+    --color-cross-reference: #8aa4d8;
+    --color-verse-number: #777;
+    --color-chapter-number: #888;
+
+    --color-header-background: #1a1a1a;
+    --color-header-text: #e0e0e0;
+    --color-footer-background: #1a1a1a;
+    --color-footer-text: #aaa;
+    --color-toolbar-background: #000;
+    --color-toolbar-text: #fff;
+    --color-menu-background: #222;
+    --color-menu-hover: #333;
+    --color-menu-active: #444;
+
+    --color-selection-background: #444;
+    --color-divider-background: #555;
+    --color-badge-background: #444;
+
+    --color-input-background: #222;
+    --color-input-border: #444;
+    --color-input-focus-border: #4a9df8;
+    --color-input-placeholder: #666;
+
+    --color-button-background: #333;
+    --color-button-text: #e0e0e0;
+    --color-button-border: #444;
+    --color-button-hover-background: #444;
+    --color-button-primary-background: #4a9df8;
+    --color-button-primary-text: #fff;
+
+    --color-scrollbar-track: #222;
+    --color-scrollbar-thumb: #444;
+    --color-scrollbar-thumb-hover: #555;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --shadow-popup: 0 2px 10px rgba(0, 0, 0, 0.6);
+  }
+}

@@ -1,0 +1,171 @@
+/* Theme Toggle Buttons in Config */
+.config-theme-toggle {
+	display: inline-block;
+	width: 70px;
+	padding: 6px;
+	margin: 10px 10px 0 0;
+	border: solid 1px var(--color-border-dark);
+	font-size: 10px;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+}
+.config-theme-toggle:hover {
+	border-color: var(--color-primary);
+}
+
+.config-theme-toggle-selected {
+	border: solid 2px var(--color-primary);
+}
+
+/* Theme preview colors for the toggle buttons themselves */
+#config-theme-default {
+	background-color: #fff;
+	color: #111;
+}
+
+#config-theme-sepia {
+	background-color: #FBF0D9;
+	color: #5F4B32;
+}
+
+#config-theme-dark {
+	background-color: #111;
+	color: #fff;
+}
+
+#config-theme-auto {
+	background: linear-gradient(135deg, #fff 50%, #111 50%);
+	color: #666;
+}
+
+/* ============================================
+ * Theme-Specific Overrides
+ * Most styling is handled by CSS variables in variables.css
+ * These are only for complex selectors that can't use variables directly
+ * ============================================ */
+
+/* Sepia theme specifics */
+.theme-sepia .window {
+	border-right-color: var(--color-border);
+}
+
+.theme-sepia .window .scroller-main,
+.theme-sepia .window .search-main,
+.theme-sepia .window .window-main {
+	background-color: var(--color-background);
+	color: var(--color-text);
+}
+
+/* Dark theme specifics */
+.theme-dark .window {
+	border-right: solid 1px var(--color-border-dark);
+	background-color: var(--color-border-dark);
+}
+
+.theme-dark .window .scroller-main,
+.theme-dark .window .search-main,
+.theme-dark .window .window-main {
+	background: var(--color-background);
+	color: var(--color-text);
+}
+
+.theme-dark .window .window-header,
+.theme-dark .window .window-footer {
+	background: var(--color-header-background);
+	border-bottom: solid 1px var(--color-border);
+	color: var(--color-text);
+}
+
+.theme-dark .window-tab-label {
+	color: var(--color-text);
+}
+.theme-dark .window-tab-inner {
+	border-color: transparent transparent var(--color-border) transparent;
+}
+.theme-dark .window-tab.active .window-tab-inner {
+	border-color: transparent transparent var(--color-header-background) transparent;
+}
+
+.theme-dark .close-container {
+	background: var(--color-header-background);
+}
+
+.theme-dark .scroller-info {
+	background: var(--color-background);
+	color: var(--color-text);
+	box-shadow: 0 0 30px var(--color-background-alt) inset;
+}
+
+.theme-dark .v-num,
+.theme-dark .verse-num {
+	color: var(--color-verse-number);
+}
+
+.theme-dark .selected-verse {
+	background: var(--color-selection-background);
+}
+
+.theme-dark .info-window {
+	color: var(--color-text);
+	background: var(--color-background-active);
+	border: solid 1px var(--color-background);
+	box-shadow: var(--shadow-popup);
+}
+
+.theme-dark .window .window-header .header-input,
+.theme-dark .window .window-header .header-list {
+	background-color: var(--color-input-background);
+	border: solid 1px var(--color-input-border);
+}
+
+.compact-ui .theme-dark .window .window-header .header-input,
+.compact-ui .theme-dark .window .window-header .header-list {
+	background-color: transparent;
+	border: solid 1px transparent;
+}
+
+.theme-dark #main-search-input {
+	background-color: var(--color-input-background);
+	border: solid 1px var(--color-input-border);
+}
+
+.theme-dark .window-overlay {
+	color: var(--color-text);
+	background: var(--color-background-active);
+	border: solid 1px var(--color-background);
+	box-shadow: var(--shadow-popup);
+}
+
+.theme-dark .image-library-thumbs li a {
+	color: var(--color-border);
+}
+
+.theme-dark .inline-icon {
+	background-color: var(--color-border);
+}
+
+.theme-dark .search-result-book-bar span {
+	border-right-color: var(--color-background);
+}
+
+.theme-dark .search-wrapper table tr:hover {
+	background-color: var(--color-background-hover);
+}
+
+.theme-dark .highlight {
+	background-color: var(--color-highlight);
+}
+
+.theme-dark h3.is1,
+.theme-dark div.s,
+.theme-dark div.is1 {
+	color: var(--color-text);
+}
+
+/* Comparison window dark mode overrides */
+.theme-dark .comparison-main {
+	background: var(--color-background);
+	color: var(--color-text);
+}

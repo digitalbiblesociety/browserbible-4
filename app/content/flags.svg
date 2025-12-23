@@ -1,0 +1,1513 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg">
+
+<!-- Afghanistan -->
+<symbol id="AF" viewBox="0 0 48 48">
+	<path fill="#E56" d="M16 6h16v36H16z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#445" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#FFF" d="M18 24c0 3.3 2.7 6 6 6s6-2.7 6-6m-6 4c-2.2 0-4-1.8-4-4s4-6 4-6 4 3.8 4 6-1.8 4-4 4z"/>
+</symbol>
+
+<!-- Andorra -->
+<symbol id="AD" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zM30 18H18v8l6 4 6-4"/>
+	<path fill="#45A" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- United Arab Emirates -->
+<symbol id="AE" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 18H16V6h30c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M16 18h32v12H16z"/>
+	<path fill="#455" d="M48 40c0 1-1 2-2 2H16V30h32v10z"/>
+	<path fill="#E56" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+
+
+<!-- Antigua Barbuda -->
+<symbol id="AG" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H24L42 6h4c1 0 2 1 2 2v32zm-24 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h4l18 36z"/>
+	<path fill="#EEE" d="M24 42l-9-18h18"/>
+	<path fill="#45A" d="M33 24H15l-3-6h24"/>
+	<path fill="#445" d="M6 6l6 12h4c0-4.4 3.6-8 8-8s8 3.6 8 8h4l6-12H6z"/>
+	<path fill="#FC5" d="M32 18c0-4.4-3.6-8-8-8s-8 3.6-8 8h16z"/>
+</symbol>
+
+
+<!-- Bhutan -->
+
+
+
+<!-- Dominica -->
+
+
+
+<!-- Peru -->
+
+
+<!-- Switzerland -->
+
+
+
+<!-- Albania -->
+<symbol id="AL" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#455" d="M21.5 35.4c0 .4.5.6 1 .6h3c.5 0 1-.2 1-.6.2-.4 0-.8-.2-1L24 32l-2.3 2.3c-.3.3-.4.7-.2 1zM26 18v-2c0-1 1-2 2-2s2-1 2-2h-4c-1 0-2 1-2 2 0-1-1-2-2-2h-4c0 1 1 2 2 2s2 1 2 2v2H10c0 1 1 2 2 2h10v2H12c0 1 1 2 2 2h8v2h-8c0 1 1 2 2 2h6v2h-6c0 1 1 2 2 2h12c1 0 2-1 2-2h-6v-2h6c1 0 2-1 2-2h-8v-2h8c1 0 2-1 2-2H26v-2h10c1 0 2-1 2-2H26z"/>
+</symbol>
+
+<!-- algeria -->
+<symbol id="DZ" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M24 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h22v36z"/>
+	<path fill="#EEE" d="M24 6h24v36H24z"/>
+	<path fill="#E56" d="M31.2 22.7L30 20l-1.3 2.7H26l2 2-.8 3.3 2.8-1.6 2.7 1.6-.7-3.2 2-2h-2.8z"/>
+	<path fill="#E56" d="M28 32c-4.4 0-8-3.6-8-8s3.6-8 8-8c1 0 1.7.2 2.5.4-1.8-1.5-4-2.4-6.5-2.4-5.5 0-10 4.5-10 10s4.5 10 10 10c2.5 0 4.7-1 6.5-2.4-.8.2-1.6.4-2.5.4z"/>
+</symbol>
+
+<!-- Armenia -->
+<symbol id="AM" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#FC5" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- Angola -->
+<symbol id="AO" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#E56" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#FC5" d="M36 36.4L27 28c.6-.3 1-.7 1.5-1.2 2-2.3 3-5 2.7-8-.2-3-1.6-5.6-3.8-7.6L26 12.8c2 1.5 3 3.7 3.2 6 .2 2.5-.6 4.8-2.2 6.7-.4.4-.8 1-1.3 1.2L18.4 20 17 21.5l6.8 6.3c-3 1.3-6.8 1-9.5-1.4L13 28c2 1.7 4.7 2.6 7.2 2.6 1.8 0 3.6-.5 5.2-1.4l9.2 8.6 1.4-1.4zM24.3 12.6h-3L20 10l-1 2.6h-3l2 2.2-.7 3.2 2.8-1.6 3 1.6-1-3.2 2.4-2.2z"/>
+</symbol>
+
+<!-- Argentina -->
+<symbol id="AR" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#FC5" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
+</symbol>
+
+<!-- Austria -->
+<symbol id="AT" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8a2 2 0 0 1 2-2h44a2 2 0 0 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 40a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- Australia -->
+<symbol id="AU" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/>
+	<path fill="#0402FB" d="M46 6H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#F00" d="M20 12h-4.6L19 9.3l-1-1.6-6 4.3V6H8v5.4L3 7.7 1.8 9.3 5.5 12H0v4h6.6l-4.8 3.6L3 21.2l5-3.7V22h4v-5.2l6 4.4 1-1.6-4.7-3.6H20"/>
+	<path fill="#EEE" d="M28.8 18.3l1 2.6 2.4-1.5-1 2.4 2.5 1-2.6 1 1.5 2.4-2.4-1.2-1 2.6-1-2.8-2.4 1.2 1.2-2.5-2.6-1 2.8-1-1.2-2.3 2.5 1M41 14l.6 1.5 1.4-.7-.7 1.5 2 .5-1.7.6.8 1.4L42 18l-.6 2-.5-1.5-1.6.8.7-1.4-1.4-.7 1.5-.5-1-1.8 1.5.7M18 31.2l.5 1.5L20 32l-.7 1.5 1.5.5-1.5.5.7 1.5-1.5-.7-.5 1.5-.5-1.5-1.5.7.7-1.5-1.5-.5 1.5-.5L16 32l1.5.7m17.3-.7l.6 1.5 1.4-.7-.7 1.5 2 .5-1.6.6.8 1.4L36 36l-.8 2-.5-1.5-1.5.8.7-1.4-1.6-.7 1.5-.5-1-1.8 1.5.7"/>
+</symbol>
+
+<!-- Azerbaijan -->
+<symbol id="AZ" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 18H0V8c0-1.1.9-2 2-2h44c1.1 0 2 .9 2 2v10z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#5C6" d="M48 40c0 1.1-.9 2-2 2H2c-1.1 0-2-.9-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M26 28c-2.2 0-4-1.8-4-4s1.8-4 4-4c.17 0 .32.03.48.05C25.38 18.8 23.78 18 22 18c-3.3 0-6 2.7-6 6s2.7 6 6 6c1.8 0 3.38-.8 4.48-2.05-.16.02-.32.05-.48.05zm5.36-5.36l-.13 1.08.77.76-.92.58-.12 1.07-1.02-.35-.92.57-.35-1.02-1.02-.36.57-.9-.36-1.03 1.08-.13.58-.9.76.77"/>
+</symbol>
+
+<!-- Bosnia -->
+<symbol id="BA" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M12 6l26 36V6"/>
+	<path fill="#EEE" d="M11.7 11l1-1h-1.4l-.6-1.5L10 10H8.7l1 1-.4 1.6 1.5-.8 1.4.8m4.1 2.7h-1.5l-.6-1.4-.7 1.3H12l1 1-.3 1.8 1.5-.8 1.4 1-.4-1.8m3.6 5.4l1-1h-1.4l-.6-1.5-.6 1.4h-1.5l1 1-.3 1.7 1.4-.8 1.4.8m4.3 2.6H22l-.6-1.5-.7 1.4h-1.5l1 1-.3 1.6 1.4-.8 1.4.8-.4-1.6m5 4.4h-1.5l-.6-1.4-.6 1.3H23l1 1-.3 1.8 1.5-.8 1.4 1-.4-1.8m5.4 4.3H30l-.6-1.3-.6 1.3h-1.5l1 1.2-.3 1.5 1.4-.8 1.5.8-.5-1.6"/>
+</symbol>
+
+<!-- barbados-na -->
+<symbol id="BB" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M14 6h20v36H14z"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H34V6h12c1 0 2 1 2 2v32zm-34 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h12v36z"/>
+	<path fill="#455" d="M30 14l-2 2h2v10h-4V16l-2-2-2 2v10h-4V16h2l-2-2h-2v14h6v6h4v-6h6V14"/>
+</symbol>
+
+<!-- bangladesh -->
+<symbol id="BD" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#E56" cx="24" cy="24" r="10"/>
+</symbol>
+
+<!-- belgium -->
+<symbol id="BE" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40a2 2 0 0 1-2 2H32V6h14a2 2 0 0 1 2 2v32z"/>
+	<path fill="#445" d="M16 42H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h14v36z"/>
+</symbol>
+
+<!-- burkina-faso -->
+<symbol id="BF" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V22h48v18z"/>
+	<path fill="#FC5" d="M32.4 21h-6L24 15.7 21.5 21h-6l4.4 4.5-1.6 6.4 5.6-3.3 5.6 3.2-1.5-6.5 4.4-4.5z"/>
+</symbol>
+
+<!-- bulgaria -->
+<symbol id="BG" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#5C6" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- bahrain -->
+<symbol id="BH" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40a2 2 0 0 1-2 2H16V6h30a2 2 0 0 1 2 2v32z"/>
+	<path fill="#EEE" d="M16 16l6-4-6-4V6H2a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h14v-2l6-4-6-4 6-4-6-4 6-4-6-4z"/>
+</symbol>
+
+<!-- burundi -->
+<symbol id="BI" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M0 38V10l20 14m28 14V10L28 24"/>
+	<path fill="#EEE" d="M48 8c0-1-1-2-2-2h-2L24 20 4 6H2C1 6 0 7 0 8v2l20 14L0 38v2c0 1 1 2 2 2h2l20-14 20 14h2c1 0 2-1 2-2v-2L28 24l20-14V8z"/>
+	<path fill="#E56" d="M24 28L4 42h40M24 20L4 6h40"/><circle fill="#EEE" cx="24" cy="24" r="10"/>
+	<path fill="#E56" d="M26 19.3h-1.3L24 18l-.5 1.3H22l1 1-.3 1.7 1.4-.8 1.5.8-.4-1.6 1-1zm-4 6h-1.3L20 24l-.5 1.3H18l1 1-.3 1.7 1.4-.8 1.5.8-.4-1.6 1-1zm8 0h-1.3L28 24l-.5 1.3H26l1 1-.3 1.7 1.4-.8 1.5.8-.4-1.6 1-1z"/>
+</symbol>
+
+<!-- benin -->
+<symbol id="BJ" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H16V24h32v16z"/>
+	<path fill="#FC5" d="M48 24H16V6h30c1 0 2 1 2 2v16z"/>
+	<path fill="#064" d="M16 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h14V6z"/>
+</symbol>
+
+<!-- brunei -->
+<symbol id="BN" viewBox="0 0 48 48">
+	<path fill="#455" d="M0 18l36 24h7.2L0 13.2"/>
+	<path fill="#FC5" d="M46 6H4.8L48 34.8V8c0-1-1-2-2-2zM2 42h34L0 18v22c0 1 1 2 2 2z"/>
+	<path fill="#EEE" d="M43.2 42H46c1 0 2-1 2-2v-5.2L4.8 6H2C1 6 0 7 0 8v5.2L43.2 42z"/>
+	<path fill="#E56" d="M26 29.7V20h6l-2-2h-4v-2l-2-2-2 2v2h-4l-2 2h6v9.7c-3-.8-5.5-3.4-6-6.7v1c0 4.4 3.6 8 8 8s8-3.6 8-8v-1c-.5 3.3-3 6-6 6.7z"/>
+</symbol>
+
+<!-- bolivia -->
+<symbol id="BO" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M0 18h48v12H0z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#E56" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- brazil -->
+<symbol id="BR" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M24 12L6 24l18 12 18-12"/><circle fill="#45A" cx="24" cy="24" r="8"/>
+	<path fill="#EEE" d="M26 22c-1.2-.7-2.6-1-4-1-2.2 0-4.3.8-6 2.2v.8c0 .7 0 1.3.3 2 1.3-2 3.4-3 5.7-3 1 0 2 .3 3 .7 2.6 1.3 4 4 4 6.5.7-.5 1.3-1.2 1.8-2-.6-2.6-2.2-5-4.8-6.2z"/>
+</symbol>
+
+<!-- bahamas-na -->
+<symbol id="BS" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 18H14L2 6h44c1 0 2 1 2 2v10zm0 22c0 1-1 2-2 2H2l12-12h34v10z"/>
+	<path fill="#FC5" d="M48 30H14l6-6-6-6h34"/>
+	<path fill="#455" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+</symbol>
+
+<!-- botswana -->
+<symbol id="BW" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 18H0V8a2 2 0 0 1 2-2h44a2 2 0 0 1 2 2v10zM48 40a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V28h48v12z"/>
+	<path fill="#445" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M0 18h48v2H0zM0 28h48v2H0z"/>
+</symbol>
+
+<!-- belarus -->
+<symbol id="BY" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H10V32h38v8z"/>
+	<path fill="#E56" d="M48 32H10V6h36c1 0 2 1 2 2v24zM8 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h6v36z"/>
+	<path fill="#EEE" d="M8 6h2v36H8zM4 8h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0zm4 2h4v2H4zm-4 2h4v2H0z"/>
+</symbol>
+
+<!-- belize-ca -->
+<symbol id="BZ" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-2h48v2zm0-30H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v2z"/>
+	<path fill="#45A" d="M0 10h48v28H0z"/><circle fill="#EEE" cx="24" cy="24" r="8"/><circle fill="#5C6" cx="24" cy="19" r="1"/><circle fill="#5C6" cx="24" cy="29" r="1"/><ellipse fill="#5C6" cx="27.5" cy="20.4" rx="1" ry="1"/><ellipse fill="#5C6" cx="20.5" cy="27.6" rx="1" ry="1"/><ellipse fill="#5C6" cx="29" cy="23.8" rx="1" ry="1"/><ellipse fill="#5C6" cx="19" cy="24.2" rx="1" ry="1"/><ellipse fill="#5C6" cx="27.7" cy="27.3" rx="1" ry="1"/><ellipse fill="#5C6" cx="20.3" cy="20.7" rx="1" ry="1"/>
+</symbol>
+
+<!-- canada -->
+<symbol id="CA" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zm-32 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36zm9-11.3s-.6-3.3-.3-3.3l2.7.4C26.4 26 28.8 25 30 24c-1-.2-.8 0-.2-2.4-2 .6-1.8.4-2.2-.6l-1.4 1.6c-.2.2-.5 0-.4-.2l.6-3.4c-1.2.8-1.2 1-1.4.5l-1-2-1 2c-.2.4-.2.3-1.4-.5l.6 3.4c0 .3-.2.4-.4.2L20.4 21c-.4 1-.2 1.2-2.2.6.6 2.3.7 2.2-.2 2.5 1.2 1 3.6 2 2.6 3.8 0 0 1 0 2.7-.4.3 0 0 3.4 0 3.4h1.6z"/>
+</symbol>
+
+<!-- democratic-republic-of-congo -->
+<symbol id="CD" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 18L12 42H4.8L48 13.2M36 6h7.2L0 34.8V30"/>
+	<path fill="#45A" d="M2 6h34L0 30V8c0-1 1-2 2-2zm44 36H12l36-24v22c0 1-1 2-2 2z"/>
+	<path fill="#E56" d="M4.8 42H2c-1 0-2-1-2-2v-5.2L43.2 6H46c1 0 2 1 2 2v5.2L4.8 42z"/>
+	<path fill="#FC5" d="M12.3 10.6h-3L8 8l-1 2.6H4l2 2.2-.7 3.2L8 14.4l3 1.6-1-3.2 2.3-2.2z"/>
+</symbol>
+
+<!-- central-african-republic -->
+<symbol id="CF" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M20 42H2c-1 0-2-1-2-2v-6h20v8zm8 0h18c1 0 2-1 2-2v-6H28v8z"/>
+	<path fill="#5C6" d="M0 24h20v10H0zm28 0h20v10H28z"/>
+	<path fill="#EEE" d="M0 14h20v10H0zm28 0h20v10H28z"/>
+	<path fill="#45A" d="M20 14H0V8c0-1 1-2 2-2h18v8zm8 0h20V8c0-1-1-2-2-2H28v8z"/>
+	<path fill="#E56" d="M20 6h8v36h-8z"/>
+	<path fill="#FC5" d="M8 9.3H6.5L6 8l-.7 1.3H4l1 1-.5 1.7 1.4-.8 1.3.8-.4-1.6 1-1z"/>
+</symbol>
+
+<!-- republic-of-the-congo -->
+<symbol id="CG" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M2 6h38L0 32V8c0-1 1-2 2-2z"/>
+	<path fill="#E56" d="M46 42H12l36-24v22c0 1-1 2-2 2z"/>
+	<path fill="#FC5" d="M12 42H2c-1 0-2-1-2-2v-8L40 6h6c1 0 2 1 2 2v10L12 42z"/>
+</symbol>
+
+<!-- chad -->
+<symbol id="TD" viewBox="0 0 48 48">
+	<path fill="#45A" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+</symbol>
+
+<!-- cote-d&#x2019;ivoire -->
+<symbol id="CI" viewBox="0 0 48 48">
+	<path fill="#E72" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+</symbol>
+
+<!-- chile -->
+<symbol id="CL" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#45A" d="M18 24H0V8c0-1 1-2 2-2h16v18z"/>
+	<path fill="#EEE" d="M13.2 13.6h-3L9 11l-1.2 2.6h-3L7 15.8 6.2 19 9 17.6l2.8 1.6L11 16l2.2-2.2zM48 24H18V6h28c1 0 2 1 2 2v16z"/>
+</symbol>
+
+<!-- cameroon -->
+<symbol id="CM" viewBox="0 0 48 48">
+	<path fill="#064" d="M16 42H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h14v36z"/>
+	<path fill="#FC5" d="M48 40a2 2 0 0 1-2 2H32V6h14a2 2 0 0 1 2 2v32z"/>
+	<path fill="#E56" d="M16 6h16v36H16z"/>
+	<path fill="#FC5" d="M30.305 21.724h-4.44L24 17.684l-1.864 4.04h-4.44l3.244 3.357-1.2 4.867 4.26-2.42 4.26 2.42-1.2-4.866 3.245-3.356z"/>
+</symbol>
+
+<!-- china -->
+<symbol id="CN" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><g fill="#FC5">
+	<path d="M15.4 13.3h-3.6L10.2 10l-1.5 3.3H5L7.8 16l-1 4 3.5-2 3.5 2-1-4 2.7-2.7z"/><circle cx="17" cy="11" r="1"/><circle cx="17" cy="19" r="1"/><ellipse cx="21" cy="13" rx="1" ry="1"/><ellipse cx="21" cy="17" rx="1" ry="1"/></g>
+</symbol>
+
+<!-- colombia -->
+<symbol id="CO" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 26H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v18z"/>
+	<path fill="#45A" d="M0 26h48v8H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6z"/>
+</symbol>
+
+<!-- costa rica -->
+<symbol id="CR" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-4h48v4zm0-28H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v4z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M0 30h48v6H0zm0-18h48v6H0zm14 8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- cuba -->
+<symbol id="CU" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 28l-8 8h40v-8M8 12l8 8h32v-8"/>
+	<path fill="#45A" d="M46 6H2l6 6h40V8c0-1-1-2-2-2zM16 20l4 4-4 4h32v-8M8 36l-6 6h44c1 0 2-1 2-2v-4H8z"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#EEE" d="M12.4 22.5h-3L8.2 20 7 22.4H4l2.2 2.3-.8 3.2 2.8-1.6L11 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- cape-verde -->
+<symbol id="CV" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6zm0-12H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v20z"/>
+	<path fill="#EEE" d="M0 32h48v2H0zm0-4h48v2H0z"/>
+	<path fill="#E56" d="M0 30h48v2H0z"/>
+	<path fill="#FC5" d="M16 21.3h-1.3L14 20l-.5 1.3H12l1 1-.3 1.7 1.4-.8 1.5.8-.4-1.6 1-1zm0 14h-1.3L14 34l-.5 1.3H12l1 1-.3 1.7 1.4-.8 1.5.8-.4-1.6 1-1zM21 25l-1-1 .3-1.5-1.3.5-1-1v1.6l-1.5.8 1.6.4.6 1.6.8-1.5H21zm-9.8 10l-1-1 .4-1.4-1.4.5-1-1v1.6l-1.4 1 1.6.3.4 1.5.8-1.5h1.6zm10.6-4.2v-1.5l1.3-.6-1.3-.6v-1.3l-1 1-1.7-.3 1 1.4-1 1.4 1.7-.4 1 1zm-14 .5v-1.5l1.3-.6-1.3-.6V27l-1 1.3L5 28l.8 1.3-.7 1.4 1.7-.4 1 1zm10.6 4.4l1-1 1.4.3-.6-1.3 1-1h-1.5l-1-1.4-.3 1.6-1.5.4 1.3.8v1.5zM8 26.3l1-1 1.4.4-.6-1.4 1-1H9.2l-1-1.4-.2 1.5-1.6.5 1.5.8v1.5z"/>
+</symbol>
+
+<!-- cyprus -->
+<symbol id="CY" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E72" d="M34 16v2h-2v-2h-2v2h-2v-2h-2v2h-4v-2h-2v2h-2v-2h-2v2h-2v-2c-1 0-2 1-2 2v4c0 1 1 2 2 2v-2h2v2h2v-2h2v2h2v-2h4v2h2v-2h2v2h2v-2h2v2c1 0 2-1 2-2v-4c0-1-1-2-2-2z"/>
+	<path fill="#064" d="M10 30h12v-2H12c-1 0-2 1-2 2zm16 0h12c0-1-1-2-2-2H26v2z"/>
+</symbol>
+
+<!-- czech -->
+<symbol id="CZ" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 24H20L2 6h44c1 0 2 1 2 2v16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2l18-18h28v16z"/>
+	<path fill="#45A" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+</symbol>
+
+<!-- germany -->
+<symbol id="DE" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#FC5" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- djibouti -->
+<symbol id="DJ" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2l20-18h26v16z"/>
+	<path fill="#3AD" d="M48 24H22L2 6h44c1 0 2 1 2 2v16z"/>
+	<path fill="#EEE" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l20-18L2 6z"/>
+	<path fill="#E56" d="M14.4 22.5h-3L10.2 20 9 22.4H6l2.2 2.3-.8 3.2 2.8-1.6L13 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- denmark -->
+<symbol id="DK" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M12 6h8v36h-8z"/>
+	<path fill="#EEE" d="M0 20h48v8H0z"/>
+</symbol>
+
+<!-- dominican-republic-na -->
+<symbol id="DO" viewBox="0 0 48 48">
+	<path fill="#45A" d="M20 20H0V8c0-1 1-2 2-2h18v14zm28 20c0 1-1 2-2 2H28V28h20v12z"/>
+	<path fill="#E56" d="M0 40c0 1 1 2 2 2h18V28H0v12zm28-20h20V8c0-1-1-2-2-2H28v14z"/>
+	<path fill="#EEE" d="M48 20H28V6h-8v14H0v8h20v14h8V28h20"/>
+	<path fill="#687" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- ecuador -->
+<symbol id="EC" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 22H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v14z"/>
+	<path fill="#45A" d="M0 22h48v10H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/>
+	<path fill="#A75" d="M30 18H18v8l6 4 6-4"/>
+</symbol>
+
+<!-- estonia -->
+<symbol id="EE" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#445" d="M0 18h48v12H0z"/>
+	<path fill="#37C" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- egypt -->
+<symbol id="EG" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M28 20h-8v5.3l4 2.7 4-2.7"/>
+</symbol>
+
+<!-- eritrea -->
+<symbol id="ER" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-2l48-8v10z"/>
+	<path fill="#E56" d="M48 30L0 38V10l48 8"/>
+	<path fill="#5C6" d="M48 18L0 10V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M10 16c-4 0-7 3-7 7s3 7 7 7 7-3 7-7-3-7-7-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z"/>
+</symbol>
+
+
+<!-- ethiopia -->
+<symbol id="ET" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/><circle fill="#45A" cx="24" cy="24" r="10"/>
+	<path fill="#FC5" d="M28.3 24l2.3-4H26l-2-3.5-2 3.5h-4.6l2.3 4-2.3 4H22l2 3.5 2-3.5h4.6l-2.3-4zM23 26l-1-2 1-2h2l1 2-1 2h-2z"/>
+</symbol>
+
+<!-- finland -->
+<symbol id="FI" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#45A" d="M0 20h48v8H0zM12 6h8v36h-8z"/>
+</symbol>
+
+<!-- fiji -->
+<symbol id="FJ" viewBox="0 0 48 48">
+	<path fill="#040385" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/>
+	<path fill="#0402FB" d="M46 6H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#F00" d="M20 12h-4.6L19 9.3l-1-1.6-6 4.3V6H8v5.4L3 7.7 1.8 9.3 5.5 12H0v4h6.6l-4.8 3.6L3 21.2l5-3.7V22h4v-5.2l6 4.4 1-1.6-4.7-3.6H20"/>
+	<path fill="#FFF" d="M44 22H32v11c0 .6.3 1.2 1 1.6l5 3.4 5-3.4c.7-.4 1-1 1-1.7V22z"/>
+	<path fill="#F00" d="M32 26h12v4H32z"/>
+	<path fill="#F00" d="M40 36.7L38 38l-2-1.3V22h4"/>
+</symbol>
+
+<!-- falkland-islands -->
+<symbol id="FK" viewBox="0 0 48 48">
+	<path fill="#02247E" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#C30F2C" d="M20 14h-5.2l3.7-3.7-2.8-2.8-3.7 3.7V6H8v5.2L4.3 7.5l-2.8 2.8L5.2 14H0v4h5.2l-3.7 3.7 2.8 2.8L8 20.8V26h4v-5.2l3.7 3.7 2.8-2.8-3.7-3.7H20"/>
+	<path fill="#1B69A9" d="M44 24H32v10l6 4 6-4"/>
+</symbol>
+
+<!-- micronesia -->
+<symbol id="FM" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M28.2 14.5h-3L24 12l-1.2 2.5h-3l2.2 2.3-.8 3.2 2.8-1.6 2.8 1.6-.8-3.2 2.2-2.3zm0 16h-3L24 28l-1.2 2.5h-3l2.2 2.3-.8 3.2 2.8-1.6 2.8 1.6-.8-3.2 2.2-2.3zm-9.8-7.8h-3L14.2 20 13 22.7h-3l2.2 2.2-.8 3 2.8-1.5L17 28l-.8-3 2.2-2.3zm20 0h-3L34.2 20 33 22.7h-3l2.2 2.2-.8 3 2.8-1.5L37 28l-.8-3 2.2-2.3z"/>
+</symbol>
+
+<!-- faroe-islands -->
+<symbol id="FO" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#45A" d="M10 18H0v2h12V6h-2M0 30h10v12h2V28H0m22-10V6h-2v14h28v-2M20 30v12h2V30h26v-2H20"/>
+	<path fill="#E56" d="M48 20H20V6h-8v14H0v8h12v14h8V28h28"/>
+</symbol>
+
+<!-- france -->
+<symbol id="FR" viewBox="0 0 48 48">
+	<path fill="#45A" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+</symbol>
+
+<!-- gabon -->
+<symbol id="GA" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M0 18h48v12H0z"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- uk -->
+<symbol id="GB" viewBox="0 0 48 48">
+	<path fill="#45A" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#EEE" d="M48 8c0-1-1-2-2-2h-5.2L28 16V6h-8v10L7.2 6H2C1 6 0 7 0 8v2.6L12.2 20H0v8h12.2L0 37.4V40c0 1 1 2 2 2h5.2L20 32v10h8V32l12.8 10H46c1 0 2-1 2-2v-2.6L35.8 28H48v-8H35.8L48 10.6V8z"/>
+	<path fill="#E56" d="M48 22H26V6h-4v16H0v4h22v16h4V26h22"/>
+	<path fill="#E56" d="M47 6.3L29.2 20h3.3L48 8c0-.7-.4-1.3-1-1.7zM32.5 28h-3.3L47 41.7c.6-.4 1-1 1-1.7L32.5 28zm-17 0L0 40c0 .7.4 1.3 1 1.7L18.8 28h-3.3zm0-8h3.3L1 6.3c-.6.4-1 1-1 1.7l15.5 12z"/>
+</symbol>
+
+<!-- grenada-na -->
+<symbol id="GD" viewBox="0 0 48 48">
+	<path fill="#E56" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2zm-4 30H6V12h36v24z"/>
+	<path fill="#FC5" d="M6 12h36v24H6z"/>
+	<path fill="#064" d="M18 24c0-1.2.4-2.4 1-3.3L6 12v24l13-8.7c-.6-1-1-2-1-3.3zm12 0c0-1.2-.4-2.4-1-3.3L42 12v24l-13-8.7c.6-1 1-2 1-3.3z"/><circle fill="#E56" cx="24" cy="24" r="6"/>
+	<path fill="#FC5" d="M22 38h4v2h-4zm-8 0h4v2h-4zm16 0h4v2h-4zM22 8h4v2h-4zm-8 0h4v2h-4zm16 0h4v2h-4zm-1.8 14.5h-3L24 19.7l-1.3 2.8h-3l2.2 2.2-1 3.3 3-1.6 3 1.6-1-3.3 2.2-2.2z"/>
+</symbol>
+
+<!-- georgia -->
+<symbol id="GE" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M48 22H26V6h-4v16H0v4h22v16h4V26h22M12 10h-2v4H6v2h4v4h2v-4h4v-2h-4m26 0v-4h-2v4h-4v2h4v4h2v-4h4v-2M12 28h-2v4H6v2h4v4h2v-4h4v-2h-4m26-4h-2v4h-4v2h4v4h2v-4h4v-2h-4"/>
+</symbol>
+
+<!-- french-guiana -->
+<symbol id="GF" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M0 8v32c0 1 1 2 2 2h44c.6 0 1-.3 1.5-.7L.5 6.7C.2 7 0 7.5 0 8z"/>
+	<path fill="#5C6" d="M48 8c0-1-1-2-2-2H2c-.6 0-1 .3-1.5.7l47 34.6c.3-.3.5-.8.5-1.3V8z"/>
+	<path fill="#E56" d="M30.2 22h-4.4L24 18l-1.8 4h-4.4l3.2 3.2-1.2 4.8 4.2-2.4 4.2 2.4-1.2-4.8 3.2-3.3z"/>
+</symbol>
+
+<!-- guernsey -->
+<symbol id="GG" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M22 6h4v36h-4zM0 22h48v4H0z"/>
+	<path fill="#FC5" d="M32 22h-6v-6l2-2h-8l2 2v6h-6l-2-2v8l2-2h6v6l-2 2h8l-2-2v-6h6l2 2v-8"/>
+</symbol>
+
+<!-- ghana -->
+<symbol id="GH" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#FC5" d="M0 18h48v12H0V18z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#445" d="M24 18.3l1.5 4.3H30l-3.6 2.8 1.3 4.3L24 27l-3.7 2.7 1.3-4.3-3.6-2.8h4.5z"/>
+</symbol>
+
+<!-- gibraltar -->
+<symbol id="GI" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 32H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v24z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8zM34 18h2v-2h-8v2h2v6h-4V14h2v-2h-8v2h2v10h-4v-6h2v-2h-8v2h2v10h-2v2h24v-2h-2v-4"/>
+	<path fill="#455" d="M22 26h4v4h-4z"/>
+	<path fill="#FC5" d="M22 32h4v6h-4z"/>
+</symbol>
+
+<!-- gambia -->
+<symbol id="GM" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V28h48v12z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M0 18h48v2H0zm0 10h48v2H0z"/>
+</symbol>
+
+<!-- guinea -->
+<symbol id="GN" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- equatorial-guinea -->
+<symbol id="GQ" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 18H14L2 6h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M48 30H14l6-6-6-6h34"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2l12-12h34v10z"/>
+	<path fill="#3AD" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#445" d="M34 20h-8v5.3l4 2.7 4-2.7"/>
+</symbol>
+
+<!-- greece -->
+<symbol id="GR" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M20 10h28v4H20zm0 8h28v4H20zm-8-4V6H8v8H0v4h8v8H0v4h48v-4H12v-8h8v-4M0 34h48v4H0z"/>
+</symbol>
+
+<!-- south-sandwich-islands -->
+<symbol id="GS" viewBox="0 0 48 48">
+	<path fill="#02247E" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#C30F2C" d="M20 14h-5.2l3.7-3.7-2.8-2.8-3.7 3.7V6H8v5.2L4.3 7.5l-2.8 2.8L5.2 14H0v4h5.2l-3.7 3.7 2.8 2.8L8 20.8V26h4v-5.2l3.7 3.7 2.8-2.8-3.7-3.7H20"/>
+	<path fill="#703D35" d="M44 24H32v10l6 4 6-4"/>
+</symbol>
+
+<!-- guatemala -->
+<symbol id="GT" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zm-32 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#785" d="M24 18c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 10c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
+</symbol>
+
+<!-- guinea-bissau -->
+<symbol id="GW" viewBox="0 0 48 48">
+	<path fill="#E56" d="M16 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h14V6z"/>
+	<path fill="#FC5" d="M48 24H16V6h30c1 0 2 1 2 2v16z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H16V24h32v16z"/>
+	<path fill="#445" d="M12.2 22.5h-3L8 20l-1.2 2.5h-3L6 24.8 5.2 28 8 26.4l2.8 1.6-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- guyana -->
+<symbol id="GY" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M2 6l36 18L2 42l44-18"/>
+	<path fill="#FC5" d="M2 6l22 18L2 42l36-18"/>
+	<path fill="#455" d="M24 24L2 6l18 18L2 42"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#5C6" d="M46 6H2l44 18L2 42h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+</symbol>
+
+<!-- honduras-ca -->
+<symbol id="HN" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#3AD" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10zm0 22c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10zM18.3 19.4h-1.5L16 18l-.5 1.4H14l1 1-.3 1.8 1.4-1 1.6 1-.4-1.7 1-1zm0 7.8h-1.5l-.7-1.4-.5 1.4H14l1 1.2-.3 1.6 1.4-.8 1.6.8-.4-1.6 1-1.2zM34 19.4h-1.5L32 18l-.8 1.4h-1.5l1 1-.3 1.8 1.5-1 1.3 1-.4-1.7 1-1zm0 7.8h-1.5l-.6-1.4-.8 1.4h-1.5l1 1.2-.3 1.6 1.5-.8 1.3.8-.4-1.6 1-1.2zm-8-3.9h-1.4L24 22l-.6 1.3H22l1 1-.4 1.8 1.4-.7 1.4.8-.4-1.6 1-1z"/>
+</symbol>
+
+<!-- croatia -->
+<symbol id="HR" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#E56" d="M30 20H18v8l6 4 6-4"/>
+	<path fill="#EEE" d="M20 22h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm-2-2h2v2h-2zm4-4h2v2h-2zm-4 0h2v2h-2zm6 2h2v2h-2zm2-2h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm2 2h2v2h-2zm-4 0h2v2h-2zm-2 2h2v2h-2zm4 2h1l1-.7V28h-2m-2 4l2-1.3V30h-2m-4-.7V28h-2m4 2.7V30h-1"/>
+</symbol>
+
+<!-- haiti-na -->
+<symbol id="HT" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#45A" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#EEE" d="M18 18h12v12H18z"/>
+	<path fill="#064" d="M24 24l-6 6h12"/>
+</symbol>
+
+<!-- hungary -->
+<symbol id="HU" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- indonesia -->
+<symbol id="ID" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#E56" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+</symbol>
+
+<!-- ireland -->
+<symbol id="IE" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+	<path fill="#E72" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#5C6" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- israel -->
+<symbol id="IL" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 40c0 1 1 2 2 2h44c1 0 2-1 2-2v-2H0v2zM46 6H2C1 6 0 7 0 8v2h48V8c0-1-1-2-2-2zM0 18h48v12H0z"/>
+	<path fill="#3AD" d="M0 10h48v8H0zm0 20h48v8H0zm26.7-6l1.3-2h-2.7L24 20l-1.3 2H20l1.3 2-1.3 2h2.7l1.3 2 1.3-2H28"/>
+</symbol>
+
+<!-- isle-of-man -->
+<symbol id="IM" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M31.8 25.2L30 21.7c-.5-1-1.7-1.4-2.7-1l-1.8 1-1.8-3.6c-.4-1-1.7-1.3-2.6-.8L17.6 19l-1.8-3.6c-1 .5-1.4 1.7-1 2.7l1 2c.5 1 1.7 1.3 2.7.8L22 19l1.7 3.6-1.7.8c-1 .5-1.4 1.7-1 2.7l2 3.7-3.7 1.8c.5 1 1.7 1.4 2.7 1l1.7-1c1-.5 1.4-1.7 1-2.7l-1.8-3.6 1.6-1 1.8-.8 1.8-.8L30 26c.5 1 1.7 1.5 2.7 1l1.8-1c1-.4 1.4-1.6 1-2.6l-3.7 1.8z"/>
+</symbol>
+
+<!-- india -->
+<symbol id="IN" viewBox="0 0 48 48">
+	<path fill="#E72" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#45A" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- iraq -->
+<symbol id="IQ" viewBox="0 0 48 48">
+	<path fill="#455" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#064" d="M12 22h2v6h-2zm-4 0h6v2H8zm0 4h8v2H8zm2-6h2v4h-2zm10 6v-6h-2v8h4v-2M6 22h2v2H6zm32-2h-2v6h-2v-6h-2v6h-2v-4h-2v4h-2v2h14v-2h-2m2-4h2v2h-2z"/>
+</symbol>
+
+<!-- iran -->
+<symbol id="IR" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#5C6" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10zM24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- iceland -->
+<symbol id="IS" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M22 18V6H10v12H0v12h10v12h12V30h26V18H22z"/>
+	<path fill="#E56" d="M12 6h8v36h-8zM0 20h48v8H0z"/>
+</symbol>
+
+<!-- italy -->
+<symbol id="IT" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+</symbol>
+
+<!-- jersey -->
+<symbol id="JE" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 8v32l22-16m4 0l22 16V8M2 42h44L24 26M46 6H2l22 16"/>
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2L24 22 2 6C1 6 0 7 0 8l22 16L0 40c0 1 1 2 2 2l22-16 22 16c1 0 2-1 2-2L26 24 48 8zm-20 2h-8v5.3l4 2.7 4-2.7"/>
+</symbol>
+
+<!-- jamaica -->
+<symbol id="JM" viewBox="0 0 48 48">
+	<path fill="#455" d="M0 38V10l20 14m28 14V10L28 24"/>
+	<path fill="#FC5" d="M48 8c0-1-1-2-2-2h-2L24 20 4 6H2C1 6 0 7 0 8v2l20 14L0 38v2c0 1 1 2 2 2h2l20-14 20 14h2c1 0 2-1 2-2v-2L28 24l20-14V8z"/>
+	<path fill="#5C6" d="M24 28L4 42h40M24 20L4 6h40"/>
+</symbol>
+
+<!-- jordan -->
+<symbol id="JO" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 18H14L2 6h44c1 0 2 1 2 2v10z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2l12-12h34v10z"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#EEE" d="M48 30H14l6-6-6-6h34M8.4 19.5l1 2.5 2.5-.8-1.5 2.3 2.2 1.5-2.6.4.3 2.6-2-1.8-2 1.8.3-2.6L4 25l2.2-1.5L5 21.2l2.4.8"/>
+</symbol>
+
+<!-- japan -->
+<symbol id="JP" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#E56" cx="24" cy="24" r="10"/>
+</symbol>
+
+<!-- kenya -->
+<symbol id="KE" viewBox="0 0 48 48">
+	<path fill="#455" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V28h48v12z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M0 18h48v2H0zm0 10h48v2H0zm16 5l5.2-3 1 1.8-5.2 3zm9.8-1.2l1-1.8 5.2 3-1 1.7zM16 15l1-1.7 5.2 3-1 1.7zm9.8 1.2l5.2-3 1 1.8-5.2 3z"/>
+	<path fill="#455" d="M28 16l-4-2-4 2v16l4 2 4-2"/>
+</symbol>
+
+<!-- kyrgyzstan -->
+<symbol id="KG" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#FC5" cx="24" cy="24" r="6"/>
+	<path fill="#FC5" d="M24 12c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12-5.4-12-12-12zm0 22c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z"/>
+</symbol>
+
+<!-- cambodia -->
+<symbol id="KH" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 16H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v8zm0 24c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/>
+	<path fill="#E56" d="M0 16h48v16H0z"/>
+	<path fill="#EEE" d="M34 26v-4l-2-2-2 2v4h-4v-6l-2-2-2 2v6h-4v-4l-2-2-2 2v4l-2 4h24"/>
+</symbol>
+
+<!-- kiribati -->
+<symbol id="KI" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 34h48v2H0zm0-4h48v2H0zm0 8h48v2H0z"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2h48zM0 36h48v2H0zm0-4h48v2H0z"/>
+	<path fill="#E56" d="M0 30h48V8c0-1-1-2-2-2H2C1 6 0 7 0 8v22z"/>
+	<path fill="#FC5" d="M34 30c0-5.5-4.5-10-10-10s-10 4.5-10 10h20zM18 16c-1 0-2 1-2 2h14c0-1-1-2-2-2h-4v-4h2c1 0 2-1 2-2h-6v2h-6c0 1 1 2 2 2h2v2h-2z"/>
+</symbol>
+
+<!-- comoros -->
+<symbol id="KM" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 14H10L2 6h44c1 0 2 1 2 2v6z"/>
+	<path fill="#45A" d="M48 34H10l-8 8h44c1 0 2-1 2-2v-6z"/>
+	<path fill="#EEE" d="M10 14h38v10H20"/>
+	<path fill="#E56" d="M10 34h38V24H20"/>
+	<path fill="#5C6" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#EEE" d="M6 24c0-2.6 1.7-4.8 4-5.6-.6-.3-1.3-.4-2-.4-3.3 0-6 2.7-6 6s2.7 6 6 6c.7 0 1.4 0 2-.4-2.3-.8-4-3-4-5.6zm7-.4h-.8L12 23l-.4.6h-.8l.6.7-.3.8 1-.3.8.4-.3-.7.5-.7zm0-4.3h-.8l-.3-.7-.4.7h-.8l.6.7-.3.8 1-.4.8.4-.3-.8.5-.7zm0 8.7h-.8l-.2-1-.4.7h-.8l.6.6-.3.8 1-.4.8.4-.3-.8.5-.7z"/>
+</symbol>
+
+<!-- saint-kitts-nevis -->
+<symbol id="KN" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M2 6h28L0 26V8c0-1 1-2 2-2z"/>
+	<path fill="#E56" d="M46 42H18l30-20v18c0 1-1 2-2 2z"/>
+	<path fill="#455" d="M37.2 6H46c1 0 2 1 2 2v9.2L10.8 42H2c-1 0-2-1-2-2v-9.2L37.2 6z"/>
+	<path fill="#FC5" d="M48 22L18 42h-7.2L48 17.2M30 6h7.2L0 30.8V26"/>
+	<path fill="#EEE" d="M12.4 32.7h-3L8.2 30 7 32.7H4L6.2 35l-.8 3 2.8-1.5L11 38l-.8-3 2.2-2.3zM44 12.5h-3L40 10l-1.2 2.5h-3l2.2 2.3-1 3.2 2.8-1.6 2.8 1.6-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- north-korea -->
+<symbol id="KP" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 14H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v6zm0 26c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6z"/>
+	<path fill="#E56" d="M0 16h48v16H0z"/>
+	<path fill="#EEE" d="M0 14h48v2H0zm0 18h48v2H0z"/><circle fill="#EEE" cx="14" cy="24" r="6"/>
+	<path fill="#E56" d="M18.2 22.6h-3L14 20l-1.2 2.6h-3l2.2 2.2-.8 3.3 2.8-1.3 2.8 1.6L16 25l2.2-2.2z"/>
+</symbol>
+
+<!-- korea -->
+<symbol id="KR" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#455" d="M7.2 19.4l6-8 1.6 1.2-6 8zm26-6.8l1.6-1.2 6 8-1.6 1.2zm-26 16l1.6-1.2 6 8-1.6 1.2zm26 6.8l6-8 1.6 1.2-6 8z"/>
+	<path fill="#45A" d="M34 24c0-2.8-2.2-5-5-5s-5 2.2-5 5-2.2 5-5 5c-2.4 0-4.4-1.7-5-4 .6 5 4.8 9 10 9s9.4-4 10-9v-1z"/>
+	<path fill="#E56" d="M24 14c-5.2 0-9.4 4-10 9v1c0 2.8 2.2 5 5 5s5-2.2 5-5 2.2-5 5-5c2.4 0 4.4 1.7 5 4-.6-5-4.8-9-10-9z"/>
+</symbol>
+
+<!-- kuwait -->
+<symbol id="KW" viewBox="0 0 48 48">
+	<path fill="#445" d="M16 18v12L2 42c-1 0-2-1-2-2V8c0-1 1-2 2-2"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2l14-12h32v10z"/>
+	<path fill="#EEE" d="M16 18h32v12H16z"/>
+	<path fill="#5C6" d="M48 18H16L2 6h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- kazakhstan -->
+<symbol id="KZ" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#FC5" cx="24" cy="22" r="6"/>
+	<path fill="#FC5" d="M24 32c-6 0-11-5-11-11 0-.6.4-1 1-1s1 .4 1 1c0 5 4 9 9 9s9-4 9-9c0-.6.4-1 1-1s1 .4 1 1c0 6-5 11-11 11z"/>
+</symbol>
+
+<!-- laos -->
+<symbol id="LA" viewBox="0 0 48 48">
+	<path fill="#45A" d="M0 16h48v16H0z"/>
+	<path fill="#E56" d="M48 16H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v8zm0 24c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/><circle fill="#EEE" cx="24" cy="24" r="6"/>
+</symbol>
+
+<!-- lebanon -->
+<symbol id="LB" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8zm0-24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v8z"/>
+	<path fill="#EEE" d="M0 16h48v16H0z"/>
+	<path fill="#064" d="M24 18l-6 8h4v4h4v-4h4"/>
+</symbol>
+
+<!-- saint-lucia-na -->
+<symbol id="LC" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M32 34l-8-20-8 20 8-16"/>
+	<path fill="#455" d="M32 34l-8-16-8 16 8-12"/>
+	<path fill="#FF0" d="M24 22l-8 12h16"/>
+</symbol>
+
+<!-- liechtenstein -->
+<symbol id="LI" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#FC5" d="M14 12H6v5.3l4 2.7 4-2.7"/>
+</symbol>
+
+<!-- sri-lanka -->
+<symbol id="LK" viewBox="0 0 48 48">
+	<path fill="#064" d="M4 10h8v28H4z"/>
+	<path fill="#E72" d="M12 10h8v28h-8z"/>
+	<path fill="#822" d="M24 10h20v28H24z"/>
+	<path fill="#FC5" d="M48 8c0-1-1-2-2-2H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8zM4 10h16v28H4V10zm40 28H24V10h20v28zM26 12h2v2h-2zm14 0h2v2h-2zM26 34h2v2h-2zm14 0h2v2h-2zm0-14v2h-8v-2c0-1-1-2-2-2h-4c0 1 1 2 2 2v4h-2c0 1 1 2 2 2v2c0 1 1 2 2 2v-2c0-1 1-2 2-2h6c1 0 2 1 2 2v2c1 0 2-1 2-2v-6c0-1-1-2-2-2z"/>
+</symbol>
+
+<!-- liberia -->
+<symbol id="LR" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2H20v20H0v14c0 1 1 2 2 2h44c1 0 2-1 2-2V8z"/>
+	<path fill="#45A" d="M20 26H0V8c0-1 1-2 2-2h18v20z"/>
+	<path fill="#EEE" d="M20 10h28v4H20zm0 8h28v4H20zM0 26v4h48v-4H20M0 34h48v4H0zm14.2-19.4h-3L10 12l-1.2 2.6h-3L8 16.8 7.2 20l2.8-1.5 2.8 1.6-.8-3 2.2-2z"/>
+</symbol>
+
+<!-- lesotho -->
+<symbol id="LS" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 16H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v8z"/>
+	<path fill="#EEE" d="M0 16h48v16H0z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/>
+	<path fill="#445" d="M29.5 30l-3-5c1-.7 1.5-1.8 1.5-3 0-2.2-1.8-4-4-4s-4 1.8-4 4c0 1.2.6 2.3 1.4 3l-3 5h11z"/>
+</symbol>
+
+<!-- lithuania -->
+<symbol id="LT" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#064" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+</symbol>
+
+<!-- luxembourg -->
+<symbol id="LU" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- latvia -->
+<symbol id="LV" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#812" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10zm0-22H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- libya -->
+<symbol id="LY" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 14H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v6z"/>
+	<path fill="#445" d="M0 14h48v20H0z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6z"/>
+	<path fill="#EEE" d="M26 30c-3.3 0-6-2.7-6-6s2.7-6 6-6c.5 0 1 0 1.5.2C26 17 24 16 22 16c-4.4 0-8 3.6-8 8s3.6 8 8 8c2 0 4-.8 5.5-2.2L26 30zm8-7.5h-3L30 20l-1.2 2.5h-3l2.2 2.3-1 3.2 2.8-1.6 2.8 1.6-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- marocco -->
+<symbol id="MA" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#445" d="M32.4 21h-6L24 15.7 21.5 21h-6l4.4 4.5-1.6 6.4 5.6-3.3 5.6 3.2-1.5-6.5 4.4-4.5zm-5.8 7L24 26.3 21.4 28l.7-3-1.6-2h2.4l1.2-2.5 1.2 2.5h2.4l-1.8 2 .8 3z"/>
+</symbol>
+
+<!-- monaco -->
+<symbol id="MC" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+</symbol>
+
+<!-- moldova -->
+<symbol id="MD" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#45A" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#651" d="M30 20h-4v-2c0-1-1-2-2-2h-2c-1 0-2 1-2 2h2v2h-4v7c0 .6.3 1.2 1 1.6l5 3.4 5-3.4c.7-.4 1-1 1-1.7v-7z"/>
+</symbol>
+
+<!-- montenegro -->
+<symbol id="ME" viewBox="0 0 48 48">
+	<path fill="#E56" d="M4 10h40v28H4z"/>
+	<path fill="#FC5" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2zm-2 32H4V10h40v28zM24 16c0-1-1-2-2-2h-4c-1 0-2 1-2 2h8zm8 4v4h-4v-8h4c0-1-1-2-2-2h-4c-1 0-2 1-2 2 0-1-1-2-2-2h-2v10h-4v-4c-1 0-2 1-2 2v4c0 1 1 2 2 2h4l-1 4 3.5-2.6L24 34l1.5-4.6L29 32l-1-4h4c1 0 2-1 2-2v-4c0-1-1-2-2-2zm-8 14l-2-6"/>
+</symbol>
+
+<!-- madagascar -->
+<symbol id="MG" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h14V6z"/>
+	<path fill="#E56" d="M48 24H16V6h30c1 0 2 1 2 2v16z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H16V24h32v16z"/>
+</symbol>
+
+<!-- marshall-islands -->
+<symbol id="MH" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2l48-10v10zM0 40L42 6H2C1 6 0 7 0 8v32z"/>
+	<path fill="#E72" d="M48 8c0-1-1-2-2-2h-4L0 40l48-22V8z"/>
+	<path fill="#EEE" d="M0 40l48-10V18m-34.8-4.7l-1 2.2 3.8.8-3.8.8 1 2.3-2-1-1 3.7-.8-3.7-2.2 1 1-2.2-4.2-.7 4.3-.8-1-2.2 2 1 1-4.3.8 4.3"/>
+</symbol>
+
+<!-- macedonia -->
+<symbol id="MK" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M26 42l-2-16-2 16m26-20l-22 2 22 2M0 26l22-2-22-2M48 8c0-1-1-2-2-2h-2L24 22 4 6H2C1 6 0 7 0 8v2l22 14L0 38v2c0 1 1 2 2 2h2l20-16 20 16h2c1 0 2-1 2-2v-2L26 24l22-14V8zM22 6l2 16 2-16"/><circle fill="#E56" cx="24" cy="24" r="5"/><circle fill="#FC5" cx="24" cy="24" r="3"/>
+</symbol>
+
+<!-- mali -->
+<symbol id="ML" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#5C6" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- burma -->
+<symbol id="MM" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V30h48v10z"/>
+	<path fill="#5C6" d="M0 18h48v12H0z"/>
+	<path fill="#FC5" d="M48 18H0V8a2 2 0 0 1 2-2h44a2 2 0 0 1 2 2v10z"/>
+	<path fill="#EEE" d="M32.297 21.25H26.45L24 15.93l-2.453 5.32h-5.844l4.27 4.416-1.58 6.404L24 28.887l5.605 3.184-1.578-6.403 4.27-4.417z"/>
+</symbol>
+
+<!-- mongolia -->
+<symbol id="MN" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zm-32 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+	<path fill="#45A" d="M16 6h16v36H16z"/>
+	<path fill="#FC5" d="M10 18v2H6v-2H4v12h2v-2h4v2h2V18h-2zm0 8H6v-4h4v4zm-2-8c1 0 2-1 2-2s-2-4-2-4-2 3-2 4 1 2 2 2z"/>
+</symbol>
+
+<!-- mauritania -->
+<symbol id="MR" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M31.6 17.5c.2.8.4 1.6.4 2.5 0 4.4-3.6 8-8 8s-8-3.6-8-8c0-1 .2-1.7.4-2.5-1.5 1.8-2.4 4-2.4 6.5 0 5.5 4.5 10 10 10s10-4.5 10-10c0-2.5-1-4.7-2.4-6.5zm-3.4-1h-3L24 14l-1.2 2.5h-3l2.2 2.3-.8 3.2 2.8-1.6 2.8 1.6-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- malta -->
+<symbol id="MT" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H24V6h22c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M24 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h22v36z"/>
+	<path fill="#BBB" d="M6 10h4v8H6zm-2 2h8v4H4z"/>
+</symbol>
+
+<!-- mauritius -->
+<symbol id="MU" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6z"/>
+	<path fill="#FC5" d="M0 24h48v10H0z"/>
+	<path fill="#45A" d="M0 14h48v10H0z"/>
+	<path fill="#E56" d="M48 14H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v6z"/>
+</symbol>
+
+<!-- maldives -->
+<symbol id="MV" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#064" d="M8 14h32v20H8z"/>
+	<path fill="#EEE" d="M22 24c0-3.7 2.6-6.8 6-7.7-.6-.2-1.3-.3-2-.3-4.4 0-8 3.6-8 8s3.6 8 8 8c.7 0 1.4 0 2-.3-3.4-1-6-4-6-7.7z"/>
+</symbol>
+
+<!-- malawi -->
+<symbol id="MW" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#445" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/><circle fill="#E56" cx="24" cy="20" r="8"/>
+</symbol>
+
+<!-- mexico -->
+<symbol id="MX" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6.5h16v36H16v-36z"/>
+	<path fill="#E56" d="M48 40.5a2.2 2.2 0 0 1-2 2H32v-36h14a2.2 2.2 0 0 1 2 2v32z"/>
+	<path fill="#064" d="M16 42.5H2a2.2 2.2 0 0 1-2-2v-32a2.2 2.2 0 0 1 2-2h14v36z"/><circle fill="#FC5" cx="24" cy="23.5" r="8"/>
+	<path fill="#EEE" d="M19 22.9l2.1-3.2a1.7 1.7 0 0 1 1.3-.7h5L29 29h-7.7l1-6.1H19z"/>
+</symbol>
+
+<!-- malaysia -->
+<symbol id="MY" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 8c0-1-1-2-2-2H20v20H0v14c0 1 1 2 2 2h44c1 0 2-1 2-2V8z"/>
+	<path fill="#E56" d="M20 10h28v4H20zm0 8h28v4H20zM0 26v4h48v-4H20M0 34h48v4H0z"/>
+	<path fill="#45A" d="M20 26H0V8c0-1 1-2 2-2h18v20z"/>
+	<path fill="#FC5" d="M12 14h4v4h-4zm-5.6 2c0-2.2 1.5-4 3.6-4.6l-1.2-.2C6 11.2 4 13.4 4 16s2 4.8 4.8 4.8c.4 0 .8 0 1.2-.2-2-.5-3.6-2.4-3.6-4.6z"/>
+</symbol>
+
+<!-- mozanbique -->
+<symbol id="MZ" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#445" d="M0 18h48v12H0z"/>
+	<path fill="#064" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 28h48v2H0zm0-10h48v2H0z"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l20-18L2 6z"/>
+	<path fill="#FC5" d="M14.4 22.5h-3L10.2 20 9 22.4H6l2.2 2.3-.8 3.2 2.8-1.7L13 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- namibia -->
+<symbol id="NA" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 18L12 42H4.8L48 13.2M36 6h7.2L0 34.8V30"/>
+	<path fill="#45A" d="M2 6h34L0 30V8c0-1 1-2 2-2z"/>
+	<path fill="#5C6" d="M46 42H12l36-24v22c0 1-1 2-2 2z"/>
+	<path fill="#E56" d="M4.8 42H2c-1 0-2-1-2-2v-5.2L43.2 6H46c1 0 2 1 2 2v5.2L4.8 42z"/><circle fill="#FC5" cx="8" cy="14" r="4"/>
+</symbol>
+
+<!-- niger -->
+<symbol id="NE" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E72" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/><circle fill="#E72" cx="24" cy="24" r="4"/>
+</symbol>
+
+<!-- nigeria -->
+<symbol id="NG" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zm-32 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- nicaragua-ca -->
+<symbol id="NI" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10zm0 22c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#445" d="M24 20l2.3 4 2.4 4h-9.4l2.4-4"/>
+</symbol>
+
+<!-- netherlands -->
+<symbol id="NL" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- norway -->
+<symbol id="NO" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M10 18H0v2h12V6h-2M0 30h10v12h2V28H0m22-10V6h-2v14h28v-2M20 30v12h2V30h26v-2H20"/>
+	<path fill="#45A" d="M48 20H20V6h-8v14H0v8h12v14h8V28h28"/>
+</symbol>
+
+<!-- nepal -->
+<symbol id="NP" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M12 22h16L8 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h28L12 22z"/>
+	<path fill="#EEE" d="M12.6 30l-1.2 2.4 2.6.6-2.5 1 1.7 2-2.6-.7V38L9 35.8l-1.8 2 .3-2.7-2.6.4 1.8-1.8L4.6 32h2.7l-.8-2.5 2 1.6 1-2.4.7 2.6"/><circle fill="#EEE" cx="9" cy="15" r="2"/>
+	<path fill="#EEE" d="M9 20c-2.8 0-5-2.2-5-5h2c0 1.7 1.3 3 3 3s3-1.3 3-3h2c0 2.8-2.2 5-5 5z"/>
+</symbol>
+
+<!-- nauru -->
+<symbol id="NR" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 22H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v14zm0 18c0 1-1 2-2 2H2c-1 0-2-1-2-2V26h48v14z"/>
+	<path fill="#FC5" d="M0 22h48v4H0zm8 7l1 2.5 2.2-1-1 2.2 2.3.8-2.4 1 1.2 2.2-2.3-1L8 38l-1-2.4-2.2 1 1-2.2-2.3-1 2.4-.7-1.2-2.3 2.3 1"/>
+</symbol>
+
+<!-- new-zealand -->
+<symbol id="NZ" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/>
+	<path fill="#45A" d="M46 6H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#F00" d="M20 12h-4.6L19 9.3l-1-1.6-6 4.3V6H8v5.4L3 7.7 1.8 9.3 5.5 12H0v4h6.6l-4.8 3.6L3 21.2l5-3.7V22h4v-5.2l6 4.4 1-1.6-4.7-3.6H20m16.5 1h-2l-1-2-1 2h-2l1.6 1.5-.5 2.3 2-1 2 1-.5-2.3 1.5-1.6zm0 17h-2l-1-2-1 2h-2l1.6 1.5-.5 2.3 2-1 2 1-.5-2.3 1.5-1.6zm5.5-9h-2l-1-2-1 2h-2l1.5 1.4-.5 2.4 2-1.2 2 1-.6-2.2L42 25zm-11 0h-2l-1-2-1 2h-2l1.6 1.4-.6 2.4 2-1.2 2 1-.5-2.2L31 25z"/>
+</symbol>
+
+<!-- oman -->
+<symbol id="OM" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H14V30h34v10z"/>
+	<path fill="#EEE" d="M48 18H14V6h32c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M14 18V6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h12V30h34V18H14z"/>
+	<path fill="#EEE" d="M10 12l-1.4-1.4L7 12l-1.7-1.4L4 12l1.4 1.3L4 14.5 5.3 16 7 14.6 8.5 16l1.3-1.5-1.5-1.2"/>
+</symbol>
+
+<!-- panama-ca -->
+<symbol id="PA" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M24 24H0V8c0-1 1-2 2-2h22v18z"/>
+	<path fill="#45A" d="M16.2 13.6h-3L12 11l-1.2 2.6h-3l2.2 2.2-.8 3.3 2.8-1.5 2.8 1.6L14 16l2.2-2.2zM0 40c0 1 1 2 2 2h22V24H0v16z"/>
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H24V24h24v16z"/>
+	<path fill="#E56" d="M40.2 31.6h-3L36 29l-1.2 2.6h-3l2.2 2.2-.8 3.3 2.8-1.5 2.8 1.6L38 34l2.2-2.2zM24 24h24V8c0-1-1-2-2-2H24v18z"/>
+</symbol>
+
+<!-- Peru -->
+<symbol id="PE" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32zm-32 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- papua-new-guinea -->
+<symbol id="PG" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2H2l46 32V8z"/>
+	<path fill="#455" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2v-2L2 6z"/>
+	<path fill="#EEE" d="M18.4 28.8l.6-2.3-2 1-2-1 .5 2.3-1.6 1.6h2l1 2 .8-2h2l-1.4-1.6zM11 24l.3-1.5-1.3.8-1.4-.8L9 24l-1 1h1.4l.6 1.3.5-1.2H12l-1-1zm6-2l.3-1.5-1.3.8-1.4-.8.4 1.5-1 1h1.4l.6 1.3.5-1.2H18l-1-1zM7 28.2l.3-1.5-1.3.7-1.4-.7.4 1.5-1 1h1.4l.6 1.3.5-1.3H8l-1-1zm7.4 7.8h-2l-1 2-.8-2h-2l1.4-1.5-.6-2.3 2 1 2-1-.5 2.3"/>
+	<path fill="#FC5" d="M40 14h-4v-4h-4c-1 0-2 1-2 2v2h-4c-1 0-2 1-2 2h6v2c0 1 1 2 2 2h4v-4h4v2c1 0 2-1 2-2s-1-2-2-2z"/>
+</symbol>
+
+<!-- philippines -->
+<symbol id="PH" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 24H20L2 6h44c1 0 2 1 2 2v16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2l18-18h28v16z"/>
+	<path fill="#EEE" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#FC5" d="M9 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
+</symbol>
+
+<!-- pakistan -->
+<symbol id="PK" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H16V6h30c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M42 22.7h-3L38 20l-1.2 2.7h-3L36 25l-.8 3 2.8-1.6 2.8 1.6-.8-3 2.2-2.3zM34 30c-3.3 0-6-2.7-6-6s2.7-6 6-6c.5 0 1 0 1.5.2C34 17 32 16 30 16c-4.4 0-8 3.6-8 8s3.6 8 8 8c2 0 4-.8 5.5-2.2L34 30zM16 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h14V6z"/>
+</symbol>
+
+<!-- poland -->
+<symbol id="PL" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#EEE" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+</symbol>
+
+<!-- palestine -->
+<symbol id="PS" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 18H14L2 6h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M48 30H14l6-6-6-6h34"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2l12-12h34v10z"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+</symbol>
+
+<!-- portugal -->
+<symbol id="PT" viewBox="0 0 48 48">
+	<path fill="#064" d="M18 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h16v36z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H18V6h28c1 0 2 1 2 2v32z"/><circle fill="#FC5" cx="18" cy="22" r="6"/>
+</symbol>
+
+<!-- palau -->
+<symbol id="PW" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#FC5" cx="18" cy="24" r="8"/>
+</symbol>
+
+<!-- paraguay -->
+<symbol id="PY" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#455" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- qatar -->
+<symbol id="QA" viewBox="0 0 48 48">
+	<path fill="#812" d="M48 40c0 1-1 2-2 2H16V6h30c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M16 16l6-4-6-4V6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h14v-2l6-4-6-4 6-4-6-4 6-4-6-4z"/>
+</symbol>
+
+<!-- romania -->
+<symbol id="RO" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#45A" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36z"/>
+</symbol>
+
+<!-- serbia -->
+<symbol id="RS" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#E56" d="M18 18H6v12l6 4 6-4"/>
+	<path fill="#EEE" d="M8 20h8v6H8zm4 12l4-4H8"/>
+	<path fill="#FC5" d="M8 14v2h2v2h4v-2h2v-2"/>
+</symbol>
+
+<!-- russia -->
+<symbol id="RU" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- rwanda -->
+<symbol id="RW" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/>
+	<path fill="#FC5" d="M0 22h48v10H0z"/>
+	<path fill="#3AD" d="M48 22H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v14z"/><circle fill="#FC5" cx="36" cy="16" r="4"/>
+</symbol>
+
+<!-- saudi-arabia -->
+<symbol id="SA" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M38 14v2h-6v2h6v2h-6v2h6v2h-6v2h6v2h-8v-8h-2v2h-2v2h2v4h-4V18h-2v10h-2V18h-2v10h-2v-6h-6v-2h6v-2h-6v-4H8v16h32V14h-2zM10 28v-4h4v4h-4zm2-14h2v2h-2zm6 0h6v2h-6zm8 2h4v2h-4zM8 34h32v2H8z"/>
+</symbol>
+
+<!-- solomon-islands -->
+<symbol id="SB" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M4 42H2c-1 0-2-1-2-2v-4L44 6h2c1 0 2 1 2 2v4L4 42z"/>
+	<path fill="#064" d="M46 42H4l44-30v28c0 1-1 2-2 2z"/>
+	<path fill="#45A" d="M2 6h42L0 36V8c0-1 1-2 2-2z"/>
+	<path fill="#EEE" d="M14.5 10.4h-2l-1-2-1 2h-2L10 12l-.5 2.3 2-1 2 1L13 12m-5 5.3H6.6L6 16l-.5 1.3H4l1 1-.3 1.5L6 19l1.4.8-.4-1.5 1-1zm4 4.1h-1.4l-.6-1.2-.5 1.2H8l1 1-.3 1.6 1.3-.8 1.4.8-.4-1.5 1-1zm8-5.4h-2l-1-1.8-1 2h-2l1.6 1.5L15 20l2-1 2 1-.5-2.3L20 16z"/>
+</symbol>
+
+<!-- seychelles -->
+<symbol id="SC" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2l48-10v10z"/>
+	<path fill="#EEE" d="M0 40l48-10V20"/>
+	<path fill="#FC5" d="M0 40L42 6H22"/>
+	<path fill="#45A" d="M0 40L22 6H2C1 6 0 7 0 8v32z"/>
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2h-4L0 40l48-20V8z"/>
+</symbol>
+
+<!-- spain -->
+<symbol id="ES" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 16H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v8zm0 24c0 1-1 2-2 2H2c-1 0-2-1-2-2v-8h48v8z"/>
+	<path fill="#FC5" d="M0 16h48v16H0z"/>
+	<path fill="#943" d="M14 20v-2H6v2h2v2H6v5.3l4 2.7 4-2.7V22h-2v-2"/>
+</symbol>
+
+<!-- sudan -->
+<symbol id="SD" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#445" d="M48 40c0 1-1 2-2 2H2l12-12h34v10z"/>
+	<path fill="#EEE" d="M48 30H14l6-6-6-6h34"/>
+	<path fill="#E56" d="M48 18H14L2 6h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- sweden -->
+<symbol id="SE" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M48 20H20V6h-8v14H0v8h12v14h8V28h28"/>
+</symbol>
+
+<!-- singapore -->
+<symbol id="SG" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16zM8 16c0-2.6 1.7-4.8 4-5.6-.6-.3-1.3-.4-2-.4-3.3 0-6 2.7-6 6s2.7 6 6 6c.7 0 1.4 0 2-.4-2.3-.8-4-3-4-5.6z"/><circle fill="#EEE" cx="19" cy="11" r="1"/><circle fill="#EEE" cx="19" cy="19" r="1"/><ellipse fill="#EEE" cx="15" cy="17" rx="1" ry="1"/><ellipse fill="#EEE" cx="23" cy="13" rx="1" ry="1"/><ellipse fill="#EEE" cx="23" cy="17" rx="1" ry="1"/><ellipse fill="#EEE" cx="15" cy="13" rx="1" ry="1"/>
+</symbol>
+
+<!-- slovenia -->
+<symbol id="SI" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#45A" d="M18 14H6v10l6 4 6-4"/>
+	<path fill="#EEE" d="M16 18H8v4h8v-4z"/>
+</symbol>
+
+<!-- slovakia -->
+<symbol id="SK" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M18 14H6v11c0 .6.3 1.2 1 1.6l5 3.4 5-3.4c.7-.4 1-1 1-1.7V14z"/>
+	<path fill="#EEE" d="M8 16h8v2H8zm2 4h4v2h-4zm0 4h4v2h-4z"/>
+</symbol>
+
+<!-- sierra-leone -->
+<symbol id="SL" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#5C6" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- san-marino -->
+<symbol id="SM" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+	<path fill="#FC5" d="M28 20h-2v-2h2v-2h-8v2h2v2h-2c-1 0-2 1-2 2v6l6 4 6-4v-6c0-1-1-2-2-2z"/>
+	<path fill="#064" d="M14 20h2v8h-2zm18 0h2v8h-2z"/>
+</symbol>
+
+<!-- senegal -->
+<symbol id="SN" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M16 6h16v36H16z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H32V6h14c1 0 2 1 2 2v32z"/>
+	<path fill="#5C6" d="M16 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h14v36zm14.3-20.3H26l-2-4-2 4h-4.3L21 25l-1.3 5 4.3-2.5 4.3 2.4-1.2-5 3.4-3.4z"/>
+</symbol>
+
+<!-- somalia -->
+<symbol id="SO" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M32.4 21h-6L24 15.7 21.5 21h-6l4.4 4.5-1.7 6.4 5.6-3.4 5.5 3.2-1.5-6.5 4.4-4.5z"/>
+</symbol>
+
+<!-- suriname -->
+<symbol id="SR" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10zm0 22c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#FC5" d="M28.2 22.4h-3L24 19.7l-1.3 2.7h-3l2.2 2.3-1 3.2 3-1.7 3 1.6-1-3.3 2.2-2.3z"/>
+	<path fill="#EEE" d="M0 16h48v2H0zm0 14h48v2H0z"/>
+</symbol>
+
+<!-- south-sudan -->
+<symbol id="SS" viewBox="0 0 48 48">
+	<path fill="#445" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#E56" d="M0 18h48v12H0z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v2H0zm0 10h48v2H0z"/>
+	<path fill="#45A" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l20-18L2 6z"/>
+	<path fill="#FC5" d="M14.4 22.5h-3L10.2 20 9 22.4H6l2.2 2.3-.8 3.2 2.8-1.7L13 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- sao-tome-and-principe -->
+<symbol id="ST" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 16H12L2 6h44c1 0 2 1 2 2v8zm0 24c0 1-1 2-2 2H2l10-10h36v8z"/>
+	<path fill="#FC5" d="M48 32H12l8-8-8-8h36"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#445" d="M30.4 22.5h-3L26.2 20 25 22.4h-3l2.2 2.3-.8 3.2 2.8-1.8L29 28l-.8-3.2 2.2-2.3zm12 0h-3L38.2 20 37 22.4h-3l2.2 2.3-.8 3.2 2.8-1.8L41 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- el-salvador-ca -->
+<symbol id="SV" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10zm0 22c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#343" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"/>
+</symbol>
+
+<!-- syria -->
+<symbol id="SY" viewBox="0 0 48 48">
+	<path fill="#455" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#064" d="M20.3 22.6h-3l-1-2.6-1 2.6h-3l2 2.2-.8 3.3 2.8-1.2 3 1.6-.8-3.2 2-2zm15.7 0h-3L32 20l-1.2 2.6h-3l2.2 2.2-1 3.2 2.8-1.5 2.8 1.6-.8-3 2.2-2z"/>
+</symbol>
+
+<!-- swaziland -->
+<symbol id="SZ" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 14H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v6zm0 26c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6z"/>
+	<path fill="#E56" d="M0 16h48v16H0z"/>
+	<path fill="#FC5" d="M0 14h48v2H0zm0 18h48v2H0zm10-6h12v2H10zm0-6h12v2H10zm16 6h12v2H26zm0-6h12v2H26z"/>
+	<path fill="#455" d="M18 24c0 3.3 2.7 6 6 6V18c-3.3 0-6 2.7-6 6z"/>
+	<path fill="#EEE" d="M30 24c0 3.3-2.7 6-6 6V18c3.3 0 6 2.7 6 6z"/>
+</symbol>
+
+<!-- SWITZERLAND -->
+<symbol id="CH" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M35 28H13c-.6 0-1-.4-1-1v-6c0-.6.4-1 1-1h22c.6 0 1 .4 1 1v6c0 .6-.4 1-1 1zm-8 8h-6c-.6 0-1-.4-1-1V13c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v22c0 .6-.4 1-1 1z"/>
+</symbol>
+
+<!-- togo -->
+<symbol id="TG" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-6h48v6zm0-26H14V6h32c1 0 2 1 2 2v6zM0 20h48v8H0z"/>
+	<path fill="#FC5" d="M0 28h48v6H0zm14-14h34v6H14z"/>
+	<path fill="#E56" d="M14 20H0V8c0-1 1-2 2-2h12v14z"/>
+	<path fill="#EEE" d="M10.8 12.3H8.3l-1-2.2-1 2.3H3.7l1.8 2-.7 2.6 2.3-1.5L9.6 17 9 14l1.8-2z"/>
+</symbol>
+
+<!-- thailand -->
+<symbol id="TH" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-4h48v4zm0-28H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v4z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#EEE" d="M0 30h48v6H0zm0-18h48v6H0z"/>
+</symbol>
+
+<!-- Tajikistan -->
+<symbol id="TJ" viewBox="0 0 48 48">
+	<path fill="#E45" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#064" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#FC5" d="M24 20c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/>
+</symbol>
+
+<!-- east-timor -->
+<symbol id="TL" viewBox="0 0 48 48">
+	<path fill="#E56" d="M14.4 22.5h-3L10.2 20 9 22.4H6l2.2 2.3-.8 3.2 2.8-1.6L13 28l-.8-3.2 2.2-2.3zM46 6H2l20 18L2 42h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#FC5" d="M28 24L2 6l20 18L2 42"/>
+	<path fill="#445" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l20-18L2 6z"/>
+	<path fill="#EEE" d="M12.4 22.5h-3L8.2 20 7 22.4H4l2.2 2.3-.8 3.2 2.8-1.6L11 28l-.8-3.2 2.2-2.3z"/>
+</symbol>
+
+<!-- turkmenistan -->
+<symbol id="TM" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H18V6h28c1 0 2 1 2 2v32zM18 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h16V6z"/>
+	<path fill="#EEE" d="M34 16c0-2.6-1.7-4.8-4-5.6.6-.3 1.3-.4 2-.4 3.3 0 6 2.7 6 6s-2.7 6-6 6c-.7 0-1.4 0-2-.4 2.3-.8 4-3 4-5.6zm-10-4h2v2h-2zm4 0h2v2h-2zm0 4h2v2h-2zm-4 0h2v2h-2zm2-2h2v2h-2z"/>
+	<path fill="#E56" d="M10 6v36h8V6h-8zm6 32h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4v-4h4v4z"/>
+</symbol>
+
+<!-- tunisia -->
+<symbol id="TN" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/><circle fill="#EEE" cx="24" cy="24" r="12"/>
+	<path fill="#E56" d="M27.2 30.4c-3.5 0-6.4-3-6.4-6.4s3-6.4 6.4-6.4c.7 0 1.3 0 2 .3-1.4-1.4-3.2-2-5.2-2-4.4 0-8 3.5-8 8s3.6 8 8 8c2 0 3.8-.8 5.2-2-.7.2-1.3.3-2 .3zm2.1-7.7L28 20l-1.2 2.7H24l2 2-.7 3.3 2.7-1.6 2.8 1.6-.8-3.2 2-2h-2.7z"/>
+</symbol>
+
+<!-- tonga -->
+<symbol id="TO" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M20 26H0V8c0-1 1-2 2-2h18v20z"/>
+	<path fill="#E56" d="M46 6H20v20H0v14c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2zm-30 8h-4v-4H8v4H4v4h4v4h4v-4h4"/>
+</symbol>
+
+<!-- turkey -->
+<symbol id="TR" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M22 34c-5.5 0-10-4.5-10-10s4.5-10 10-10c1.3 0 2.4.3 3.6.7C23.6 13 21 12 18 12c-6.6 0-12 5.4-12 12s5.4 12 12 12c3 0 5.5-1 7.6-2.7-1.2.4-2.3.7-3.6.7zm10.3-12l-1.8-4-2 4h-4l3 3.2-1.2 4.8 4.2-2.4 4 2.4-1-4.8 3-3.2h-4.2z"/>
+</symbol>
+
+<!-- trinidad-tobago -->
+<symbol id="TT" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 39.8c0 1-1 2-2 2H2c-1 0-2-1-2-2v-32c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M46 6H12l36 24V8c0-1-1-2-2-2zM2 42h34L0 18v22c0 1 1 2 2 2z"/>
+	<path fill="#455" d="M43.2 42H46c1 0 2-1 2-2v-5.2L4.8 6H2C1 6 0 7 0 8v5.2L43.2 42z"/>
+</symbol>
+
+<!-- tuvalu -->
+<symbol id="TV" viewBox="0 0 48 48">
+	<path fill="#070084" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/>
+	<path fill="#0482FB" d="M46 6H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#F00" d="M20 12h-4.6L19 9.3l-1-1.6-6 4.3V6H8v5.4L3 7.7 1.8 9.3 5.5 12H0v4h6.6l-4.8 3.6L3 21.2l5-3.7V22h4v-5.2l6 4.4 1-1.6-4.7-3.6H20"/>
+	<path fill="#F6D031" d="M35 25h-2.4l-1-2-1 2h-2l1.5 1.6-.5 2.5 2.2-1 2.2 1-.7-2.4L35 25zm-7 2.6h-1.6l-.8-1.5-.7 1.6H23l1.3 1.3-.5 1.7 1.6-1 1.7 1-.5-1.8 1.2-1.4zm-6 1.7h-1l-.6-1-.5 1h-1.2l.8.8-.3 1.4 1-.6 1.2.6-.3-1.3.8-.7zm-4.5.9h-1l-.6-1-.6 1h-1l.7 1-.2 1 1-.5 1.2.6-.3-1.2.8-.8zm25.5-.6h-2.3l-1-2-1 2h-2.2l1.7 1.7-.6 2.5 2.2-1.3 2 1.3-.5-2.5 1.7-1.7zm-7 2.6h-1.6l-.7-1.5-.7 1.5h-1.7l1.3 1.3-.5 2 1.7-1 1.6 1-.4-2 1-1.3zM30 34h-1l-.5-1-.5 1h-1l.7.8-.3 1.2 1-.6 1 .6-.2-1.2.8-1zm-4.5.8h-1l-.5-1-.5 1h-1l.7 1-.3 1 1-.5 1 .6-.3-1.3.8-1z"/>
+</symbol>
+
+<!-- taiwan -->
+<symbol id="TW" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8z"/>
+	<path fill="#45A" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/><circle fill="#EEE" cx="10" cy="14" r="4"/>
+</symbol>
+
+<!-- tanzania -->
+<symbol id="TZ" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 18L12 42H4.8L48 13.2M36 6h7.2L0 34.8V30"/>
+	<path fill="#5C6" d="M2 6h34L0 30V8c0-1 1-2 2-2z"/>
+	<path fill="#3AD" d="M46 42H12l36-24v22c0 1-1 2-2 2z"/>
+	<path fill="#445" d="M4.8 42H2c-1 0-2-1-2-2v-5.2L43.2 6H46c1 0 2 1 2 2v5.2L4.8 42z"/>
+</symbol>
+
+<!-- ukraine -->
+<symbol id="UA" viewBox="0 0 48 48">
+	<path fill="#3AD" d="M48 24H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v16z"/>
+	<path fill="#FC5" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V24h48v16z"/>
+</symbol>
+
+<!-- uganda -->
+<symbol id="UG" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2v-4h48v4z"/>
+	<path fill="#FC5" d="M0 30h48v6H0z"/>
+	<path fill="#445" d="M0 24h48v6H0z"/>
+	<path fill="#E56" d="M0 18h48v6H0z"/>
+	<path fill="#445" d="M0 12h48V8c0-1-1-2-2-2H2C1 6 0 7 0 8v4z"/>
+	<path fill="#FC5" d="M0 12h48v6H0z"/><circle fill="#EEE" cx="24" cy="24" r="8"/>
+	<path fill="#999" d="M26 22h-4v-2h2v-2l-4 2v4c0 1 1 2 2 2v4l2-4 2 4v-4h2v-2c0-1-1-2-2-2z"/>
+</symbol>
+
+<!-- usa -->
+<symbol id="US" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 8c0-1-1-2-2-2H20v20H0v14c0 1 1 2 2 2h44c1 0 2-1 2-2V8z"/>
+	<path fill="#45A" d="M20 26H0V8c0-1 1-2 2-2h18v20z"/>
+	<path fill="#EEE" d="M20 10h28v4H20zm0 8h28v4H20zM0 26v4h48v-4H20M0 34h48v4H0zm10-20l-.6 1.3H8l1 1-.4 1.8 1.4-.7 1.4.8-.4-1.6 1-1h-1.4M5 9l-.5 1.4H3l1 1-.3 1.8 1.4-.8 1.6.8-.5-1.7 1.2-1H5.7M15 9l.5 1.4H17l-1 1 .3 1.8-1.4-.8-1.6.8.5-1.7-1.2-1h1.5M5 23l-.5-1.4H3l1-1-.3-1.8 1.4.8 1.6-.8-.5 1.7 1.2 1H5.7M15 23l.5-1.4H17l-1-1 .3-1.8-1.4.8-1.6-.8.5 1.7-1.2 1h1.5"/>
+</symbol>
+
+<!-- uruguay -->
+<symbol id="UY" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 8c0-1-1-2-2-2H18v20H0v14c0 1 1 2 2 2h44c1 0 2-1 2-2V8zM18 26H0V8c0-1 1-2 2-2h16v20z"/>
+	<path fill="#45A" d="M18 10h30v4H18zm0 8h30v4H18zM0 26v4h48v-4H20M0 34h48v4H0z"/><circle fill="#FC5" cx="10" cy="16" r="4"/>
+</symbol>
+
+<!-- uzbekistan -->
+<symbol id="UZ" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#3AD" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0zM10 8H9c-2.2 0-4 1.8-4 4s1.8 4 4 4h1c-1.7-.6-3-2-3-4s1.3-3.4 3-4zm2 2h2v2h-2zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2h-2zm4 0h2v2h-2zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+</symbol>
+
+<!-- saint-vincent-grenadines -->
+<symbol id="VC" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M14 6h20v36H14z"/>
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H34V6h12c1 0 2 1 2 2v32zM20.6 26.7l3.4-3.3 3.3 3.3L24 30zm4-4l3.4-3.3 3.3 3.3L28 26zm-8 0l3.4-3.3 3.3 3.3L20 26z"/>
+	<path fill="#3AD" d="M14 42H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h12v36z"/>
+</symbol>
+
+<!-- venezuela -->
+<symbol id="VE" viewBox="0 0 48 48">
+	<path fill="#FC5" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+	<path fill="#45A" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M26 23.3h-1.4L24 22l-.6 1.3H22l1 1-.4 1.8 1.4-.7 1.4.8-.4-1.6 1-1zm-7.7 2.1h-1.5L16 24l-.5 1.4H14l1 1-.3 1.7 1.4-.7 1.6.8-.4-1.5 1-1zm16 0h-1.5L32 24l-.5 1.4H30l1 1-.3 1.7 1.4-.7 1.6.8-.4-1.5 1-1z"/>
+</symbol>
+
+<!-- vietnam -->
+<symbol id="VN" viewBox="0 0 48 48">
+	<path fill="#E56" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M32.4 21h-6L24 15.7 21.5 21h-6l4.4 4.5-1.7 6.4 5.6-3.4 5.5 3.2-1.5-6.5 4.4-4.5z"/>
+</symbol>
+
+<!-- vanuatu -->
+<symbol id="VU" viewBox="0 0 48 48">
+	<path fill="#445" d="M0 14v20l16-10"/>
+	<path fill="#FC5" d="M20 22L0 10v4l16 10L0 34v4l20-12h28v-4M6 22c-1 0-2 1-2 2s1 2 2 2 2-1 2-2-1-2-2-2zm0 3c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z"/>
+	<path fill="#E56" d="M2 6C1 6 0 7 0 8v2l20 12h28V8c0-1-1-2-2-2H2z"/>
+	<path fill="#5C6" d="M2 42c-1 0-2-1-2-2v-2l20-12h28v14c0 1-1 2-2 2H2z"/>
+</symbol>
+
+<!-- samoa -->
+<symbol id="WS" viewBox="0 0 48 48">
+	<path fill="#45A" d="M20 22H0V8c0-1 1-2 2-2h18v16z"/>
+	<path fill="#E56" d="M46 6H20v16H0v18c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#EEE" d="M17.7 10.2h-2.3l-1-2-1 2h-2.2L13 12l-.7 2.4 2-1.2 2.3 1.2L16 12l1.7-1.8zM8 11.5H6.3L5.6 10 5 11.5H3l1.2 1.3-.4 2 1.6-1 1.6 1-.4-2L8 11.5zm8 5.5h-1.7l-.7-1.5L13 17h-1.7l1.2 1.3L12 20l1.6-.8 1.6 1-.4-2L16 17zm-6 .7H8.8l-.5-1-.6 1H6.5l1 1L7 20l1.3-.7 1 .7-.2-1.4 1-1z"/>
+</symbol>
+
+<!-- kosovo -->
+<symbol id="XK" viewBox="0 0 48 48">
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#EEE" d="M26 15.2h-1.4L24 14l-.6 1.2H22l1 1.2-.4 1.6 1.4-.8 1.4.8-.4-1.6 1-1.2zm7.2 0h-1.5L31 14l-.6 1.2H29l1 1.2-.4 1.6 1.4-.8 1.5.8-.4-1.6 1.2-1.2zm7.1 0h-1.5L38 14l-.5 1.2H36l1 1.2-.3 1.6 1.4-.8 1.6.8-.4-1.6 1-1.2zm-21.3 0h-1.4L17 14l-.7 1.2h-1.5l1 1.2-.3 1.6 1.5-.8 1.4.8-.4-1.6 1-1.2zm-6.7 0h-1.5L10 14l-.4 1H8l1 1.2-.3 1.6 1.4-.8 1.6.8-.4-1.6 1-1.2z"/><circle fill="#FC5" cx="24" cy="28" r="6"/>
+</symbol>
+
+<!-- yemen -->
+<symbol id="YE" viewBox="0 0 48 48">
+	<path fill="#455" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V30h48v10z"/>
+	<path fill="#EEE" d="M0 18h48v12H0z"/>
+	<path fill="#E56" d="M48 18H0V8c0-1 1-2 2-2h44c1 0 2 1 2 2v10z"/>
+</symbol>
+
+<!-- south-africa -->
+<symbol id="ZA" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#FC5" d="M0 14v4l10 6-10 6v4l16-10"/>
+	<path fill="#455" d="M0 18v12l10-6"/>
+	<path fill="#45A" d="M48 40c0 1-1 2-2 2H10l14-10h24v8z"/>
+	<path fill="#E56" d="M48 16H24L10 6h36c1 0 2 1 2 2v8z"/>
+	<path fill="#064" d="M23.4 20L2.4 6H2C1 6 0 7 0 8v6l16 10L0 34v6c0 1 1 2 2 2h.4l21-14H48v-8H23.4z"/>
+</symbol>
+
+<!-- zambia -->
+<symbol id="ZM" viewBox="0 0 48 48">
+	<path fill="#064" d="M48 8c0-1-1-2-2-2H2C1 6 0 7 0 8v32c0 1 1 2 2 2h22V28h24V8z"/>
+	<path fill="#E72" d="M48 28h-8v14h6c1 0 2-1 2-2V28z"/>
+	<path fill="#455" d="M32 28h8v14h-8z"/>
+	<path fill="#E56" d="M24 28h8v14h-8z"/>
+	<path fill="#764" d="M44.6 17c.3-.7.2-1.5 0-2s-1-1-1.8-1H29.2c-.7 0-1.3.4-1.7 1-.3.5-.4 1.3 0 2l.5 1h16l.6-1z"/>
+	<path fill="#764" d="M38 22l-2 2-2-2V12c0-1 1-2 2-2s2 1 2 2v10z"/>
+</symbol>
+
+<!-- zimbabwe -->
+<symbol id="ZW" viewBox="0 0 48 48">
+	<path fill="#5C6" d="M48 40c0 1-1 2-2 2H2l4-4h42v2z"/>
+	<path fill="#FC5" d="M6 38h42v-6H12"/>
+	<path fill="#E56" d="M48 32H12l6-6h30m-30-4h30v-6H12"/>
+	<path fill="#5C6" d="M6 10h42V8c0-1-1-2-2-2H2l4 4z"/>
+	<path fill="#FC5" d="M48 16H12l-6-6h42"/>
+	<path fill="#445" d="M48 26H18l2-2-2-2h30"/>
+	<path fill="#EEE" d="M2 6C1 6 0 7 0 8v32c0 1 1 2 2 2l18-18L2 6z"/>
+	<path fill="#E56" d="M14 21.5h-4L8.6 18 7 21.5H3l2.8 3-1 4.2 3.7-2 3.7 2-1-4.3 2.8-3z"/><circle fill="#FC5" cx="8.5" cy="23.7" r="3.4"/>
+</symbol>
+
+<!-- Europe -->
+<symbol id="ZZ" viewBox="0 0 48 48">
+	<path fill="#45A" d="M46 6H2C1 6 0 7 0 8v32c0 1 1 2 2 2h44c1 0 2-1 2-2V8c0-1-1-2-2-2z"/>
+	<path fill="#FC5" d="M27 14h-2l-1-2-1 2h-2l1.5 1.6L22 18l2-1 2 1-.5-2.4m8 .7h-2.2l-1-2-1 2h-2l1.5 1.7-.6 2.4 2-1.2 2.2 1.2L32 18m-5 14h-2l-1-2-1 2h-2l1.5 1.6L22 36l2-1.2 2 1.2-.5-2.4m-4.7-17.3h-2.2l-1-2-1 2h-2L16 18l-.4 2.4 2-1.2 2.2 1.2-.6-2.4m-2 5H15l-1-2-.8 2H11l1.6 1.6L12 27l2-1.2 2.2 1.2-.6-2.4M37 23h-2.2l-1-2-.8 2h-2.2l1.6 1.6-.6 2.4 2-1.2L36 27l-.6-2.4m-1.9 4.9h-2.2l-1-2-1 2h-2l1.5 1.7-.6 2.4 2-1.2 2.2 1.2-.5-2.4m-11.1-1.7h-2.2l-1-2-1 2h-2l1.5 1.7-.4 2.4 2-1.2 2.2 1.2-.6-2.4"/>
+</symbol>
+
+<!-- Great Britian -->
+<symbol id="GB" viewBox="0 0 48 48">
+	<path fill="#EEE" d="M48 40c0 1-1 2-2 2H2c-1 0-2-1-2-2V8c0-1 1-2 2-2h44c1 0 2 1 2 2v32z"/>
+	<path fill="#E56" d="M48 20H28V6h-8v14H0v8h20v14h8V28h20"/>
+</symbol></svg>
