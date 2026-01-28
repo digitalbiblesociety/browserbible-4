@@ -17,9 +17,9 @@
     "test:ui": "playwright test --ui",
     "lint": "eslint app/js",
     "lint:fix": "eslint app/js --fix",
-    "verse-detection:dev": "npx vite --config verse-detection/vite.config.js serve verse-detection",
-    "verse-detection:build": "npx vite --config verse-detection/vite.config.js build",
-    "verse-detection:preview": "npx vite --config verse-detection/vite.config.js preview verse-detection"
+    "vd:dev": "npx vite --config verse-detection/vite.config.js serve verse-detection",
+    "vd:build": "npx vite --config verse-detection/vite.config.js build",
+    "vd:preview": "npx vite --config verse-detection/vite.config.js preview verse-detection"
   },
   "dependencies": {
     "diff": "^8.0.2",

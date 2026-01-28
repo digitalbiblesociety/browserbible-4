@@ -8,6 +8,23 @@
 import { config as defaultConfig, mergeConfig, VerseDetectionConfig, PartialVerseDetectionConfig } from './config.js';
 import type { CanonicalBookName } from './bookNames.js';
 
+/** Embedded inscript.org logo SVG */
+const INSCRIPT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+<path fill="#D1EAF1" d="M44 23Q33 8 9 0q23 34-8 64 30-10 43-40"/>
+<path fill="#A5CBE2" d="M61 34Q51 14 34 3q0 44-33 61 39-3 60-30"/>
+<path fill="#3F87C1" d="M69 40q-4-14-15-29-8 47-53 53 52-2 68-24"/>
+<path fill="#2468B9" d="M72 59q0-6-2-10Q48 64 0 64q30 1 72-5"/>
+<rect fill="#666" width="70" height="4" x="2" y="67" rx="2"/>
+</svg>`;
+
+/** Social share icons */
+const SOCIAL_ICONS: Record<string, string> = {
+	facebook: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+	x: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+	bluesky: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.296 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>`,
+	copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
+};
+
 /** Book code mapping type */
 export type BookCode = string;
 
@@ -124,6 +141,32 @@ function createPopupElement(config: VerseDetectionConfig): HTMLDivElement {
 				padding-bottom: 6px;
 				border-bottom: 1px solid var(--popup-border, #eee);
 				color: var(--popup-header-color, #333);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 8px;
+			}
+
+			.verse-popup-header-text {
+				flex: 1;
+			}
+
+			.verse-popup-logo {
+				flex-shrink: 0;
+				width: 20px;
+				height: 20px;
+				opacity: 0.7;
+				transition: opacity 0.2s ease;
+			}
+
+			.verse-popup-logo:hover {
+				opacity: 1;
+			}
+
+			.verse-popup-logo svg {
+				width: 100%;
+				height: 100%;
+				display: block;
 			}
 
 			.verse-popup-content {
@@ -220,6 +263,72 @@ function createPopupElement(config: VerseDetectionConfig): HTMLDivElement {
 				text-decoration-style: solid;
 			}
 
+			/* Social share footer */
+			.verse-popup-social {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 12px;
+				margin-top: 10px;
+				padding-top: 10px;
+				border-top: 1px solid var(--popup-border, #eee);
+			}
+
+			.verse-popup-social-btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 32px;
+				height: 32px;
+				border: none;
+				border-radius: 50%;
+				background: var(--popup-social-btn-bg, #f0f0f0);
+				color: var(--popup-social-btn-color, #555);
+				cursor: pointer;
+				transition: all 0.2s ease;
+				padding: 0;
+			}
+
+			.verse-popup-social-btn:hover {
+				background: var(--popup-social-btn-hover-bg, #e0e0e0);
+				color: var(--popup-social-btn-hover-color, #333);
+				transform: scale(1.1);
+			}
+
+			.verse-popup-social-btn:active {
+				transform: scale(0.95);
+			}
+
+			.verse-popup-social-btn svg {
+				width: 16px;
+				height: 16px;
+			}
+
+			.verse-popup-social-btn.facebook:hover {
+				background: #1877f2;
+				color: #fff;
+			}
+
+			.verse-popup-social-btn.x:hover {
+				background: #000;
+				color: #fff;
+			}
+
+			.verse-popup-social-btn.bluesky:hover {
+				background: #0085ff;
+				color: #fff;
+			}
+
+			.verse-popup-social-btn.copy:hover {
+				background: #4a90d9;
+				color: #fff;
+			}
+
+			.verse-popup-social-btn.copied {
+				background: #4caf50 !important;
+				color: #fff !important;
+			}
+
 			.verse-popup-loading {
 				display: flex;
 				align-items: center;
@@ -296,16 +405,24 @@ function createPopupElement(config: VerseDetectionConfig): HTMLDivElement {
 					--popup-footnote-key-color: #6ab0f3;
 					--popup-footnote-text-color: #aaa;
 					--popup-xref-color: #6ab0f3;
+					--popup-social-btn-bg: #3d3d3d;
+					--popup-social-btn-color: #aaa;
+					--popup-social-btn-hover-bg: #4d4d4d;
+					--popup-social-btn-hover-color: #fff;
 				}
 			}
 		`;
 		document.head.appendChild(styles);
 	}
 
-	// Create popup element
+	// Create popup element with ARIA attributes for accessibility
 	const popup = document.createElement('div');
 	popup.className = `verse-popup ${config.popup.cssClass}`;
-	popup.setAttribute('role', 'tooltip');
+	popup.setAttribute('role', 'dialog');
+	popup.setAttribute('aria-modal', 'false');
+	popup.setAttribute('aria-label', 'Verse preview');
+	popup.setAttribute('aria-live', 'polite');
+	popup.id = 'verse-popup-' + Math.random().toString(36).substr(2, 9);
 	popup.style.display = 'none';
 	document.body.appendChild(popup);
 
@@ -321,7 +438,7 @@ export class VersePopup {
 	private currentTarget: HTMLElement | null = null;
 	private showTimeout: ReturnType<typeof setTimeout> | null = null;
 	private hideTimeout: ReturnType<typeof setTimeout> | null = null;
-	private cache: Map<string, string> = new Map();
+	private cache: Map<string, { content: string; footnotes: Array<{ key: string; text: string }> }> = new Map();
 	private textLoader: TextLoader | null = null;
 	private currentTextInfo: TextInfo | null = null;
 	private textsIndexLoaded: boolean = false;
@@ -340,6 +457,7 @@ export class VersePopup {
 		this.handleClick = this.handleClick.bind(this);
 		this.handleTouchStart = this.handleTouchStart.bind(this);
 		this.handleTouchEnd = this.handleTouchEnd.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 	}
 
 	/**
@@ -392,6 +510,9 @@ export class VersePopup {
 				}
 			}
 		});
+
+		// Handle keyboard events for accessibility
+		document.addEventListener('keydown', this.handleKeyDown);
 	}
 
 	/**
@@ -570,6 +691,17 @@ export class VersePopup {
 
 		const links = container.querySelectorAll<HTMLElement>('.verse-link[data-verse-ref]');
 		links.forEach(link => {
+			// Add ARIA attributes for accessibility
+			const ref = link.dataset.verseRef || '';
+			link.setAttribute('role', 'button');
+			link.setAttribute('tabindex', '0');
+			link.setAttribute('aria-haspopup', 'dialog');
+			link.setAttribute('aria-expanded', 'false');
+			link.setAttribute('aria-label', `View ${ref}`);
+			if (this.popup) {
+				link.setAttribute('aria-controls', this.popup.id);
+			}
+
 			// Mouse events for desktop
 			if (!this.hasTouch) {
 				link.addEventListener('mouseenter', this.handleMouseEnter);
@@ -720,6 +852,35 @@ export class VersePopup {
 	}
 
 	/**
+	 * Handle keyboard events for accessibility
+	 * Escape closes popup, Enter/Space on verse link toggles popup
+	 */
+	private handleKeyDown(event: KeyboardEvent): void {
+		// Escape key closes the popup
+		if (event.key === 'Escape' && this.popup?.classList.contains('visible')) {
+			this.hide();
+			// Return focus to the triggering element
+			if (this.currentTarget) {
+				this.currentTarget.focus();
+			}
+			return;
+		}
+
+		// Enter or Space on a verse link toggles popup
+		if ((event.key === 'Enter' || event.key === ' ') && this.config.displayMode !== 'link') {
+			const target = event.target as HTMLElement;
+			if (target.classList.contains('verse-link') && target.dataset.verseRef) {
+				event.preventDefault();
+				if (this.popup?.classList.contains('visible') && this.currentTarget === target) {
+					this.hide();
+				} else {
+					this.show(target);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Navigate to a verse using the app's navigation system
 	 */
 	private navigateToVerse(reference: string): void {
@@ -757,13 +918,23 @@ export class VersePopup {
 			return;
 		}
 
+		// Update ARIA expanded state on previous target
+		if (this.currentTarget && this.currentTarget !== target) {
+			this.currentTarget.setAttribute('aria-expanded', 'false');
+		}
+		this.currentTarget = target;
+
 		// Position the popup initially
 		this.positionPopup(target);
 
 		// Show loading state
 		if (this.config.popup.showLoadingIndicator) {
-			this.popup.innerHTML = '<div class="verse-popup-loading">Loading</div>';
+			this.popup.innerHTML = '<div class="verse-popup-loading" role="status" aria-live="polite">Loading</div>';
 		}
+
+		// Update ARIA attributes
+		target.setAttribute('aria-expanded', 'true');
+		this.popup.setAttribute('aria-label', `Verse preview: ${ref}`);
 
 		this.popup.style.display = 'block';
 		// Force reflow for transition
@@ -788,6 +959,11 @@ export class VersePopup {
 	 */
 	hide(): void {
 		if (!this.popup) return;
+
+		// Update ARIA expanded state
+		if (this.currentTarget) {
+			this.currentTarget.setAttribute('aria-expanded', 'false');
+		}
 
 		this.popup.classList.remove('visible');
 		setTimeout(() => {
@@ -872,7 +1048,10 @@ export class VersePopup {
 
 		// Check cache first
 		if (this.config.popup.cacheContent && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey)!;
+			const cached = this.cache.get(cacheKey)!;
+			// Restore footnotes from cache
+			this.collectedFootnotes = cached.footnotes;
+			return cached.content;
 		}
 
 		const parsed = this.parseReference(reference);
@@ -899,9 +1078,12 @@ export class VersePopup {
 				break;
 		}
 
-		// Cache the result
+		// Cache the result along with footnotes
 		if (this.config.popup.cacheContent) {
-			this.cache.set(cacheKey, content);
+			this.cache.set(cacheKey, {
+				content,
+				footnotes: [...this.collectedFootnotes]
+			});
 		}
 
 		return content;
@@ -1212,15 +1394,94 @@ export class VersePopup {
 	}
 
 	/**
+	 * Build HTML for social share buttons
+	 * @param reference - Verse reference for sharing
+	 * @param content - Plain text content for sharing
+	 * @returns HTML string for social share section
+	 */
+	private buildSocialShareHtml(reference: string, content: string): string {
+		if (!this.config.popup.showSocialShare) {
+			return '';
+		}
+
+		const platforms = this.config.popup.socialSharePlatforms || ['facebook', 'x', 'copy'];
+		const buttons = platforms.map(platform => {
+			const icon = SOCIAL_ICONS[platform] || '';
+			const title = platform === 'copy' ? 'Copy to clipboard' : `Share on ${platform.charAt(0).toUpperCase() + platform.slice(1)}`;
+			return `<button class="verse-popup-social-btn ${platform}" data-platform="${platform}" title="${title}">${icon}</button>`;
+		}).join('');
+
+		return `<div class="verse-popup-social">${buttons}</div>`;
+	}
+
+	/**
+	 * Handle social share button click
+	 */
+	private handleSocialShare(platform: string, reference: string, content: string): void {
+		// Strip HTML tags from content for plain text
+		const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+		const shareText = `"${plainText}" - ${reference}`;
+		const shareUrl = `${this.config.appBaseUrl}#${this.parseReference(reference)?.sectionId || ''}`;
+
+		switch (platform) {
+			case 'facebook':
+				window.open(
+					`https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}&u=${encodeURIComponent(shareUrl)}`,
+					'_blank',
+					'width=600,height=400'
+				);
+				break;
+			case 'x':
+				window.open(
+					`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+					'_blank',
+					'width=600,height=400'
+				);
+				break;
+			case 'bluesky':
+				window.open(
+					`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+					'_blank',
+					'width=600,height=400'
+				);
+				break;
+			case 'copy':
+				navigator.clipboard.writeText(shareText).then(() => {
+					// Show copied feedback
+					const btn = this.popup?.querySelector('.verse-popup-social-btn.copy');
+					if (btn) {
+						btn.classList.add('copied');
+						setTimeout(() => btn.classList.remove('copied'), 1500);
+					}
+				}).catch(err => {
+					console.error('Failed to copy:', err);
+				});
+				break;
+		}
+	}
+
+	/** Current reference for social sharing */
+	private currentReference: string = '';
+	/** Current content for social sharing */
+	private currentContent: string = '';
+
+	/**
 	 * Display verse content in the popup
 	 */
 	private displayContent(reference: string, content: string): void {
 		if (!this.popup) return;
 
+		// Store for social sharing
+		this.currentReference = reference;
+		this.currentContent = content;
+
 		let html = '';
 
 		if (this.config.popup.showHeader) {
-			html += `<div class="verse-popup-header">${reference}</div>`;
+			const logoHtml = this.config.popup.showLogo
+				? `<a href="${this.config.popup.logoUrl}" target="_blank" rel="noopener noreferrer" class="verse-popup-logo" title="Powered by inscript.org">${INSCRIPT_LOGO_SVG}</a>`
+				: '';
+			html += `<div class="verse-popup-header"><span class="verse-popup-header-text">${reference}</span>${logoHtml}</div>`;
 		}
 
 		// Add verse content
@@ -1234,7 +1495,26 @@ export class VersePopup {
 
 		html += `</div>`;
 
+		// Add social share footer
+		const socialHtml = this.buildSocialShareHtml(reference, content);
+		if (socialHtml) {
+			html += socialHtml;
+		}
+
 		this.popup.innerHTML = html;
+
+		// Attach social share click handlers
+		if (this.config.popup.showSocialShare) {
+			this.popup.querySelectorAll('.verse-popup-social-btn').forEach(btn => {
+				btn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const platform = (btn as HTMLElement).dataset.platform;
+					if (platform) {
+						this.handleSocialShare(platform, this.currentReference, this.currentContent);
+					}
+				});
+			});
+		}
 
 		// Check if content needs scrolling and add appropriate class
 		const contentEl = this.popup.querySelector<HTMLElement>('.verse-popup-content');
@@ -1369,6 +1649,8 @@ export class VersePopup {
 	destroy(): void {
 		this.clearShowTimeout();
 		this.clearHideTimeout();
+		// Remove keyboard event listener
+		document.removeEventListener('keydown', this.handleKeyDown);
 		if (this.popup && this.popup.parentNode) {
 			this.popup.parentNode.removeChild(this.popup);
 		}

@@ -67,6 +67,14 @@ export interface PopupConfig {
 	showLoadingIndicator: boolean;
 	/** Cache fetched verse content to avoid repeated requests */
 	cacheContent: boolean;
+	/** Show the inscript.org logo in the popup header */
+	showLogo: boolean;
+	/** URL the logo links to */
+	logoUrl: string;
+	/** Show social media sharing buttons in popup footer (below footnotes area) */
+	showSocialShare: boolean;
+	/** Social share platforms to show in order: 'facebook', 'x' (Twitter), 'bluesky', 'copy' (clipboard) */
+	socialSharePlatforms: ('facebook' | 'x' | 'bluesky' | 'copy')[];
 }
 
 /** Link configuration */
@@ -101,8 +109,8 @@ export interface LanguageConfig {
 	autoDetect: boolean;
 	/** Primary language to use (overrides auto-detection if set) */
 	primary: string | null;
-	/** Additional languages to support alongside primary */
-	additional: string[];
+	/** Additional languages to support alongside primary. Use 'all' to load all supported languages. */
+	additional: string[] | 'all';
 	/** Always include English as a fallback */
 	alwaysIncludeEnglish: boolean;
 }
@@ -337,7 +345,36 @@ export const config: VerseDetectionConfig = {
 		/**
 		 * Cache fetched verse content to avoid repeated requests
 		 */
-		cacheContent: true
+		cacheContent: true,
+
+		/**
+		 * Show the inscript.org logo in the popup header
+		 * The logo links to inscript.org (or configured logoUrl)
+		 */
+		showLogo: true,
+
+		/**
+		 * URL the logo links to
+		 */
+		logoUrl: 'https://inscript.org',
+
+		/**
+		 * Show social media sharing buttons in popup footer
+		 * When enabled, displays a row of share buttons below the footnotes area
+		 * allowing users to share the verse on social media or copy to clipboard
+		 */
+		showSocialShare: false,
+
+		/**
+		 * Social share platforms to show (in order)
+		 * Available platforms:
+		 *   - 'facebook': Share on Facebook with verse text and link
+		 *   - 'x': Share on X (Twitter) with verse text and link
+		 *   - 'bluesky': Share on Bluesky with verse text and link
+		 *   - 'copy': Copy verse text to clipboard
+		 * Buttons appear in the order specified in this array
+		 */
+		socialSharePlatforms: ['facebook', 'x', 'bluesky', 'copy']
 	},
 
 	/**

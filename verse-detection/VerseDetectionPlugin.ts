@@ -537,7 +537,7 @@ export const createVerseDetector = (options: VerseDetectionPluginOptions = {}): 
  * @returns Initialized plugin with popup system
  */
 export async function initVerseDetection(
-	app: BrowserBibleApp,
+	app: BrowserBibleApp | null = null,
 	userConfig: PartialVerseDetectionConfig = {}
 ): Promise<InitializedVerseDetection> {
 	// Import config and popup modules
@@ -558,7 +558,7 @@ export async function initVerseDetection(
 	let popup: VersePopup | null = null;
 	if (finalConfig.displayMode === 'popup' || finalConfig.displayMode === 'both') {
 		popup = new VersePopup(finalConfig);
-		await popup.init(app);
+		await popup.init(app ?? undefined);
 	}
 
 	// Book code mapping for URL generation

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Verse Detection - CDN Integration Example</title>
+	<style>
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			line-height: 1.7;
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 40px 20px;
+			color: #333;
+		}
+
+		h1 {
+			color: #2c3e50;
+			margin-bottom: 10px;
+		}
+
+		.subtitle {
+			color: #7f8c8d;
+			margin-bottom: 40px;
+		}
+
+		.example-box {
+			background: #f8f9fa;
+			border: 1px solid #e9ecef;
+			border-radius: 8px;
+			padding: 24px;
+			margin: 30px 0;
+		}
+
+		.example-box h3 {
+			margin-top: 0;
+			color: #495057;
+		}
+
+		.content-area {
+			background: white;
+			padding: 20px;
+			border-radius: 6px;
+			border: 1px solid #dee2e6;
+		}
+
+		code {
+			background: #e9ecef;
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-family: 'SF Mono', Monaco, monospace;
+			font-size: 0.9em;
+		}
+
+		pre {
+			background: #2d3748;
+			color: #e2e8f0;
+			padding: 20px;
+			border-radius: 8px;
+			overflow-x: auto;
+			font-size: 13px;
+			line-height: 1.5;
+		}
+
+		pre code {
+			background: none;
+			padding: 0;
+			color: inherit;
+		}
+
+		.comment { color: #68d391; }
+		.string { color: #f6ad55; }
+		.keyword { color: #90cdf4; }
+		.property { color: #fbb6ce; }
+
+		.badge {
+			display: inline-block;
+			background: #4a90d9;
+			color: white;
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 12px;
+			margin-right: 8px;
+		}
+
+		.badge.green { background: #38a169; }
+		.badge.purple { background: #805ad5; }
+	</style>
+</head>
+<body>
+	<h1>Verse Detection Plugin</h1>
+	<p class="subtitle">Add Bible verse popups to any website with just a few lines of code</p>
+
+	<!-- Example 1: Basic Article -->
+	<div class="example-box">
+		<h3>
+			<span class="badge">Live Demo</span>
+			Article with Verse References
+		</h3>
+		<div class="content-area" id="article">
+			<p>The Bible's most famous verse is arguably John 3:16, which speaks of God's love for humanity. This theme of love is echoed throughout Scripture, from the poetic declarations in 1 John 4:8 to the practical instructions in 1 Corinthians 13:4-7.</p>
+
+			<p>For those seeking wisdom, Proverbs 3:5-6 offers timeless guidance about trusting in the Lord. The Psalms also provide comfort, with Psalm 23 being one of the most beloved passages about God's care and provision.</p>
+
+			<p>In times of difficulty, Romans 8:28 reminds us that God works all things for good, while Philippians 4:13 encourages us that we can do all things through Christ who strengthens us.</p>
+		</div>
+	</div>
+
+	<!-- Example 2: Multi-language -->
+	<div class="example-box">
+		<h3>
+			<span class="badge green">Multi-Language</span>
+			International Content
+		</h3>
+		<div class="content-area" id="international">
+			<p><strong>English:</strong> Read John 3:16 for the gospel message.</p>
+			<p><strong>Espa&ntilde;ol:</strong> Lee Juan 3:16 para el mensaje del evangelio.</p>
+			<p><strong>Portugu&ecirc;s:</strong> Leia Jo&atilde;o 3:16 para a mensagem do evangelho.</p>
+			<p><strong>Fran&ccedil;ais:</strong> Lisez Jean 3:16 pour le message de l'&Eacute;vangile.</p>
+		</div>
+	</div>
+
+	<!-- Example 3: Study Notes -->
+	<div class="example-box">
+		<h3>
+			<span class="badge purple">Study Notes</span>
+			Cross-References
+		</h3>
+		<div class="content-area" id="study">
+			<p><strong>Topic: The Sermon on the Mount</strong></p>
+			<p>The Beatitudes are found in Matthew 5:3-12. Compare with Luke 6:20-26 for the parallel account. Jesus's teaching on prayer (Matt 6:9-13) gives us the Lord's Prayer. The Golden Rule appears in Matthew 7:12.</p>
+
+			<p><strong>Related Passages:</strong> Psalm 1, Isaiah 61:1-3, Micah 6:8</p>
+		</div>
+	</div>
+
+	<!-- Integration Code -->
+	<div class="example-box">
+		<h3>Advanced Integration (ES Module)</h3>
+		<p>For more control, use the ES module version:</p>
+		<pre><code>&lt;script <span class="property">type</span>=<span class="string">"module"</span>&gt;
+<span class="keyword">import</span> { initVerseDetection } <span class="keyword">from</span> <span class="string">'https://inscript.org/verse-detection.esm.js'</span>;
+
+<span class="keyword">const</span> verseSystem = <span class="keyword">await</span> initVerseDetection(<span class="keyword">null</span>, {
+  <span class="property">appBaseUrl</span>: <span class="string">'https://inscript.org'</span>,
+  <span class="property">displayMode</span>: <span class="string">'both'</span>,
+  <span class="property">language</span>: { <span class="property">additional</span>: <span class="string">'all'</span> },
+  <span class="property">popup</span>: { <span class="property">showLogo</span>: <span class="keyword">true</span> }
+});
+
+document.querySelectorAll(<span class="string">'.content'</span>).forEach(<span class="property">el</span> =&gt; {
+  verseSystem.processContainer(el);
+});
+&lt;/script&gt;</code></pre>
+	</div>
+
+	<!-- Minimal Example -->
+	<div class="example-box">
+		<h3>Minimal Setup (1 line!)</h3>
+		<pre><code><span class="comment">&lt;!-- Just add this script tag - that's it! --&gt;</span>
+&lt;script <span class="property">src</span>=<span class="string">"https://inscript.org/verse-detection.min.js"</span>&gt;&lt;/script&gt;</code></pre>
+		<p style="margin-top: 15px; color: #666;">The script auto-detects and processes all verse references on page load.</p>
+
+		<h4 style="margin-top: 20px;">All Options</h4>
+		<pre><code>&lt;script <span class="property">src</span>=<span class="string">"verse-detection.min.js"</span>
+  <span class="property">data-app-url</span>=<span class="string">"https://inscript.org"</span>
+  <span class="property">data-mode</span>=<span class="string">"both"</span>
+  <span class="property">data-selector</span>=<span class="string">"body"</span>
+  <span class="property">data-new-tab</span>=<span class="string">"true"</span>
+  <span class="property">data-language</span>=<span class="string">"en"</span>
+  <span class="property">data-show-logo</span>=<span class="string">"true"</span>&gt;
+&lt;/script&gt;</code></pre>
+
+		<p style="margin-top: 15px; font-size: 13px; color: #666;">
+			<strong>Options:</strong><br>
+			<code>data-app-url</code> - Base URL for verse links (default: "https://inscript.org")<br>
+			<code>data-mode</code> - Display mode: "popup", "link", or "both" (default: "both")<br>
+			<code>data-selector</code> - CSS selector for content to process (default: "body")<br>
+			<code>data-new-tab</code> - Open links in new tab (default: "true")<br>
+			<code>data-language</code> - Primary language code, e.g. "en", "es", "fr" (default: auto-detect)<br>
+			<code>data-show-logo</code> - Show inscript.org logo in popup (default: "true")
+		</p>
+	</div>
+
+	<!-- Features -->
+	<div class="example-box">
+		<h3>Features</h3>
+		<ul style="margin: 0; padding-left: 20px;">
+			<li>Hover to preview verse content</li>
+			<li>Click to open in Bible app</li>
+			<li>10+ languages supported (English, Spanish, Portuguese, French, German, Russian, Arabic, Hindi, Chinese, Indonesian)</li>
+			<li>Automatic language detection</li>
+			<li>Footnote display</li>
+			<li>Touch-friendly for mobile</li>
+			<li>Dark mode support</li>
+			<li>Customizable styling via CSS variables</li>
+		</ul>
+	</div>
+
+	<!--
+		Load the plugin - just one script tag!
+		The auto-init version processes all .content-area elements automatically.
+
+		To test locally, serve this folder with any static server:
+		  npx serve .
+		  python -m http.server
+		  php -S localhost:8000
+
+		Then open: http://localhost:PORT/demo-cdn.html
+	-->
+	<script
+		src="dist/verse-detection.min.js"
+		data-selector=".content-area"
+		data-mode="both"
+		data-new-tab="true">
+	</script>
+</body>
+</html>

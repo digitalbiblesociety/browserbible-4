@@ -18,6 +18,7 @@ export default defineConfig({
 			// Entry point
 			entry: {
 				'verse-detection': resolve(__dirname, 'index.ts'),
+				'verse-detection-auto': resolve(__dirname, 'auto.ts'),
 				'languages/index': resolve(__dirname, 'languages/index.ts'),
 				'languages/en': resolve(__dirname, 'languages/en.ts'),
 				'languages/es': resolve(__dirname, 'languages/es.ts'),
