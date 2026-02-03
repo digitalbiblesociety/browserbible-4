@@ -1,22 +1,13 @@
-/**
- * MediaWindow - Web Component for media thumbnails (art, video, maps)
- */
-
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { Reference } from '../bible/BibleReference.js';
 import { i18n } from '../lib/i18n.js';
 import { JesusFilmMediaApi } from '../media/ArclightApi.js';
 
-// Constants
 const DEFAULT_LANGUAGE = 'eng';
 const RESIZE_DEBOUNCE_MS = 100;
 const TARGET_ROW_HEIGHT = 80;
 const TARGET_GUTTER_WIDTH = 4;
 
-/**
- * MediaWindow Web Component
- * Shows media thumbnails for Bible chapters (art, video, maps)
- */
 export class MediaWindowComponent extends BaseWindow {
   constructor() {
     super();
@@ -116,6 +107,7 @@ export class MediaWindowComponent extends BaseWindow {
         const filterType = btn.getAttribute('data-filter');
         this.state.filters[filterType] = !this.state.filters[filterType];
         btn.classList.toggle('active', this.state.filters[filterType]);
+
         // Force re-render
         this.state.currentSectionId = '';
         this.processContent();
@@ -123,13 +115,13 @@ export class MediaWindowComponent extends BaseWindow {
     });
 
     // Gallery control handlers
-    this.addListener(this.refs.galleryPrev, 'click', () => this.prevGalleryItem());
-    this.addListener(this.refs.galleryNext, 'click', () => this.nextGalleryItem());
+    this.addListener(this.refs.galleryPrev, 'click', () => this.navigateGallery(-1));
+    this.addListener(this.refs.galleryNext, 'click', () => this.navigateGallery(1));
 
     this.addListener(this.refs.main, 'keydown', (e) => {
       if (!this.refs.gallery.classList.contains('active')) return;
-      if (e.key === 'ArrowLeft') this.prevGalleryItem();
-      else if (e.key === 'ArrowRight') this.nextGalleryItem();
+      if (e.key === 'ArrowLeft') this.navigateGallery(-1);
+      else if (e.key === 'ArrowRight') this.navigateGallery(1);
       else if (e.key === 'Escape') this.refs.gallery.classList.remove('active');
     });
 
@@ -179,39 +171,22 @@ export class MediaWindowComponent extends BaseWindow {
 
   handleMessage(e) {
     const { data } = e;
+    let content = null;
 
-    // Handle nav messages (user navigation in BibleWindow)
     if (data.messagetype === 'nav' && data.type === 'bible' && data.locationInfo) {
-      const content = document.querySelector(`.section[data-id="${data.locationInfo.sectionid}"]`);
-      if (content) {
-        this.contentToProcess = content;
-        this.processContent();
-      }
-      return;
+      content = document.querySelector(`.section[data-id="${data.locationInfo.sectionid}"]`);
+    } else if (data.messagetype === 'textload' && data.sectionid && data.content) {
+      const temp = document.createElement('div');
+      temp.innerHTML = data.content;
+      content = temp.querySelector('.section') || temp;
+      content.setAttribute('data-id', data.sectionid);
+      if (data.abbr) content.setAttribute('lang', data.abbr);
     }
 
-    // Handle textload messages (response to content request)
-    if (data.messagetype === 'textload' && data.sectionid && data.content) {
-      this.handleTextLoadMessage(data);
+    if (content) {
+      this.contentToProcess = content;
+      this.processContent();
     }
-  }
-
-  handleTextLoadMessage(data) {
-    // Parse the content HTML to create a DOM element we can query
-    const tempContainer = document.createElement('div');
-    tempContainer.innerHTML = data.content;
-
-    // Find the section element within the parsed content
-    const section = tempContainer.querySelector('.section') || tempContainer;
-    section.setAttribute('data-id', data.sectionid);
-
-    // Copy language attributes if available
-    if (data.abbr) {
-      section.setAttribute('lang', data.abbr);
-    }
-
-    this.contentToProcess = section;
-    this.processContent();
   }
 
   requestCurrentContent() {
@@ -322,15 +297,10 @@ export class MediaWindowComponent extends BaseWindow {
     });
   }
 
-  nextGalleryItem() {
-    if (this.state.currentGalleryIndex < this.state.galleryItems.length - 1) {
-      this.showGalleryItem(this.state.currentGalleryIndex + 1);
-    }
-  }
-
-  prevGalleryItem() {
-    if (this.state.currentGalleryIndex > 0) {
-      this.showGalleryItem(this.state.currentGalleryIndex - 1);
+  navigateGallery(delta) {
+    const newIndex = this.state.currentGalleryIndex + delta;
+    if (newIndex >= 0 && newIndex < this.state.galleryItems.length) {
+      this.showGalleryItem(newIndex);
     }
   }
 
@@ -554,95 +524,50 @@ export class MediaWindowComponent extends BaseWindow {
     </a>`;
   }
 
-  // ============================================================================
-  // Resize Logic
-  // ============================================================================
-
   startResize() {
     this.resizeImages(this.refs.thumbsContainer.querySelector('.media-library-thumbs'));
   }
 
   resizeImages(gallery) {
     if (!gallery) return;
-
     const images = gallery.querySelectorAll('img');
-    if (images.length === 0) return;
+    if (!images.length) return;
 
-    // Phase 1: Batch all DOM reads
     const containerWidth = gallery.offsetWidth;
-    const itemData = [];
+    let row = [], rowWidth = 0;
+
+    const flushRow = (fit) => {
+      if (!row.length) return;
+      const scale = fit && row.length > 1 ? containerWidth / rowWidth : 1;
+      for (let i = 0; i < row.length; i++) {
+        const { anchor, img, sw } = row[i];
+        this.applyThumbStyles(anchor, img,
+          Math.round(sw * scale),
+          Math.round(TARGET_ROW_HEIGHT * scale),
+          fit && i === row.length - 1);
+      }
+      row = [];
+      rowWidth = 0;
+    };
 
     for (const img of images) {
       const anchor = img.closest('a');
       if (!anchor) continue;
 
-      // Read stored dimensions or measure once
-      let width = img.dataset.originalWidth;
-      let height = img.dataset.originalHeight;
-
-      if (!width || !height) {
-        width = img.offsetWidth || img.naturalWidth || TARGET_ROW_HEIGHT;
-        height = img.offsetHeight || img.naturalHeight || TARGET_ROW_HEIGHT;
-        img.dataset.originalWidth = width;
-        img.dataset.originalHeight = height;
-      } else {
-        width = parseInt(width, 10);
-        height = parseInt(height, 10);
+      let { originalWidth: ow, originalHeight: oh } = img.dataset;
+      if (!ow) {
+        ow = img.offsetWidth || img.naturalWidth || TARGET_ROW_HEIGHT;
+        oh = img.offsetHeight || img.naturalHeight || TARGET_ROW_HEIGHT;
+        img.dataset.originalWidth = ow;
+        img.dataset.originalHeight = oh;
       }
 
-      if (height === 0) height = TARGET_ROW_HEIGHT;
-
-      const heightRatio = TARGET_ROW_HEIGHT / height;
-      const scaledWidth = Math.floor(heightRatio * width);
-
-      itemData.push({ anchor, img, scaledWidth, height: TARGET_ROW_HEIGHT });
+      const sw = Math.floor(TARGET_ROW_HEIGHT * ow / (oh || TARGET_ROW_HEIGHT));
+      if (rowWidth + sw > containerWidth && row.length) flushRow(true);
+      row.push({ anchor, img, sw });
+      rowWidth += sw + TARGET_GUTTER_WIDTH;
     }
-
-    // Phase 2: Calculate row layouts (no DOM access)
-    const rows = [];
-    let currentRow = [];
-    let currentWidth = 0;
-
-    for (const item of itemData) {
-      if (containerWidth < currentWidth + item.scaledWidth && currentRow.length > 0) {
-        rows.push({ items: currentRow, totalWidth: currentWidth });
-        currentRow = [];
-        currentWidth = 0;
-      }
-      currentRow.push(item);
-      currentWidth += item.scaledWidth + TARGET_GUTTER_WIDTH;
-    }
-    if (currentRow.length > 0) {
-      rows.push({ items: currentRow, totalWidth: currentWidth, isLast: true });
-    }
-
-    // Phase 3: Batch all DOM writes
-    for (const row of rows) {
-      if (!row.isLast && row.items.length > 1) {
-        // Fit row to container width
-        const ratio = containerWidth / row.totalWidth;
-        let remainder = containerWidth - row.totalWidth;
-        let widthPerItem = Math.ceil(remainder / row.items.length);
-
-        for (let i = 0; i < row.items.length; i++) {
-          const item = row.items[i];
-          const newWidth = item.scaledWidth + widthPerItem;
-          const newHeight = Math.floor(item.height * ratio);
-          const isLast = i === row.items.length - 1;
-
-          this.applyThumbStyles(item.anchor, item.img, newWidth, newHeight, isLast);
-
-          remainder -= widthPerItem;
-          if (widthPerItem > remainder) widthPerItem = remainder;
-        }
-      } else {
-        // Last/incomplete row - use calculated sizes
-        for (let i = 0; i < row.items.length; i++) {
-          const item = row.items[i];
-          this.applyThumbStyles(item.anchor, item.img, item.scaledWidth, item.height, false);
-        }
-      }
-    }
+    flushRow(false);
   }
 
   applyThumbStyles(anchor, img, width, height, isLastInRow) {
@@ -670,14 +595,10 @@ export class MediaWindowComponent extends BaseWindow {
   }
 }
 
-// Register web component
 registerWindowComponent('media-window', MediaWindowComponent, {
   windowType: 'media',
   displayName: 'Media',
   paramKeys: {}
 });
 
-// Export with original name for backwards compatibility
 export { MediaWindowComponent as MediaWindow };
-
-export default MediaWindowComponent;
