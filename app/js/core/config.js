@@ -123,7 +123,7 @@ let config = { ...defaultConfig };
 export const getConfig = () => config;
 
 export const updateConfig = (newConfig) => {
-  config = Object.assign({}, config, newConfig);
+  config = { ...config, ...newConfig };
   return config;
 };
 

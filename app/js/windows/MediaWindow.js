@@ -5,8 +5,13 @@
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { Reference } from '../bible/BibleReference.js';
 import { i18n } from '../lib/i18n.js';
-import { getApp } from '../core/registry.js';
 import { JesusFilmMediaApi } from '../media/ArclightApi.js';
+
+// Constants
+const DEFAULT_LANGUAGE = 'eng';
+const RESIZE_DEBOUNCE_MS = 100;
+const TARGET_ROW_HEIGHT = 80;
+const TARGET_GUTTER_WIDTH = 4;
 
 /**
  * MediaWindow Web Component
@@ -19,7 +24,7 @@ export class MediaWindowComponent extends BaseWindow {
     this.state = {
       ...this.state,
       currentSectionId: '',
-      currentLanguage: 'eng',
+      currentLanguage: DEFAULT_LANGUAGE,
       filters: {
         art: true,
         video: true,
@@ -140,7 +145,7 @@ export class MediaWindowComponent extends BaseWindow {
       }
       this._resizeTimeout = setTimeout(() => {
         this.startResize();
-      }, 100);
+      }, RESIZE_DEBOUNCE_MS);
     };
     window.addEventListener('resize', this._resizeHandler, false);
 
@@ -155,26 +160,10 @@ export class MediaWindowComponent extends BaseWindow {
     if (MediaLibrary) {
       MediaLibrary.getMediaLibraries((data) => {
         this.mediaLibraries = data;
-        this.processContent();
+        // Request current content once media libraries are loaded
+        this.requestCurrentContent();
       });
     }
-
-    setTimeout(() => {
-      const app = getApp();
-      if (app?.windowManager) {
-        const firstWindowSettings = app.windowManager.getSettings()[0];
-        const firstWin = document.querySelector('.window');
-
-        if (firstWindowSettings?.data && firstWin) {
-          const selectedChapter = firstWin.querySelector(`.section[data-id="${firstWindowSettings.data.sectionid}"]`);
-
-          if (selectedChapter !== null) {
-            this.contentToProcess = selectedChapter;
-            this.processContent();
-          }
-        }
-      }
-    }, 500);
   }
 
   cleanup() {
@@ -189,74 +178,138 @@ export class MediaWindowComponent extends BaseWindow {
   }
 
   handleMessage(e) {
-    if (e.data.messagetype === 'nav' && e.data.type === 'bible' && e.data.locationInfo) {
-      const content = document.querySelector(`.section[data-id="${e.data.locationInfo.sectionid}"]`);
-      this.contentToProcess = content;
-      this.processContent();
+    const { data } = e;
+
+    // Handle nav messages (user navigation in BibleWindow)
+    if (data.messagetype === 'nav' && data.type === 'bible' && data.locationInfo) {
+      const content = document.querySelector(`.section[data-id="${data.locationInfo.sectionid}"]`);
+      if (content) {
+        this.contentToProcess = content;
+        this.processContent();
+      }
+      return;
     }
+
+    // Handle textload messages (response to content request)
+    if (data.messagetype === 'textload' && data.sectionid && data.content) {
+      this.handleTextLoadMessage(data);
+    }
+  }
+
+  handleTextLoadMessage(data) {
+    // Parse the content HTML to create a DOM element we can query
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = data.content;
+
+    // Find the section element within the parsed content
+    const section = tempContainer.querySelector('.section') || tempContainer;
+    section.setAttribute('data-id', data.sectionid);
+
+    // Copy language attributes if available
+    if (data.abbr) {
+      section.setAttribute('lang', data.abbr);
+    }
+
+    this.contentToProcess = section;
+    this.processContent();
+  }
+
+  requestCurrentContent() {
+    // Request current content from BibleWindow (similar to MapWindow pattern)
+    this.trigger('globalmessage', {
+      type: 'globalmessage',
+      target: this,
+      data: {
+        messagetype: 'maprequest',
+        requesttype: 'currentcontent'
+      }
+    });
   }
 
   async showGalleryItem(index) {
     if (index < 0 || index >= this.state.galleryItems.length) return;
-
     this.state.currentGalleryIndex = index;
     const item = this.state.galleryItems[index];
-
-    // Clear previous content
-    this.refs.galleryContent.innerHTML = '';
-
     const oldVideo = this.refs.galleryContent.querySelector('video');
     if (oldVideo) oldVideo.pause();
 
-    if (item.type === 'jfm') {
-      this.refs.galleryContent.innerHTML = '<div class="media-gallery-loading">Loading video...</div>';
-    }
-
-    let mediaEl;
-    if (item.type === 'image') {
-      mediaEl = document.createElement('img');
-      mediaEl.src = item.url;
-      mediaEl.alt = item.title || item.reference;
-    } else if (item.type === 'video') {
-      mediaEl = document.createElement('video');
-      mediaEl.src = item.url;
-      mediaEl.controls = true;
-      mediaEl.autoplay = true;
-    } else if (item.type === 'jfm') {
-      let videoData = null;
-      try {
-        videoData = await JesusFilmMediaApi.getVideoData(this.state.currentLanguage, item.chapterNumber);
-      } catch (err) { /* empty */ }
-
-      this.refs.galleryContent.innerHTML = '';
-      mediaEl = document.createElement('video');
-      mediaEl.controls = true;
-      mediaEl.autoplay = true;
-
-      if (videoData) {
-        mediaEl.src = videoData.url;
-        mediaEl.poster = videoData.poster || videoData.thumbnail || '';
-        if (videoData.title) {
-          item.title = videoData.title;
-        }
-      } else {
-        mediaEl.src = item.url;
-      }
-    }
-
+    const mediaEl = await this.createMediaElement(item);
+    this.clearGalleryContent();
     if (mediaEl) {
-      this.refs.galleryContent.innerHTML = '';
       this.refs.galleryContent.appendChild(mediaEl);
     }
 
-    let titleText = item.title || item.reference;
+    this.updateGalleryUI(item, index);
+  }
+
+  clearGalleryContent() {
+    this.refs.galleryContent.innerHTML = '';
+  }
+
+  createVideoElement(src, options = {}) {
+    const video = document.createElement('video');
+    video.src = src;
+    video.controls = true;
+    video.autoplay = options.autoplay ?? true;
+    if (options.poster) video.poster = options.poster;
+    return video;
+  }
+
+  createImageElement(src, alt) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = alt || '';
+    return img;
+  }
+
+  async createMediaElement(item) {
+    if (item.type === 'image') {
+      return this.createImageElement(item.url, item.title || item.reference);
+    }
+
+    if (item.type === 'video') {
+      return this.createVideoElement(item.url);
+    }
+
+    if (item.type === 'jfm') {
+      return this.createJfmVideoElement(item);
+    }
+
+    return null;
+  }
+
+  async createJfmVideoElement(item) {
+    // Show loading indicator
+    this.refs.galleryContent.innerHTML = '<div class="media-gallery-loading">Loading video...</div>';
+
+    let videoData = null;
+    try {
+      videoData = await JesusFilmMediaApi.getVideoData(this.state.currentLanguage, item.chapterNumber);
+    } catch { /* empty */ }
+
+    if (videoData) {
+      if (videoData.title) item.title = videoData.title;
+      return this.createVideoElement(videoData.url, {
+        poster: videoData.poster || videoData.thumbnail || ''
+      });
+    }
+
+    return this.createVideoElement(item.url);
+  }
+
+  buildItemTitle(item) {
+    let title = item.title || item.reference;
     if (item.artist) {
-      titleText += ` - ${item.artist}`;
+      title += ` - ${item.artist}`;
       if (item.date) {
-        titleText += ` (${item.date})`;
+        title += ` (${item.date})`;
       }
     }
-    this.refs.galleryTitle.textContent = titleText;
+    return title;
+  }
+
+  updateGalleryUI(item, index) {
+    this.refs.galleryTitle.textContent = this.buildItemTitle(item);
     this.refs.galleryCounter.textContent = `${index + 1} / ${this.state.galleryItems.length}`;
 
     this.refs.galleryPrev.disabled = index === 0;
@@ -282,45 +335,62 @@ export class MediaWindowComponent extends BaseWindow {
   }
 
   processContent() {
-    if (this.mediaLibraries === null || this.contentToProcess === null) {
-      return;
-    }
+    if (!this.mediaLibraries || !this.contentToProcess) return;
 
     const contentEl = this.contentToProcess;
     const sectionid = contentEl.getAttribute('data-id');
 
-    if (this.state.currentSectionId === sectionid) {
-      return;
-    }
+    if (this.state.currentSectionId === sectionid) return;
 
     this.state.currentSectionId = sectionid;
+    this.state.currentLanguage = this.extractContentLanguage(contentEl);
 
     const bibleReference = new Reference(sectionid);
     bibleReference.language = contentEl.getAttribute('lang');
 
-    this.state.currentLanguage = contentEl.getAttribute('data-lang3') ||
-                                  contentEl.getAttribute('lang3') ||
-                                  contentEl.getAttribute('lang') ||
-                                  'eng';
+    this.resetGalleryState();
+    this.clearCheckedMediaMarkers();
 
-    document.querySelectorAll('.checked-media').forEach((el) => {
-      el.classList.remove('checked-media');
-    });
+    const thumbsGallery = this.createThumbsContainer(bibleReference);
+    const html = this.renderVerses(contentEl);
 
+    thumbsGallery.innerHTML = html;
+    this.attachThumbClickHandlers(thumbsGallery);
+    this.setupImageLoadTracking(thumbsGallery);
+  }
+
+  extractContentLanguage(el) {
+    return el.getAttribute('data-lang3') ||
+           el.getAttribute('lang3') ||
+           el.getAttribute('lang') ||
+           DEFAULT_LANGUAGE;
+  }
+
+  resetGalleryState() {
     this.state.galleryItems = [];
     this.state.currentGalleryIndex = -1;
     this.refs.gallery.classList.remove('active');
-    this.refs.galleryContent.innerHTML = '';
-
+    this.clearGalleryContent();
     this.refs.thumbsContainer.innerHTML = '';
     this.refs.main.scrollTop = 0;
+  }
 
+  clearCheckedMediaMarkers() {
+    document.querySelectorAll('.checked-media').forEach((el) => {
+      el.classList.remove('checked-media');
+    });
+  }
+
+  createThumbsContainer(bibleReference) {
     const node = this.createElement(`<div class="media-library-verses">
       <h2>${bibleReference.toString()}</h2>
       <div class="media-library-thumbs"></div>
     </div>`);
     this.refs.thumbsContainer.appendChild(node);
-    const thumbsGallery = node.querySelector('.media-library-thumbs');
+    return node.querySelector('.media-library-thumbs');
+  }
+
+  renderVerses(contentEl) {
     let html = '';
 
     contentEl.querySelectorAll('.verse, .v').forEach((verse) => {
@@ -332,42 +402,46 @@ export class MediaWindowComponent extends BaseWindow {
         verse = chapter.querySelector(`.${verseid}`) ?? verse;
       }
 
-      if (verse.classList.contains('checked-media')) {
-        return;
-      }
+      if (verse.classList.contains('checked-media')) return;
 
       html += this.renderVerse(verseid, reference);
-
       verse.classList.add('checked-media');
     });
 
-    thumbsGallery.innerHTML = html;
+    return html;
+  }
 
-    thumbsGallery.querySelectorAll('a').forEach((a, index) => {
+  attachThumbClickHandlers(gallery) {
+    gallery.querySelectorAll('a').forEach((a, index) => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
         this.showGalleryItem(index);
       });
     });
+  }
 
-    const images = thumbsGallery.querySelectorAll('img');
+  setupImageLoadTracking(gallery) {
+    const images = gallery.querySelectorAll('img');
 
     if (images.length === 0) {
-      thumbsGallery.innerHTML = '<div class="media-no-content">No media for this chapter</div>';
-      thumbsGallery.classList.add('resized');
+      gallery.innerHTML = '<div class="media-no-content">No media for this chapter</div>';
+      gallery.classList.add('resized');
       return;
     }
 
     let loadedCount = 0;
+    const totalImages = images.length;
+
     const onImageReady = () => {
       loadedCount++;
-      if (loadedCount === images.length) {
-        this.resizeImages(thumbsGallery);
-        thumbsGallery.classList.add('resized');
+      if (loadedCount === totalImages) {
+        this.resizeImages(gallery);
+        gallery.classList.add('resized');
       }
     };
+
     images.forEach((img) => {
-      img.addEventListener('load', function() {
+      img.addEventListener('load', () => {
         img.classList.add('loaded');
         onImageReady();
       }, false);
@@ -388,61 +462,68 @@ export class MediaWindowComponent extends BaseWindow {
   renderVerse(verseid, reference) {
     let html = '';
 
-    for (let i = 0, il = this.mediaLibraries.length; i < il; i++) {
-      const mediaLibrary = this.mediaLibraries[i];
-
+    for (const mediaLibrary of this.mediaLibraries) {
       const category = this.getFilterCategory(mediaLibrary);
-      if (!this.state.filters[category]) {
-        continue;
-      }
+      if (!this.state.filters[category]) continue;
 
       const mediaForVerse = mediaLibrary.data?.[verseid];
+      if (!mediaForVerse) continue;
 
-      if (mediaForVerse !== undefined) {
-        for (let j = 0, jl = mediaForVerse.length; j < jl; j++) {
-          const mediaInfo = mediaForVerse[j];
+      for (const mediaInfo of mediaForVerse) {
+        if (mediaInfo.filename?.includes('-color')) continue;
 
-          if (mediaInfo.filename && mediaInfo.filename.includes('-color')) {
-            continue;
-          }
+        const { fullUrl, thumbUrl } = this.buildMediaUrls(mediaLibrary, mediaInfo);
+        const galleryItem = this.createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category);
+        this.state.galleryItems.push(galleryItem);
 
-          let fullUrl, thumbUrl;
-          if (mediaLibrary.baseUrl) {
-            const largeSuffix = mediaLibrary.largeSuffix || `.${mediaInfo.exts}`;
-            const thumbSuffix = mediaLibrary.thumbSuffix || '-thumb.jpg';
-            fullUrl = `${mediaLibrary.baseUrl}${mediaInfo.filename}${largeSuffix}`;
-            thumbUrl = `${mediaLibrary.baseUrl}${mediaInfo.filename}${thumbSuffix}`;
-          } else {
-            const baseUrl = `${this.config.baseContentUrl}content/media/${mediaLibrary.folder}/`;
-            const ext = Array.isArray(mediaInfo.exts) ? mediaInfo.exts[0] : mediaInfo.exts;
-            fullUrl = `${baseUrl}${mediaInfo.filename}.${ext}`;
-            thumbUrl = `${baseUrl}${mediaInfo.filename}-thumb.jpg`;
-          }
-
-          this.state.galleryItems.push({
-            url: fullUrl,
-            thumbUrl: thumbUrl,
-            type: mediaLibrary.type,
-            title: mediaInfo.name || mediaInfo.title || '',
-            artist: mediaInfo.artist || '',
-            date: mediaInfo.date || '',
-            reference: reference.toString(),
-            category: category,
-            // For jfm, store chapter number for Arclight API
-            chapterNumber: mediaLibrary.type === 'jfm' ? mediaInfo.filename : null
-          });
-
-          const displayTitle = mediaInfo.name || mediaInfo.title || '';
-          html += `<a href="${fullUrl}" class="mediatype-${mediaLibrary.type} mediacategory-${category}" ${displayTitle ? `title="${this.escapeHtml(displayTitle)}"` : ''} data-filename="${mediaInfo.filename}" data-index="${this.state.galleryItems.length - 1}">
-            <img src="${thumbUrl}" />
-            ${mediaLibrary.type !== 'image' ? '<b><i></i></b>' : ''}
-            <span>${reference.toString()}</span>
-          </a>`;
-        }
+        html += this.renderThumbLink(galleryItem, mediaLibrary, mediaInfo, reference);
       }
     }
 
     return html;
+  }
+
+  buildMediaUrls(mediaLibrary, mediaInfo) {
+    if (mediaLibrary.baseUrl) {
+      const largeSuffix = mediaLibrary.largeSuffix || `.${mediaInfo.exts}`;
+      const thumbSuffix = mediaLibrary.thumbSuffix || '-thumb.jpg';
+      return {
+        fullUrl: `${mediaLibrary.baseUrl}${mediaInfo.filename}${largeSuffix}`,
+        thumbUrl: `${mediaLibrary.baseUrl}${mediaInfo.filename}${thumbSuffix}`
+      };
+    }
+
+    const baseUrl = `${this.config.baseContentUrl}content/media/${mediaLibrary.folder}/`;
+    const ext = Array.isArray(mediaInfo.exts) ? mediaInfo.exts[0] : mediaInfo.exts;
+    return {
+      fullUrl: `${baseUrl}${mediaInfo.filename}.${ext}`,
+      thumbUrl: `${baseUrl}${mediaInfo.filename}-thumb.jpg`
+    };
+  }
+
+  createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category) {
+    return {
+      url: fullUrl,
+      thumbUrl,
+      type: mediaLibrary.type,
+      title: mediaInfo.name || mediaInfo.title || '',
+      artist: mediaInfo.artist || '',
+      date: mediaInfo.date || '',
+      reference: reference.toString(),
+      category,
+      chapterNumber: mediaLibrary.type === 'jfm' ? mediaInfo.filename : null
+    };
+  }
+
+  renderThumbLink(galleryItem, mediaLibrary, mediaInfo, reference) {
+    const titleAttr = galleryItem.title ? `title="${this.escapeHtml(galleryItem.title)}"` : '';
+    const playIndicator = mediaLibrary.type !== 'image' ? '<b><i></i></b>' : '';
+
+    return `<a href="${galleryItem.url}" class="mediatype-${mediaLibrary.type} mediacategory-${galleryItem.category}" ${titleAttr} data-filename="${mediaInfo.filename}" data-index="${this.state.galleryItems.length - 1}">
+      <img src="${galleryItem.thumbUrl}" />
+      ${playIndicator}
+      <span>${reference.toString()}</span>
+    </a>`;
   }
 
   // ============================================================================
@@ -456,86 +537,93 @@ export class MediaWindowComponent extends BaseWindow {
   resizeImages(gallery) {
     if (!gallery) return;
 
-    const TARGET_ROW_HEIGHT = 80;
-    const TARGET_GUTTER_WIDTH = 4;
-    const container_width = gallery.offsetWidth;
-    let current_width = 0;
+    const containerWidth = gallery.offsetWidth;
+    let currentWidth = 0;
     let currentRow = [];
 
     gallery.querySelectorAll('img').forEach((img) => {
-      const a = img.closest('a');
-      let width = img.getAttribute('data-original-width');
-      let height = img.getAttribute('data-original-height');
+      const anchor = img.closest('a');
+      const { width, height } = this.getStoredDimensions(img);
 
-      // store for resize
-      if (width === null) {
-        width = img.offsetWidth;
-        img.setAttribute('data-original-width', width);
-      } else {
-        width = parseInt(width, 10);
-      }
-      if (height === null) {
-        height = img.offsetHeight;
-        img.setAttribute('data-original-height', height);
-      } else {
-        height = parseInt(height, 10);
-      }
+      const heightRatio = TARGET_ROW_HEIGHT / height;
+      const scaledWidth = Math.floor(heightRatio * width);
 
-      const height_ratio = TARGET_ROW_HEIGHT / height;
-      const new_width = Math.floor(height_ratio * width);
-
-      // will this push the last row
-      if (container_width < current_width + new_width) {
-        // resize the previous ones
-        let remainder = container_width - current_width;
-        let width_per_item = Math.ceil(remainder / currentRow.length);
-
-        for (let j = 0, jl = currentRow.length; j < jl; j++) {
-          const row_a = currentRow[j];
-          const row_img = row_a.querySelector('img');
-          const row_width = parseInt(row_a.offsetWidth, 10);
-          const row_height = parseInt(row_a.offsetHeight, 10);
-          const row_ratio = container_width / current_width;
-          const new_row_width = row_width + width_per_item;
-          const new_row_height = Math.floor(row_height * row_ratio);
-
-          row_a.style.width = `${new_row_width}px`;
-          row_a.style.height = `${new_row_height}px`;
-
-          if (row_img) {
-            row_img.style.width = `${new_row_width}px`;
-            row_img.style.height = `${new_row_height}px`;
-          }
-
-          if (j + 1 === jl) {
-            row_a.style.marginRight = '0';
-          }
-
-          remainder = remainder - width_per_item;
-
-          if (width_per_item > remainder) {
-            width_per_item = remainder;
-          }
-        }
-
-        // start over
+      // Check if this image would overflow the row
+      if (containerWidth < currentWidth + scaledWidth && currentRow.length > 0) {
+        this.fitRowToWidth(currentRow, containerWidth, currentWidth);
         currentRow = [];
-        current_width = 0;
+        currentWidth = 0;
       }
 
-      // restart
-      a.style.width = `${new_width}px`;
-      a.style.height = `${TARGET_ROW_HEIGHT}px`;
-      a.style.marginRight = `${TARGET_GUTTER_WIDTH}px`;
-      a.style.marginBottom = `${TARGET_GUTTER_WIDTH}px`;
-
-      img.style.width = `${new_width}px`;
-      img.style.height = `${TARGET_ROW_HEIGHT}px`;
-
-      currentRow.push(a);
-
-      current_width += new_width + TARGET_GUTTER_WIDTH;
+      this.applyThumbSize(anchor, img, scaledWidth, TARGET_ROW_HEIGHT);
+      currentRow.push(anchor);
+      currentWidth += scaledWidth + TARGET_GUTTER_WIDTH;
     });
+  }
+
+  getStoredDimensions(img) {
+    let width = img.getAttribute('data-original-width');
+    let height = img.getAttribute('data-original-height');
+
+    if (width === null) {
+      width = img.offsetWidth;
+      img.setAttribute('data-original-width', width);
+    } else {
+      width = parseInt(width, 10);
+    }
+
+    if (height === null) {
+      height = img.offsetHeight;
+      img.setAttribute('data-original-height', height);
+    } else {
+      height = parseInt(height, 10);
+    }
+
+    return { width, height };
+  }
+
+  fitRowToWidth(row, containerWidth, currentWidth) {
+    const remainder = containerWidth - currentWidth;
+    const ratio = containerWidth / currentWidth;
+    let widthToDistribute = remainder;
+    let widthPerItem = Math.ceil(widthToDistribute / row.length);
+
+    row.forEach((anchor, index) => {
+      const img = anchor.querySelector('img');
+      const anchorWidth = parseInt(anchor.offsetWidth, 10);
+      const anchorHeight = parseInt(anchor.offsetHeight, 10);
+
+      const newWidth = anchorWidth + widthPerItem;
+      const newHeight = Math.floor(anchorHeight * ratio);
+
+      anchor.style.width = `${newWidth}px`;
+      anchor.style.height = `${newHeight}px`;
+
+      if (img) {
+        img.style.width = `${newWidth}px`;
+        img.style.height = `${newHeight}px`;
+      }
+
+      // Remove right margin from last item in row
+      if (index === row.length - 1) {
+        anchor.style.marginRight = '0';
+      }
+
+      widthToDistribute -= widthPerItem;
+      if (widthPerItem > widthToDistribute) {
+        widthPerItem = widthToDistribute;
+      }
+    });
+  }
+
+  applyThumbSize(anchor, img, width, height) {
+    anchor.style.width = `${width}px`;
+    anchor.style.height = `${height}px`;
+    anchor.style.marginRight = `${TARGET_GUTTER_WIDTH}px`;
+    anchor.style.marginBottom = `${TARGET_GUTTER_WIDTH}px`;
+
+    img.style.width = `${width}px`;
+    img.style.height = `${height}px`;
   }
   
   size(width, height) {

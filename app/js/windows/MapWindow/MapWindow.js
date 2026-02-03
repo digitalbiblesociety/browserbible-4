@@ -785,7 +785,8 @@ export class MapWindowComponent extends BaseWindow {
         const icon = marker.querySelector('.map-marker-icon');
         if (icon) {
           const tier = parseInt(marker.getAttribute('data-tier') || '4', 10);
-          const originalColor = tier === 1 ? '#c41e3a' : tier === 2 ? '#d45a5a' : '#e08080';
+          const tierColors = { 1: '#c41e3a', 2: '#d45a5a' };
+          const originalColor = tierColors[tier] || '#e08080';
           icon.style.color = originalColor;
           marker.classList.remove('highlighted');
         }

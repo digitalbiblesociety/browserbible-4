@@ -21,7 +21,7 @@ export const SearchTools = {
 
       for (const part of strongNumbers) {
         searchTermsRegExp.push(
-          new RegExp(`s=("|\')(\\w\\d{1,4}[a-z]?\\s)?(G|H)?${part.substr(1)}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?("|\')`, 'gi')
+          new RegExp(`s=("')(\\w\\d{1,4}[a-z]?\\s)?(G|H)?${part.substr(1)}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?("')`, 'gi')
         );
       }
     } else if (searchText.substring(0, 1) === '"' && searchText.substring(searchText.length - 1) === '"') {
@@ -79,7 +79,7 @@ export const SearchTools = {
 
     input = String(input);
 
-    input = input.replace(/(['']s)/gi, '');
+    input = input.replace(/('s)/gi, '');
 
     for (let i = 0, il = input.length; i < il; i++) {
       const letter = input.charAt(i);

@@ -81,7 +81,8 @@ export function createLocationIcon(type, tier, color = null) {
 
   // Tier-based colors
   if (!color) {
-    color = tier === 1 ? '#c41e3a' : tier === 2 ? '#d45a5a' : '#e08080';
+    const tierColors = { 1: '#c41e3a', 2: '#d45a5a' };
+    color = tierColors[tier] || '#e08080';
   }
 
   // Create SVG element

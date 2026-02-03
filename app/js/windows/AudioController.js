@@ -243,7 +243,12 @@ export function AudioController(id, container, toggleButton, scroller) {
       sectionid = newSectionid;
 
       if (loadNewData) {
-        const audioOption = optionsDramaticDrama.checked ? 'drama' : optionsDramaticAudio.checked ? 'audio' : '';
+        let audioOption = '';
+        if (optionsDramaticDrama.checked) {
+          audioOption = 'drama';
+        } else if (optionsDramaticAudio.checked) {
+          audioOption = 'audio';
+        }
 
         audioDataManager.getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption, (newFragmentAudioData) => {
           if (fragmentAudioData == null || newFragmentAudioData == null || fragmentAudioData.id != newFragmentAudioData.id) {

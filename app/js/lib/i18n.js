@@ -68,7 +68,7 @@ export function t(key, options) {
       }
     } else {
       for (const prop in options) {
-        if (Object.prototype.hasOwnProperty.call(options, prop)) {
+        if (Object.hasOwn(options, prop)) {
           translation = translation.replace(new RegExp('\\{' + prop + '\\}', 'g'), options[prop]);
         }
       }

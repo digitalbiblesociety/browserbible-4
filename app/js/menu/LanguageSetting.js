@@ -31,7 +31,7 @@ export function LanguageSetting(_parentNode, _menu) {
   }
 
   // make sure English isn't first!
-  langKeys.sort();
+  langKeys.sort((a, b) => a.localeCompare(b));
 
   for (const langKey of langKeys) {
     const langName = resources[langKey].translation.name;

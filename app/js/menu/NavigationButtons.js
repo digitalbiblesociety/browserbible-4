@@ -67,8 +67,6 @@ export function NavigationButtons() {
   TextNavigation.on('locationchange', () => updateButtonStates());
 
   updateButtonStates();
-
-  return null;
 }
 
 export default NavigationButtons;

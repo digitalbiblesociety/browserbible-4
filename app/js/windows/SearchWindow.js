@@ -148,24 +148,24 @@ export class SearchWindowComponent extends BaseWindow {
       }
     });
 
-    // Results click handler
-    this.refs.resultsBlock.addEventListener('click', (e) => {
+    // Results click handler - navigate all Bible windows to clicked reference
+    this.addListener(this.refs.resultsBlock, 'click', (e) => {
       const tr = e.target.closest('tr');
       if (tr) this.handleResultClick(tr);
     });
 
     // Visual bar events
-    this.refs.topVisual.addEventListener('mouseover', (e) => {
+    this.addListener(this.refs.topVisual, 'mouseover', (e) => {
       const target = e.target.closest('.search-result-book-bar');
       if (target) this.handleVisualBarMouseover(target);
     });
 
-    this.refs.topVisual.addEventListener('mouseout', (e) => {
+    this.addListener(this.refs.topVisual, 'mouseout', (e) => {
       const target = e.target.closest('.search-result-book-bar');
       if (target) this.refs.topVisualLabel.style.display = 'none';
     });
 
-    this.refs.topVisual.addEventListener('click', (e) => {
+    this.addListener(this.refs.topVisual, 'click', (e) => {
       const target = e.target.closest('.search-result-book-bar');
       if (target) this.handleVisualBarClick(target);
     });

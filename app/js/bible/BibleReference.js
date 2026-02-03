@@ -53,7 +53,7 @@ export function Reference(...args) {
   if (bookid == null) return null;
 
   // Strip leading underscore
-  if (input[0] === '_') input = input.substring(1);
+  if (input.startsWith('_')) input = input.substring(1);
 
   // Parse chapter:verse-chapter:verse
   let afterRange = false,

@@ -5,8 +5,7 @@
 
 import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
-import { getWindowType } from '../core/registry.js';
-import { getApp } from '../core/registry.js';
+import { getWindowType, getApp } from '../core/registry.js';
 
 /**
  * Create URL copier component
@@ -80,7 +79,7 @@ export function ConfigUrl(_parentNode, _menu) {
       }
     }
 
-    mergedParams = Object.assign({}, mergedParams, newParams);
+    mergedParams = { ...mergedParams, ...newParams };
 
     for (const param in mergedParams) {
       if (param !== '') {

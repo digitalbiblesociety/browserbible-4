@@ -26,7 +26,12 @@ export const robinson = {
         const c = this.nounCases[parsingInfo.substring(0, 1)];
         const n = this.wordNumber[parsingInfo.substring(1, 2)];
         const g = this.wordGender[parsingInfo.substring(2, 3)];
-        formattedParsing = c + (n ? `, ${n}${g ? `, ${g}` : ''}` : '');
+        const parts = [c];
+        if (n) {
+          parts.push(n);
+          if (g) parts.push(g);
+        }
+        formattedParsing = parts.join(', ');
         break;
       }
 
@@ -36,12 +41,22 @@ export const robinson = {
           const p = this.wordPerson[parsingInfo.substring(0, 1)];
           const c = this.nounCases[parsingInfo.substring(1, 2)];
           const n = this.wordNumber[parsingInfo.substring(2, 3)];
-          formattedParsing = p + (c ? `, ${c}${n ? `, ${n}` : ''}` : '');
+          const parts = [p];
+          if (c) {
+            parts.push(c);
+            if (n) parts.push(n);
+          }
+          formattedParsing = parts.join(', ');
         } else {
           const c = this.nounCases[parsingInfo.substring(0, 1)];
           const n = this.wordNumber[parsingInfo.substring(1, 2)];
           const g = this.wordGender[parsingInfo.substring(2, 3)];
-          formattedParsing = c + (n ? `, ${n}${g ? `, ${g}` : ''}` : '');
+          const parts = [c];
+          if (n) {
+            parts.push(n);
+            if (g) parts.push(g);
+          }
+          formattedParsing = parts.join(', ');
         }
         break;
       }

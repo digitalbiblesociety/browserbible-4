@@ -21,14 +21,6 @@ import { ConfigUrl } from './ConfigUrl.js';
 import { LanguageSetting } from './LanguageSetting.js';
 import { MainMenu } from './MainMenu.js';
 
-// Base MenuComponent class
-export class BaseMenuComponent {
-  constructor(parentNode, menu) {
-    this.parentNode = parentNode;
-    this.menu = menu;
-  }
-}
-
 // Register menu components
 registerMenuComponent('MainMenuButton', MainMenuButton);
 registerMenuComponent('MainSearchBox', MainSearchBox);
@@ -67,7 +59,6 @@ export {
 };
 
 export default {
-  BaseMenuComponent,
   MainMenu,
   MainMenuButton,
   MainSearchBox,
