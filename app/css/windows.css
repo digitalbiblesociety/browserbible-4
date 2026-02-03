@@ -378,11 +378,8 @@ input:focus {
 	display: none;
 }
 
-.blur {
-	transition: all .25s ease-in;
-	-webkit-filter: blur(3px);
-	-moz-filter: blur(3px);
-	-o-filter: blur(3px);
-	-ms-filter: blur(3px);
+/* Blur windows container when a movable-window popover is open */
+body:has(.movable-window:popover-open) .windows-container {
+	transition: filter .25s ease-in;
 	filter: blur(3px);
 }

@@ -1,123 +1,92 @@
-/**
- * AboutScreen
- * About dialog with HTML content loading
- * Uses native popover API for click-off detection
- */
-
-import { createElements, qs } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 
-/**
- * Create about button and dialog
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {HTMLElement} Button element
- */
-export function AboutScreen(_parentNode, _menu) {
+const WINDOW_SIZE = { widthRatio: 0.8, heightRatio: 0.7 };
+
+async function fetchAboutContent(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return { data: await response.text(), url };
+}
+
+export function AboutScreen() {
   const config = getConfig();
-  const container = qs('.windows-container');
-  const aboutButton = createElements('<div class="main-menu-item about-logo i18n" data-i18n="[html]menu.labels.about">About</div>');
-  const mainMenuFeatures = qs('#main-menu-features');
-  const aboutWindow = new MovableWindow(500, 250, i18n.t('menu.labels.about'));
-
-  let isAboutLoaded = false;
-
-  if (mainMenuFeatures) {
-    mainMenuFeatures.appendChild(aboutButton);
-  }
-
-  // Handle popover toggle events (fires on light dismiss - click outside or Escape)
-  aboutWindow.onToggle((e) => {
-    if (e.newState === 'closed') {
-      container?.classList.remove('blur');
-    } else {
-      container?.classList.add('blur');
-    }
+  const aboutButton = Object.assign(document.createElement('div'), {
+    className: 'main-menu-item about-logo i18n',
+    textContent: 'About'
   });
+  aboutButton.dataset.i18n = '[html]menu.labels.about';
 
-  // aboutWindow.body
-  const aboutBody = aboutWindow.body[0] ?? aboutWindow.body;
-  aboutBody.style.padding = '20px';
+  document.querySelector('#main-menu-features')?.appendChild(aboutButton);
 
-  const aboutTitle = aboutWindow.title[0] ?? aboutWindow.title;
-  aboutTitle.classList.add('i18n');
-  aboutTitle.setAttribute('data-i18n', '[html]menu.labels.about');
+  let aboutWindow = null;
+  let aboutBody = null;
+  let isLoaded = false;
 
-  const showAboutContent = (data, url) => {
-    if (data.indexOf('<html') > -1) {
-      aboutBody.innerHTML = `<iframe style="border: 0;" src="${url}"></iframe>`;
+  const getWindow = () => {
+    if (!aboutWindow) {
+      aboutWindow = new MovableWindow(500, 250, i18n.t('menu.labels.about'));
+      aboutBody = [aboutWindow.body].flat()[0];
+      const aboutTitle = [aboutWindow.title].flat()[0];
+
+      aboutBody.style.padding = '20px';
+      aboutTitle.classList.add('i18n');
+      aboutTitle.dataset.i18n = '[html]menu.labels.about';
+    }
+    return aboutWindow;
+  };
+
+  const showContent = (data, url) => {
+    if (data.includes('<html')) {
+      aboutBody.innerHTML = `<iframe style="border:0; width:${aboutBody.offsetWidth}px; height:${aboutBody.offsetHeight - 5}px" src="${url}"></iframe>`;
       aboutBody.style.padding = '2px';
-
-      const iframe = aboutBody.querySelector('iframe');
-
-      if (iframe) {
-        iframe.style.width = `${aboutBody.offsetWidth}px`;
-        iframe.style.height = `${aboutBody.offsetHeight - 5}px`;
-      }
     } else {
       aboutBody.innerHTML = data;
     }
   };
 
-  const aboutClick = () => {
-    if (aboutWindow.isVisible()) {
-      aboutWindow.hide();
-    } else {
-      // Properly close the main menu popover
-      const mainMenuDropdown = qs('#main-menu-dropdown');
-      if (mainMenuDropdown?.matches(':popover-open')) {
-        mainMenuDropdown.hidePopover();
-      }
+  const loadContent = async () => {
+    aboutBody.classList.add('loading-indicator');
 
-      const winWidth = window.innerWidth;
-      const winHeight = window.innerHeight;
+    const urls = [config.aboutPagePath];
+    if (config.baseContentUrl) {
+      urls.push(config.baseContentUrl + config.aboutPagePath);
+    }
 
-      aboutWindow
-        .size(0.8 * winWidth, 0.7 * winHeight)
-        .show()
-        .center();
-
-      if (!isAboutLoaded) {
-        aboutBody.classList.add('loading-indicator');
-
-        // assume a local file first
-        fetch(config.aboutPagePath)
-          .then(response => {
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response.text();
-          })
-          .then(data => {
-            aboutBody.classList.remove('loading-indicator');
-            isAboutLoaded = true;
-            showAboutContent(data, config.aboutPagePath);
-          })
-          .catch(() => {
-            if (config.baseContentUrl !== '') {
-              // this one will go through the CDN
-              fetch(config.baseContentUrl + config.aboutPagePath)
-                .then(response => {
-                  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                  return response.text();
-                })
-                .then(data => {
-                  aboutBody.classList.remove('loading-indicator');
-                  isAboutLoaded = true;
-                  showAboutContent(data, config.baseContentUrl + config.aboutPagePath);
-                })
-                .catch(() => {
-                  console.log("Can't find about.html");
-                });
-            } else {
-              console.log('No local about.html, no CDN to check');
-            }
-          });
+    for (const url of urls) {
+      try {
+        const { data } = await fetchAboutContent(url);
+        aboutBody.classList.remove('loading-indicator');
+        isLoaded = true;
+        showContent(data, url);
+        return;
+      } catch {
+        // Try next URL
       }
     }
+
+    aboutBody.classList.remove('loading-indicator');
+    console.log("Can't find about.html");
   };
 
-  aboutButton.addEventListener('click', aboutClick, false);
+  aboutButton.addEventListener('click', () => {
+    const win = getWindow();
+
+    if (win.isVisible()) {
+      win.hide();
+      return;
+    }
+
+    document.querySelector('#main-menu-dropdown[popover]')?.hidePopover();
+
+    win
+      .size(WINDOW_SIZE.widthRatio * innerWidth, WINDOW_SIZE.heightRatio * innerHeight)
+      .show()
+      .center();
+
+    if (!isLoaded) loadContent();
+  });
 
   return aboutButton;
 }

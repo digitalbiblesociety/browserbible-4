@@ -1,8 +1,3 @@
-/**
- * Navigation
- * Handles browser history and location tracking
- */
-
 import { mixinEventEmitter } from './EventEmitter.js';
 import { getApp } from '../core/registry.js';
 
