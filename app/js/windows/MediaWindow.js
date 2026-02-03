@@ -144,10 +144,10 @@ export class MediaWindowComponent extends BaseWindow {
         clearTimeout(this._resizeTimeout);
       }
       this._resizeTimeout = setTimeout(() => {
-        this.startResize();
+        requestAnimationFrame(() => this.startResize());
       }, RESIZE_DEBOUNCE_MS);
     };
-    window.addEventListener('resize', this._resizeHandler, false);
+    window.addEventListener('resize', this._resizeHandler, { passive: true });
 
     this.on('message', (e) => this.handleMessage(e));
   }
@@ -376,9 +376,12 @@ export class MediaWindowComponent extends BaseWindow {
   }
 
   clearCheckedMediaMarkers() {
-    document.querySelectorAll('.checked-media').forEach((el) => {
-      el.classList.remove('checked-media');
-    });
+    // Scope to content element instead of entire document
+    const scope = this.contentToProcess || document;
+    const markers = scope.querySelectorAll('.checked-media');
+    for (let i = 0; i < markers.length; i++) {
+      markers[i].classList.remove('checked-media');
+    }
   }
 
   createThumbsContainer(bibleReference) {
@@ -391,32 +394,39 @@ export class MediaWindowComponent extends BaseWindow {
   }
 
   renderVerses(contentEl) {
-    let html = '';
+    const htmlParts = [];
+    const verses = contentEl.querySelectorAll('.verse, .v');
 
-    contentEl.querySelectorAll('.verse, .v').forEach((verse) => {
+    for (let i = 0; i < verses.length; i++) {
+      let verse = verses[i];
       const verseid = verse.getAttribute('data-id');
-      const reference = new Reference(verseid);
+      if (!verseid) continue;
 
       const chapter = verse.closest('.chapter');
       if (chapter) {
         verse = chapter.querySelector(`.${verseid}`) ?? verse;
       }
 
-      if (verse.classList.contains('checked-media')) return;
+      if (verse.classList.contains('checked-media')) continue;
 
-      html += this.renderVerse(verseid, reference);
+      const reference = new Reference(verseid);
+      this.renderVerseInto(verseid, reference, htmlParts);
       verse.classList.add('checked-media');
-    });
+    }
 
-    return html;
+    return htmlParts.join('');
   }
 
   attachThumbClickHandlers(gallery) {
-    gallery.querySelectorAll('a').forEach((a, index) => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
+    // Event delegation - single listener instead of one per thumbnail
+    gallery.addEventListener('click', (e) => {
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+      e.preventDefault();
+      const index = parseInt(anchor.dataset.index, 10);
+      if (!isNaN(index)) {
         this.showGalleryItem(index);
-      });
+      }
     });
   }
 
@@ -431,21 +441,37 @@ export class MediaWindowComponent extends BaseWindow {
 
     let loadedCount = 0;
     const totalImages = images.length;
+    let resizeScheduled = false;
+
+    const scheduleResize = () => {
+      if (resizeScheduled) return;
+      resizeScheduled = true;
+      requestAnimationFrame(() => {
+        this.resizeImages(gallery);
+        resizeScheduled = false;
+        if (loadedCount === totalImages) {
+          gallery.classList.add('resized');
+        }
+      });
+    };
 
     const onImageReady = () => {
       loadedCount++;
-      if (loadedCount === totalImages) {
-        this.resizeImages(gallery);
-        gallery.classList.add('resized');
-      }
+      // Resize progressively as images load, batched via rAF
+      scheduleResize();
     };
 
     images.forEach((img) => {
-      img.addEventListener('load', () => {
+      if (img.complete) {
         img.classList.add('loaded');
         onImageReady();
-      }, false);
-      img.addEventListener('error', onImageReady, false);
+      } else {
+        img.addEventListener('load', () => {
+          img.classList.add('loaded');
+          onImageReady();
+        }, { once: true });
+        img.addEventListener('error', onImageReady, { once: true });
+      }
     });
   }
 
@@ -459,28 +485,30 @@ export class MediaWindowComponent extends BaseWindow {
     return 'art';
   }
 
-  renderVerse(verseid, reference) {
-    let html = '';
+  renderVerseInto(verseid, reference, htmlParts) {
+    const libraries = this.mediaLibraries;
+    const filters = this.state.filters;
+    const galleryItems = this.state.galleryItems;
 
-    for (const mediaLibrary of this.mediaLibraries) {
+    for (let i = 0; i < libraries.length; i++) {
+      const mediaLibrary = libraries[i];
       const category = this.getFilterCategory(mediaLibrary);
-      if (!this.state.filters[category]) continue;
+      if (!filters[category]) continue;
 
       const mediaForVerse = mediaLibrary.data?.[verseid];
       if (!mediaForVerse) continue;
 
-      for (const mediaInfo of mediaForVerse) {
+      for (let j = 0; j < mediaForVerse.length; j++) {
+        const mediaInfo = mediaForVerse[j];
         if (mediaInfo.filename?.includes('-color')) continue;
 
         const { fullUrl, thumbUrl } = this.buildMediaUrls(mediaLibrary, mediaInfo);
         const galleryItem = this.createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category);
-        this.state.galleryItems.push(galleryItem);
+        galleryItems.push(galleryItem);
 
-        html += this.renderThumbLink(galleryItem, mediaLibrary, mediaInfo, reference);
+        htmlParts.push(this.renderThumbLink(galleryItem, mediaLibrary, mediaInfo, reference));
       }
     }
-
-    return html;
   }
 
   buildMediaUrls(mediaLibrary, mediaInfo) {
@@ -537,93 +565,92 @@ export class MediaWindowComponent extends BaseWindow {
   resizeImages(gallery) {
     if (!gallery) return;
 
-    const containerWidth = gallery.offsetWidth;
-    let currentWidth = 0;
-    let currentRow = [];
+    const images = gallery.querySelectorAll('img');
+    if (images.length === 0) return;
 
-    gallery.querySelectorAll('img').forEach((img) => {
+    // Phase 1: Batch all DOM reads
+    const containerWidth = gallery.offsetWidth;
+    const itemData = [];
+
+    for (const img of images) {
       const anchor = img.closest('a');
-      const { width, height } = this.getStoredDimensions(img);
+      if (!anchor) continue;
+
+      // Read stored dimensions or measure once
+      let width = img.dataset.originalWidth;
+      let height = img.dataset.originalHeight;
+
+      if (!width || !height) {
+        width = img.offsetWidth || img.naturalWidth || TARGET_ROW_HEIGHT;
+        height = img.offsetHeight || img.naturalHeight || TARGET_ROW_HEIGHT;
+        img.dataset.originalWidth = width;
+        img.dataset.originalHeight = height;
+      } else {
+        width = parseInt(width, 10);
+        height = parseInt(height, 10);
+      }
+
+      if (height === 0) height = TARGET_ROW_HEIGHT;
 
       const heightRatio = TARGET_ROW_HEIGHT / height;
       const scaledWidth = Math.floor(heightRatio * width);
 
-      // Check if this image would overflow the row
-      if (containerWidth < currentWidth + scaledWidth && currentRow.length > 0) {
-        this.fitRowToWidth(currentRow, containerWidth, currentWidth);
+      itemData.push({ anchor, img, scaledWidth, height: TARGET_ROW_HEIGHT });
+    }
+
+    // Phase 2: Calculate row layouts (no DOM access)
+    const rows = [];
+    let currentRow = [];
+    let currentWidth = 0;
+
+    for (const item of itemData) {
+      if (containerWidth < currentWidth + item.scaledWidth && currentRow.length > 0) {
+        rows.push({ items: currentRow, totalWidth: currentWidth });
         currentRow = [];
         currentWidth = 0;
       }
-
-      this.applyThumbSize(anchor, img, scaledWidth, TARGET_ROW_HEIGHT);
-      currentRow.push(anchor);
-      currentWidth += scaledWidth + TARGET_GUTTER_WIDTH;
-    });
-  }
-
-  getStoredDimensions(img) {
-    let width = img.getAttribute('data-original-width');
-    let height = img.getAttribute('data-original-height');
-
-    if (width === null) {
-      width = img.offsetWidth;
-      img.setAttribute('data-original-width', width);
-    } else {
-      width = parseInt(width, 10);
+      currentRow.push(item);
+      currentWidth += item.scaledWidth + TARGET_GUTTER_WIDTH;
+    }
+    if (currentRow.length > 0) {
+      rows.push({ items: currentRow, totalWidth: currentWidth, isLast: true });
     }
 
-    if (height === null) {
-      height = img.offsetHeight;
-      img.setAttribute('data-original-height', height);
-    } else {
-      height = parseInt(height, 10);
+    // Phase 3: Batch all DOM writes
+    for (const row of rows) {
+      if (!row.isLast && row.items.length > 1) {
+        // Fit row to container width
+        const ratio = containerWidth / row.totalWidth;
+        let remainder = containerWidth - row.totalWidth;
+        let widthPerItem = Math.ceil(remainder / row.items.length);
+
+        for (let i = 0; i < row.items.length; i++) {
+          const item = row.items[i];
+          const newWidth = item.scaledWidth + widthPerItem;
+          const newHeight = Math.floor(item.height * ratio);
+          const isLast = i === row.items.length - 1;
+
+          this.applyThumbStyles(item.anchor, item.img, newWidth, newHeight, isLast);
+
+          remainder -= widthPerItem;
+          if (widthPerItem > remainder) widthPerItem = remainder;
+        }
+      } else {
+        // Last/incomplete row - use calculated sizes
+        for (let i = 0; i < row.items.length; i++) {
+          const item = row.items[i];
+          this.applyThumbStyles(item.anchor, item.img, item.scaledWidth, item.height, false);
+        }
+      }
     }
-
-    return { width, height };
   }
 
-  fitRowToWidth(row, containerWidth, currentWidth) {
-    const remainder = containerWidth - currentWidth;
-    const ratio = containerWidth / currentWidth;
-    let widthToDistribute = remainder;
-    let widthPerItem = Math.ceil(widthToDistribute / row.length);
+  applyThumbStyles(anchor, img, width, height, isLastInRow) {
+    const widthPx = `${width}px`;
+    const heightPx = `${height}px`;
 
-    row.forEach((anchor, index) => {
-      const img = anchor.querySelector('img');
-      const anchorWidth = parseInt(anchor.offsetWidth, 10);
-      const anchorHeight = parseInt(anchor.offsetHeight, 10);
-
-      const newWidth = anchorWidth + widthPerItem;
-      const newHeight = Math.floor(anchorHeight * ratio);
-
-      anchor.style.width = `${newWidth}px`;
-      anchor.style.height = `${newHeight}px`;
-
-      if (img) {
-        img.style.width = `${newWidth}px`;
-        img.style.height = `${newHeight}px`;
-      }
-
-      // Remove right margin from last item in row
-      if (index === row.length - 1) {
-        anchor.style.marginRight = '0';
-      }
-
-      widthToDistribute -= widthPerItem;
-      if (widthPerItem > widthToDistribute) {
-        widthPerItem = widthToDistribute;
-      }
-    });
-  }
-
-  applyThumbSize(anchor, img, width, height) {
-    anchor.style.width = `${width}px`;
-    anchor.style.height = `${height}px`;
-    anchor.style.marginRight = `${TARGET_GUTTER_WIDTH}px`;
-    anchor.style.marginBottom = `${TARGET_GUTTER_WIDTH}px`;
-
-    img.style.width = `${width}px`;
-    img.style.height = `${height}px`;
+    anchor.style.cssText = `width:${widthPx};height:${heightPx};margin-right:${isLastInRow ? '0' : TARGET_GUTTER_WIDTH + 'px'};margin-bottom:${TARGET_GUTTER_WIDTH}px`;
+    img.style.cssText = `width:${widthPx};height:${heightPx}`;
   }
   
   size(width, height) {
