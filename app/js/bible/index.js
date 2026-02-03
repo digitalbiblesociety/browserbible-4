@@ -16,10 +16,7 @@ import {
   getVerseCount
 } from './BibleData.js';
 
-import {
-  parseReference,
-  Reference
-} from './BibleReference.js';
+import { Reference } from './BibleReference.js';
 
 import {
   morphology,
@@ -40,7 +37,6 @@ export const bible = {
   getBookIndex,
   getChapterCount,
   getVerseCount,
-  parseReference,
   Reference,
   morphology,
   robinson,
@@ -60,7 +56,6 @@ export {
   getBookIndex,
   getChapterCount,
   getVerseCount,
-  parseReference,
   Reference,
   morphology,
   robinson,

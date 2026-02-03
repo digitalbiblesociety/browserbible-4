@@ -1,317 +1,163 @@
-/**
- * Bible Reference Parser
- *
- * @author John Dyer (http://j.hn/)
- */
-
 import { BOOK_DATA, DEFAULT_BIBLE } from './BibleData.js';
 
 const shortCodeRegex = /^\w{2}\d{1,3}(_\d{1,3})?$/;
+const bookNameIndex = Object.entries(BOOK_DATA)
+  .flatMap(([bid, data]) => [
+    { name: bid.toLowerCase(), bid },
+    ...Object.values(data.names).flat().map(n => ({ name: String(n).toLowerCase(), bid }))
+  ])
+  .sort((a, b) => b.name.length - a.name.length);
 
-export function parseReference(textReference, language) {
-  let bookIndex = -1,
+export function Reference(...args) {
+  let bookid,
     chapter1 = -1,
     verse1 = -1,
     chapter2 = -1,
     verse2 = -1,
-    input = String(textReference),
-    matchingbookid = null,
-    afterRange = false,
+    language = 'eng';
+
+  // Direct construction: Reference(bookid, chapter, verse, ...)
+  if (typeof args[0] === 'string' && typeof args[1] === 'number') {
+    [bookid, chapter1, verse1 = -1, chapter2 = -1, verse2 = -1, language = 'eng'] = args;
+    return createRef();
+  }
+
+  // Must be string parsing mode
+  if (args.length > 2 || typeof args[0] !== 'string' || typeof args[1] === 'number') {
+    return null;
+  }
+
+  let input = String(args[0]);
+  language = args[1] || 'eng';
+
+  // Handle short codes like "GN1" or "GN1_1"
+  if (shortCodeRegex.test(input)) {
+    const parts = input.split('_');
+    bookid = parts[0].substring(0, 2).toUpperCase();
+    chapter1 = parseInt(parts[0].substring(2), 10);
+    if (parts.length > 1) verse1 = parseInt(parts[1], 10);
+    return createRef();
+  }
+
+  input = input.toLowerCase();
+
+  // Find book by ID or name (index is sorted longest-first for greedy matching)
+  for (const { name, bid } of bookNameIndex) {
+    if (input.startsWith(name) && /[\d.\s]|$/.test(input[name.length] || '')) {
+      bookid = bid;
+      input = input.substring(name.length);
+      break;
+    }
+  }
+
+  if (bookid == null) return null;
+
+  // Strip leading underscore
+  if (input[0] === '_') input = input.substring(1);
+
+  // Parse chapter:verse-chapter:verse
+  let afterRange = false,
     afterSeparator = false,
     startedNumber = false,
     currentNumber = '';
 
-  // Is short code format (GN2 || GN2_1)
-  if (shortCodeRegex.test(input)) {
-    const parts = input.split('_');
-    const bookChapter = parts[0];
-
-    const bookid = bookChapter.substring(0, 2).toUpperCase();
-    chapter1 = parseInt(bookChapter.substring(2), 10);
-
-    if (parts.length > 1) {
-      verse1 = parseInt(parts[1], 10);
-    }
-
-    return Reference(bookid, chapter1, verse1, chapter2, verse2, language);
-  }
-
-  // Go through all books and test all names
-  for (const bookid in BOOK_DATA) {
-    // Match id?
-    const possibleMatch = input.substring(0, Math.floor(bookid.length, input.length)).toLowerCase();
-    const nextIsSeparator = input.length > possibleMatch.length ? /(\d|\.|\s)/.test(input.substr(possibleMatch.length, 1)) : false;
-
-    if (possibleMatch === bookid.toLowerCase() && nextIsSeparator) {
-      matchingbookid = bookid;
-      input = input.substring(bookid.length);
-      break;
-    }
-
-    // If no direct match on ID, then go through names in each language
-    for (const lang in BOOK_DATA[bookid].names) {
-      // Test each name
-      const names = BOOK_DATA[bookid].names[lang];
-      for (const nameItem of names) {
-        const name = String(nameItem).toLowerCase();
-        const possibleMatch = input.substring(0, Math.floor(name.length, input.length)).toLowerCase();
-
-        if (possibleMatch === name) {
-          matchingbookid = bookid;
-          input = input.substring(name.length);
-          break;
-        }
-      }
-
-      if (matchingbookid != null) break;
-    }
-    if (matchingbookid != null) break;
-  }
-
-  if (matchingbookid == null) return null;
-
-  // Pull off _10_10 => 10_10
-  if (input.substring(0, 1) === '_') {
-    input = input.substring(1);
-  }
-
-  for (let i = 0; i < input.length; i++) {
-    const c = input.charAt(i);
-
+  for (const c of input) {
     if (c === ' ' || isNaN(c)) {
       if (!startedNumber) continue;
-
       if (c === '-') {
         afterRange = true;
         afterSeparator = false;
-      } else if (c === ':' || c === ',' || c === '.' || c === '_') {
+      } else if (':,._'.includes(c)) {
         afterSeparator = true;
       }
-
       currentNumber = '';
       startedNumber = false;
-    } else {
-      startedNumber = true;
-      currentNumber += c;
+      continue;
+    }
 
-      if (afterSeparator) {
-        if (afterRange) {
-          verse2 = parseInt(currentNumber);
-        } else {
-          verse1 = parseInt(currentNumber);
-        }
-      } else {
-        if (afterRange) {
-          chapter2 = parseInt(currentNumber);
-        } else {
-          chapter1 = parseInt(currentNumber);
-        }
-      }
+    startedNumber = true;
+    currentNumber += c;
+    const num = parseInt(currentNumber);
+
+    if (afterSeparator) {
+      if (afterRange) verse2 = num;
+      else verse1 = num;
+    } else {
+      if (afterRange) chapter2 = num;
+      else chapter1 = num;
     }
   }
 
-  // Reassign 1:1-2
+  // Normalize "1:1-2" → verse range within same chapter
   if (chapter1 > 0 && verse1 > 0 && chapter2 > 0 && verse2 <= 0) {
     verse2 = chapter2;
     chapter2 = chapter1;
   }
 
-  // Fix 1-2:5
+  // Normalize "1-2:5" → chapter 1 verse 1 through chapter 2 verse 5
   if (chapter1 > 0 && verse1 <= 0 && chapter2 > 0 && verse2 > 0) {
     verse1 = 1;
   }
 
-  // Just book
-  if (bookIndex > -1 && chapter1 <= 0 && verse1 <= 0 && chapter2 <= 0 && verse2 <= 0) {
-    chapter1 = 1;
-  }
-
-  // Validate max chapter
+  // Validate/clamp chapter
+  const chapters = BOOK_DATA[bookid].chapters;
   if (chapter1 === -1) {
     chapter1 = 1;
-  } else if (BOOK_DATA[matchingbookid].chapters?.length > 0 && chapter1 > BOOK_DATA[matchingbookid].chapters.length) {
-    chapter1 = BOOK_DATA[matchingbookid].chapters.length;
+  } else if (chapters?.length > 0 && chapter1 > chapters.length) {
+    chapter1 = chapters.length;
     if (verse1 > 0) verse1 = 1;
   }
 
-  // Validate max verse
-  if (BOOK_DATA[matchingbookid].chapters?.length > 0 && verse1 > BOOK_DATA[matchingbookid].chapters[chapter1 - 1]) {
-    verse1 = BOOK_DATA[matchingbookid].chapters[chapter1 - 1];
+  // Validate/clamp verse
+  if (chapters?.length > 0 && verse1 > chapters[chapter1 - 1]) {
+    verse1 = chapters[chapter1 - 1];
   }
 
+  // Clear invalid range
   if (verse2 <= verse1) {
     chapter2 = -1;
     verse2 = -1;
   }
 
-  return Reference(matchingbookid, chapter1, verse1, chapter2, verse2, language);
-}
+  return createRef();
 
-export function Reference(...args) {
-  let _bookid = -1,
-    _chapter1 = -1,
-    _verse1 = -1,
-    _chapter2 = -1,
-    _verse2 = -1,
-    _language = 'eng';
+  function createRef() {
+    return {
+      bookid,
+      chapter1,
+      verse1,
+      chapter2,
+      verse2,
+      language,
+      bookList: DEFAULT_BIBLE,
 
-  if (args.length === 1 && typeof args[0] === 'string') {
-    return parseReference(args[0]);
-  } else if (args.length === 2 && typeof args[0] === 'string' && typeof args[1] === 'string') {
-    return parseReference(args[0], args[1]);
-  } else if (args.length >= 2 && typeof args[0] === 'string' && typeof args[1] === 'number') {
-    _bookid = args[0];
-    _chapter1 = args[1];
-    if (args.length >= 3) _verse1 = args[2];
-    if (args.length >= 4) _chapter2 = args[3];
-    if (args.length >= 5) _verse2 = args[4];
-    if (args.length >= 6) _language = args[5];
-  } else {
-    return null;
+      isValid() {
+        return this.bookid != null && this.chapter1 > 0;
+      },
+
+      toSection() {
+        if (this.bookid == null) return 'invalid';
+        const pad = (n, width) => String(n).padStart(width, '0');
+        const versePart = this.verse1 > 0 ? `_${pad(this.verse1, 3)}` : '';
+        return `${this.bookid}${pad(this.chapter1, 3)}${versePart}`;
+      },
+
+      toString() {
+        if (this.bookid == null) return '';
+        const bookData = BOOK_DATA[this.bookid];
+        const bookName = bookData?.names?.[this.language]?.[0] ?? bookData?.names?.eng?.[0] ?? this.bookid;
+        const crossChapter = this.chapter2 > 0 && this.chapter2 !== this.chapter1;
+        let ref = `${this.chapter1}`;
+        if (this.verse1 > 0) ref += `:${this.verse1}`;
+        if (crossChapter) {
+          ref += this.verse2 > 0 ? `-${this.chapter2}:${this.verse2}` : `-${this.chapter2}`;
+        } else if (this.verse2 > 0 && this.verse2 !== this.verse1) {
+          ref += `-${this.verse2}`;
+        }
+        return `${bookName} ${ref}`;
+      }
+    };
   }
-
-  const padLeft = (nr, n, str = '0') => Array(n - String(nr).length + 1).join(str) + nr;
-
-  const refObject = {
-    bookid: _bookid,
-    chapter: _chapter1,
-    verse: _verse1,
-    chapter1: _chapter1,
-    verse1: _verse1,
-    chapter2: _chapter2,
-    verse2: _verse2,
-    language: _language,
-    bookList: DEFAULT_BIBLE,
-
-    isValid() {
-      return (typeof _bookid !== 'undefined' && _bookid !== null && _chapter1 > 0);
-    },
-
-    chapterAndVerse(cvSeparator = ':', vvSeparator = '-', ccSeparator = '-') {
-      if (this.chapter1 > 0 && this.verse1 <= 0 && this.chapter2 <= 0 && this.verse2 <= 0)
-        return this.chapter1.toString();
-      else if (this.chapter1 > 0 && this.verse1 > 0 && this.chapter2 <= 0 && this.verse2 <= 0)
-        return `${this.chapter1}${cvSeparator}${this.verse1}`;
-      else if (this.chapter1 > 0 && this.verse1 > 0 && this.chapter2 <= 0 && this.verse2 > 0)
-        return `${this.chapter1}${cvSeparator}${this.verse1}${vvSeparator}${this.verse2}`;
-      else if (this.chapter1 > 0 && this.verse1 <= 0 && this.chapter2 > 0 && this.verse2 <= 0)
-        return `${this.chapter1}${ccSeparator}${this.chapter2}`;
-      else if (this.chapter1 > 0 && this.verse1 > 0 && this.chapter2 > 0 && this.verse2 > 0)
-        return `${this.chapter1}${cvSeparator}${this.verse1}${ccSeparator}${this.chapter1 !== this.chapter2 ? `${this.chapter2}${cvSeparator}` : ''}${this.verse2}`;
-      else
-        return 'unknown';
-    },
-
-    toFormat(format) {
-      const t = this;
-      const bookInfo = BOOK_DATA[this.bookid];
-      let output = format;
-
-      const flags = {
-        'I': () => bookInfo.sortOrder.toString(),
-        'II': () => padLeft(bookInfo.sortOrder.toString(), 2),
-        'III': () => padLeft(bookInfo.sortOrder.toString(), 3),
-        'UUU': () => bookInfo.usfm.toUpperCase(),
-        'uuu': () => bookInfo.usfm.toLowerCase(),
-        'Uuu': () => `${bookInfo.usfm.substring(0, 1).toUpperCase()}${bookInfo.usfm.substring(1).toLowerCase()}`,
-        'DD': () => bookInfo.shortCode.toUpperCase(),
-        'dd': () => bookInfo.shortCode.toLowerCase(),
-        'NNN': () => {
-          const bookNames = bookInfo.names[t.language];
-          return bookNames?.[0] ?? bookInfo.names['eng'][0];
-        },
-        'N': () => `${bookInfo.usfm.substring(0, 1).toUpperCase()}${bookInfo.usfm.substring(1).toLowerCase()}`,
-        'C': () => t.chapter1.toString(),
-        'CC': () => padLeft(t.chapter1.toString(), 2),
-        'CCC': () => padLeft(t.chapter1.toString(), 3),
-        'V': () => t.verse1.toString(),
-        'VV': () => padLeft(t.verse1.toString(), 2),
-        'VVV': () => padLeft(t.verse1.toString(), 3),
-        '##': () => t.chapterAndVerse()
-      };
-
-      // Lowercase aliases
-      flags['i'] = flags['I'];
-      flags['ii'] = flags['II'];
-      flags['iii'] = flags['III'];
-      flags['c'] = flags['C'];
-      flags['cc'] = flags['CC'];
-      flags['ccc'] = flags['CCC'];
-      flags['v'] = flags['V'];
-      flags['vv'] = flags['VV'];
-      flags['vvv'] = flags['VVV'];
-
-      // Sort keys by length (longest first)
-      const keys = Object.keys(flags).sort((a, b) => b.length - a.length);
-
-      // Do replacement
-      for (const key of keys) {
-        output = output.replace(new RegExp(key, 'g'), flags[key]());
-      }
-
-      return output;
-    },
-
-    toString() {
-      if (this.bookid == null) return "invalid";
-
-      const bookNames = BOOK_DATA[this.bookid].names[this.language];
-      const bookName = bookNames?.[0] ?? BOOK_DATA[this.bookid].names['eng'][0];
-
-      return `${bookName} ${this.chapterAndVerse()}`;
-    },
-
-    toSection() {
-      if (this.bookid == null) return "invalid";
-      return `${this.bookid}${this.chapter1}${this.verse1 > 0 ? `_${this.verse1}` : ''}`;
-    },
-
-    prevChapter() {
-      this.verse1 = 1;
-      this.chapter2 = -1;
-      this.verse2 = -1;
-
-      if (this.chapter1 === 1 && this.bookList.indexOf(this.bookid) === 0) {
-        return null;
-      } else {
-        if (this.chapter1 === 1) {
-          this.bookid = this.bookList[this.bookList.indexOf(this.bookid) - 1];
-          this.chapter = this.chapter1 = BOOK_DATA[this.bookid].chapters.length;
-        } else {
-          this.chapter = this.chapter1 = this.chapter1 - 1;
-        }
-      }
-      return this;
-    },
-
-    nextChapter() {
-      this.verse1 = 1;
-      this.chapter2 = -1;
-      this.verse2 = -1;
-
-      if (this.bookList[this.bookid] === this.bookList.length - 1 && BOOK_DATA[this.bookid].chapters.length === this.chapter1) {
-        return null;
-      } else {
-        if (this.chapter1 < BOOK_DATA[this.bookid].chapters.length) {
-          this.chapter = this.chapter1 = this.chapter1 + 1;
-        } else if (this.bookList.indexOf(this.bookid) < this.bookList.length - 1) {
-          this.bookid = this.bookList[this.bookList.indexOf(this.bookid) + 1];
-          this.chapter = this.chapter1 = 1;
-        }
-      }
-      return this;
-    },
-
-    isFirstChapter() {
-      return (this.chapter1 === 1 && this.bookList.indexOf(this.bookid) === 0);
-    },
-
-    isLastChapter() {
-      return (this.bookList[this.bookid] === this.bookList.length - 1 && BOOK_DATA[this.bookid].chapters.length === this.chapter1);
-    }
-  };
-
-  return refObject;
 }
 
-export default { parseReference, Reference };
+export default Reference;
