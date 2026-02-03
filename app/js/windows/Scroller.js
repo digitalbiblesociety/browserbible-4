@@ -19,7 +19,6 @@ const SCROLL_THRESHOLDS = {
 };
 
 const SPEED_CHECK_INTERVAL = 100;
-const GLOBAL_EVENT_DELAY = 10;
 
 const TEXT_TYPES = {
   BIBLE: 'bible',
@@ -49,32 +48,58 @@ const isFirstFragmentVisible = (fragment, topOfContentArea) => {
 
 const createLocationInfo = (fragment, currentTextInfo, topOfContentArea) => {
   const fragmentid = fragment.getAttribute('data-id');
-  const textType = currentTextInfo?.type?.toLowerCase() ?? TEXT_TYPES.BIBLE;
-  let label = '';
-  let labelLong = '';
-
-  if ([TEXT_TYPES.BIBLE, TEXT_TYPES.COMMENTARY, TEXT_TYPES.VIDEOBIBLE, TEXT_TYPES.DEAFBIBLE].includes(textType)) {
-    const bibleref = Reference(fragmentid);
-    if (bibleref && currentTextInfo) {
-      bibleref.language = currentTextInfo.lang;
-      label = bibleref.toString();
-      labelLong = `${label} (${currentTextInfo.abbr})`;
-    }
-  } else if (textType === TEXT_TYPES.BOOK && currentTextInfo) {
-    labelLong = label = `${currentTextInfo.name} ${fragmentid}`;
-  }
-
   const closestSection = closest(fragment, '.section');
-  return {
+
+  // Core location data needed for sync
+  const info = {
     fragmentid,
     sectionid: fragment.classList.contains('section')
       ? fragmentid
       : (closestSection?.getAttribute('data-id') ?? ''),
     offset: topOfContentArea - offset(fragment).top,
-    label,
-    labelLong,
-    textid: currentTextInfo?.id ?? ''
+    textid: currentTextInfo?.id ?? '',
+    _textInfo: currentTextInfo // Store for lazy label generation
   };
+
+  // Lazy label generation - only computed when accessed
+  Object.defineProperty(info, 'label', {
+    get() {
+      if (this._label === undefined) {
+        this._computeLabels();
+      }
+      return this._label;
+    },
+    enumerable: true
+  });
+
+  Object.defineProperty(info, 'labelLong', {
+    get() {
+      if (this._labelLong === undefined) {
+        this._computeLabels();
+      }
+      return this._labelLong;
+    },
+    enumerable: true
+  });
+
+  info._computeLabels = function() {
+    const textType = this._textInfo?.type?.toLowerCase() ?? TEXT_TYPES.BIBLE;
+    this._label = '';
+    this._labelLong = '';
+
+    if ([TEXT_TYPES.BIBLE, TEXT_TYPES.COMMENTARY, TEXT_TYPES.VIDEOBIBLE, TEXT_TYPES.DEAFBIBLE].includes(textType)) {
+      const bibleref = Reference(this.fragmentid);
+      if (bibleref && this._textInfo) {
+        bibleref.language = this._textInfo.lang;
+        this._label = bibleref.toString();
+        this._labelLong = `${this._label} (${this._textInfo.abbr})`;
+      }
+    } else if (textType === TEXT_TYPES.BOOK && this._textInfo) {
+      this._labelLong = this._label = `${this._textInfo.name} ${this.fragmentid}`;
+    }
+  };
+
+  return info;
 };
 
 export function Scroller(node) {
@@ -97,7 +122,7 @@ export function Scroller(node) {
 
   const startGlobalTimeout = () => {
     if (globalTimeout == null) {
-      setTimeout(triggerGlobalEvent, GLOBAL_EVENT_DELAY);
+      globalTimeout = requestAnimationFrame(triggerGlobalEvent);
     }
   };
 
@@ -113,7 +138,7 @@ export function Scroller(node) {
         }
       });
     }
-    clearTimeout(globalTimeout);
+    cancelAnimationFrame(globalTimeout);
     globalTimeout = null;
   };
 
@@ -414,7 +439,7 @@ export function Scroller(node) {
     stopSpeedTest();
 
     if (globalTimeout != null) {
-      clearTimeout(globalTimeout);
+      cancelAnimationFrame(globalTimeout);
       globalTimeout = null;
     }
 

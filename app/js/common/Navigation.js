@@ -51,21 +51,20 @@ class TextNavigationClass {
   }
 
   _handleBrowserNavigation(e) {
-    if (e.state?.locationid !== undefined) {
-      const newlocationid = e.state.locationid;
-      let type = '';
+    const locationid = e.state?.locationid;
+    if (locationid === undefined) return;
 
-      if (this.locationIndex - 1 > -1 && this.locations[this.locationIndex - 1] === newlocationid) {
-        this.locationIndex--;
-        type = 'back';
-      } else if (this.locationIndex + 1 < this.locations.length && this.locations[this.locationIndex + 1] === newlocationid) {
-        this.locationIndex++;
-        type = 'forward';
-      }
-
-      this._setLocation(newlocationid);
-      this.trigger('locationchange', { type });
+    let type = '';
+    if (this.locationIndex > 0 && this.locations[this.locationIndex - 1] === locationid) {
+      this.locationIndex--;
+      type = 'back';
+    } else if (this.locationIndex < this.locations.length - 1 && this.locations[this.locationIndex + 1] === locationid) {
+      this.locationIndex++;
+      type = 'forward';
     }
+
+    this._setLocation(locationid);
+    this.trigger('locationchange', { type });
   }
 
   firstState(locationid) {
@@ -76,9 +75,6 @@ class TextNavigationClass {
   }
 
   locationChange(locationid, type) {
-    while (this.locationIndex > this.locations.length - 1) {
-      this.locations.pop();
-    }
 
     this.locations.push(locationid);
     this.locationIndex++;
@@ -90,10 +86,7 @@ class TextNavigationClass {
 
   _setLocation(locationid) {
     const fragmentid = locationid.includes('_') ? locationid : `${locationid}_1`;
-    const sectionid = fragmentid.split('_')[0];
-
-    const app = getApp();
-    app?.handleGlobalMessage({
+    getApp()?.handleGlobalMessage({
       type: 'globalmessage',
       target: this,
       data: {
@@ -101,7 +94,7 @@ class TextNavigationClass {
         type: 'bible',
         locationInfo: {
           fragmentid,
-          sectionid,
+          sectionid: fragmentid.split('_')[0],
           offset: 0
         }
       }
