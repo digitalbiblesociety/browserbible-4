@@ -3,7 +3,6 @@
  * Highlights matching verses across Bible windows on hover
  */
 
-import { on } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 const hasTouch = 'ontouchend' in document;
 
@@ -23,22 +22,26 @@ export const VerseMatchPlugin = (app) => {
     const windowsMain = document.querySelector('.windows-main');
 
     if (windowsMain) {
-      on(windowsMain, 'mouseover', '.BibleWindow .verse, .BibleWindow .v', function(e) {
-        const verse = this;
-        const verseid = verse.getAttribute('data-id');
+      windowsMain.addEventListener('mouseover', (e) => {
+        const verse = e.target.closest('.BibleWindow .verse, .BibleWindow .v');
+        if (verse) {
+          const verseid = verse.getAttribute('data-id');
 
-        document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
-          el.classList.add('selected-verse');
-        });
+          document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
+            el.classList.add('selected-verse');
+          });
+        }
       });
 
-      on(windowsMain, 'mouseout', '.BibleWindow .verse, .BibleWindow .v', function(e) {
-        const verse = this;
-        const verseid = verse.getAttribute('data-id');
+      windowsMain.addEventListener('mouseout', (e) => {
+        const verse = e.target.closest('.BibleWindow .verse, .BibleWindow .v');
+        if (verse) {
+          const verseid = verse.getAttribute('data-id');
 
-        document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
-          el.classList.remove('selected-verse');
-        });
+          document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
+            el.classList.remove('selected-verse');
+          });
+        }
       });
     }
   }

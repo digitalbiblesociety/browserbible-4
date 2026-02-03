@@ -3,7 +3,7 @@
  */
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
-import { toElement, deepMerge } from '../lib/helpers.esm.js';
+import { deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { Reference } from '../bible/BibleReference.js';
 import { AudioController } from './AudioController.js';
@@ -178,12 +178,14 @@ export class AudioWindowComponent extends BaseWindow {
   }
 
   handleTextNavigatorChange(e) {
-    if (toElement(e.data.target) !== this.refs.navui) return;
+    const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
+    if (target !== this.refs.navui) return;
     this.changeLocation(e.data.sectionid);
   }
 
   handleTextChooserChange(e) {
-    if (toElement(e.data.target) !== this.refs.textlistui) return;
+    const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
+    if (target !== this.refs.textlistui) return;
     const newTextInfo = e.data.textInfo;
     this.updateText(newTextInfo);
   }

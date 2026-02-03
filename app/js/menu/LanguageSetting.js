@@ -3,7 +3,6 @@
  * UI language selector
  */
 
-import { createElements, qs } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { getAllResources } from '../core/registry.js';
@@ -21,14 +20,14 @@ export function LanguageSetting(_parentNode, _menu) {
     return;
   }
 
-  const body = qs('#config-tools .config-body');
-  const list = createElements('<select id="config-language" class="app-list"></select>');
+  const body = document.querySelector('#config-tools .config-body');
+  const list = Object.assign(document.createElement('select'), { id: 'config-language', className: 'app-list' });
   const resources = getAllResources();
   const langKeys = Object.keys(resources);
 
   if (body) {
     body.appendChild(list);
-    body.appendChild(createElements('<div class="clear"></div>'));
+    body.appendChild(Object.assign(document.createElement('div'), { className: 'clear' }));
   }
 
   // make sure English isn't first!
@@ -37,7 +36,7 @@ export function LanguageSetting(_parentNode, _menu) {
   for (const langKey of langKeys) {
     const langName = resources[langKey].translation.name;
 
-    const option = createElements(`<option value="${langKey}">${langName}</option>`);
+    const option = Object.assign(document.createElement('option'), { value: langKey, textContent: langName });
     list.appendChild(option);
   }
 

@@ -3,7 +3,6 @@
  * Main application class
  */
 
-import helpers from '../lib/helpers.esm.js';
 import { WindowManager } from './WindowManager.js';
 import { MainMenu } from '../menu/MainMenu.js';
 import AppSettings from '../common/AppSettings.js';
@@ -26,10 +25,10 @@ export class App {
     this.mainMenu = null;
     this.plugins = [];
 
-    this.container = helpers.createElements('<div class="windows-container"></div>');
-    this.header = helpers.createElements('<div class="windows-header"></div>');
-    this.main = helpers.createElements('<div class="windows-main"></div>');
-    this.footer = helpers.createElements('<div class="windows-footer"></div>');
+    this.container = Object.assign(document.createElement('div'), { className: 'windows-container' });
+    this.header = Object.assign(document.createElement('div'), { className: 'windows-header' });
+    this.main = Object.assign(document.createElement('div'), { className: 'windows-main' });
+    this.footer = Object.assign(document.createElement('div'), { className: 'windows-footer' });
 
     document.body.appendChild(this.container);
     this.container.appendChild(this.header);

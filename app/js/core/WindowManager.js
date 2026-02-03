@@ -3,7 +3,7 @@
  * Manages multiple window instances in the application
  */
 
-import helpers, { toElement } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getWindowTypeByClassName, getApp } from './registry.js';
 
@@ -13,11 +13,11 @@ export class Window {
     this.className = className;
     this.manager = manager;
 
-    const parentNodeEl = toElement(parentNode);
+    const parentNodeEl = parentNode?.nodeType ? parentNode : parentNode?.[0];
 
-    this.node = helpers.createElements(`<div class="window ${className} active"></div>`);
-    this.closeContainer = helpers.createElements('<div class="close-container"><span class="close-button"></span></div>');
-    this.tab = helpers.createElements(
+    this.node = createElements(`<div class="window ${className} active"></div>`);
+    this.closeContainer = createElements('<div class="close-container"><span class="close-button"></span></div>');
+    this.tab = createElements(
       `<div class="window-tab ${className} active">
         <div class="window-tab-inner">
           <span class="window-tab-label ${className}-tab">${className}</span>
@@ -34,12 +34,12 @@ export class Window {
       manager.remove(this.id);
     });
 
-    helpers.siblings(this.node, '.window').forEach(sibling => {
-      sibling.classList.remove('active');
-    });
-    helpers.siblings(this.tab, '.window-tab').forEach(sibling => {
-      sibling.classList.remove('active');
-    });
+    Array.from(this.node.parentNode?.children || [])
+      .filter(el => el !== this.node && el.matches('.window'))
+      .forEach(sibling => sibling.classList.remove('active'));
+    Array.from(this.tab.parentNode?.children || [])
+      .filter(el => el !== this.tab && el.matches('.window-tab'))
+      .forEach(sibling => sibling.classList.remove('active'));
 
     // Supports both factory functions and web components
     const WindowType = getWindowTypeByClassName(className);
@@ -111,11 +111,13 @@ export class Window {
   _handleFocus() {
     this.controller?.trigger?.('focus', {});
     this.node.classList.add('focused');
-    helpers.siblings(this.node).forEach(sibling => {
-      sibling.classList.remove('focused');
-      const blurEvent = new CustomEvent('windowblur');
-      sibling.dispatchEvent(blurEvent);
-    });
+    Array.from(this.node.parentNode?.children || [])
+      .filter(el => el !== this.node)
+      .forEach(sibling => {
+        sibling.classList.remove('focused');
+        const blurEvent = new CustomEvent('windowblur');
+        sibling.dispatchEvent(blurEvent);
+      });
   }
 
   _handleBlur() {
@@ -151,7 +153,7 @@ export class Window {
 
 export class WindowManager {
   constructor(node, app) {
-    this.nodeEl = toElement(node);
+    this.nodeEl = node?.nodeType ? node : node?.[0];
     this.app = app;
     this.windows = [];
     this.splitters = [];
@@ -291,7 +293,7 @@ export class WindowManager {
     this.splitters = [];
 
     for (let i = 0; i < this.windows.length - 1; i++) {
-      const splitter = helpers.createElements('<div class="window-splitter"></div>');
+      const splitter = Object.assign(document.createElement('div'), { className: 'window-splitter' });
       this.nodeEl.appendChild(splitter);
       this.splitters.push(splitter);
 

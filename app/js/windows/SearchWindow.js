@@ -3,7 +3,7 @@
  */
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
-import { offset, on, closest } from '../lib/helpers.esm.js';
+import { offset } from '../lib/helpers.esm.js';
 
 import { getApp } from '../core/registry.js';
 import { i18n } from '../lib/i18n.js';
@@ -128,39 +128,46 @@ export class SearchWindowComponent extends BaseWindow {
     });
 
     // Division chooser delegated events
-    on(this.divisionChooser, 'click', '.division-header input', (e) => {
-      const checkbox = e.target;
-      const setChildrenTo = checkbox.checked;
-      const divisionList = closest(checkbox, '.division-list');
-      if (divisionList) {
-        divisionList.querySelectorAll('.division-list-items input').forEach((inp) => {
-          inp.checked = setChildrenTo;
-        });
+    this.divisionChooser.addEventListener('click', (e) => {
+      const checkbox = e.target.closest('.division-header input');
+      if (checkbox) {
+        const setChildrenTo = checkbox.checked;
+        const divisionList = checkbox.closest('.division-list');
+        if (divisionList) {
+          divisionList.querySelectorAll('.division-list-items input').forEach((inp) => {
+            inp.checked = setChildrenTo;
+          });
+        }
       }
     });
 
-    on(this.divisionChooser, 'click', '.division-list-items input', (e) => {
-      const checkbox = e.target;
-      this.checkDivisionHeader(closest(checkbox, '.division-list'));
+    this.divisionChooser.addEventListener('click', (e) => {
+      const checkbox = e.target.closest('.division-list-items input');
+      if (checkbox) {
+        this.checkDivisionHeader(checkbox.closest('.division-list'));
+      }
     });
 
     // Results click handler
-    on(this.refs.resultsBlock, 'click', 'tr', (e) => {
+    this.refs.resultsBlock.addEventListener('click', (e) => {
       const tr = e.target.closest('tr');
       if (tr) this.handleResultClick(tr);
     });
 
     // Visual bar events
-    on(this.refs.topVisual, 'mouseover', '.search-result-book-bar', (e) => {
-      this.handleVisualBarMouseover(e.target.closest('.search-result-book-bar'));
+    this.refs.topVisual.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('.search-result-book-bar');
+      if (target) this.handleVisualBarMouseover(target);
     });
 
-    on(this.refs.topVisual, 'mouseout', '.search-result-book-bar', () => {
-      this.refs.topVisualLabel.style.display = 'none';
+    this.refs.topVisual.addEventListener('mouseout', (e) => {
+      const target = e.target.closest('.search-result-book-bar');
+      if (target) this.refs.topVisualLabel.style.display = 'none';
     });
 
-    on(this.refs.topVisual, 'click', '.search-result-book-bar', (e) => {
-      this.handleVisualBarClick(e.target.closest('.search-result-book-bar'));
+    this.refs.topVisual.addEventListener('click', (e) => {
+      const target = e.target.closest('.search-result-book-bar');
+      if (target) this.handleVisualBarClick(target);
     });
 
     // Text chooser change - use bound handler for global singleton
@@ -247,7 +254,7 @@ export class SearchWindowComponent extends BaseWindow {
     const bookInfo = BOOK_DATA[dbsBookCode];
     if (!bookInfo) return;
 
-    const win = closest(bookBar, '.window');
+    const win = bookBar.closest('.window');
     const winPos = win ? offset(win) : { top: 0, left: 0 };
     const winWidth = win ? win.offsetWidth : window.innerWidth;
     const bookBarPos = offset(bookBar);

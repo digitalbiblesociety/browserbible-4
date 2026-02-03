@@ -3,7 +3,7 @@
  * URL copier for sharing current view
  */
 
-import { createElements, extend, insertAfter, qs } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { getWindowType } from '../core/registry.js';
 import { getApp } from '../core/registry.js';
@@ -21,7 +21,7 @@ export function ConfigUrl(_parentNode, _menu) {
     return;
   }
 
-  const body = qs('#main-menu-features');
+  const body = document.querySelector('#main-menu-features');
   const urlBox = createElements(
     `<div id="config-global-url">` +
       `<span class="url-copy-button"></span>` +
@@ -32,7 +32,7 @@ export function ConfigUrl(_parentNode, _menu) {
   const urlDiv = urlBox.querySelector('div');
 
   if (body) {
-    insertAfter(urlBox, body);
+    body.after(urlBox);
   }
 
   /**
@@ -80,7 +80,7 @@ export function ConfigUrl(_parentNode, _menu) {
       }
     }
 
-    mergedParams = extend({}, mergedParams, newParams);
+    mergedParams = Object.assign({}, mergedParams, newParams);
 
     for (const param in mergedParams) {
       if (param !== '') {

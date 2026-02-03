@@ -3,7 +3,7 @@
  * Toggle switches for various display options
  */
 
-import { createElements, qs } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -17,7 +17,7 @@ import { PlaceKeeper } from '../common/Navigation.js';
 export function ConfigToggles(_parentNode, _menu) {
   const config = getConfig();
 
-  const body = qs('#config-type .config-body');
+  const body = document.querySelector('#config-type .config-body');
   const toggleNames = config.settingToggleNames ?? [];
   const toggleDefaults = config.settingToggleDefaults ?? [];
 
@@ -25,7 +25,7 @@ export function ConfigToggles(_parentNode, _menu) {
   const setToggle = (toggleId, checked) => {
     PlaceKeeper?.storePlace();
 
-    const toggle = qs(`#config-toggle-${toggleId}`);
+    const toggle = document.querySelector(`#config-toggle-${toggleId}`);
     const onClass = `toggle-${toggleId}-on`;
     const offClass = `toggle-${toggleId}-off`;
 

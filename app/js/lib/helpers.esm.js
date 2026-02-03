@@ -148,19 +148,6 @@ export function on(el, events, selectorOrHandler, handler) {
   });
 }
 
-export function fadeOut(el, duration, callback) {
-  if (!el) return;
-  duration = duration || 300;
-
-  el.style.transition = 'opacity ' + duration + 'ms';
-  el.style.opacity = '0';
-
-  setTimeout(() => {
-    el.style.display = 'none';
-    el.style.transition = '';
-    if (callback) callback();
-  }, duration);
-}
 
 export function slideDown(el, duration, callback) {
   if (!el) return;
@@ -251,7 +238,6 @@ const helpers = {
   createElements,
   insertAfter,
   on,
-  fadeOut,
   slideDown,
   slideUp,
   data

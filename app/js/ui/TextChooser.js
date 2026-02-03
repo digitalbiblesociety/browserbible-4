@@ -4,7 +4,7 @@
  * Uses virtual scrolling for 60fps smooth rendering
  */
 
-import { createElements, on, deepMerge, toElement, offset } from '../lib/helpers.esm.js';
+import { createElements, deepMerge, offset } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 import { loadTexts, getText } from '../texts/TextLoader.js';
@@ -223,10 +223,13 @@ export function TextChooser() {
   }
 
   // Event delegation for row clicks
-  on(scrollContent, 'click', '.text-chooser-row', function() {
-    const textid = this.getAttribute('data-id');
-    if (textid) {
-      selectText(textid);
+  scrollContent.addEventListener('click', (e) => {
+    const target = e.target.closest('.text-chooser-row');
+    if (target) {
+      const textid = target.getAttribute('data-id');
+      if (textid) {
+        selectText(textid);
+      }
     }
   });
 
@@ -381,9 +384,8 @@ export function TextChooser() {
   function size(w, h) {
     if (target == null || container == null) return;
 
-    const targetEl = toElement(target);
-    const targetOffset = offset(targetEl);
-    const targetOuterHeight = targetEl.offsetHeight;
+    const targetOffset = offset(target);
+    const targetOuterHeight = target.offsetHeight;
     const selectorWidth = textChooser.offsetWidth;
     const winHeight = window.innerHeight - 40;
     const winWidth = window.innerWidth;

@@ -3,7 +3,7 @@
  * Theme selector (default, sepia, dark)
  */
 
-import { createElements, on, siblings, qs } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 
@@ -20,8 +20,8 @@ export function ThemeSetting(_parentNode, _menu) {
     return;
   }
 
-  const body = qs('#config-type .config-body');
-  const themesBlock = createElements('<div id="config-themes"></div>');
+  const body = document.querySelector('#config-type .config-body');
+  const themesBlock = Object.assign(document.createElement('div'), { id: 'config-themes' });
   const themeNames = ['default', 'sepia', 'dark'];
   const defaultThemeSetting = { themeName: themeNames[0] };
   const themeKey = 'config-theme';
@@ -35,8 +35,10 @@ export function ThemeSetting(_parentNode, _menu) {
   }
 
   // handle clicks using event delegation
-  on(themesBlock, 'click', '.config-theme-toggle', function() {
-    const span = this;
+  themesBlock.addEventListener('click', (e) => {
+    const span = e.target.closest('.config-theme-toggle');
+    if (!span) return;
+
     const selectedTheme = span.getAttribute('data-themename');
     const selectedThemeClass = `theme-${selectedTheme}`;
 
@@ -50,7 +52,7 @@ export function ThemeSetting(_parentNode, _menu) {
 
     // Update selected state
     span.classList.add('config-theme-toggle-selected');
-    siblings(span).forEach(sibling => {
+    [...span.parentElement.children].filter(s => s !== span).forEach(sibling => {
       sibling.classList.remove('config-theme-toggle-selected');
     });
 
@@ -58,7 +60,7 @@ export function ThemeSetting(_parentNode, _menu) {
   });
 
   // Trigger initial click on saved theme
-  const initialTheme = body ? qs(`#config-theme-${themeSetting.themeName}`, body) : null;
+  const initialTheme = body ? body.querySelector(`#config-theme-${themeSetting.themeName}`) : null;
   initialTheme?.click();
 }
 

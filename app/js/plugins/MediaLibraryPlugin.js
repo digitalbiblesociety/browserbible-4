@@ -3,7 +3,7 @@
  * Adds media icons to verses and shows media popups
  */
 
-import { on, closest, createElements, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -33,11 +33,12 @@ export const MediaLibraryPlugin = (app) => {
     // handle clicks
     const windowsMain = document.querySelector('.windows-main');
     if (windowsMain) {
-      on(windowsMain, 'click', '.mediathumb', function(e) {
+      windowsMain.addEventListener('click', (e) => {
+        const icon = e.target.closest('.mediathumb');
+        if (!icon) return;
         // determine what kind of media this is
-        const icon = this;
         const mediaFolder = icon.getAttribute('data-mediafolder');
-        const verse = closest(icon, '.verse, .v');
+        const verse = icon.closest('.verse, .v');
         const verseid = verse?.getAttribute('data-id') ?? '';
         const reference = new Reference(verseid).toString();
         let mediaLibrary = null;
@@ -53,7 +54,7 @@ export const MediaLibraryPlugin = (app) => {
 
         mediaForVerse = mediaLibrary.data[verseid];
 
-        const bodyEl = toElement(mediaPopup.body);
+        const bodyEl = mediaPopup.body;
 
         switch (mediaLibrary.type) {
           case 'image':
@@ -93,7 +94,7 @@ export const MediaLibraryPlugin = (app) => {
             break;
 
           case 'jfm':
-            const section = closest(icon, '.section');
+            const section = icon.closest('.section');
             const lang = section?.getAttribute('data-lang3') ?? 'eng';
             const jfmMediaInfo = mediaForVerse[0];
 
@@ -139,7 +140,7 @@ export const MediaLibraryPlugin = (app) => {
         temp.innerHTML = content;
         contentEl = temp;
       } else {
-        contentEl = toElement(content);
+        contentEl = content;
       }
 
       if (contentEl.getAttribute('data-has-media') !== null) {
@@ -151,7 +152,7 @@ export const MediaLibraryPlugin = (app) => {
         const verseid = verse.getAttribute('data-id');
 
         // make sure we're just doing the first verse
-        const section = closest(verse, '.section');
+        const section = verse.closest('.section');
         if (section) {
           verse = section.querySelector(`.${verseid}`) ?? verse;
         }
@@ -196,15 +197,21 @@ export const MediaLibraryPlugin = (app) => {
     });
   }
 
-  const bodyEl = toElement(mediaPopup.body);
+  const mediaPopupBody = mediaPopup.body;
 
   // Use global handlers if available
   if (window.sofia?.globals) {
     if (window.sofia.globals.mediaImageClick) {
-      on(bodyEl, 'click', '.inline-image-library-thumbs a', window.sofia.globals.mediaImageClick);
+      mediaPopupBody.addEventListener('click', (e) => {
+        const target = e.target.closest('.inline-image-library-thumbs a');
+        if (target) window.sofia.globals.mediaImageClick.call(target, e);
+      });
     }
     if (window.sofia.globals.mediaVideoClick) {
-      on(bodyEl, 'click', '.inline-video-library-thumbs a', window.sofia.globals.mediaVideoClick);
+      mediaPopupBody.addEventListener('click', (e) => {
+        const target = e.target.closest('.inline-video-library-thumbs a');
+        if (target) window.sofia.globals.mediaVideoClick.call(target, e);
+      });
     }
   }
 

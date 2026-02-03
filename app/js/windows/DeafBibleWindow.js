@@ -3,7 +3,6 @@
  */
 
 import { TextWindowComponent, registerWindowComponent } from './TextWindow.js';
-import { on, closest, siblings } from '../lib/helpers.esm.js';
 
 /**
  * DeafBibleWindow Web Component
@@ -18,18 +17,20 @@ export class DeafBibleWindow extends TextWindowComponent {
   attachEventListeners() {
     super.attachEventListeners();
 
-    on(this, 'click', '.deaf-video-header input', function() {
-      const button = this;
-      const url = button.getAttribute('data-src');
-      const video = closest(button, '.deaf-video')?.querySelector('video');
+    this.addEventListener('click', (e) => {
+      const button = e.target.closest('.deaf-video-header input');
+      if (button) {
+        const url = button.getAttribute('data-src');
+        const video = button.closest('.deaf-video')?.querySelector('video');
 
-      button.classList.add('active');
-      siblings(button).forEach(sib => {
-        sib.classList.remove('active');
-      });
+        button.classList.add('active');
+        [...button.parentElement.children].filter(s => s !== button).forEach(sib => {
+          sib.classList.remove('active');
+        });
 
-      if (video) {
-        video.setAttribute('src', url);
+        if (video) {
+          video.setAttribute('src', url);
+        }
       }
     });
   }

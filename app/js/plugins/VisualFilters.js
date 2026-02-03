@@ -3,7 +3,7 @@
  * Highlights words based on morphological data (Strong's numbers, Greek/Hebrew morphology)
  */
 
-import { createElements, on, closest, siblings, offset, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
@@ -23,7 +23,7 @@ const toCamelCase = (str) => {
 const applyStyle = (node, css) => {
   if (css === undefined || css == null || css === '') return;
 
-  const el = toElement(node);
+  const el = node;
   const props = css.split(';');
 
   for (const prop of props) {
@@ -52,7 +52,7 @@ const VisualTransformer = {
   runTransforms(sectionNode, visualSettings) {
     if (visualSettings.transforms.length === 0) return;
 
-    const sectionEl = toElement(sectionNode);
+    const sectionEl = sectionNode;
 
     sectionEl.querySelectorAll('l').forEach(word => {
       for (const transform of visualSettings.transforms) {
@@ -307,12 +307,12 @@ const MorphologySelector = () => {
   // Define drawSelectedPartOfSpeech before drawPartsOfSpeech (which calls it)
   const drawSelectedPartOfSpeech = () => {
     const firstTh = morphSelectorHeaderRow.querySelector('th');
-    siblings(firstTh).forEach(sibling => {
+    [...firstTh.parentElement.children].filter(s => s !== firstTh).forEach(sibling => {
       sibling.parentNode.removeChild(sibling);
     });
 
     const firstTd = morphSelectorMainRow.querySelector('td');
-    siblings(firstTd).forEach(sibling => {
+    [...firstTd.parentElement.children].filter(s => s !== firstTd).forEach(sibling => {
       sibling.parentNode.removeChild(sibling);
     });
 
@@ -331,7 +331,7 @@ const MorphologySelector = () => {
 
     if (!partOfSpeech) return;
 
-    const tr = closest(selectedSpan, 'tr');
+    const tr = selectedSpan.closest('tr');
     for (const declension of partOfSpeech.declensions) {
       const th = createElements(`<th>${declension.declension}</th>`);
       const td = document.createElement('td');
@@ -382,7 +382,7 @@ const MorphologySelector = () => {
 
     if (partOfSpeechSpan) {
       partOfSpeechSpan.classList.add('selected');
-      siblings(partOfSpeechSpan).forEach(sibling => {
+      [...partOfSpeechSpan.parentElement.children].filter(s => s !== partOfSpeechSpan).forEach(sibling => {
         sibling.classList.remove('selected');
       });
 
@@ -410,19 +410,20 @@ const MorphologySelector = () => {
 
   drawPartsOfSpeech();
 
-  on(morphSelector, 'click', 'span', function() {
-    const selectedSpan = this;
+  morphSelector.addEventListener('click', (e) => {
+    const selectedSpan = e.target.closest('span');
+    if (!selectedSpan) return;
 
     if (selectedSpan.classList.contains('selected')) {
       selectedSpan.classList.remove('selected');
     } else {
       selectedSpan.classList.add('selected');
-      siblings(selectedSpan).forEach(sibling => {
+      [...selectedSpan.parentElement.children].filter(s => s !== selectedSpan).forEach(sibling => {
         sibling.classList.remove('selected');
       });
     }
 
-    const parentTd = closest(selectedSpan, 'td');
+    const parentTd = selectedSpan.closest('td');
     if (parentTd?.classList.contains('morph-pos')) {
       drawSelectedPartOfSpeech();
     }
@@ -430,7 +431,7 @@ const MorphologySelector = () => {
     let selector = '';
     let lastPartOfSpeechWithSelection = -1;
 
-    const tr = closest(selectedSpan, 'tr');
+    const tr = selectedSpan.closest('tr');
     const tds = tr.querySelectorAll('td');
     tds.forEach((td, index) => {
       const selectedDeclension = td.querySelector('span.selected');
@@ -534,7 +535,7 @@ export function VisualFilters(app) {
     `</div>`
   );
 
-  const filtersWindowBody = toElement(filtersWindow.body);
+  const filtersWindowBody = filtersWindow.body;
   filtersWindowBody.appendChild(visualNode);
 
   const morphSelector = MorphologySelector();
@@ -649,7 +650,7 @@ export function VisualFilters(app) {
     tbody.appendChild(row);
   });
 
-  const filtersWindowTitle = toElement(filtersWindow.title);
+  const filtersWindowTitle = filtersWindow.title;
   filtersWindowTitle.classList.add('i18n');
   filtersWindowTitle.setAttribute('data-i18n', '[html]plugins.visualfilters.title');
 
@@ -664,8 +665,10 @@ export function VisualFilters(app) {
     }
   });
 
-  on(tbody, 'click', '.visualfilters-remove', function() {
-    const tr = closest(this, 'tr');
+  tbody.addEventListener('click', (e) => {
+    const target = e.target.closest('.visualfilters-remove');
+    if (!target) return;
+    const tr = target.closest('tr');
     if (tr) {
       tr.parentNode.removeChild(tr);
     }
@@ -675,17 +678,23 @@ export function VisualFilters(app) {
   });
 
   // Handle changes on all filter inputs including new style controls
-  on(tbody, 'change', '.visualfilters-active input, .visualfilters-morph select, .visualfilters-strongs input, .visualfilters-morph input, .style-type, .style-color', function() {
-    saveTransforms();
-    VisualTransformer.resetTransforms(visualSettings);
+  tbody.addEventListener('change', (e) => {
+    const target = e.target.closest('.visualfilters-active input, .visualfilters-morph select, .visualfilters-strongs input, .visualfilters-morph input, .style-type, .style-color');
+    if (target) {
+      saveTransforms();
+      VisualTransformer.resetTransforms(visualSettings);
+    }
   });
 
-  on(tbody, 'keyup', '.visualfilters-strongs input, .visualfilters-morph input', function() {
-    saveTransforms();
-    VisualTransformer.resetTransforms(visualSettings);
+  tbody.addEventListener('keyup', (e) => {
+    const target = e.target.closest('.visualfilters-strongs input, .visualfilters-morph input');
+    if (target) {
+      saveTransforms();
+      VisualTransformer.resetTransforms(visualSettings);
+    }
   });
 
-  const filtersWindowContainer = toElement(filtersWindow.container);
+  const filtersWindowContainer = filtersWindow.container;
   const closeButton = filtersWindowContainer.querySelector('.close-button');
   if (closeButton) {
     closeButton.addEventListener('click', () => {
@@ -693,10 +702,10 @@ export function VisualFilters(app) {
     });
   }
 
-  on(filtersWindowBody, 'click', '.visualfilters-morph input', function(e) {
+  filtersWindowBody.addEventListener('click', (e) => {
+    const input = e.target.closest('.visualfilters-morph input');
+    if (!input) return;
     e.preventDefault();
-
-    const input = this;
 
     const morphSelectorVisible = morphSelector.style.display !== 'none';
     if (morphSelectorVisible && morphSelector.currentInput != null && morphSelector.currentInput === input) {
@@ -710,7 +719,7 @@ export function VisualFilters(app) {
     morphSelector.style.display = '';
 
     morphSelector.currentInput = input;
-    const selectSibling = siblings(input, 'select')[0];
+    const selectSibling = [...input.parentElement.children].filter(s => s !== input && s.matches('select'))[0];
     morphSelector.setMorphology(selectSibling?.value ?? '');
     morphSelector.updateMorphSelector(input.value);
 
@@ -735,7 +744,7 @@ export function VisualFilters(app) {
 
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload') {
-      const contentEl = toElement(e.data.content);
+      const contentEl = e.data.content;
       const lang = contentEl.getAttribute('lang');
 
       // Check if language starts with any of the valid prefixes

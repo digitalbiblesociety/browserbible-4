@@ -3,7 +3,7 @@
  * Font size slider control
  */
 
-import { createElements, qs } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -35,7 +35,7 @@ export function FontSizeSettings(_parentNode, _menu) {
     return;
   }
 
-  const body = qs('#config-type .config-body');
+  const body = document.querySelector('#config-type .config-body');
   const fontSizeKey = 'config-font-size';
   const defaultFontSizeSetting = { fontSize: fontSizeDefault };
   const fontSizeSetting = AppSettings.getValue(fontSizeKey, defaultFontSizeSetting);

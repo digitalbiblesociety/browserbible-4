@@ -4,7 +4,7 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements, offset, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 
 /**
@@ -56,8 +56,7 @@ export function InfoWindow(id = null) {
     return ext;
   }
 
-  function position(target) {
-    const targetEl = toElement(target);
+  function position(targetEl) {
     const tOffset = offset(targetEl);
     const tHeight = targetEl.offsetHeight;
     const infoWidth = container.offsetWidth;

@@ -3,7 +3,6 @@
  */
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
-import { toElement } from '../lib/helpers.esm.js';
 import { Reference } from '../bible/BibleReference.js';
 import { i18n } from '../lib/i18n.js';
 import { getApp } from '../core/registry.js';
@@ -266,7 +265,7 @@ export class StatisticsWindowComponent extends BaseWindow {
         temp.innerHTML = content;
         contentEl = temp;
       } else {
-        contentEl = toElement(content);
+        contentEl = content?.nodeType ? content : content?.[0];
       }
 
       const verses = contentEl.querySelectorAll('.verse, .v');

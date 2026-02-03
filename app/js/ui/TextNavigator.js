@@ -4,7 +4,7 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements, on, siblings, offset, slideDown, slideUp, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, offset, slideDown, slideUp, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 const hasTouch = 'ontouchend' in document;
 import { i18n } from '../lib/i18n.js';
@@ -39,7 +39,7 @@ export function TextNavigator() {
   const title = changer.querySelector('.text-navigator-title');
   const back = changer.querySelector('.text-navigator-back');
   const closeBtn = changer.querySelector('.text-navigator-close');
-  const fullname = createElements('<div class="text-navigator-fullname"></div>');
+  const fullname = Object.assign(document.createElement('div'), { className: 'text-navigator-fullname' });
 
   document.body.appendChild(changer);
 
@@ -57,23 +57,28 @@ export function TextNavigator() {
   fullname.style.display = 'none';
 
   if (!hasTouch) {
-    on(changer, 'mouseover', '.text-navigator-division', function() {
-      if (!fullBookMode) {
-        const node = this;
-        const name = node.getAttribute('data-name');
-        const nodeOffset = offset(node);
+    changer.addEventListener('mouseover', (e) => {
+      const node = e.target.closest('.text-navigator-division');
+      if (node) {
+        if (!fullBookMode) {
+          const name = node.getAttribute('data-name');
+          const nodeOffset = offset(node);
 
-        fullname.innerHTML = name;
-        fullname.style.backgroundColor = getComputedStyle(node).backgroundColor;
-        fullname.style.top = (nodeOffset.top - 1) + 'px';
-        fullname.style.left = nodeOffset.left + 'px';
-        fullname.style.display = '';
-        fullname.lastNode = node;
+          fullname.innerHTML = name;
+          fullname.style.backgroundColor = getComputedStyle(node).backgroundColor;
+          fullname.style.top = (nodeOffset.top - 1) + 'px';
+          fullname.style.left = nodeOffset.left + 'px';
+          fullname.style.display = '';
+          fullname.lastNode = node;
+        }
       }
     });
 
-    on(changer, 'mouseout', '.text-navigator-division', function() {
-      fullname.style.display = 'none';
+    changer.addEventListener('mouseout', (e) => {
+      const target = e.target.closest('.text-navigator-division');
+      if (target) {
+        fullname.style.display = 'none';
+      }
     });
   }
 
@@ -123,8 +128,7 @@ export function TextNavigator() {
       case 'deafbible':
       case 'videobible':
       case 'commentary':
-        const targetEl = toElement(target);
-        const textInputValue = targetEl?.value ?? '';
+        const textInputValue = target?.value ?? '';
         const biblereference = Reference(textInputValue);
         const fragmentid = biblereference ? biblereference.toSection() : null;
 
@@ -221,8 +225,9 @@ export function TextNavigator() {
   }
 
   // Click a division (Bible book)
-  on(changer, 'click', '.text-navigator-division', function() {
-    const divisionNode = this;
+  changer.addEventListener('click', (e) => {
+    const divisionNode = e.target.closest('.text-navigator-division');
+    if (!divisionNode) return;
 
     if (divisionNode.classList.contains('selected')) {
       const sectionsEl = divisionNode.querySelector('.text-navigator-sections');
@@ -237,7 +242,7 @@ export function TextNavigator() {
     }
 
     divisionNode.classList.add('selected');
-    siblings(divisionNode).forEach(sib => sib.classList.remove('selected'));
+    [...divisionNode.parentElement.children].filter(s => s !== divisionNode).forEach(sib => sib.classList.remove('selected'));
 
     fullname.style.display = 'none';
 
@@ -310,8 +315,10 @@ export function TextNavigator() {
     }
   }
 
-  on(changer, 'click', '.text-navigator-section', function() {
-    const el = this;
+  changer.addEventListener('click', (e) => {
+    const el = e.target.closest('.text-navigator-section');
+    if (!el) return;
+
     el.classList.add('selected');
     const sectionid = el.getAttribute('data-id');
 
@@ -321,13 +328,12 @@ export function TextNavigator() {
 
   function size(width, height) {
     if (isFull) {
-      const containerEl = toElement(container);
       if (!(width && height)) {
-        width = containerEl.offsetWidth;
-        height = containerEl.offsetHeight;
+        width = container.offsetWidth;
+        height = container.offsetHeight;
       }
 
-      const containerOffset = offset(containerEl);
+      const containerOffset = offset(container);
 
       changer.style.width = width + 'px';
       changer.style.height = height + 'px';
@@ -336,9 +342,8 @@ export function TextNavigator() {
     } else {
       if (target == null) return;
 
-      const targetEl = toElement(target);
-      const targetOffset = offset(targetEl);
-      const targetOuterHeight = targetEl.offsetHeight;
+      const targetOffset = offset(target);
+      const targetOuterHeight = target.offsetHeight;
       const top = targetOffset.top + targetOuterHeight + 10;
       const changerWidth = changer.offsetWidth;
       const winHeight = window.innerHeight - 40;

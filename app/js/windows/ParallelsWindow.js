@@ -3,7 +3,6 @@
  */
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
-import { on, closest, toElement } from '../lib/helpers.esm.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
 import { i18n } from '../lib/i18n.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
@@ -86,13 +85,22 @@ export class ParallelsWindowComponent extends BaseWindow {
     this.textChooser.on('change', this._textChooserHandler);
 
     // Delegated click handlers for parallels
-    on(this.refs.main, 'click', '.parallel-entry-header', (e) => {
+    this.refs.main.addEventListener('click', (e) => {
       const headerRow = e.target.closest('.parallel-entry-header');
-      this.handleHeaderRowClick(headerRow);
+      if (headerRow) {
+        this.handleHeaderRowClick(headerRow);
+      }
     });
 
-    on(this.refs.main, 'click', '.parallel-show-all', () => this.handleShowAll());
-    on(this.refs.main, 'click', '.parallel-hide-all', () => this.handleHideAll());
+    this.refs.main.addEventListener('click', (e) => {
+      const target = e.target.closest('.parallel-show-all');
+      if (target) this.handleShowAll();
+    });
+
+    this.refs.main.addEventListener('click', (e) => {
+      const target = e.target.closest('.parallel-hide-all');
+      if (target) this.handleHideAll();
+    });
   }
 
   async init() {
@@ -411,7 +419,7 @@ export class ParallelsWindowComponent extends BaseWindow {
       temp.innerHTML = content;
       contentEl = temp;
     } else {
-      contentEl = toElement(content);
+      contentEl = content;
     }
 
     contentEl.querySelectorAll('.cf,.note').forEach(el => {
@@ -439,7 +447,7 @@ export class ParallelsWindowComponent extends BaseWindow {
   }
 
   async processCell(cell, callback) {
-    closest(cell, 'tr')?.classList.remove('parallel-entry-text-collapsed');
+    cell.closest('tr')?.classList.remove('parallel-entry-text-collapsed');
 
     if (cell.classList.contains('parallel-text-loaded')) {
       callback?.();

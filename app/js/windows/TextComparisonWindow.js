@@ -9,7 +9,6 @@ import { loadTexts, getText, loadSection } from '../texts/TextLoader.js';
 import { diffWords } from '../lib/SimpleDiff.js';
 import { TextChooser } from '../ui/TextChooser.js';
 import { TextNavigator } from '../ui/TextNavigator.js';
-import { toElement } from '../lib/helpers.esm.js';
 
 const hasTouch = 'ontouchend' in document;
 
@@ -27,7 +26,7 @@ const hasVerses = (content, sectionId) => {
   if (typeof content === 'string') {
     tempDiv.innerHTML = content;
   } else {
-    const contentEl = toElement(content);
+    const contentEl = content?.nodeType ? content : content?.[0];
     if (!contentEl) return false;
     tempDiv.appendChild(contentEl.cloneNode(true));
   }
@@ -49,7 +48,7 @@ const extractPlainText = (content, verseId) => {
     temp.innerHTML = content;
     contentEl = temp;
   } else {
-    contentEl = toElement(content);
+    contentEl = content?.nodeType ? content : content?.[0];
   }
 
   const verseNodes = contentEl.querySelectorAll(`.${verseId}`);
@@ -337,9 +336,14 @@ export class TextComparisonWindow extends BaseWindow {
       const content = await loadSectionAsync(textInfo, sectionId);
 
       // Extract the actual section ID from the loaded content (may differ in padding)
-      const contentEl = typeof content === 'string'
-        ? (() => { const d = document.createElement('div'); d.innerHTML = content; return d; })()
-        : toElement(content);
+      let contentEl;
+      if (typeof content === 'string') {
+        const d = document.createElement('div');
+        d.innerHTML = content;
+        contentEl = d;
+      } else {
+        contentEl = content?.nodeType ? content : content?.[0];
+      }
       const actualSectionId = contentEl?.querySelector('.section')?.getAttribute('data-id') || sectionId;
 
       if (!hasVerses(content, actualSectionId)) {

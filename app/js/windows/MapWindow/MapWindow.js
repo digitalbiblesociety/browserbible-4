@@ -3,7 +3,7 @@
  */
 
 import { BaseWindow, registerWindowComponent } from '../BaseWindow.js';
-import { on, offset } from '../../lib/helpers.esm.js';
+import { offset } from '../../lib/helpers.esm.js';
 import { Reference } from '../../bible/BibleReference.js';
 import { fuzzySearchLocations } from './fuzzy-search.js';
 import { SVG_WIDTH, SVG_HEIGHT, COLLISION_DETECTION_ENABLED } from './constants.js';
@@ -249,8 +249,9 @@ export class MapWindowComponent extends BaseWindow {
       });
     });
 
-    on(this.refs.searchSuggestions, 'click', '.map-suggestion-item', (e) => {
+    this.refs.searchSuggestions.addEventListener('click', (e) => {
       const item = e.target.closest('.map-suggestion-item');
+      if (!item) return;
       const index = parseInt(item.getAttribute('data-index'), 10);
       if (this.state.currentSuggestions[index]) {
         this.openLocation(this.state.currentSuggestions[index]);
@@ -259,14 +260,16 @@ export class MapWindowComponent extends BaseWindow {
       }
     });
 
-    on(this.refs.searchSuggestions, 'mouseenter', '.map-suggestion-item', (e) => {
+    this.refs.searchSuggestions.addEventListener('mouseenter', (e) => {
       const item = e.target.closest('.map-suggestion-item');
+      if (!item) return;
       const index = parseInt(item.getAttribute('data-index'), 10);
       this.selectSuggestion(index);
-    });
+    }, true);
 
-    on(this.refs.mapContainer, 'click', '.verse, .v', (e) => {
+    this.refs.mapContainer.addEventListener('click', (e) => {
       const link = e.target.closest('.verse, .v');
+      if (!link) return;
       const sectionid = link.getAttribute('data-sectionid');
       const fragmentid = link.getAttribute('data-fragmentid');
 

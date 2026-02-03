@@ -4,8 +4,6 @@
  */
 
 import { getConfig } from '../core/config.js';
-import { toElement } from '../lib/helpers.esm.js';
-import { closest } from '../lib/helpers.esm.js';
 import { TextSearch } from './Search.js';
 
 const providerName = 'local';
@@ -29,7 +27,7 @@ export function getTextManifest(callback) {
 
       if (typeof window !== 'undefined' && window.MovableWindow) {
         const modal = new window.MovableWindow(600, 250, 'Texts Error');
-        const bodyEl = toElement(modal.body);
+        const bodyEl = modal.body?.nodeType ? modal.body : modal.body?.[0];
         bodyEl.style.background = '#000';
         bodyEl.style.color = '#fff';
         bodyEl.innerHTML = `
@@ -113,7 +111,7 @@ export function loadSection(textid, sectionid, callback, errorCallback) {
           }
 
           for (const vnum of content.querySelectorAll('.v-num')) {
-            const v = closest(vnum, '.v');
+            const v = vnum.closest('.v');
             if (v) {
               v.parentNode.insertBefore(vnum, v);
             }

@@ -3,7 +3,7 @@
  * Shows morphology info on hover over lemma elements
  */
 
-import { on, closest, offset, createElements } from '../lib/helpers.esm.js';
+import { offset } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 const hasTouch = 'ontouchend' in document;
 import { morphology } from '../bible/Morphology.js';
@@ -20,7 +20,7 @@ export const LemmaInfoPlugin = (app) => {
     return {};
   }
 
-  const lemmaInfo = createElements('<div class="lemma-info"></div>');
+  const lemmaInfo = Object.assign(document.createElement('div'), { className: 'lemma-info' });
   document.body.appendChild(lemmaInfo);
   lemmaInfo.style.display = 'none';
 
@@ -28,12 +28,13 @@ export const LemmaInfoPlugin = (app) => {
     const windowsMain = document.querySelector('.windows-main');
 
     if (windowsMain) {
-      on(windowsMain, 'mouseover', '.BibleWindow l', function(e) {
-        const l = this;
+      windowsMain.addEventListener('mouseover', (e) => {
+        const l = e.target.closest('.BibleWindow l');
+        if (!l) return;
         const morph = l.getAttribute('m');
-        const main = closest(l, '.scroller-main');
+        const main = l.closest('.scroller-main');
         const mainOffset = main ? offset(main) : { left: 0, top: 0 };
-        const section = closest(l, '.section');
+        const section = l.closest('.section');
         const lang = section?.getAttribute('lang') ?? '';
 
         let morphologyType = '';
@@ -55,8 +56,11 @@ export const LemmaInfoPlugin = (app) => {
         }
       });
 
-      on(windowsMain, 'mouseout', 'l', function(e) {
-        lemmaInfo.style.display = 'none';
+      windowsMain.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('l');
+        if (target) {
+          lemmaInfo.style.display = 'none';
+        }
       });
     }
   }

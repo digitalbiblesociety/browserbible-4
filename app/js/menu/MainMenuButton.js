@@ -4,7 +4,7 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements, deepMerge, on, toElement } from '../lib/helpers.esm.js';
+import { createElements, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 
 /**
@@ -14,8 +14,8 @@ import { EventEmitterMixin } from '../common/EventEmitter.js';
  * @returns {Object} Component API
  */
 export function MainMenuButton(parentNode, _menu) {
-  const mainMenuLogo = createElements('<div id="app-logo"></div>');
-  const mainMenuButton = createElements('<div id="main-menu-button"></div>');
+  const mainMenuLogo = Object.assign(document.createElement('div'), { id: 'app-logo' });
+  const mainMenuButton = Object.assign(document.createElement('div'), { id: 'main-menu-button' });
   const mainMenuDropDown = createElements(`<div id="main-menu-dropdown" popover>
     <div class="main-menu-heading i18n" data-i18n="[html]menu.labels.addwindow">Add Window</div>
     <div id="main-menu-windows-list" class="main-menu-list"></div>
@@ -25,11 +25,8 @@ export function MainMenuButton(parentNode, _menu) {
 
   // Append elements
   if (parentNode) {
-    const nodeEl = toElement(parentNode);
-    if (nodeEl) {
-      nodeEl.appendChild(mainMenuLogo);
-      nodeEl.appendChild(mainMenuButton);
-    }
+    parentNode.appendChild(mainMenuLogo);
+    parentNode.appendChild(mainMenuButton);
   }
   document.body.appendChild(mainMenuDropDown);
 
@@ -60,8 +57,9 @@ export function MainMenuButton(parentNode, _menu) {
 
   mainMenuButton.addEventListener('click', mainMenuClick, false);
 
-  on(mainMenuDropDown, 'click', '.main-menu-item', () => {
-    hide();
+  mainMenuDropDown.addEventListener('click', (e) => {
+    const target = e.target.closest('.main-menu-item');
+    if (target) hide();
   });
 
   let ext = {};

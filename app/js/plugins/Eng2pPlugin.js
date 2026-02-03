@@ -5,7 +5,7 @@
  * @author John Dyer (http://j.hn/)
  */
 
-import { closest, createElements, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
@@ -21,7 +21,7 @@ const eng2p = {
   youPluralReflexive: "Y'allselves",
 
   removePluralTransforms(node) {
-    const nodeEl = toElement(node);
+    const nodeEl = node;
 
     // remove the changed words
     nodeEl.querySelectorAll('.eng2p-corrected').forEach((el) => {
@@ -246,7 +246,7 @@ export const Eng2pPlugin = (app) => {
     </table>
   </div>`);
 
-  const engWindowBody = toElement(engWindow.body);
+  const engWindowBody = engWindow.body;
   engWindowBody.appendChild(configBlock);
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
@@ -256,7 +256,7 @@ export const Eng2pPlugin = (app) => {
     configToolsBody.appendChild(button);
   }
 
-  const engWindowTitle = toElement(engWindow.title);
+  const engWindowTitle = engWindow.title;
   engWindowTitle.classList.add('i18n');
   engWindowTitle.setAttribute('data-i18n', '[html]plugins.eng2p.title');
 
@@ -289,14 +289,14 @@ export const Eng2pPlugin = (app) => {
 
   if (params['eng2pshow'] !== undefined || config.eng2pShowWindowAtStartup === true) {
     engWindow.show();
-    const engWindowContainer = toElement(engWindow.container);
+    const engWindowContainer = engWindow.container;
     engWindowContainer.style.left = `${window.innerWidth - engWindowContainer.offsetWidth - 10}px`;
   }
 
   // Define helper functions before they are used
   const getPluralValues = () => {
     const selectedOption = document.getElementById(`eng2p-option-${eng2pSetting.eng2p}`);
-    const selectedRow = selectedOption ? closest(selectedOption, 'tr') : null;
+    const selectedRow = selectedOption ? selectedOption.closest('tr') : null;
 
     if (selectedRow) {
       const tds = selectedRow.querySelectorAll('td');
@@ -312,7 +312,7 @@ export const Eng2pPlugin = (app) => {
   };
 
   const runPluralTransforms = (node) => {
-    const nodeEl = toElement(node);
+    const nodeEl = node;
     nodeEl.querySelectorAll('.verse, .v').forEach((verse) => {
       const verseid = verse.getAttribute('data-id');
 
@@ -374,7 +374,7 @@ export const Eng2pPlugin = (app) => {
 
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload' && e.data.type === 'bible') {
-      const contentEl = toElement(e.data.content);
+      const contentEl = e.data.content;
       if (!contentEl || eng2pSetting.eng2p === 'none') return;
 
       // Helper to check if a lang attribute indicates English

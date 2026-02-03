@@ -3,7 +3,6 @@
  * Central configuration management
  */
 
-import { extend } from '../lib/helpers.esm.js';
 
 const defaultConfig = {
   // Change this to clear all user settings
@@ -124,7 +123,7 @@ let config = { ...defaultConfig };
 export const getConfig = () => config;
 
 export const updateConfig = (newConfig) => {
-  config = extend({}, config, newConfig);
+  config = Object.assign({}, config, newConfig);
   return config;
 };
 

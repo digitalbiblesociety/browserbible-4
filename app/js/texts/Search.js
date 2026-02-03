@@ -4,7 +4,6 @@
  */
 
 import { getConfig } from '../core/config.js';
-import { toElement } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
 import { loadSection, getText } from './TextLoader.js';
@@ -559,7 +558,9 @@ export class TextSearch {
       });
 
       loadSection(this.textInfo, sectionid, (content) => {
-        const contentEl = toElement(content);
+        const temp = document.createElement('div');
+        temp.innerHTML = content;
+        const contentEl = temp;
 
         for (const fragmentid of fragmentids) {
           const fragmentNodes = contentEl.querySelectorAll(`.${fragmentid}`);

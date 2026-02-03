@@ -3,7 +3,7 @@
  * Feedback form dialog
  */
 
-import { createElements, qs, toElement } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
@@ -21,10 +21,10 @@ export function Feedback(_parentNode, _menu) {
     return;
   }
 
-  const container = qs('.windows-container');
+  const container = document.querySelector('.windows-container');
   const feedbackButton = createElements('<div class="main-menu-item feedback-logo i18n" data-i18n="[html]menu.labels.feedback">Feedback</div>');
-  const mainMenuFeatures = qs('#main-menu-features');
-  const modalOverlay = createElements('<div class="modal-overlay"></div>');
+  const mainMenuFeatures = document.querySelector('#main-menu-features');
+  const modalOverlay = Object.assign(document.createElement('div'), { className: 'modal-overlay' });
   const feedbackWindow = new MovableWindow(Math.min(window.innerWidth, 500), 300, i18n.t('menu.labels.feedback'));
 
   mainMenuFeatures?.appendChild(feedbackButton);
@@ -32,7 +32,7 @@ export function Feedback(_parentNode, _menu) {
   document.body.appendChild(modalOverlay);
   modalOverlay.style.display = 'none';
 
-  const feedbackBody = toElement(feedbackWindow.body);
+  const feedbackBody = feedbackWindow.body;
 
   const name = createElements('<input type="text" id="feedback-from" class="app-input i18n" data-i18n="[placeholder]menu.feedback.name" />');
   feedbackBody.appendChild(name);
@@ -58,7 +58,7 @@ export function Feedback(_parentNode, _menu) {
   message.style.display = 'none';
 
   feedbackBody.classList.add('feedback-body');
-  const feedbackTitle = toElement(feedbackWindow.title);
+  const feedbackTitle = feedbackWindow.title;
   feedbackTitle.classList.add('i18n');
   feedbackTitle.setAttribute('data-i18n', '[html]menu.labels.feedback');
 
@@ -97,7 +97,7 @@ export function Feedback(_parentNode, _menu) {
   };
 
   const clickFeedback = () => {
-    const feedbackContainer = toElement(feedbackWindow.container);
+    const feedbackContainer = feedbackWindow.container;
     if (feedbackContainer.style.display !== 'none' && feedbackContainer.offsetParent !== null) {
       hideFeedback();
     } else {
@@ -110,7 +110,7 @@ export function Feedback(_parentNode, _menu) {
         el.style.display = '';
       });
 
-      const mainMenuDropdown = qs('#main-menu-dropdown');
+      const mainMenuDropdown = document.querySelector('#main-menu-dropdown');
       if (mainMenuDropdown) mainMenuDropdown.style.display = 'none';
 
       const winWidth = window.innerWidth;
@@ -127,7 +127,7 @@ export function Feedback(_parentNode, _menu) {
     hideFeedback();
   }, false);
 
-  const closeBtn = toElement(feedbackWindow.closeButton);
+  const closeBtn = feedbackWindow.closeButton;
   closeBtn.addEventListener('click', () => {
     hideFeedback();
   }, false);

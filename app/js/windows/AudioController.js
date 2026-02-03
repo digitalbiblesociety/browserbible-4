@@ -3,7 +3,7 @@
  * Controls audio playback synchronized with text scrolling
  */
 
-import { createElements, offset, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -18,7 +18,7 @@ import { AudioDataManager } from '../media/AudioDataManager.js';
  * @returns {Object} AudioController API
  */
 export function AudioController(id, container, toggleButton, scroller) {
-  const containerEl = toElement(container);
+  const containerEl = container?.nodeType ? container : container?.[0];
 
   let block = createElements(
     `<div class="audio-controller">
@@ -92,7 +92,7 @@ export function AudioController(id, container, toggleButton, scroller) {
 
   i18n.translatePage(options);
 
-  const toggleButtonEl = toElement(toggleButton);
+  const toggleButtonEl = toggleButton?.nodeType ? toggleButton : toggleButton?.[0];
 
   if (toggleButtonEl != null) {
     toggleButtonEl.style.display = 'none';

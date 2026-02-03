@@ -3,7 +3,7 @@
  * Font family selector
  */
 
-import { createElements, on, qs } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -19,7 +19,7 @@ const toSlug = (str) => str.replace(/\s+/g, '-').toLowerCase();
 export function FontFamilySettings(_parentNode, _menu) {
   const config = getConfig();
 
-  const body = qs('#config-type .config-body');
+  const body = document.querySelector('#config-type .config-body');
   const fontFamilyStacks = config.fontFamilyStacks ?? {};
   const fontFamilyStackNames = Object.keys(fontFamilyStacks);
   const defaultFontSetting = { fontName: fontFamilyStackNames[0] };
@@ -75,14 +75,17 @@ export function FontFamilySettings(_parentNode, _menu) {
 
   // handle clicks using event delegation
   if (body) {
-    on(body, 'change', 'input[name=config-font-family]', function() {
-      const newFontFamilyValue = this.value;
-      setFontFamily(newFontFamilyValue);
+    body.addEventListener('change', (e) => {
+      const target = e.target.closest('input[name=config-font-family]');
+      if (target) {
+        const newFontFamilyValue = target.value;
+        setFontFamily(newFontFamilyValue);
+      }
     });
   }
 
   // set default
-  const defaultRadio = body ? qs(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`, body) : null;
+  const defaultRadio = body ? body.querySelector(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`) : null;
   defaultRadio?.click();
 }
 

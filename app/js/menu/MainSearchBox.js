@@ -3,7 +3,7 @@
  * Top search input for Bible references and text search
  */
 
-import { createElements, toElement } from '../lib/helpers.esm.js';
+import { createElements } from '../lib/helpers.esm.js';
 import { Reference } from '../bible/BibleReference.js';
 import { getApp } from '../core/registry.js';
 import { getConfig } from '../core/config.js';
@@ -48,9 +48,8 @@ export function MainSearchBox(parentNode, _menu) {
 
   // Append to node
   if (parentNode) {
-    const nodeEl = toElement(parentNode);
-    nodeEl?.appendChild(searchBox);
-    nodeEl?.appendChild(suggestions);
+    parentNode.appendChild(searchBox);
+    parentNode.appendChild(suggestions);
   }
 
   const searchInput = searchBox.querySelector('#main-search-input');

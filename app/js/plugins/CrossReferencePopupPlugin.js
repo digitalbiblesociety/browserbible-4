@@ -3,7 +3,7 @@
  * Shows popup with Bible reference content on hover/click
  */
 
-import { on, closest, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 const hasTouch = 'ontouchend' in document;
@@ -30,12 +30,11 @@ export const CrossReferencePopupPlugin = (app) => {
 
   const referencePopup = InfoWindow('CrossReferencePopup');
 
-  const containerEl = toElement(referencePopup.container);
+  const containerEl = referencePopup.container;
   containerEl.style.zIndex = '1000';
 
   const getFragmentidFromNode = (node) => {
-    const el = toElement(node);
-    const possibleTexts = [el.getAttribute('data-id'), el.getAttribute('title'), el.innerHTML];
+    const possibleTexts = [node.getAttribute('data-id'), node.getAttribute('title'), node.innerHTML];
     let fragmentid = null;
 
     for (const text of possibleTexts) {
@@ -89,7 +88,7 @@ export const CrossReferencePopupPlugin = (app) => {
       const sectionid = fragmentid.split('_')[0];
 
       if (typeof textid === 'undefined') {
-        const section = closest(link, '.section');
+        const section = link.closest('.section');
         if (section?.classList.contains('commentary')) {
           const firstBibleSection = document.querySelector('.BibleWindow .section');
           textid = firstBibleSection?.getAttribute('data-textid') ?? '';
@@ -110,7 +109,7 @@ export const CrossReferencePopupPlugin = (app) => {
               temp.innerHTML = contentNode;
               contentEl = temp;
             } else {
-              contentEl = toElement(contentNode);
+              contentEl = contentNode;
             }
 
             const verseEls = contentEl.querySelectorAll(`.${fragmentid}`);
@@ -125,8 +124,7 @@ export const CrossReferencePopupPlugin = (app) => {
               html += verse.innerHTML;
             }
 
-            const bodyEl = toElement(referencePopup.body);
-            bodyEl.innerHTML = html;
+            referencePopup.body.innerHTML = html;
             referencePopup.show();
             referencePopup.position(link);
           });
@@ -142,11 +140,20 @@ export const CrossReferencePopupPlugin = (app) => {
   // Set up event listeners
   const windowsMain = document.querySelector('.windows-main');
   if (windowsMain) {
-    on(windowsMain, 'click', '.bibleref, .xt', handleBibleRefClick);
+    windowsMain.addEventListener('click', (e) => {
+      const target = e.target.closest('.bibleref, .xt');
+      if (target) handleBibleRefClick.call(target, e);
+    });
 
     if (!hasTouch) {
-      on(windowsMain, 'mouseover', '.bibleref, .xt', handleBibleRefMouseover);
-      on(windowsMain, 'mouseout', '.bibleref, .xt', handleBibleRefMouseout);
+      windowsMain.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('.bibleref, .xt');
+        if (target) handleBibleRefMouseover.call(target, e);
+      });
+      windowsMain.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('.bibleref, .xt');
+        if (target) handleBibleRefMouseout.call(target, e);
+      });
     }
   }
 

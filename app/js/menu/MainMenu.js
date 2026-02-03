@@ -3,7 +3,6 @@
  * Main application menu
  */
 
-import helpers from '../lib/helpers.esm.js';
 import { getAllMenuComponents } from '../core/registry.js';
 
 export class MainMenu {
@@ -12,11 +11,11 @@ export class MainMenu {
     this.components = [];
 
     // Create logo
-    const logo = helpers.createElements('<div id="app-logo"></div>');
+    const logo = Object.assign(document.createElement('div'), { id: 'app-logo' });
     this.node.appendChild(logo);
 
     // Create menu container
-    this.menuContainer = helpers.createElements('<div class="main-menu-container"></div>');
+    this.menuContainer = Object.assign(document.createElement('div'), { className: 'main-menu-container' });
     this.node.appendChild(this.menuContainer);
 
     // Initialize all registered menu components

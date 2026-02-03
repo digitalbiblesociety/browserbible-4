@@ -37,35 +37,6 @@ export function NavigationButtons() {
   const back = () => TextNavigation.back();
   const forward = () => TextNavigation.forward();
 
-  let compactTimer = null;
-
-  const fadeOut = (el) => {
-    el.style.transition = 'opacity 0.3s';
-    el.style.opacity = '0';
-    setTimeout(() => {
-      el.style.display = 'none';
-      el.style.opacity = '';
-      el.style.transition = '';
-    }, 300);
-  };
-
-  const hideCompactTimer = () => {
-    if (compactBackButton.style.display !== 'none') {
-      fadeOut(compactBackButton);
-    }
-  };
-
-  const clearCompactTimer = () => {
-    if (compactTimer !== null) {
-      clearTimeout(compactTimer);
-    }
-  };
-
-  const startCompactTimer = () => {
-    clearCompactTimer();
-    compactTimer = setTimeout(hideCompactTimer, 5000);
-  };
-
   const updateButtonStates = () => {
     const locations = TextNavigation.getLocations();
     const locationIndex = TextNavigation.getLocationIndex();
@@ -77,11 +48,6 @@ export function NavigationButtons() {
       compactLabel.innerHTML = lastRef.toString();
 
       compactBackButton.classList.add('active');
-      compactBackButton.style.display = '';
-
-      if (d.body.classList.contains('compact-ui')) {
-        startCompactTimer();
-      }
     } else {
       backButton.classList.add('inactive');
       compactBackButton.classList.remove('active');

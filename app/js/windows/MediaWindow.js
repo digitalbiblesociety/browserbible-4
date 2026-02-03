@@ -3,7 +3,6 @@
  */
 
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
-import { closest, toElement } from '../lib/helpers.esm.js';
 import { Reference } from '../bible/BibleReference.js';
 import { i18n } from '../lib/i18n.js';
 import { getApp } from '../core/registry.js';
@@ -287,7 +286,7 @@ export class MediaWindowComponent extends BaseWindow {
       return;
     }
 
-    const contentEl = toElement(this.contentToProcess);
+    const contentEl = this.contentToProcess;
     const sectionid = contentEl.getAttribute('data-id');
 
     if (this.state.currentSectionId === sectionid) {
@@ -328,7 +327,7 @@ export class MediaWindowComponent extends BaseWindow {
       const verseid = verse.getAttribute('data-id');
       const reference = new Reference(verseid);
 
-      const chapter = closest(verse, '.chapter');
+      const chapter = verse.closest('.chapter');
       if (chapter) {
         verse = chapter.querySelector(`.${verseid}`) ?? verse;
       }
@@ -464,7 +463,7 @@ export class MediaWindowComponent extends BaseWindow {
     let currentRow = [];
 
     gallery.querySelectorAll('img').forEach((img) => {
-      const a = closest(img, 'a');
+      const a = img.closest('a');
       let width = img.getAttribute('data-original-width');
       let height = img.getAttribute('data-original-height');
 

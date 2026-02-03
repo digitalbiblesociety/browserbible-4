@@ -10,7 +10,6 @@ import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
 import { getText, loadTexts } from '../texts/TextLoader.js';
 import { TextNavigation } from '../common/Navigation.js';
-import { toElement } from '../lib/helpers.esm.js';
 
 export { registerWindowComponent } from './BaseWindow.js';
 
@@ -210,6 +209,10 @@ export class TextWindowComponent extends BaseWindow {
       }
     }
 
+    // Position the info panel relative to this window (popover is in top layer)
+    const containerLeft = this.refs.container.getBoundingClientRect().left;
+    this.refs.info.style.left = `${containerLeft}px`;
+
     this.refs.info.showPopover();
   }
 
@@ -267,13 +270,15 @@ export class TextWindowComponent extends BaseWindow {
   }
 
   handleTextNavigatorChange(e) {
-    if (toElement(e.data.target) !== this.refs.navui) return;
+    const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
+    if (target !== this.refs.navui) return;
     TextNavigation.locationChange(e.data.sectionid);
     this.scroller.load('text', e.data.sectionid);
   }
 
   handleTextChooserChange(e) {
-    if (toElement(e.data.target) !== this.refs.textlistui) return;
+    const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
+    if (target !== this.refs.textlistui) return;
 
     const newTextInfo = e.data.textInfo;
 
@@ -403,7 +408,9 @@ export class TextWindowComponent extends BaseWindow {
     this.refs.main.style.width = `${width}px`;
     this.refs.main.style.height = `${contentHeight}px`;
 
+    const containerLeft = this.refs.container.getBoundingClientRect().left;
     this.refs.info.style.top = `${headerHeight + 10}px`;
+    this.refs.info.style.left = `${containerLeft}px`;
     this.refs.info.style.width = `${width}px`;
     this.refs.info.style.height = `${contentHeight - 10}px`;
 

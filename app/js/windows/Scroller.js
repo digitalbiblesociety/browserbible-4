@@ -3,7 +3,7 @@
  * Handles infinite scrolling of Bible text with chapter loading
  */
 
-import { createElements, offset, closest, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -48,7 +48,7 @@ const isFirstFragmentVisible = (fragment, topOfContentArea) => {
 
 const createLocationInfo = (fragment, currentTextInfo, topOfContentArea) => {
   const fragmentid = fragment.getAttribute('data-id');
-  const closestSection = closest(fragment, '.section');
+  const closestSection = fragment.closest('.section');
 
   // Core location data needed for sync
   const info = {
@@ -103,7 +103,7 @@ const createLocationInfo = (fragment, currentTextInfo, topOfContentArea) => {
 };
 
 export function Scroller(node) {
-  const nodeEl = toElement(node);
+  const nodeEl = node?.nodeType ? node : node?.[0];
   const wrapper = nodeEl.querySelector('.scroller-text-wrapper');
 
   let currentTextInfo = null;
@@ -302,7 +302,7 @@ export function Scroller(node) {
   };
 
   const insertContent = (loadType, content, nodeScrolltopBefore, wrapperHeightBefore) => {
-    const contentEl = typeof content === 'string' ? null : toElement(content);
+    const contentEl = typeof content === 'string' ? null : (content?.nodeType ? content : content?.[0]);
 
     switch (loadType) {
       case 'text':

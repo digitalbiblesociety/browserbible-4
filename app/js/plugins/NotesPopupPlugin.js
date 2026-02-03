@@ -3,7 +3,7 @@
  * Shows popup with footnotes and notes content
  */
 
-import { on, closest, deepMerge, toElement } from '../lib/helpers.esm.js';
+import { deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 const hasTouch = 'ontouchend' in document;
@@ -28,67 +28,75 @@ export const NotesPopupPlugin = (app) => {
 
   const notesPopup = InfoWindow('NotesPopup');
 
-  const notesPopupBody = toElement(notesPopup.body);
+  const notesPopupBody = notesPopup.body;
 
   // Handle clicks on bible refs within notes
-  on(notesPopupBody, 'click', '.bibleref, .xt', function(e) {
-    const handler = getBibleRefClickHandler();
-    if (handler) {
-      handler.call(this, e);
+  notesPopupBody.addEventListener('click', (e) => {
+    const target = e.target.closest('.bibleref, .xt');
+    if (target) {
+      const handler = getBibleRefClickHandler();
+      if (handler) {
+        handler.call(target, e);
+      }
+      notesPopup.hide();
     }
-    notesPopup.hide();
   });
 
   if (!hasTouch) {
-    on(notesPopupBody, 'mouseover', '.bibleref, .xt', function(e) {
-      const section = closest(notesPopup.currentWord, '.section');
-      const textid = section?.getAttribute('data-textid') ?? '';
-      const handler = getBibleRefMouseoverHandler();
-      if (handler) {
-        handler.call(this, e, textid);
+    notesPopupBody.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('.bibleref, .xt');
+      if (target) {
+        const section = notesPopup.currentWord?.closest('.section');
+        const textid = section?.getAttribute('data-textid') ?? '';
+        const handler = getBibleRefMouseoverHandler();
+        if (handler) {
+          handler.call(target, e, textid);
+        }
       }
     });
 
-    on(notesPopupBody, 'mouseout', '.bibleref, .xt', function(e) {
-      const handler = getBibleRefMouseoutHandler();
-      if (handler) {
-        handler.call(this, e);
+    notesPopupBody.addEventListener('mouseout', (e) => {
+      const target = e.target.closest('.bibleref, .xt');
+      if (target) {
+        const handler = getBibleRefMouseoutHandler();
+        if (handler) {
+          handler.call(target, e);
+        }
       }
     });
   }
 
   const windowsMain = document.querySelector('.windows-main');
   if (windowsMain) {
-    on(windowsMain, 'click', '.note .key, .cf .key', function(e) {
-      e.preventDefault();
+    windowsMain.addEventListener('click', (e) => {
+      const key = e.target.closest('.note .key, .cf .key');
+      if (key) {
+        e.preventDefault();
 
-      const key = this;
+        const containerEl = notesPopup.container;
 
-      const containerEl = toElement(notesPopup.container);
+        // hide if second click
+        if (containerEl.style.display !== 'none' && notesPopup.currentWord === key) {
+          notesPopup.hide();
+          notesPopup.currentWord = null;
+          return;
+        }
+        notesPopup.currentWord = key;
 
-      // hide if second click
-      if (containerEl.style.display !== 'none' && notesPopup.currentWord === key) {
-        notesPopup.hide();
-        notesPopup.currentWord = null;
-        return;
+        // clone and attach content
+        const parent = key.parentNode;
+        const textEl = parent.querySelector('.text');
+        const content = textEl?.cloneNode(true) ?? null;
+
+        notesPopupBody.innerHTML = '';
+        if (content) {
+          notesPopupBody.appendChild(content);
+        }
+
+        // show popup
+        notesPopup.show();
+        notesPopup.position(key);
       }
-      notesPopup.currentWord = key;
-
-      // clone and attach content
-      const parent = key.parentNode;
-      const textEl = parent.querySelector('.text');
-      const content = textEl?.cloneNode(true) ?? null;
-
-      notesPopupBody.innerHTML = '';
-      if (content) {
-        notesPopupBody.appendChild(content);
-      }
-
-      // show popup
-      notesPopup.show();
-      notesPopup.position(key);
-
-      return false;
     });
   }
 
