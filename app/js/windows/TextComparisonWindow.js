@@ -336,12 +336,18 @@ export class TextComparisonWindow extends BaseWindow {
       const textInfo = await getTextAsync(textId);
       const content = await loadSectionAsync(textInfo, sectionId);
 
-      if (!hasVerses(content, sectionId)) {
-        console.log(`${textInfo.abbr} doesn't contain ${sectionId}`);
+      // Extract the actual section ID from the loaded content (may differ in padding)
+      const contentEl = typeof content === 'string'
+        ? (() => { const d = document.createElement('div'); d.innerHTML = content; return d; })()
+        : toElement(content);
+      const actualSectionId = contentEl?.querySelector('.section')?.getAttribute('data-id') || sectionId;
+
+      if (!hasVerses(content, actualSectionId)) {
+        console.log(`${textInfo.abbr} doesn't contain ${actualSectionId}`);
         return null;
       }
 
-      return { textInfo, content };
+      return { textInfo, content, sectionId: actualSectionId };
     } catch (err) {
       console.error(`Failed to load ${textId}:`, err);
       return null;
@@ -350,7 +356,6 @@ export class TextComparisonWindow extends BaseWindow {
 
   renderComparison(textData) {
     const reference = this.state.currentReference;
-    const sectionId = this.state.currentSectionId;
 
     let html = '<table class="comparison-table section"><thead><tr><th></th>';
     for (const { textInfo } of textData) {
@@ -359,17 +364,19 @@ export class TextComparisonWindow extends BaseWindow {
     html += '</tr></thead><tbody>';
 
     const startVerse = reference.verse1 > 0 ? reference.verse1 : 1;
-    const endVerse = reference.verse2 > 0 ? reference.verse2 : BOOK_DATA[reference.bookid].chapters[reference.chapter];
+    const endVerse = reference.verse2 > 0 ? reference.verse2 : BOOK_DATA[reference.bookid].chapters[reference.chapter1 - 1];
 
     for (let verse = startVerse; verse <= endVerse; verse++) {
-      const verseId = `${sectionId}_${verse}`;
-      const baseText = extractPlainText(textData[0].content, verseId);
+      // Use each text's actual section ID for verse lookup (handles different padding formats)
+      const baseVerseId = `${textData[0].sectionId}_${verse}`;
+      const baseText = extractPlainText(textData[0].content, baseVerseId);
 
       html += `<tr><th>${verse}</th>`;
       html += `<td class="reading-text" style="width:${100 / textData.length}%">${baseText}</td>`;
 
       for (let i = 1; i < textData.length; i++) {
-        const comparisonText = extractPlainText(textData[i].content, verseId);
+        const compVerseId = `${textData[i].sectionId}_${verse}`;
+        const comparisonText = extractPlainText(textData[i].content, compVerseId);
         const diffHtml = generateDiffHtml(baseText, comparisonText);
         html += `<td class="reading-text" style="width:${100 / textData.length}%">${diffHtml}</td>`;
       }

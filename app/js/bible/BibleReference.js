@@ -137,9 +137,8 @@ export function Reference(...args) {
 
       toSection() {
         if (this.bookid == null) return 'invalid';
-        const pad = (n, width) => String(n).padStart(width, '0');
-        const versePart = this.verse1 > 0 ? `_${pad(this.verse1, 3)}` : '';
-        return `${this.bookid}${pad(this.chapter1, 3)}${versePart}`;
+        const versePart = this.verse1 > 0 ? `_${this.verse1}` : '';
+        return `${this.bookid}${this.chapter1}${versePart}`;
       },
 
       toString() {

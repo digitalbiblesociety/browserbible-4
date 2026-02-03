@@ -47,8 +47,23 @@ export function loadSection(textInfo, sectionid, successCallback, errorCallback)
   } else {
     textid = textInfo.id;
 
-    if (textInfo.sections?.length > 0 && textInfo.sections.indexOf(sectionid) == -1) {
-      sectionid = textInfo.sections[0];
+    // If the exact section doesn't exist, try to find a matching section
+    if (textInfo.sections?.length > 0 && textInfo.sections.indexOf(sectionid) === -1) {
+      const bookPrefix = sectionid.substring(0, 2);
+      const chapterNum = parseInt(sectionid.substring(2), 10);
+
+      // Try to find the exact chapter with different padding formats
+      const matchingSection = textInfo.sections.find(s => {
+        if (!s.startsWith(bookPrefix)) return false;
+        const sectionChapter = parseInt(s.substring(2), 10);
+        return sectionChapter === chapterNum;
+      });
+
+      if (matchingSection) {
+        sectionid = matchingSection;
+      }
+      // If book/chapter doesn't exist in this text, keep the original sectionid
+      // and let the provider handle it (or fail gracefully)
     }
   }
 

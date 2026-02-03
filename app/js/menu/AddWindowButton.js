@@ -3,10 +3,12 @@
  * Buttons to add new windows
  */
 
-import { createElements, on, data, qs } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { getAllWindowTypes, getApp } from '../core/registry.js';
 import { PlaceKeeper } from '../common/Navigation.js';
+
+// Store init data for buttons
+const buttonData = new WeakMap();
 
 /**
  * Create add window buttons
@@ -16,9 +18,7 @@ import { PlaceKeeper } from '../common/Navigation.js';
  */
 export function AddWindowButton(_parentNode, _menu) {
   const config = getConfig();
-  const buttonMenu = qs('#main-menu-windows-list');
-
-  // create window buttons from window Types
+  const buttonMenu = document.querySelector('#main-menu-windows-list');
   const windowTools = [];
   const windowTypes = getAllWindowTypes();
 
@@ -37,7 +37,6 @@ export function AddWindowButton(_parentNode, _menu) {
       }
     }
   } else {
-    // build default array
     for (const winType of windowTypes) {
       windowTools.push({
         type: winType.className,
@@ -47,32 +46,34 @@ export function AddWindowButton(_parentNode, _menu) {
     }
   }
 
-  // add buttons
   let addButton;
   for (const tool of windowTools) {
-    // ADD Button
-    addButton = createElements(`<div class="main-menu-item window-add i18n" id="add-${tool.type}" data-i18n="[html]windows.${tool.label}.label"></div>`);
+    addButton = document.createElement('div');
+    addButton.className = 'main-menu-item window-add i18n';
+    addButton.id = `add-${tool.type}`;
+    addButton.setAttribute('data-i18n', `[html]windows.${tool.label}.label`);
+
     if (buttonMenu) {
       buttonMenu.appendChild(addButton);
     }
-    data(addButton, 'init', tool);
+    buttonData.set(addButton, tool);
   }
 
   if (buttonMenu) {
-    on(buttonMenu, 'click', '.window-add', function(e) {
-      const label = this;
-      const settings = data(label, 'init');
+    buttonMenu.addEventListener('click', (e) => {
+      const label = e.target.closest('.window-add');
+      if (!label) return;
+
+      const settings = buttonData.get(label);
+      if (!settings) return;
+
       const app = getApp();
 
       // when starting a bible or commentary window, try to match it up with the others
       if (settings.type === 'BibleWindow' || settings.type === 'CommentaryWindow') {
-        // get location from first window
-        const firstBCWindow = app?.windowManager?.getWindows().filter(w =>
-          w.className === 'BibleWindow' || w.className === 'CommentaryWindow'
-        )[0] ?? null;
+        const firstBCWindow = app?.windowManager?.getWindows().filter(w => w.className === 'BibleWindow' || w.className === 'CommentaryWindow')[0] ?? null;
         const currentData = firstBCWindow?.getData() ?? null;
 
-        // if no location, then use the defaults from config
         if (currentData !== null) {
           settings.data.fragmentid = currentData.fragmentid;
           settings.data.sectionid = currentData.sectionid;
