@@ -21,7 +21,6 @@ export function ConfigToggles(_parentNode, _menu) {
   const toggleNames = config.settingToggleNames ?? [];
   const toggleDefaults = config.settingToggleDefaults ?? [];
 
-  // Define setToggle before it's used
   const setToggle = (toggleId, checked) => {
     PlaceKeeper?.storePlace();
 
@@ -59,7 +58,6 @@ export function ConfigToggles(_parentNode, _menu) {
     return;
   }
 
-  // Create toggle helper
   const createToggle = (toggleName, defaultValue) => {
     const toggleId = toggleName.replace(/\s/gi, '').toLowerCase();
     const toggleDefaultSetting = { checked: defaultValue };

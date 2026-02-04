@@ -1,6 +1,5 @@
 /**
- * Text Search
- * Handles Bible text searching with index support
+ * TextSearch - Full-text search with stemming, lemma support, and server fallback
  */
 
 import { getConfig } from '../core/config.js';

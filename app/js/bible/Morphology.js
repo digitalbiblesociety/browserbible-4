@@ -1,9 +1,18 @@
 /**
  * Morphology Parser
- * Parses Greek and Hebrew morphology codes
+ * Parses Greek (Robinson) and Hebrew (OSHB) morphology codes into human-readable descriptions
  */
 
+/**
+ * Robinson Greek morphology parser
+ * @example robinson.format("V-PAI-3S") // => "verb: present, active, indicative, 3rd, singular"
+ */
 export const robinson = {
+  /**
+   * Format a morphology code into readable text
+   * @param {string} morph - Robinson morphology code (e.g., "V-PAI-3S")
+   * @returns {string} Human-readable description
+   */
   format(morph) {
     const firstDash = morph.indexOf('-');
     const partOfSpeechKey = (firstDash > -1) ? morph.substring(0, firstDash) : morph;
@@ -83,7 +92,6 @@ export const robinson = {
   particleTypes: { 'I': 'interogative', 'N': 'negative' }
 };
 
-// Initialize parsers lookup (maps part-of-speech keys to parser methods)
 robinson.parsers = {
   T: robinson.parseNounLike, N: robinson.parseNounLike, R: robinson.parseNounLike,
   C: robinson.parseNounLike, D: robinson.parseNounLike, K: robinson.parseNounLike,
@@ -95,7 +103,16 @@ robinson.parsers = {
   PRT: (info) => robinson.particleTypes[info]
 };
 
+/**
+ * OSHB Hebrew/Aramaic morphology parser
+ * @example OSHB.format("HVqp3ms") // => "verb: qal, perfect (qatal), 3rd, masculine, singular"
+ */
 export const OSHB = {
+  /**
+   * Format a morphology code into readable text
+   * @param {string} morph - OSHB morphology code (e.g., "HVqp3ms")
+   * @returns {string} Human-readable description
+   */
   format(morph) {
     const languageKey = morph.substr(0, 1);
     const language = this.languages[languageKey];

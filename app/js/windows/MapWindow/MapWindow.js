@@ -323,7 +323,6 @@ export class MapWindowComponent extends BaseWindow {
       document.removeEventListener('click', this._popupCloseHandler);
     }
 
-    // Remove popover from DOM
     if (this.mapOptionsPopover && this.mapOptionsPopover.parentNode) {
       this.mapOptionsPopover.remove();
     }

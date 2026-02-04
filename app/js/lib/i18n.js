@@ -1,12 +1,19 @@
 /**
- * Simple i18n (internationalization) module (ES6)
- * Replacement for i18next that doesn't require jQuery
+ * Simple i18n (internationalization) module
+ * Lightweight replacement for i18next without jQuery dependency
  */
 
 let currentLanguage = 'en';
 let fallbackLanguage = 'en';
 let resources = {};
 
+/**
+ * Initialize the i18n system
+ * @param {Object} [options={}] - Configuration options
+ * @param {Object} [options.resStore] - Resource store with translations keyed by language
+ * @param {string} [options.fallbackLng] - Fallback language code
+ * @param {string} [options.lng] - Initial language code (auto-detected if not provided)
+ */
 export function init(options = {}) {
   if (options.resStore) {
     resources = options.resStore;
@@ -68,6 +75,12 @@ function interpolate(str, options) {
   return str;
 }
 
+/**
+ * Translate a key to the current language
+ * @param {string} key - Translation key (dot notation supported)
+ * @param {Object|Array} [options] - Interpolation values or array of positional values
+ * @returns {string} Translated string, or key if not found
+ */
 export function t(key, options) {
   let translation = getNestedValue(resources, currentLanguage + '.translation.' + key);
 
@@ -80,6 +93,10 @@ export function t(key, options) {
   return interpolate(translation, options);
 }
 
+/**
+ * Get current language code
+ * @returns {string} Current language code
+ */
 export function lng() {
   return currentLanguage;
 }
@@ -105,6 +122,10 @@ function setCookie(name, value, days) {
   document.cookie = name + '=' + (value || '') + expires + '; path=/';
 }
 
+/**
+ * Change the current language and re-translate the page
+ * @param {string} langCode - Language code to switch to
+ */
 export function setLng(langCode) {
   if (resources[langCode]) {
     currentLanguage = langCode;
@@ -113,6 +134,11 @@ export function setLng(langCode) {
   }
 }
 
+/**
+ * Translate a single element using its data-i18n attribute
+ * Supports attribute targeting: [attr]key (e.g., [title]tooltip.help)
+ * @param {Element} el - Element with data-i18n attribute
+ */
 export function translateElement(el) {
   const attr = el.getAttribute('data-i18n');
   if (!attr) return;
@@ -151,6 +177,10 @@ export function translateElement(el) {
   }
 }
 
+/**
+ * Translate all elements with data-i18n attribute within a container
+ * @param {Element|Document} [container=document] - Container to search within
+ */
 export function translatePage(container) {
   if (typeof document === 'undefined') return;
   container = container || document;

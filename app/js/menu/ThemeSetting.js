@@ -50,7 +50,6 @@ export function ThemeSetting(_parentNode, _menu) {
 
     document.body.classList.add(selectedThemeClass);
 
-    // Update selected state
     span.classList.add('config-theme-toggle-selected');
     [...span.parentElement.children].filter(s => s !== span).forEach(sibling => {
       sibling.classList.remove('config-theme-toggle-selected');

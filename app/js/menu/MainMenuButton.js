@@ -23,7 +23,6 @@ export function MainMenuButton(parentNode, _menu) {
     <div id="main-menu-features" class="main-menu-list"></div>
     </div>`);
 
-  // Append elements
   if (parentNode) {
     parentNode.appendChild(mainMenuLogo);
     parentNode.appendChild(mainMenuButton);

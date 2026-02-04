@@ -1,3 +1,8 @@
+/**
+ * Bible Data
+ * Book metadata, chapter/verse counts, and canonical orderings
+ */
+
 export const BOOK_DATA = {
   "FR":{"name":"Front matter","sortOrder":0,"shortCode":"FR","usfm":"FRT","osis":"Preface","chapters":[null],"names":{"eng":["Front matter"]}},
   "IN":{"name":"Introduction","sortOrder":1,"shortCode":"IN","usfm":"INT","osis":"Intro","chapters":[null],"names":{"eng":["Introduction"]}},
@@ -129,10 +134,17 @@ export const DEFAULT_BIBLE_USFM = [...OT_BOOKS_USFM, ...NT_BOOKS_USFM];
 export const APOCRYPHAL_BIBLE = [...OT_BOOKS, ...AP_BOOKS, ...NT_BOOKS];
 export const APOCRYPHAL_BIBLE_USFM = [...OT_BOOKS_USFM, ...AP_BOOKS_USFM, ...NT_BOOKS_USFM];
 
+/** Chapter number strings indexed by number (0-150) */
 export const numbers = {
   default: Array.from({ length: 151 }, (_, i) => String(i))
 };
 
+/**
+ * Add localized book names to BOOK_DATA
+ * @param {string} lang - Language code
+ * @param {string[]} bookList - Array of book IDs
+ * @param {(string|string[])[]} namesData - Corresponding names for each book
+ */
 export function addNames(lang, bookList, namesData) {
   for (const [i, dbsCode] of bookList.entries()) {
     const bookInfo = BOOK_DATA[dbsCode];
@@ -152,8 +164,18 @@ export function addNames(lang, bookList, namesData) {
   }
 }
 
+/**
+ * Get book metadata by ID
+ * @param {string} bookid - Two-letter book code
+ * @returns {Object|null} Book data or null
+ */
 export const getBookInfo = (bookid) => BOOK_DATA[bookid] ?? null;
 
+/**
+ * Get book by canonical sort order
+ * @param {number} index - Sort order index
+ * @returns {Object|null} Book data or null
+ */
 export const getBookByIndex = (index) => {
   for (const bookid in BOOK_DATA) {
     if (BOOK_DATA[bookid].sortOrder === index) {
@@ -163,16 +185,32 @@ export const getBookByIndex = (index) => {
   return null;
 };
 
+/**
+ * Get book's canonical sort order
+ * @param {string} bookid - Two-letter book code
+ * @returns {number} Sort order or -1 if not found
+ */
 export const getBookIndex = (bookid) => {
   const book = BOOK_DATA[bookid];
   return book?.sortOrder ?? -1;
 };
 
+/**
+ * Get number of chapters in a book
+ * @param {string} bookid - Two-letter book code
+ * @returns {number} Chapter count
+ */
 export const getChapterCount = (bookid) => {
   const book = BOOK_DATA[bookid];
   return book?.chapters?.length ?? 0;
 };
 
+/**
+ * Get number of verses in a chapter
+ * @param {string} bookid - Two-letter book code
+ * @param {number} chapter - Chapter number (1-based)
+ * @returns {number} Verse count
+ */
 export const getVerseCount = (bookid, chapter) => {
   const book = BOOK_DATA[bookid];
   if (book?.chapters && chapter > 0 && chapter <= book.chapters.length) {

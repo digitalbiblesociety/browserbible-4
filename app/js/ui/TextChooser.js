@@ -173,7 +173,6 @@ export function TextChooser() {
       Math.ceil((scrollTop + viewportHeight) / ROW_HEIGHT) + BUFFER_ROWS
     );
 
-    // Build HTML for visible rows
     const fragment = document.createDocumentFragment();
 
     for (let i = startIndex; i < endIndex; i++) {
@@ -292,13 +291,11 @@ export function TextChooser() {
 
       const displayName = textsInLang[0].langNameEnglish || textsInLang[0].langName;
 
-      // Add header
       processedData.push({
         type: 'header',
         data: displayName
       });
 
-      // Add texts with pre-computed search text
       for (const text of textsInLang) {
         processedData.push({
           type: 'text',
@@ -310,7 +307,6 @@ export function TextChooser() {
       }
     }
 
-    // Initialize filtered indices to all
     filteredIndices = processedData.map((_, i) => i);
     updateScrollHeight();
     scheduleRender();

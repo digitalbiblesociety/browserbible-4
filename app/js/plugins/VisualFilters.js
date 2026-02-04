@@ -574,13 +574,11 @@ export function VisualFilters(app) {
       const morphSelect = row.querySelector('.visualfilters-morph select');
       transform.morphType = morphSelect?.value ?? '';
 
-      // Get style type and color from new controls
       const styleTypeSelect = row.querySelector('.visualfilters-style .style-type');
       const styleColorInput = row.querySelector('.visualfilters-style .style-color');
       transform.styleType = styleTypeSelect?.value ?? 'text';
       transform.styleColor = styleColorInput?.value ?? '#ff3333';
 
-      // Build CSS from type and color
       transform.style = buildStyleCss(transform.styleType, transform.styleColor);
 
       if (transform.morph !== '') {
@@ -662,7 +660,6 @@ export function VisualFilters(app) {
     VisualTransformer.resetTransforms(visualSettings);
   });
 
-  // Handle changes on all filter inputs including new style controls
   tbody.addEventListener('change', (e) => {
     const target = e.target.closest('.visualfilters-active input, .visualfilters-morph select, .visualfilters-strongs input, .visualfilters-morph input, .style-type, .style-color');
     if (target) {

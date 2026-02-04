@@ -179,7 +179,6 @@ export function LemmaPopupPlugin(app) {
         lemmaPopup.hide();
       }
 
-      // Update selection state
       lemmaPopup.currentWord = lemmaEl;
       document.querySelectorAll('.selected-lemma').forEach((el) => el.classList.remove('selected-lemma'));
       lemmaEl.classList.add('selected-lemma');

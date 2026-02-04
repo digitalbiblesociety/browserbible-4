@@ -60,7 +60,6 @@ export const CrossReferencePopupPlugin = (app) => {
     return fragmentid;
   };
 
-  // Set up global handlers
   handleBibleRefClick = function(e) {
     const link = this;
     const newfragmentid = getFragmentidFromNode(link);
@@ -143,7 +142,6 @@ export const CrossReferencePopupPlugin = (app) => {
     referencePopup.hide();
   };
 
-  // Set up event listeners
   const windowsMain = document.querySelector('.windows-main');
   if (windowsMain) {
     windowsMain.addEventListener('click', (e) => {

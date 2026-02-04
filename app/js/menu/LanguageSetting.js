@@ -74,7 +74,6 @@ export function LanguageSetting(_parentNode, _menu) {
     const newLang = list.value;
 
     i18n.setLng(newLang);
-    // Update all i18n elements
     i18n.translatePage();
 
     localizeLanguages();

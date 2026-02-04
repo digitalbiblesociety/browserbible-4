@@ -1,8 +1,13 @@
 /**
  * Vanilla JS Helper Library
- * Provides jQuery-like utilities for DOM manipulation, events, and AJAX
+ * jQuery-like utilities for DOM manipulation, events, and animations
  */
 
+/**
+ * Convert various input types to a DOM element
+ * @param {Element|NodeList|Array|null} el - Element, array-like, or null
+ * @returns {Element|null} DOM element or null
+ */
 export function toElement(el) {
   if (!el) return null;
   if (el.nodeType) return el;
@@ -10,6 +15,12 @@ export function toElement(el) {
   return null;
 }
 
+/**
+ * Query selector shorthand
+ * @param {string} selector - CSS selector
+ * @param {Element|Document} [context=document] - Context to search within
+ * @returns {Element|null} First matching element
+ */
 export function qs(selector, context) {
   return (context || document).querySelector(selector);
 }
@@ -20,6 +31,12 @@ function isPlainObject(obj) {
     Object.prototype.toString.call(obj) === '[object Object]';
 }
 
+/**
+ * Deep merge objects recursively
+ * @param {Object} target - Target object to merge into
+ * @param {...Object} sources - Source objects to merge from
+ * @returns {Object} The modified target object
+ */
 export function deepMerge(target, ...sources) {
   sources.forEach(source => {
     if (!source) return;
@@ -44,6 +61,12 @@ export function deepMerge(target, ...sources) {
   return target;
 }
 
+/**
+ * Shallow merge objects (Object.assign alternative)
+ * @param {Object} target - Target object
+ * @param {...Object} sources - Source objects
+ * @returns {Object} The modified target object
+ */
 export function extend(target, ...sources) {
   sources.forEach(source => {
     if (!source) return;
@@ -54,6 +77,11 @@ export function extend(target, ...sources) {
   return target;
 }
 
+/**
+ * Get element's position relative to document
+ * @param {Element} el - DOM element
+ * @returns {{top: number, left: number}} Position coordinates
+ */
 export function offset(el) {
   if (!el) return { top: 0, left: 0 };
   const rect = el.getBoundingClientRect();
@@ -65,6 +93,12 @@ export function offset(el) {
   };
 }
 
+/**
+ * Find closest ancestor matching selector (polyfill)
+ * @param {Element} el - Starting element
+ * @param {string} selector - CSS selector
+ * @returns {Element|null} Matching ancestor or null
+ */
 export function closest(el, selector) {
   if (!el) return null;
   if (el.closest) return el.closest(selector);
@@ -76,6 +110,12 @@ export function closest(el, selector) {
   return null;
 }
 
+/**
+ * Get sibling elements, optionally filtered by selector
+ * @param {Element} el - Reference element
+ * @param {string} [selector] - Optional CSS selector to filter siblings
+ * @returns {Element[]} Array of sibling elements
+ */
 export function siblings(el, selector) {
   if (!el || !el.parentElement) return [];
   let sibs = Array.from(el.parentElement.children).filter(sibling => sibling !== el);
@@ -85,6 +125,11 @@ export function siblings(el, selector) {
   return sibs;
 }
 
+/**
+ * Create DOM elements from HTML string
+ * @param {string} html - HTML string
+ * @returns {Element|DocumentFragment} Single element or fragment if multiple
+ */
 export function createElements(html) {
   const template = document.createElement('template');
   template.innerHTML = html.trim();
@@ -92,6 +137,11 @@ export function createElements(html) {
   return content.childNodes.length === 1 ? content.firstChild : content;
 }
 
+/**
+ * Insert element after a reference element
+ * @param {Element} newEl - Element to insert
+ * @param {Element} refEl - Reference element
+ */
 export function insertAfter(newEl, refEl) {
   if (refEl && refEl.parentNode && newEl) {
     refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
@@ -115,6 +165,13 @@ function parseEventString(eventString) {
   };
 }
 
+/**
+ * Attach event listener with optional delegation
+ * @param {Element} el - Target element
+ * @param {string} events - Space-separated event types (supports namespaces like "click.myns")
+ * @param {string|Function} selectorOrHandler - CSS selector for delegation, or handler function
+ * @param {Function} [handler] - Handler function (when using delegation)
+ */
 export function on(el, events, selectorOrHandler, handler) {
   if (!el) return;
 
@@ -149,8 +206,18 @@ export function on(el, events, selectorOrHandler, handler) {
 }
 
 
+/**
+ * Animate element height from 0 to full (slide down)
+ * @param {Element} el - Element to animate
+ * @param {number|Function} [duration=300] - Animation duration in ms, or callback
+ * @param {Function} [callback] - Called when animation completes
+ */
 export function slideDown(el, duration, callback) {
   if (!el) return;
+  if (typeof duration === 'function') {
+    callback = duration;
+    duration = 300;
+  }
   duration = duration || 300;
 
   el.style.display = '';
@@ -159,8 +226,7 @@ export function slideDown(el, duration, callback) {
   el.style.height = '0px';
   el.style.transition = 'height ' + duration + 'ms';
 
-  // Force reflow before animation
-  el.getBoundingClientRect();
+  el.getBoundingClientRect(); // force reflow
 
   el.style.height = height + 'px';
 
@@ -172,16 +238,25 @@ export function slideDown(el, duration, callback) {
   }, duration);
 }
 
+/**
+ * Animate element height to 0 then hide (slide up)
+ * @param {Element} el - Element to animate
+ * @param {number|Function} [duration=300] - Animation duration in ms, or callback
+ * @param {Function} [callback] - Called when animation completes
+ */
 export function slideUp(el, duration, callback) {
   if (!el) return;
+  if (typeof duration === 'function') {
+    callback = duration;
+    duration = 300;
+  }
   duration = duration || 300;
 
   el.style.overflow = 'hidden';
   el.style.height = el.scrollHeight + 'px';
   el.style.transition = 'height ' + duration + 'ms';
 
-  // Force reflow before animation
-  el.getBoundingClientRect();
+  el.getBoundingClientRect(); // force reflow
 
   el.style.height = '0px';
 
@@ -196,6 +271,13 @@ export function slideUp(el, duration, callback) {
 
 const dataStore = new WeakMap();
 
+/**
+ * Get/set arbitrary data on elements (like jQuery.data)
+ * @param {Element} el - DOM element
+ * @param {string} [key] - Data key (omit to get all data)
+ * @param {*} [value] - Value to set (omit to get)
+ * @returns {*} Stored value when getting
+ */
 export function data(el, key, value) {
   if (!el) return;
 

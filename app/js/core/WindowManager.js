@@ -1,13 +1,24 @@
 /**
  * WindowManager
- * Manages multiple window instances in the application
+ * Manages multiple resizable window instances with tabs and splitters
  */
 
 import { createElements } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getWindowTypeByClassName, getApp } from './registry.js';
 
+/**
+ * Individual window instance within the manager
+ * @class
+ */
 export class Window {
+  /**
+   * @param {string} id - Unique window identifier
+   * @param {HTMLElement} parentNode - Container element
+   * @param {string} className - Window type class name
+   * @param {Object} data - Initial window data
+   * @param {WindowManager} manager - Parent manager instance
+   */
   constructor(id, parentNode, className, data, manager) {
     this.id = id;
     this.className = className;
@@ -41,22 +52,17 @@ export class Window {
       .filter(el => el !== this.tab && el.matches('.window-tab'))
       .forEach(sibling => sibling.classList.remove('active'));
 
-    // Supports both factory functions and web components
     const WindowType = getWindowTypeByClassName(className);
     if (WindowType && WindowType.WindowClass) {
       const isWebComponent = WindowType.WindowClass.prototype instanceof HTMLElement;
 
       if (isWebComponent) {
         this.controller = new WindowType.WindowClass();
-
-        // Set parent info BEFORE appending (so it's available in connectedCallback)
         this.controller.parentInfo = { node: this.node, tab: this.tab };
         this.controller.windowId = id;
         this.controller.initData = data || {};
-
         this.controller.setAttribute('window-id', id);
         this.controller.setAttribute('init-data', JSON.stringify(data || {}));
-
         this.node.appendChild(this.controller);
       } else {
         this.controller = WindowType.WindowClass(id, this, data);
@@ -125,6 +131,11 @@ export class Window {
     this.controller?.trigger?.('blur', {});
   }
 
+  /**
+   * Resize the window
+   * @param {number} width - Width in pixels
+   * @param {number} height - Height in pixels
+   */
   size(width, height) {
     this.node.style.width = `${width}px`;
     this.node.style.height = `${height}px`;
@@ -136,10 +147,17 @@ export class Window {
     this.controller?.quit?.();
   }
 
+  /**
+   * Get window's current state data
+   * @returns {Object} Window data for persistence
+   */
   getData() {
     return this.controller?.getData() ?? {};
   }
 
+  /**
+   * Close and clean up the window
+   */
   close() {
     this.controller?.close?.();
     this.controller = null;
@@ -151,17 +169,31 @@ export class Window {
   }
 }
 
+/**
+ * Manages a collection of windows with resizable splitters
+ * @class
+ */
 export class WindowManager {
+  /**
+   * @param {HTMLElement} node - Container element
+   * @param {App} app - Parent application instance
+   */
   constructor(node, app) {
     this.nodeEl = node?.nodeType ? node : node?.[0];
     this.app = app;
     this.windows = [];
     this.splitters = [];
-    this.windowWidths = []; // Store proportional widths (0-1)
+    this.windowWidths = []; // proportional widths (0-1)
 
     mixinEventEmitter(this);
   }
 
+  /**
+   * Add a new window
+   * @param {string} className - Window type class name
+   * @param {Object} data - Initial window data
+   * @returns {Window|null} The created window or null on error
+   */
   add(className, data) {
     const id = `win${Date.now()}`;
 
@@ -186,6 +218,10 @@ export class WindowManager {
     return win;
   }
 
+  /**
+   * Remove a window by ID
+   * @param {string} id - Window ID to remove
+   */
   remove(id) {
     const windowToClose = this.windows.find(win => win.id === id);
 
@@ -211,6 +247,11 @@ export class WindowManager {
     this.trigger('settingschange', { type: 'settingschange', target: this, data: null });
   }
 
+  /**
+   * Resize all windows to fit container
+   * @param {number} [width] - Container width (auto-detected if omitted)
+   * @param {number} [height] - Container height (auto-detected if omitted)
+   */
   size(width, height) {
     if (width && height) {
       this.nodeEl.style.width = `${width}px`;
@@ -263,6 +304,10 @@ export class WindowManager {
     }
   }
 
+  /**
+   * Get serializable settings for all windows
+   * @returns {Array<{windowType: string, data: Object}>}
+   */
   getSettings() {
     return this.windows.map(win => ({
       windowType: win.className,
@@ -270,6 +315,10 @@ export class WindowManager {
     }));
   }
 
+  /**
+   * Get all window instances
+   * @returns {Window[]}
+   */
   getWindows() {
     return this.windows;
   }
@@ -315,8 +364,7 @@ export class WindowManager {
       const newLeftWidth = startWidths[index] + deltaProportion;
       const newRightWidth = startWidths[index + 1] - deltaProportion;
 
-      // Minimum width constraint (10% of container)
-      const minWidth = 0.1;
+      const minWidth = 0.1; // 10% minimum
       if (newLeftWidth >= minWidth && newRightWidth >= minWidth) {
         this.windowWidths[index] = newLeftWidth;
         this.windowWidths[index + 1] = newRightWidth;
@@ -352,7 +400,6 @@ export class WindowManager {
       document.addEventListener('touchend', onMouseUp);
     };
 
-    // Store handlers for cleanup
     splitter._mousedownHandler = onMouseDown;
     splitter._touchstartHandler = onMouseDown;
 

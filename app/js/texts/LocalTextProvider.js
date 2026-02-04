@@ -1,6 +1,5 @@
 /**
- * Local Text Provider
- * Loads Bible texts from local JSON/HTML files
+ * LocalTextProvider - Loads texts from content/texts/{textid}/ directory
  */
 
 import { getConfig } from '../core/config.js';
@@ -29,7 +28,7 @@ function processContent(content, textInfo, textid) {
   content.setAttribute('data-textid', textid);
   content.setAttribute('data-lang3', textInfo.lang);
 
-  // Move section heading before chapter marker if needed
+  // section headings go before chapter markers, not after
   const c = content.querySelector('.c');
   if (c) {
     const afterc = c.nextElementSibling;
@@ -38,7 +37,7 @@ function processContent(content, textInfo, textid) {
     }
   }
 
-  // Move verse numbers outside verse elements
+  // verse numbers go before the verse element for CSS styling
   for (const vnum of content.querySelectorAll('.v-num')) {
     const v = vnum.closest('.v');
     if (v) v.parentNode.insertBefore(vnum, v);

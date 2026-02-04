@@ -1,12 +1,23 @@
+/**
+ * Navigation
+ * Browser history integration and scroll position preservation
+ */
+
 import { mixinEventEmitter } from './EventEmitter.js';
 import { getApp } from '../core/registry.js';
 
+/**
+ * Preserves scroll position during resize by storing and restoring the current location
+ */
 class PlaceKeeperClass {
   constructor() {
     this.currentWindow = null;
     this.currentData = null;
   }
 
+  /**
+   * Store current scroll position before resize
+   */
   storePlace() {
     this.currentData = this.getFirstLocation();
   }
@@ -14,10 +25,12 @@ class PlaceKeeperClass {
   getFirstLocation() {
     const app = getApp();
     this.currentWindow = app?.windowManager?.getWindows().find(w => w.className === 'BibleWindow') ?? null;
-
     return this.currentWindow?.getData() ?? null;
   }
 
+  /**
+   * Restore scroll position after resize
+   */
   restorePlace() {
     this.currentWindow?.trigger('globalmessage', {
       type: 'globalmessage',
@@ -33,6 +46,10 @@ class PlaceKeeperClass {
 
 export const PlaceKeeper = new PlaceKeeperClass();
 
+/**
+ * Manages browser history for Bible navigation with back/forward support
+ * @fires locationchange When navigation occurs
+ */
 class TextNavigationClass {
   constructor() {
     this.locations = [];
@@ -62,20 +79,25 @@ class TextNavigationClass {
     this.trigger('locationchange', { type });
   }
 
+  /**
+   * Set initial location on page load (uses replaceState)
+   * @param {string} locationid - Initial location ID
+   */
   firstState(locationid) {
     this.locations.push(locationid);
     this.locationIndex = 0;
-
     window.history.replaceState({ locationid }, null, window.location.href);
   }
 
+  /**
+   * Navigate to a new location (adds to history)
+   * @param {string} locationid - Location ID (e.g., "JN3" or "JN3_16")
+   * @param {string} type - Navigation type
+   */
   locationChange(locationid, type) {
-
     this.locations.push(locationid);
     this.locationIndex++;
-
     window.history.pushState({ locationid }, null, window.location.href);
-
     this.trigger('locationchange', { type });
   }
 
@@ -96,18 +118,22 @@ class TextNavigationClass {
     });
   }
 
+  /** Navigate back in history */
   back() {
     window.history.go(-1);
   }
 
+  /** Navigate forward in history */
   forward() {
     window.history.go(1);
   }
 
+  /** @returns {string[]} All stored locations */
   getLocations() {
     return this.locations;
   }
 
+  /** @returns {number} Current position in history */
   getLocationIndex() {
     return this.locationIndex;
   }

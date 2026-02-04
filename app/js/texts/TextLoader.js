@@ -1,6 +1,5 @@
 /**
- * Text Loader
- * Manages loading Bible texts from various providers
+ * TextLoader - Loads Bible texts from registered providers with caching
  */
 
 import { addNames } from '../bible/BibleData.js';

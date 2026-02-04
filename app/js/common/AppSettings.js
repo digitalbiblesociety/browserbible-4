@@ -1,6 +1,6 @@
 /**
  * AppSettings
- * Manages application settings with localStorage persistence
+ * Persistent key-value storage using localStorage with prefix namespacing
  */
 
 import { getConfig } from '../core/config.js';
@@ -28,6 +28,12 @@ class AppSettingsManager {
     return `${config.settingsPrefix}${key}`;
   }
 
+  /**
+   * Get a stored value, merged with defaults
+   * @param {string} key - Storage key
+   * @param {Object} [defaultValue={}] - Default values
+   * @returns {Object} Stored value merged with defaults
+   */
   getValue(key, defaultValue = {}) {
     const fullKey = this._getKey(key);
     const returnValue = { ...defaultValue };
@@ -40,22 +46,36 @@ class AppSettingsManager {
     try {
       storedValue = JSON.parse(storedValue);
     } catch {
-      // Ignore JSON parse errors
+      // invalid JSON, use default
     }
 
     return { ...returnValue, ...storedValue };
   }
 
+  /**
+   * Store a value
+   * @param {string} key - Storage key
+   * @param {*} value - Value to store (will be JSON stringified)
+   */
   setValue(key, value) {
     const fullKey = this._getKey(key);
     this.storage[fullKey] = JSON.stringify(value);
   }
 
+  /**
+   * Remove a stored value
+   * @param {string} key - Storage key
+   */
   removeValue(key) {
     const fullKey = this._getKey(key);
     delete this.storage[fullKey];
   }
 
+  /**
+   * Get a cookie value
+   * @param {string} name - Cookie name
+   * @returns {string|null} Cookie value or null
+   */
   getCookieValue(name) {
     const nameEQ = `${name}=`;
     const ca = document.cookie.split(';');

@@ -1,11 +1,15 @@
 /**
  * AudioDataManager
- * Manages audio data sources and provides unified audio API
+ * Unified audio API that delegates to registered audio sources
  */
 
 import { getConfig } from '../core/config.js';
 import { getAudioSources, registerAudioSource } from '../core/registry.js';
 
+/**
+ * Create an audio data manager that tries each registered source until one provides data
+ * @returns {{getAudioInfo: Function, getFragmentAudio: Function, getNextFragment: Function, getPrevFragment: Function}}
+ */
 export function AudioDataManager() {
   const getAudioInfo = (textInfo, callback) => {
     const audioSources = getAudioSources();
@@ -78,6 +82,9 @@ export function AudioDataManager() {
   };
 }
 
+/**
+ * Local audio source - loads from JSON manifests at content/audio/{textId}/info.json
+ */
 export const LocalAudio = (() => {
   const getAudioInfo = (textInfo, callback) => {
     const config = getConfig();

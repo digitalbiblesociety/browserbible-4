@@ -1,6 +1,5 @@
 /**
- * MainMenu
- * Main application menu
+ * MainMenu - Header bar with logo and configurable menu components
  */
 
 import { getAllMenuComponents } from '../core/registry.js';
@@ -10,15 +9,12 @@ export class MainMenu {
     this.node = headerNode;
     this.components = [];
 
-    // Create logo
     const logo = Object.assign(document.createElement('div'), { id: 'app-logo' });
     this.node.appendChild(logo);
 
-    // Create menu container
     this.menuContainer = Object.assign(document.createElement('div'), { className: 'main-menu-container' });
     this.node.appendChild(this.menuContainer);
 
-    // Initialize all registered menu components
     this._initComponents();
   }
 

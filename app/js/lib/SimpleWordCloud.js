@@ -1,17 +1,17 @@
 /**
  * SimpleWordCloud - Lightweight CSS-based word cloud
- * Replaces the heavier canvas-based wordcloud library
+ * Uses flexbox layout instead of canvas positioning
  */
 
 /**
  * Render a word cloud into a container element
- * @param {HTMLElement} container - The container element
+ * @param {HTMLElement} container - Container element
  * @param {Object} options - Configuration options
- * @param {Array} options.list - Array of [word, weight] tuples
- * @param {Function} options.weightFactor - Function(weight) returning font size
- * @param {Function} options.color - Function(word, weight) returning CSS color
- * @param {Function} options.hover - Callback(item) when hovering, item is [word, weight] or null
- * @param {number} options.minSize - Minimum font size to display (default: 0)
+ * @param {Array<[string, number]>} options.list - Array of [word, weight] tuples
+ * @param {Function} [options.weightFactor] - (weight) => fontSize in pixels
+ * @param {Function} [options.color] - (word, weight) => CSS color string
+ * @param {Function} [options.hover] - ([word, weight] | null) => void, called on hover
+ * @param {number} [options.minSize=0] - Minimum font size to display
  */
 export function renderWordCloud(container, options) {
   const {
@@ -22,10 +22,8 @@ export function renderWordCloud(container, options) {
     minSize = 0
   } = options;
 
-  // Clear container
   container.innerHTML = '';
 
-  // Apply container styles
   Object.assign(container.style, {
     display: 'flex',
     flexWrap: 'wrap',
@@ -37,7 +35,6 @@ export function renderWordCloud(container, options) {
     padding: '1em'
   });
 
-  // Filter and shuffle words for visual variety
   const filteredList = list.filter(([, weight]) => {
     const size = weightFactor(weight);
     return size >= minSize;
@@ -45,7 +42,6 @@ export function renderWordCloud(container, options) {
 
   const shuffledList = shuffleArray([...filteredList]);
 
-  // Create word elements
   for (const [word, weight] of shuffledList) {
     const size = weightFactor(weight);
     const wordColor = color(word, weight);
@@ -64,7 +60,6 @@ export function renderWordCloud(container, options) {
       whiteSpace: 'nowrap'
     });
 
-    // Store data for hover callback
     span.dataset.word = word;
     span.dataset.weight = weight;
 
@@ -86,9 +81,6 @@ export function renderWordCloud(container, options) {
   }
 }
 
-/**
- * Fisher-Yates shuffle
- */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

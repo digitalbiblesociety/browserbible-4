@@ -1,12 +1,10 @@
 /**
  * Application Configuration
- * Central configuration management
+ * Central configuration management with defaults and custom overrides
  */
 
-
 const defaultConfig = {
-  // Change this to clear all user settings
-  settingsPrefix: '20140307',
+  settingsPrefix: '20140307', // change to clear all user settings
 
   enableOnlineSources: true,
 
@@ -44,14 +42,14 @@ const defaultConfig = {
   arclightApiKey: '52b06248a3c6e8.12980089',
   arclightApiUrl: 'https://api.arclight.org/v2',
 
-  // DBS Text Provider
+  // DBS API
   dbsEnabled: true,
   dbsKey: '',
   dbsBase: 'https://api.dbp4.org/',
   dbsTextExclusions: [],
   dbsSearchEnabled: false,
 
-  // Window Defaults
+  // Window defaults
   enableAudioWindow: true,
   audioWindowDefaultBibleFragmentid: 'JN1_1',
   audioWindowDefaultBibleVersion: 'ENGESV',
@@ -59,7 +57,7 @@ const defaultConfig = {
   deafBibleWindowDefaultBibleFragmentid: 'JN1_1',
   deafBibleWindowDefaultBibleVersion: 'deaf_ASESLV',
 
-  // Menu Components
+  // Menu components
   enableNavigationButtons: true,
   enableUrlCopier: true,
   enableRestore: false,
@@ -120,19 +118,42 @@ const customConfigs = {
 
 const config = { ...defaultConfig };
 
+/**
+ * Get the current configuration object
+ * @returns {Object} Current config
+ */
 export const getConfig = () => config;
 
+/**
+ * Merge new values into the configuration
+ * @param {Object} newConfig - Config values to merge
+ * @returns {Object} Updated config
+ */
 export const updateConfig = (newConfig) => {
   Object.assign(config, newConfig);
   return config;
 };
 
+/**
+ * Get a named custom configuration preset
+ * @param {string} name - Preset name
+ * @returns {Object|null} Custom config or null
+ */
 export const getCustomConfig = (name) => customConfigs[name] ?? null;
 
+/**
+ * Register a custom configuration preset
+ * @param {string} name - Preset name
+ * @param {Object} configObj - Configuration object
+ */
 export const registerCustomConfig = (name, configObj) => {
   customConfigs[name] = configObj;
 };
 
+/**
+ * Get protocol prefix for URLs (handles file:// protocol)
+ * @returns {string} Protocol prefix or empty string
+ */
 export const getProtocol = () => {
   if (typeof window !== 'undefined' && window?.location?.protocol === 'file:') {
     return 'https:';

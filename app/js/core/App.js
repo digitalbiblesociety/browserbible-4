@@ -1,6 +1,6 @@
 /**
- * App
- * Main application class
+ * App - Main application controller
+ * Manages windows, plugins, and global state
  */
 
 import { WindowManager } from './WindowManager.js';
@@ -18,6 +18,10 @@ import {
 import { TextNavigation, PlaceKeeper } from '../common/Navigation.js';
 import { i18n } from '../lib/i18n.js';
 
+/**
+ * Main application class
+ * @class
+ */
 export class App {
   constructor() {
     this.settingsKey = 'app-windows';
@@ -38,6 +42,9 @@ export class App {
     setApp(this);
   }
 
+  /**
+   * Initialize the application - creates windows, plugins, and event handlers
+   */
   init() {
     this.mainMenu = new MainMenu(this.header);
     this.windowManager = new WindowManager(this.main, this);
@@ -49,7 +56,7 @@ export class App {
     try {
       window.top.scrollTo(0, 1);
     } catch (_ex) {
-      // Ignore cross-origin errors
+      // cross-origin iframe
     }
 
     const settings = this._getWindowSettings();
@@ -108,7 +115,6 @@ export class App {
 
     for (const [name, PluginFactory] of allPlugins) {
       try {
-        // Plugins are factory functions, not constructors
         const plugin = PluginFactory(this);
         this.plugins.push(plugin);
         addPluginInstance(plugin);
@@ -122,6 +128,9 @@ export class App {
     }
   }
 
+  /**
+   * Handle window resize and orientation changes
+   */
   resize() {
     PlaceKeeper?.storePlace();
 
@@ -187,6 +196,10 @@ export class App {
     AppSettings.setValue(this.settingsKey, settings);
   }
 
+  /**
+   * Broadcast a message to all windows and plugins
+   * @param {Object} e - Event object with id and data
+   */
   handleGlobalMessage(e) {
     const windows = this.windowManager.getWindows();
 
@@ -204,6 +217,11 @@ export class App {
   }
 }
 
+/**
+ * Initialize and start the application
+ * Handles custom configs, i18n setup, and CSS loading
+ * @returns {App} The initialized app instance
+ */
 export function initApp() {
   const config = getConfig();
 

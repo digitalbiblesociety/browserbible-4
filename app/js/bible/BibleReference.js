@@ -1,3 +1,8 @@
+/**
+ * Bible Reference Parser
+ * Parses human-readable references (e.g., "John 3:16") and short codes (e.g., "JN3_16")
+ */
+
 import { BOOK_DATA, DEFAULT_BIBLE } from './BibleData.js';
 
 const shortCodeRegex = /^\w{2}\d{1,3}(_\d{1,3})?$/;
@@ -8,6 +13,16 @@ const bookNameIndex = Object.entries(BOOK_DATA)
   ])
   .sort((a, b) => b.name.length - a.name.length);
 
+/**
+ * Parse a Bible reference string or create a reference from components
+ * @param {string} input - Reference string ("John 3:16") or short code ("JN3_16")
+ * @param {string} [language='eng'] - Language code for book names
+ * @returns {Object|null} Reference object with bookid, chapter1, verse1, etc.
+ *
+ * @example Reference("John 3:16") // => { bookid: "JN", chapter1: 3, verse1: 16, ... }
+ * @example Reference("JN3_16") // => { bookid: "JN", chapter1: 3, verse1: 16, ... }
+ * @example Reference("JN", 3, 16) // => { bookid: "JN", chapter1: 3, verse1: 16, ... }
+ */
 export function Reference(...args) {
   if (typeof args[0] === 'string' && typeof args[1] === 'number') {
     const [bookid, chapter1, verse1 = -1, chapter2 = -1, verse2 = -1, language = 'eng'] = args;

@@ -141,7 +141,6 @@ export const Eng2pPlugin = (app) => {
 
   const engWindow = MovableWindow(550, 290);
 
-  // Build the config block HTML
   let optionsHtml = '';
   if (config.eng2pEnableAll === true) {
     optionsHtml = `

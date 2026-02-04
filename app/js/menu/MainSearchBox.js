@@ -43,10 +43,8 @@ export function MainSearchBox(parentNode, _menu) {
     <input type="button" id="main-search-button" value="" />
     </div>`);
 
-  // Create suggestions dropdown
   const suggestions = createElements(`<div id="main-search-suggestions" style="display: none;"></div>`);
 
-  // Append to node
   if (parentNode) {
     parentNode.appendChild(searchBox);
     parentNode.appendChild(suggestions);
@@ -158,7 +156,6 @@ export function MainSearchBox(parentNode, _menu) {
 
     selectedIndex = newIndex;
 
-    // Update visual selection
     const items = suggestions.querySelectorAll('.suggestion-item');
     items.forEach((item, i) => {
       item.classList.toggle('selected', i === selectedIndex);

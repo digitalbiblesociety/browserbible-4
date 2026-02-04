@@ -1,28 +1,21 @@
 /**
  * SimpleDiff - Lightweight word-level diff utility
- * Replaces the heavier 'diff' library for simple word comparison
+ * Uses LCS (Longest Common Subsequence) algorithm
  */
 
 /**
  * Compute word-level differences between two strings
  * @param {string} oldText - Original text
  * @param {string} newText - New text to compare
- * @returns {Array} Array of {value, added?, removed?} parts
+ * @returns {Array<{value: string, added?: boolean, removed?: boolean}>} Diff parts
  */
 export function diffWords(oldText, newText) {
   const oldWords = tokenize(oldText);
   const newWords = tokenize(newText);
-
-  // Build LCS table
   const lcs = computeLCS(oldWords, newWords);
-
-  // Backtrack to find the diff
   return buildDiff(oldWords, newWords, lcs);
 }
 
-/**
- * Tokenize text into words, preserving whitespace
- */
 function tokenize(text) {
   const tokens = [];
   const regex = /(\s+|\S+)/g;
@@ -35,14 +28,9 @@ function tokenize(text) {
   return tokens;
 }
 
-/**
- * Compute Longest Common Subsequence table using dynamic programming
- */
 function computeLCS(oldTokens, newTokens) {
   const m = oldTokens.length;
   const n = newTokens.length;
-
-  // Create table with dimensions [m+1][n+1]
   const table = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
 
   for (let i = 1; i <= m; i++) {
@@ -58,9 +46,6 @@ function computeLCS(oldTokens, newTokens) {
   return table;
 }
 
-/**
- * Determine the next operation when backtracking through LCS
- */
 function getNextOp(oldTokens, newTokens, lcs, i, j) {
   if (i > 0 && j > 0 && oldTokens[i - 1] === newTokens[j - 1]) {
     return { value: oldTokens[i - 1], type: 'same', di: 1, dj: 1 };
@@ -71,9 +56,6 @@ function getNextOp(oldTokens, newTokens, lcs, i, j) {
   return { value: oldTokens[i - 1], type: 'removed', di: 1, dj: 0 };
 }
 
-/**
- * Merge consecutive operations of the same type
- */
 function mergeOps(ops) {
   const result = [];
   let current = null;
@@ -91,9 +73,6 @@ function mergeOps(ops) {
   return result;
 }
 
-/**
- * Build diff result by backtracking through LCS table
- */
 function buildDiff(oldTokens, newTokens, lcs) {
   const ops = [];
   let i = oldTokens.length;
@@ -110,9 +89,6 @@ function buildDiff(oldTokens, newTokens, lcs) {
   return mergeOps(ops);
 }
 
-/**
- * Format a part for the result array
- */
 function formatPart(part) {
   const result = { value: part.value };
   if (part.type === 'added') result.added = true;
