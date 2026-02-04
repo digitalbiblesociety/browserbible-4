@@ -7,6 +7,23 @@
 
 import { config as defaultConfig, mergeConfig, VerseDetectionConfig, PartialVerseDetectionConfig } from './config.js';
 import type { CanonicalBookName } from './bookNames.js';
+import { BOOK_CODES, type BookCode } from './BookCodes.js';
+import {
+	normalizeLangCode as normalizeLangCodeUtil,
+	getLanguageName as getLanguageNameUtil,
+	buildTextIdsByLanguage as buildTextIdsByLanguageUtil
+} from './LanguageCodeMapper.js';
+import {
+	SOCIAL_ICONS,
+	buildSocialShareHtml as buildSocialShareHtmlUtil,
+	handleSocialShare as handleSocialShareUtil
+} from './SocialShareHandler.js';
+import {
+	extractVerses as extractVersesUtil,
+	buildFootnotesHtml as buildFootnotesHtmlUtil,
+	type ExtractedFootnote
+} from './VerseExtractor.js';
+import { getTextId as getTextIdUtil } from './VerseUrlBuilder.js';
 
 /** Embedded inscript.org logo SVG */
 const INSCRIPT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
@@ -17,39 +34,10 @@ const INSCRIPT_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 
 <rect fill="#666" width="70" height="4" x="2" y="67" rx="2"/>
 </svg>`;
 
-/** Social share icons */
-const SOCIAL_ICONS: Record<string, string> = {
-	facebook: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
-	x: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
-	bluesky: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.296 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>`,
-	copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
-};
+// SOCIAL_ICONS imported from SocialShareHandler.ts
 
-/** Book code mapping type */
-export type BookCode = string;
-
-/** Book code mapping from canonical names to short codes used in section IDs */
-const BOOK_CODES: Record<CanonicalBookName, BookCode> = {
-	// Old Testament
-	'Genesis': 'GN', 'Exodus': 'EX', 'Leviticus': 'LV', 'Numbers': 'NU',
-	'Deuteronomy': 'DT', 'Joshua': 'JS', 'Judges': 'JG', 'Ruth': 'RT',
-	'1 Samuel': 'S1', '2 Samuel': 'S2', '1 Kings': 'K1', '2 Kings': 'K2',
-	'1 Chronicles': 'R1', '2 Chronicles': 'R2', 'Ezra': 'ER', 'Nehemiah': 'NH',
-	'Esther': 'ES', 'Job': 'JB', 'Psalms': 'PS', 'Proverbs': 'PR',
-	'Ecclesiastes': 'EC', 'Song of Solomon': 'SS', 'Isaiah': 'IS', 'Jeremiah': 'JR',
-	'Lamentations': 'LM', 'Ezekiel': 'EK', 'Daniel': 'DN', 'Hosea': 'HO',
-	'Joel': 'JL', 'Amos': 'AM', 'Obadiah': 'OB', 'Jonah': 'JH',
-	'Micah': 'MC', 'Nahum': 'NM', 'Habakkuk': 'HK', 'Zephaniah': 'ZP',
-	'Haggai': 'HG', 'Zechariah': 'ZC', 'Malachi': 'ML',
-	// New Testament
-	'Matthew': 'MT', 'Mark': 'MK', 'Luke': 'LK', 'John': 'JN',
-	'Acts': 'AC', 'Romans': 'RM', '1 Corinthians': 'C1', '2 Corinthians': 'C2',
-	'Galatians': 'GL', 'Ephesians': 'EP', 'Philippians': 'PP', 'Colossians': 'CL',
-	'1 Thessalonians': 'H1', '2 Thessalonians': 'H2', '1 Timothy': 'T1', '2 Timothy': 'T2',
-	'Titus': 'TT', 'Philemon': 'PM', 'Hebrews': 'HB', 'James': 'JM',
-	'1 Peter': 'P1', '2 Peter': 'P2', '1 John': 'J1', '2 John': 'J2',
-	'3 John': 'J3', 'Jude': 'JD', 'Revelation': 'RV'
-};
+// BookCode type re-exported from BookCodes.ts for backward compatibility
+export type { BookCode } from './BookCodes.js';
 
 /** Parsed verse reference */
 export interface ParsedReference {
@@ -555,69 +543,9 @@ export class VersePopup {
 	 * Respects preferredTextIdsByLanguage for priority selection
 	 */
 	private buildTextIdsByLanguage(): void {
-		if (!this.textsIndexData || !Array.isArray(this.textsIndexData)) {
-			return;
-		}
-
 		const contentConfig = this.config.contentSource;
 		const preferred = contentConfig.preferredTextIdsByLanguage || {};
-		const mapping: Record<string, string> = {};
-
-		// Group texts by language code
-		const textsByLanguage = new Map<string, TextInfo[]>();
-
-		for (const textInfo of this.textsIndexData) {
-			// Skip non-Bible texts (commentaries, etc.)
-			const textType = textInfo.type || 'bible';
-			if (textType !== 'bible') continue;
-
-			// Skip texts without content
-			if (textInfo.hasText === false) continue;
-
-			// Get language code from lang property (3-letter ISO 639-3)
-			// or derive from langName/langNameEnglish
-			const langCode = this.normalizeLangCode(textInfo.lang, textInfo.langNameEnglish || textInfo.langName);
-
-			if (!langCode) continue;
-
-			if (!textsByLanguage.has(langCode)) {
-				textsByLanguage.set(langCode, []);
-			}
-			textsByLanguage.get(langCode)!.push(textInfo);
-		}
-
-		// Build mapping for each language
-		for (const [langCode, texts] of textsByLanguage) {
-			// Check if there's a preferred version for this language
-			const preferredIds = preferred[langCode];
-			let selectedTextId: string | null = null;
-
-			if (preferredIds) {
-				// Handle both single ID and array of IDs
-				const idsToCheck = Array.isArray(preferredIds) ? preferredIds : [preferredIds];
-
-				for (const prefId of idsToCheck) {
-					const found = texts.find(t => t.id === prefId || t.id.toUpperCase() === prefId.toUpperCase());
-					if (found) {
-						selectedTextId = found.id;
-						break;
-					}
-				}
-			}
-
-			// If no preferred version found or available, use the first one
-			if (!selectedTextId && texts.length > 0) {
-				// Sort by name for consistency
-				texts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-				selectedTextId = texts[0].id;
-			}
-
-			if (selectedTextId) {
-				mapping[langCode] = selectedTextId;
-			}
-		}
-
-		// Store the computed mapping
+		const mapping = buildTextIdsByLanguageUtil(this.textsIndexData, preferred);
 		this.config.contentSource.textIdsByLanguage = mapping;
 	}
 
@@ -627,17 +555,7 @@ export class VersePopup {
 	 * @returns Display name
 	 */
 	private getLanguageName(langCode: string | null | undefined): string {
-		const names: Record<string, string> = {
-			'en': 'English', 'es': 'Spanish', 'pt': 'Portuguese', 'fr': 'French',
-			'de': 'German', 'ru': 'Russian', 'ar': 'Arabic', 'hi': 'Hindi',
-			'zh': 'Chinese', 'id': 'Indonesian', 'it': 'Italian', 'nl': 'Dutch',
-			'pl': 'Polish', 'ko': 'Korean', 'ja': 'Japanese', 'vi': 'Vietnamese',
-			'th': 'Thai', 'tr': 'Turkish', 'uk': 'Ukrainian', 'sv': 'Swedish',
-			'no': 'Norwegian', 'da': 'Danish', 'fi': 'Finnish', 'cs': 'Czech',
-			'el': 'Greek', 'he': 'Hebrew', 'hu': 'Hungarian', 'ro': 'Romanian',
-			'bg': 'Bulgarian'
-		};
-		return names[langCode || ''] || langCode || 'this language';
+		return getLanguageNameUtil(langCode);
 	}
 
 	/**
@@ -648,38 +566,7 @@ export class VersePopup {
 	 * @returns 2-letter language code (e.g., 'en', 'es')
 	 */
 	private normalizeLangCode(lang3: string | undefined, langName: string | undefined): string | null {
-		// Common 3-letter to 2-letter mappings
-		const langMap: Record<string, string> = {
-			'eng': 'en', 'spa': 'es', 'por': 'pt', 'fra': 'fr', 'deu': 'de',
-			'rus': 'ru', 'ara': 'ar', 'hin': 'hi', 'zho': 'zh', 'cmn': 'zh',
-			'ind': 'id', 'ita': 'it', 'nld': 'nl', 'pol': 'pl', 'kor': 'ko',
-			'jpn': 'ja', 'vie': 'vi', 'tha': 'th', 'tur': 'tr', 'ukr': 'uk',
-			'swe': 'sv', 'nor': 'no', 'dan': 'da', 'fin': 'fi', 'ces': 'cs',
-			'ell': 'el', 'heb': 'he', 'hun': 'hu', 'ron': 'ro', 'bul': 'bg'
-		};
-
-		if (lang3 && langMap[lang3.toLowerCase()]) {
-			return langMap[lang3.toLowerCase()];
-		}
-
-		// Fallback: try to extract from language name
-		const langNameMap: Record<string, string> = {
-			'english': 'en', 'spanish': 'es', 'portuguese': 'pt', 'french': 'fr',
-			'german': 'de', 'russian': 'ru', 'arabic': 'ar', 'hindi': 'hi',
-			'chinese': 'zh', 'indonesian': 'id', 'italian': 'it', 'dutch': 'nl'
-		};
-
-		if (langName) {
-			const normalized = langName.toLowerCase();
-			for (const [name, code] of Object.entries(langNameMap)) {
-				if (normalized.includes(name)) {
-					return code;
-				}
-			}
-		}
-
-		// Return the 3-letter code as-is if we can't map it
-		return lang3?.toLowerCase() || null;
+		return normalizeLangCodeUtil(lang3, langName);
 	}
 
 	/**
@@ -1096,53 +983,7 @@ export class VersePopup {
 	 * @returns Text ID or null if none available for the language
 	 */
 	getTextId(detectedLang: string | null = null): string | null {
-		const contentConfig = this.config.contentSource;
-		const textIdsByLanguage = contentConfig?.textIdsByLanguage || {};
-
-		// If explicit textId is set (no auto-selection), use it
-		if (contentConfig?.textId && !detectedLang) {
-			return contentConfig.textId;
-		}
-
-		// If we have a detected language, try to find a matching text
-		if (detectedLang && textIdsByLanguage[detectedLang]) {
-			return textIdsByLanguage[detectedLang];
-		}
-
-		// If detected language has no text available, return null (don't fall back)
-		if (detectedLang && !textIdsByLanguage[detectedLang]) {
-			return null;
-		}
-
-		// Fall back to configured defaultTextId
-		if (this.config.defaultTextId) {
-			return this.config.defaultTextId;
-		}
-
-		// Auto-select based on primary language
-		if (contentConfig?.autoSelectByLanguage) {
-			const langConfig = this.config.language;
-			const language = langConfig?.primary || 'en';
-
-			// Try exact language match first
-			if (textIdsByLanguage[language]) {
-				return textIdsByLanguage[language];
-			}
-
-			// Try English fallback
-			if (textIdsByLanguage['en']) {
-				return textIdsByLanguage['en'];
-			}
-
-			// Try any available language as last resort
-			const availableLanguages = Object.keys(textIdsByLanguage);
-			if (availableLanguages.length > 0) {
-				return textIdsByLanguage[availableLanguages[0]];
-			}
-		}
-
-		// No text available
-		return null;
+		return getTextIdUtil(detectedLang, this.config);
 	}
 
 	/**
@@ -1238,120 +1079,15 @@ export class VersePopup {
 	 * Extracts footnotes and places markers inline, footnotes collected for display below
 	 */
 	private extractVerses(html: string, parsed: ParsedReference): string {
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(html, 'text/html');
-
-		// Clear any previously collected footnotes
-		this.clearFootnotes();
-
-		if (!parsed.startVerse) {
-			// Return entire chapter content if no verse specified
-			// Get all verses in the chapter and combine them
-			const section = doc.querySelector('.section');
-			if (section) {
-				// Get all verse elements
-				const verseEls = section.querySelectorAll('.v');
-				if (verseEls.length > 0) {
-					const verses: string[] = [];
-					verseEls.forEach((verseEl, index) => {
-						const verseNum = this.config.popup.showVerseNumbers
-							? `<span class="v-num">${index + 1}</span>`
-							: '';
-						// Preserve HTML content including footnotes
-						const verseContent = this.processVerseContent(verseEl as HTMLElement);
-						verses.push(`${verseNum}<span class="v">${verseContent}</span>`);
-					});
-					return verses.join(' ');
-				}
-			}
-			// Fallback: just get first verse
-			const firstVerse = doc.querySelector('.v');
-			return firstVerse ? this.processVerseContent(firstVerse as HTMLElement) : '';
-		}
-
-		const verses: string[] = [];
-		const start = parsed.startVerse;
-		const end = parsed.endVerse || start;
-
-		for (let v = start; v <= end; v++) {
-			const verseId = `${parsed.sectionId}_${v}`;
-			const verseEl = doc.querySelector(`[data-id="${verseId}"], .${verseId}`);
-
-			if (verseEl) {
-				const verseNum = this.config.popup.showVerseNumbers
-					? `<span class="v-num">${v}</span>`
-					: '';
-				// Preserve HTML content including footnotes
-				const verseContent = this.processVerseContent(verseEl as HTMLElement);
-				verses.push(`${verseNum}<span class="v">${verseContent}</span>`);
-			}
-		}
-
-		if (verses.length === 0) {
-			throw new Error('Verse not found');
-		}
-
-		return verses.join(' ');
+		const result = extractVersesUtil(html, parsed, {
+			showVerseNumbers: this.config.popup.showVerseNumbers
+		});
+		this.collectedFootnotes = result.footnotes;
+		return result.content;
 	}
 
 	/** Extracted footnote data */
-	private collectedFootnotes: Array<{ key: string; text: string }> = [];
-
-	/**
-	 * Process verse content - extracts footnotes and returns cleaned verse HTML
-	 * Footnotes are collected in this.collectedFootnotes for later display
-	 * @param verseEl - The verse element to process
-	 * @returns Cleaned HTML string with footnote markers
-	 */
-	private processVerseContent(verseEl: HTMLElement): string {
-		// Clone the element to avoid modifying the original
-		const clone = verseEl.cloneNode(true) as HTMLElement;
-
-		// Remove verse number elements if they exist (we add our own)
-		clone.querySelectorAll('.v-num, .verse-num').forEach(el => el.remove());
-
-		// Extract footnotes and replace with markers
-		clone.querySelectorAll('.note, .cf').forEach(note => {
-			// Get the key (footnote marker)
-			let keyEl = note.querySelector('.key');
-			let key = keyEl?.textContent?.trim() || '*';
-
-			// Get the footnote text
-			let textEl = note.querySelector('.text');
-			let text = '';
-
-			if (textEl) {
-				text = textEl.innerHTML.trim();
-			} else {
-				// Collect text content that's not the key
-				const textParts: string[] = [];
-				note.childNodes.forEach(child => {
-					if (child !== keyEl) {
-						if (child.nodeType === Node.TEXT_NODE) {
-							const t = child.textContent?.trim();
-							if (t) textParts.push(t);
-						} else if (child.nodeType === Node.ELEMENT_NODE) {
-							textParts.push((child as HTMLElement).innerHTML || child.textContent || '');
-						}
-					}
-				});
-				text = textParts.join(' ').trim();
-			}
-
-			// Store the footnote if it has content
-			if (text) {
-				this.collectedFootnotes.push({ key, text });
-			}
-
-			// Replace the note element with just a marker
-			const marker = document.createElement('span');
-			marker.className = 'note-marker';
-			marker.textContent = key;
-			note.parentNode?.replaceChild(marker, note);
-		});
-
-		return clone.innerHTML.trim();
-	}
+	private collectedFootnotes: ExtractedFootnote[] = [];
 
 	/**
 	 * Clear collected footnotes (call before processing new verses)
@@ -1365,15 +1101,7 @@ export class VersePopup {
 	 * @returns HTML string for footnotes section, or empty string if none
 	 */
 	private buildFootnotesHtml(): string {
-		if (this.collectedFootnotes.length === 0) {
-			return '';
-		}
-
-		const footnoteItems = this.collectedFootnotes.map(fn =>
-			`<div class="verse-popup-footnote"><span class="fn-key">${fn.key}</span><span class="fn-text">${fn.text}</span></div>`
-		).join('');
-
-		return `<div class="verse-popup-footnotes">${footnoteItems}</div>`;
+		return buildFootnotesHtmlUtil(this.collectedFootnotes);
 	}
 
 	/**
@@ -1400,64 +1128,32 @@ export class VersePopup {
 	 * @returns HTML string for social share section
 	 */
 	private buildSocialShareHtml(reference: string, content: string): string {
-		if (!this.config.popup.showSocialShare) {
-			return '';
-		}
-
-		const platforms = this.config.popup.socialSharePlatforms || ['facebook', 'x', 'copy'];
-		const buttons = platforms.map(platform => {
-			const icon = SOCIAL_ICONS[platform] || '';
-			const title = platform === 'copy' ? 'Copy to clipboard' : `Share on ${platform.charAt(0).toUpperCase() + platform.slice(1)}`;
-			return `<button class="verse-popup-social-btn ${platform}" data-platform="${platform}" title="${title}">${icon}</button>`;
-		}).join('');
-
-		return `<div class="verse-popup-social">${buttons}</div>`;
+		return buildSocialShareHtmlUtil({
+			showSocialShare: this.config.popup.showSocialShare,
+			socialSharePlatforms: this.config.popup.socialSharePlatforms,
+			appBaseUrl: this.config.appBaseUrl
+		});
 	}
 
 	/**
 	 * Handle social share button click
 	 */
 	private handleSocialShare(platform: string, reference: string, content: string): void {
-		// Strip HTML tags from content for plain text
-		const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-		const shareText = `"${plainText}" - ${reference}`;
-		const shareUrl = `${this.config.appBaseUrl}#${this.parseReference(reference)?.sectionId || ''}`;
-
-		switch (platform) {
-			case 'facebook':
-				window.open(
-					`https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}&u=${encodeURIComponent(shareUrl)}`,
-					'_blank',
-					'width=600,height=400'
-				);
-				break;
-			case 'x':
-				window.open(
-					`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
-					'_blank',
-					'width=600,height=400'
-				);
-				break;
-			case 'bluesky':
-				window.open(
-					`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
-					'_blank',
-					'width=600,height=400'
-				);
-				break;
-			case 'copy':
-				navigator.clipboard.writeText(shareText).then(() => {
-					// Show copied feedback
-					const btn = this.popup?.querySelector('.verse-popup-social-btn.copy');
-					if (btn) {
-						btn.classList.add('copied');
-						setTimeout(() => btn.classList.remove('copied'), 1500);
-					}
-				}).catch(err => {
-					console.error('Failed to copy:', err);
-				});
-				break;
-		}
+		const popup = this.popup;
+		handleSocialShareUtil(
+			platform,
+			reference,
+			content,
+			this.config.appBaseUrl,
+			(ref) => this.parseReference(ref),
+			popup ? (selector, className, duration) => {
+				const btn = popup.querySelector(selector);
+				if (btn) {
+					btn.classList.add(className);
+					setTimeout(() => btn.classList.remove(className), duration);
+				}
+			} : undefined
+		);
 	}
 
 	/** Current reference for social sharing */

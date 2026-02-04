@@ -4,11 +4,11 @@
  * Usage options:
  *
  * 1. Import all languages (no tree-shaking):
- *    import { bookNamesByLanguage } from 'verse-detection/languages';
+ *    import { bookNamesByLanguage } from '@browserbible/verse-detection/languages';
  *
  * 2. Import specific languages (tree-shakeable):
- *    import { en } from 'verse-detection/languages/en';
- *    import { es } from 'verse-detection/languages/es';
+ *    import en from '@browserbible/verse-detection/languages/en.json';
+ *    import es from '@browserbible/verse-detection/languages/es.json';
  */
 
 import type { BookNamePatterns, CanonicalBookName, LanguageCode } from './types.js';
@@ -16,29 +16,20 @@ import type { BookNamePatterns, CanonicalBookName, LanguageCode } from './types.
 // Re-export types
 export type { BookNamePatterns, CanonicalBookName, LanguageCode } from './types.js';
 
-// Import all language modules
-import { en } from './en.js';
-import { es } from './es.js';
-import { pt } from './pt.js';
-import { fr } from './fr.js';
-import { de } from './de.js';
-import { ru } from './ru.js';
-import { ar } from './ar.js';
-import { hi } from './hi.js';
-import { zh } from './zh.js';
-import { id } from './id.js';
+// Import all language modules from JSON
+import en from './en.json';
+import es from './es.json';
+import pt from './pt.json';
+import fr from './fr.json';
+import de from './de.json';
+import ru from './ru.json';
+import ar from './ar.json';
+import hi from './hi.json';
+import zh from './zh.json';
+import id from './id.json';
 
 // Re-export individual languages for selective imports
-export { en } from './en.js';
-export { es } from './es.js';
-export { pt } from './pt.js';
-export { fr } from './fr.js';
-export { de } from './de.js';
-export { ru } from './ru.js';
-export { ar } from './ar.js';
-export { hi } from './hi.js';
-export { zh } from './zh.js';
-export { id } from './id.js';
+export { en, es, pt, fr, de, ru, ar, hi, zh, id };
 
 /**
  * All book name patterns organized by language code
@@ -48,16 +39,16 @@ export type BookNamesByLanguage = {
 };
 
 export const bookNamesByLanguage: BookNamesByLanguage = {
-	en,
-	es,
-	pt,
-	fr,
-	de,
-	ru,
-	ar,
-	hi,
-	zh,
-	id
+	en: en as BookNamePatterns,
+	es: es as BookNamePatterns,
+	pt: pt as BookNamePatterns,
+	fr: fr as BookNamePatterns,
+	de: de as BookNamePatterns,
+	ru: ru as BookNamePatterns,
+	ar: ar as BookNamePatterns,
+	hi: hi as BookNamePatterns,
+	zh: zh as BookNamePatterns,
+	id: id as BookNamePatterns
 };
 
 /**

@@ -31,51 +31,22 @@
       "types": "./dist/languages/types.d.ts",
       "import": "./dist/languages/types.js"
     },
-    "./languages/en": {
-      "types": "./dist/languages/en.d.ts",
-      "import": "./dist/languages/en.js"
-    },
-    "./languages/es": {
-      "types": "./dist/languages/es.d.ts",
-      "import": "./dist/languages/es.js"
-    },
-    "./languages/pt": {
-      "types": "./dist/languages/pt.d.ts",
-      "import": "./dist/languages/pt.js"
-    },
-    "./languages/fr": {
-      "types": "./dist/languages/fr.d.ts",
-      "import": "./dist/languages/fr.js"
-    },
-    "./languages/de": {
-      "types": "./dist/languages/de.d.ts",
-      "import": "./dist/languages/de.js"
-    },
-    "./languages/ru": {
-      "types": "./dist/languages/ru.d.ts",
-      "import": "./dist/languages/ru.js"
-    },
-    "./languages/ar": {
-      "types": "./dist/languages/ar.d.ts",
-      "import": "./dist/languages/ar.js"
-    },
-    "./languages/hi": {
-      "types": "./dist/languages/hi.d.ts",
-      "import": "./dist/languages/hi.js"
-    },
-    "./languages/zh": {
-      "types": "./dist/languages/zh.d.ts",
-      "import": "./dist/languages/zh.js"
-    },
-    "./languages/id": {
-      "types": "./dist/languages/id.d.ts",
-      "import": "./dist/languages/id.js"
-    }
+    "./languages/en.json": "./languages/en.json",
+    "./languages/es.json": "./languages/es.json",
+    "./languages/pt.json": "./languages/pt.json",
+    "./languages/fr.json": "./languages/fr.json",
+    "./languages/de.json": "./languages/de.json",
+    "./languages/ru.json": "./languages/ru.json",
+    "./languages/ar.json": "./languages/ar.json",
+    "./languages/hi.json": "./languages/hi.json",
+    "./languages/zh.json": "./languages/zh.json",
+    "./languages/id.json": "./languages/id.json"
   },
   "files": [
     "dist",
     "*.ts",
     "languages/*.ts",
+    "languages/*.json",
     "README.md"
   ],
   "scripts": {

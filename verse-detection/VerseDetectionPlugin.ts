@@ -31,6 +31,11 @@ import {
 } from './config.js';
 
 import { VersePopup, type BrowserBibleApp } from './VersePopup.js';
+import { BOOK_CODES } from './BookCodes.js';
+import {
+	getTextIdForLanguage as getTextIdForLanguageUtil,
+	buildVerseUrl as buildVerseUrlUtil
+} from './VerseUrlBuilder.js';
 
 /** Parsed chapter information */
 export interface ParsedChapter {
@@ -561,27 +566,6 @@ export async function initVerseDetection(
 		await popup.init(app ?? undefined);
 	}
 
-	// Book code mapping for URL generation
-	const BOOK_CODES: Record<string, string> = {
-		'Genesis': 'GN', 'Exodus': 'EX', 'Leviticus': 'LV', 'Numbers': 'NU',
-		'Deuteronomy': 'DT', 'Joshua': 'JS', 'Judges': 'JG', 'Ruth': 'RT',
-		'1 Samuel': 'S1', '2 Samuel': 'S2', '1 Kings': 'K1', '2 Kings': 'K2',
-		'1 Chronicles': 'R1', '2 Chronicles': 'R2', 'Ezra': 'ER', 'Nehemiah': 'NH',
-		'Esther': 'ES', 'Job': 'JB', 'Psalms': 'PS', 'Proverbs': 'PR',
-		'Ecclesiastes': 'EC', 'Song of Solomon': 'SS', 'Isaiah': 'IS', 'Jeremiah': 'JR',
-		'Lamentations': 'LM', 'Ezekiel': 'EK', 'Daniel': 'DN', 'Hosea': 'HO',
-		'Joel': 'JL', 'Amos': 'AM', 'Obadiah': 'OB', 'Jonah': 'JH',
-		'Micah': 'MC', 'Nahum': 'NM', 'Habakkuk': 'HK', 'Zephaniah': 'ZP',
-		'Haggai': 'HG', 'Zechariah': 'ZC', 'Malachi': 'ML',
-		'Matthew': 'MT', 'Mark': 'MK', 'Luke': 'LK', 'John': 'JN',
-		'Acts': 'AC', 'Romans': 'RM', '1 Corinthians': 'C1', '2 Corinthians': 'C2',
-		'Galatians': 'GL', 'Ephesians': 'EP', 'Philippians': 'PP', 'Colossians': 'CL',
-		'1 Thessalonians': 'H1', '2 Thessalonians': 'H2', '1 Timothy': 'T1', '2 Timothy': 'T2',
-		'Titus': 'TT', 'Philemon': 'PM', 'Hebrews': 'HB', 'James': 'JM',
-		'1 Peter': 'P1', '2 Peter': 'P2', '1 John': 'J1', '2 John': 'J2',
-		'3 John': 'J3', 'Jude': 'JD', 'Revelation': 'RV'
-	};
-
 	/**
 	 * Get text ID for a specific language
 	 * @param lang - Language code
@@ -590,23 +574,7 @@ export async function initVerseDetection(
 	function getTextIdForLanguage(lang: string): string {
 		const contentConfig = finalConfig.contentSource;
 		const textIdsByLanguage = contentConfig?.textIdsByLanguage || {};
-
-		// Try the specific language first
-		if (textIdsByLanguage[lang]) {
-			return textIdsByLanguage[lang];
-		}
-
-		// Fall back to default text ID
-		if (finalConfig.defaultTextId) {
-			return finalConfig.defaultTextId;
-		}
-
-		// Fall back to English
-		if (textIdsByLanguage['en']) {
-			return textIdsByLanguage['en'];
-		}
-
-		return '';
+		return getTextIdForLanguageUtil(lang, textIdsByLanguage, finalConfig.defaultTextId);
 	}
 
 	/**
@@ -615,55 +583,11 @@ export async function initVerseDetection(
 	 * @returns URL for the verse
 	 */
 	function buildVerseUrl(verse: ParsedVerseReference): string {
-		const linkConfig = finalConfig.link;
-		const appBaseUrl = finalConfig.appBaseUrl || '';
-		// Use detected language to get appropriate text ID
-		const textId = getTextIdForLanguage(verse.detectedLanguage || 'en');
-
-		// Parse chapter and verse from reference
-		const chapterMatch = verse.reference?.match(/^(\d+)/);
-		const verseMatch = verse.reference?.match(/:(\d+)/);
-		const chapter = chapterMatch ? chapterMatch[1] : '';
-		const verseNum = verseMatch ? verseMatch[1] : '';
-
-		// Get book code
-		const bookCode = BOOK_CODES[verse.book] || '';
-		const sectionId = bookCode && chapter ? `${bookCode}${chapter}` : '';
-		const fragmentId = sectionId && verseNum ? `${sectionId}_${verseNum}` : sectionId;
-
-		// If custom URL template is provided, use it
-		if (linkConfig.urlTemplate) {
-			return linkConfig.urlTemplate
-				.replace('{ref}', encodeURIComponent(`${verse.book} ${verse.reference}`))
-				.replace('{book}', encodeURIComponent(verse.book))
-				.replace('{bookCode}', bookCode)
-				.replace('{chapter}', chapter)
-				.replace('{verse}', verseNum)
-				.replace('{version}', textId)
-				.replace('{sectionId}', sectionId)
-				.replace('{fragmentId}', fragmentId);
-		}
-
-		// Build URL using appBaseUrl
-		let url = appBaseUrl;
-
-		// Add version parameter if configured
-		if (finalConfig.versionLinking?.includeVersion && textId) {
-			const versionParam = finalConfig.versionLinking.versionParam || 'version';
-			url += url.includes('?') ? '&' : '?';
-			url += `${versionParam}=${encodeURIComponent(textId)}`;
-		}
-
-		// Add verse reference using hash navigation or query param
-		if (linkConfig.useHashNavigation && fragmentId) {
-			url += `#${fragmentId}`;
-		} else {
-			const refParam = linkConfig.refParam || 'ref';
-			url += url.includes('?') ? '&' : '?';
-			url += `${refParam}=${encodeURIComponent(`${verse.book} ${verse.reference}`)}`;
-		}
-
-		return url || 'javascript:void(0)';
+		return buildVerseUrlUtil({
+			book: verse.book,
+			reference: verse.reference,
+			detectedLanguage: verse.detectedLanguage
+		}, finalConfig);
 	}
 
 	// Track which languages have available texts (for skipping links)
