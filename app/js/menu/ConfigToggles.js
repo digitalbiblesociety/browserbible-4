@@ -3,7 +3,7 @@
  * Toggle switches for various display options
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -62,14 +62,12 @@ export function ConfigToggles(_parentNode, _menu) {
     const toggleId = toggleName.replace(/\s/gi, '').toLowerCase();
     const toggleDefaultSetting = { checked: defaultValue };
     const toggleSetting = AppSettings.getValue(toggleId, toggleDefaultSetting);
-    const toggle = createElements(`<div id="config-toggle-${toggleId}" class="config-toggle">` +
-      `<input id="config-toggle-${toggleId}-input" type="checkbox" value="${toggleId}" />` +
-      `<label for="config-toggle-${toggleId}-input" title="${toggleName}">${toggleName}</label>` +
-      `</div>`);
+    const toggle = elem('div', { id: `config-toggle-${toggleId}`, className: 'config-toggle' });
+    const input = elem('input', { id: `config-toggle-${toggleId}-input`, type: 'checkbox', value: toggleId });
+    const label = elem('label', { htmlFor: `config-toggle-${toggleId}-input`, title: toggleName, textContent: toggleName });
+    toggle.append(input, label);
 
     body?.appendChild(toggle);
-
-    const input = toggle.querySelector('input');
     if (input) {
       // Use regular function here because we need `this` binding for the event handler
       input.addEventListener('click', function() {

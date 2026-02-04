@@ -4,7 +4,7 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 
@@ -16,7 +16,8 @@ import { MovableWindow } from '../ui/MovableWindow.js';
  */
 export function ConfigButton(_parentNode, _menu) {
   const container = document.querySelector('.windows-container');
-  const configButton = createElements('<div class="main-menu-item image-config i18n" data-i18n="[html]menu.labels.settings"></div>');
+  const configButton = elem('div', { className: 'main-menu-item image-config i18n' });
+  configButton.setAttribute('data-i18n', '[html]menu.labels.settings');
   const mainMenuFeatures = document.querySelector('#main-menu-features');
 
   const configWindow = new MovableWindow(300, 380, i18n.t('menu.labels.settings'), 'config-window');

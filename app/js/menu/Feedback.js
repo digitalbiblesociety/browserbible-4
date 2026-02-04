@@ -3,7 +3,7 @@
  * Feedback form dialog
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
@@ -22,7 +22,8 @@ export function Feedback(_parentNode, _menu) {
   }
 
   const container = document.querySelector('.windows-container');
-  const feedbackButton = createElements('<div class="main-menu-item feedback-logo i18n" data-i18n="[html]menu.labels.feedback">Feedback</div>');
+  const feedbackButton = elem('div', { className: 'main-menu-item feedback-logo i18n', textContent: 'Feedback' });
+  feedbackButton.setAttribute('data-i18n', '[html]menu.labels.feedback');
   const mainMenuFeatures = document.querySelector('#main-menu-features');
   const modalOverlay = Object.assign(document.createElement('div'), { className: 'modal-overlay' });
   const feedbackWindow = new MovableWindow(Math.min(window.innerWidth, 500), 300, i18n.t('menu.labels.feedback'));
@@ -34,26 +35,34 @@ export function Feedback(_parentNode, _menu) {
 
   const feedbackBody = feedbackWindow.body;
 
-  const name = createElements('<input type="text" id="feedback-from" class="app-input i18n" data-i18n="[placeholder]menu.feedback.name" />');
+  const name = elem('input', { type: 'text', id: 'feedback-from', className: 'app-input i18n' });
+  name.setAttribute('data-i18n', '[placeholder]menu.feedback.name');
   feedbackBody.appendChild(name);
 
-  const email = createElements('<input type="email" id="feedback-email" class="app-input i18n" data-i18n="[placeholder]menu.feedback.email" />');
+  const email = elem('input', { type: 'email', id: 'feedback-email', className: 'app-input i18n' });
+  email.setAttribute('data-i18n', '[placeholder]menu.feedback.email');
   feedbackBody.appendChild(email);
 
-  const subject = createElements(`<select id="feedback-subject" class="app-list">
-    <option class="i18n" data-i18n="[html]menu.feedback.feature"></option>
-    <option class="i18n" data-i18n="[html]menu.feedback.bug"></option>
-    <option class="i18n" data-i18n="[html]menu.feedback.other"></option>
-    </select>`);
+  const subject = elem('select', { id: 'feedback-subject', className: 'app-list' });
+  const opt1 = elem('option', { className: 'i18n' });
+  opt1.setAttribute('data-i18n', '[html]menu.feedback.feature');
+  const opt2 = elem('option', { className: 'i18n' });
+  opt2.setAttribute('data-i18n', '[html]menu.feedback.bug');
+  const opt3 = elem('option', { className: 'i18n' });
+  opt3.setAttribute('data-i18n', '[html]menu.feedback.other');
+  subject.append(opt1, opt2, opt3);
   feedbackBody.appendChild(subject);
 
-  const comments = createElements('<textarea id="feedback-comment" class="app-input i18n" data-i18n="[placeholder]menu.feedback.comments"></textarea>');
+  const comments = elem('textarea', { id: 'feedback-comment', className: 'app-input i18n' });
+  comments.setAttribute('data-i18n', '[placeholder]menu.feedback.comments');
   feedbackBody.appendChild(comments);
 
-  const send = createElements('<input type="button" id="feedback-submit" class="app-button i18n" data-i18n="[value]menu.feedback.send" />');
+  const send = elem('input', { type: 'button', id: 'feedback-submit', className: 'app-button i18n' });
+  send.setAttribute('data-i18n', '[value]menu.feedback.send');
   feedbackBody.appendChild(send);
 
-  const message = createElements('<div class="feedback-message i18n" data-i18n="[placeholder]menu.feedback.thankyou"></div>');
+  const message = elem('div', { className: 'feedback-message i18n' });
+  message.setAttribute('data-i18n', '[placeholder]menu.feedback.thankyou');
   feedbackBody.appendChild(message);
   message.style.display = 'none';
 

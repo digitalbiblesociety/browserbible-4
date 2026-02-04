@@ -12,8 +12,7 @@ import {
   getWindowType,
   getAllWindowTypes,
   getAllPlugins,
-  addPluginInstance,
-  getAllResources
+  addPluginInstance
 } from './registry.js';
 import { TextNavigation, PlaceKeeper } from '../common/Navigation.js';
 import { i18n } from '../lib/i18n.js';
@@ -220,9 +219,9 @@ export class App {
 /**
  * Initialize and start the application
  * Handles custom configs, i18n setup, and CSS loading
- * @returns {App} The initialized app instance
+ * @returns {Promise<App>} The initialized app instance
  */
-export function initApp() {
+export async function initApp() {
   const config = getConfig();
 
   const params = Object.fromEntries(new URLSearchParams(window.location.search));
@@ -260,10 +259,9 @@ export function initApp() {
     lngSetting = config.defaultLanguage;
   }
 
-  i18n.init({
+  await i18n.init({
     fallbackLng: 'en',
-    lng: lngSetting,
-    resStore: getAllResources()
+    lng: lngSetting
   });
 
   app.init();

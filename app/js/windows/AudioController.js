@@ -3,8 +3,8 @@
  * Controls audio playback synchronized with text scrolling
  */
 
-import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { Reference } from '../bible/BibleReference.js';
 import { AudioDataManager } from '../media/AudioDataManager.js';
@@ -20,59 +20,52 @@ import { AudioDataManager } from '../media/AudioDataManager.js';
 export function AudioController(id, container, toggleButton, scroller) {
   const containerEl = container?.nodeType ? container : container?.[0];
 
-  let block = createElements(
-    `<div class="audio-controller">
-      <audio></audio>
-      <div class="audio-slider">
-        <div class="audio-slider-current"></div>
-        <div class="audio-slider-loaded"></div>
-        <span class="audio-slider-handle"></span>
-      </div>
-      <input type="button" class="audio-prev" value="Prev" />
-      <input type="button" class="audio-play" value="Play" />
-      <input type="button" class="audio-next" value="Next" />
-      <span class="audio-currenttime">00:00</span>
-      <span class="audio-duration">00:00</span>
-      <span class="audio-title"></span>
-      <span class="audio-subtitle"></span>
-      <input type="button" class="audio-options-button image-config-light" />
-    </div>`
-  );
+  let block = elem('div', { className: 'audio-controller' });
+  const audio = elem('audio');
+  const audioSlider = elem('div', { className: 'audio-slider' });
+  const audioSliderCurrent = elem('div', { className: 'audio-slider-current' });
+  const audioSliderLoaded = elem('div', { className: 'audio-slider-loaded' });
+  const audioSliderHandle = elem('span', { className: 'audio-slider-handle' });
+  audioSlider.append(audioSliderCurrent, audioSliderLoaded, audioSliderHandle);
+  const prevButton = elem('input', { type: 'button', className: 'audio-prev', value: 'Prev' });
+  const playButton = elem('input', { type: 'button', className: 'audio-play', value: 'Play' });
+  const nextButton = elem('input', { type: 'button', className: 'audio-next', value: 'Next' });
+  const currenttime = elem('span', { className: 'audio-currenttime', textContent: '00:00' });
+  const duration = elem('span', { className: 'audio-duration', textContent: '00:00' });
+  const title = elem('span', { className: 'audio-title' });
+  const subtitle = elem('span', { className: 'audio-subtitle' });
+  const optionsButton = elem('input', { type: 'button', className: 'audio-options-button image-config-light' });
+  block.append(audio, audioSlider, prevButton, playButton, nextButton, currenttime, duration, title, subtitle, optionsButton);
   containerEl.appendChild(block);
 
-  const optionsButton = block.querySelector('.audio-options-button');
-
-  let options = createElements(
-    `<div class="audio-options">
-      <span class="close-button"></span>
-      <strong class="i18n" data-i18n="[html]windows.audio.options"></strong>
-      <label><input type="checkbox" class="audio-scroll" checked /><span class="i18n" data-i18n="[html]windows.audio.synctext" /></label>
-      <label><input type="checkbox" class="audio-autoplay" checked /><span class="i18n" data-i18n="[html]windows.audio.autoplay" /></label>
-      <div class="audio-dramatic-option">
-        <label><input type="radio" name="${id}-dramatic-option" class="audio-dramatic-audio" disabled /><span class="i18n" data-i18n="[html]windows.audio.nondrama" /></label>
-        <label><input type="radio" name="${id}-dramatic-option" class="audio-dramatic-drama" disabled /><span class="i18n" data-i18n="[html]windows.audio.drama" /></label>
-      </div>
-    </div>`
-  );
+  let options = elem('div', { className: 'audio-options' });
+  const optionsCloseButton = elem('span', { className: 'close-button' });
+  const optionsTitle = elem('strong', { className: 'i18n' });
+  optionsTitle.setAttribute('data-i18n', '[html]windows.audio.options');
+  const scrollLabel = elem('label');
+  const scrollCheckbox = elem('input', { type: 'checkbox', className: 'audio-scroll', checked: true });
+  const scrollSpan = elem('span', { className: 'i18n' });
+  scrollSpan.setAttribute('data-i18n', '[html]windows.audio.synctext');
+  scrollLabel.append(scrollCheckbox, scrollSpan);
+  const autoplayLabel = elem('label');
+  const autoplayCheckbox = elem('input', { type: 'checkbox', className: 'audio-autoplay', checked: true });
+  const autoplaySpan = elem('span', { className: 'i18n' });
+  autoplaySpan.setAttribute('data-i18n', '[html]windows.audio.autoplay');
+  autoplayLabel.append(autoplayCheckbox, autoplaySpan);
+  const optionsDramaticBox = elem('div', { className: 'audio-dramatic-option' });
+  const audioLabel = elem('label');
+  const optionsDramaticAudio = elem('input', { type: 'radio', name: `${id}-dramatic-option`, className: 'audio-dramatic-audio', disabled: true });
+  const audioSpan = elem('span', { className: 'i18n' });
+  audioSpan.setAttribute('data-i18n', '[html]windows.audio.nondrama');
+  audioLabel.append(optionsDramaticAudio, audioSpan);
+  const dramaLabel = elem('label');
+  const optionsDramaticDrama = elem('input', { type: 'radio', name: `${id}-dramatic-option`, className: 'audio-dramatic-drama', disabled: true });
+  const dramaSpan = elem('span', { className: 'i18n' });
+  dramaSpan.setAttribute('data-i18n', '[html]windows.audio.drama');
+  dramaLabel.append(optionsDramaticDrama, dramaSpan);
+  optionsDramaticBox.append(audioLabel, dramaLabel);
+  options.append(optionsCloseButton, optionsTitle, scrollLabel, autoplayLabel, optionsDramaticBox);
   containerEl.appendChild(options);
-
-  const scrollCheckbox = options.querySelector('.audio-scroll');
-  const autoplayCheckbox = options.querySelector('.audio-autoplay');
-  const optionsCloseButton = options.querySelector('.close-button');
-  const optionsDramaticBox = options.querySelector('.audio-dramatic-option');
-  const optionsDramaticDrama = options.querySelector('.audio-dramatic-drama');
-  const optionsDramaticAudio = options.querySelector('.audio-dramatic-audio');
-  const audio = block.querySelector('audio');
-  const playButton = block.querySelector('.audio-play');
-  const nextButton = block.querySelector('.audio-next');
-  const prevButton = block.querySelector('.audio-prev');
-  const currenttime = block.querySelector('.audio-currenttime');
-  const duration = block.querySelector('.audio-duration');
-  const title = block.querySelector('.audio-title');
-  const subtitle = block.querySelector('.audio-subtitle');
-  const audioSlider = block.querySelector('.audio-slider');
-  const audioSliderCurrent = block.querySelector('.audio-slider-current');
-  const audioSliderHandle = block.querySelector('.audio-slider-handle');
   const audioDataManager = new AudioDataManager();
 
   let isDraggingSliderHandle = false;
@@ -525,7 +518,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     size,
     close
   };
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   return ext;
 }

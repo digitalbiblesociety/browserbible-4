@@ -3,7 +3,7 @@
  * Top search input for Bible references and text search
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { Reference } from '../bible/BibleReference.js';
 import { getApp } from '../core/registry.js';
 import { getConfig } from '../core/config.js';
@@ -38,20 +38,18 @@ function getCurrentVersion() {
  * @returns {HTMLElement} Search box element
  */
 export function MainSearchBox(parentNode, _menu) {
-  const searchBox = createElements(`<div id="main-search-box">
-    <input type="search" class="i18n" data-i18n="[placeholder]menu.search.placeholder" id="main-search-input" autocomplete="off" />
-    <input type="button" id="main-search-button" value="" />
-    </div>`);
+  const searchBox = elem('div', { id: 'main-search-box' });
+  const searchInput = elem('input', { type: 'search', className: 'i18n', id: 'main-search-input', autocomplete: 'off' });
+  searchInput.setAttribute('data-i18n', '[placeholder]menu.search.placeholder');
+  const searchButton = elem('input', { type: 'button', id: 'main-search-button', value: '' });
+  searchBox.append(searchInput, searchButton);
 
-  const suggestions = createElements(`<div id="main-search-suggestions" style="display: none;"></div>`);
+  const suggestions = elem('div', { id: 'main-search-suggestions', style: { display: 'none' } });
 
   if (parentNode) {
     parentNode.appendChild(searchBox);
     parentNode.appendChild(suggestions);
   }
-
-  const searchInput = searchBox.querySelector('#main-search-input');
-  const searchButton = searchBox.querySelector('#main-search-button');
 
   let selectedIndex = 0;
   let currentOptions = [];

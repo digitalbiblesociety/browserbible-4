@@ -3,7 +3,7 @@
  * Theme selector (default, sepia, dark)
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 
@@ -30,7 +30,13 @@ export function ThemeSetting(_parentNode, _menu) {
   body?.appendChild(themesBlock);
 
   for (const themeName of themeNames) {
-    const span = createElements(`<span id="config-theme-${themeName}" class="config-theme-toggle i18n" data-i18n="[html]menu.themes.${themeName}" data-themename="${themeName}">${themeName}</span>`);
+    const span = elem('span', {
+      id: `config-theme-${themeName}`,
+      className: 'config-theme-toggle i18n',
+      textContent: themeName
+    });
+    span.setAttribute('data-i18n', `[html]menu.themes.${themeName}`);
+    span.setAttribute('data-themename', themeName);
     themesBlock.appendChild(span);
   }
 

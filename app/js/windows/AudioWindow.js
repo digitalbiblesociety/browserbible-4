@@ -3,8 +3,7 @@
  */
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
-import { deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { Reference } from '../bible/BibleReference.js';
 import { AudioController } from './AudioController.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
@@ -100,7 +99,7 @@ export class AudioWindowComponent extends BaseWindow {
     this.refs.textlistui.innerHTML = 'Version';
 
     this.scrollerMimic = {};
-    this.scrollerMimic = deepMerge(this.scrollerMimic, EventEmitterMixin);
+    mixinEventEmitter(this.scrollerMimic);
     this.scrollerMimic.getLocationInfo = () => this.state.currentLocationInfo;
 
     this.audioController = AudioController(this.windowId, this.refs.main, null, this.scrollerMimic);

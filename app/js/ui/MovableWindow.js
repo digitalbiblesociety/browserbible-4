@@ -3,7 +3,7 @@
  * A draggable popup window component
  */
 
-import { createElements, offset } from '../lib/helpers.esm.js';
+import { elem, offset } from '../lib/helpers.esm.js';
 
 /**
  * Create a movable window
@@ -14,22 +14,16 @@ import { createElements, offset } from '../lib/helpers.esm.js';
  * @returns {Object} Window API object
  */
 export function MovableWindow(width = 300, height = 200, titleText = '', id = null) {
-  const container = createElements(
-    '<div class="movable-window" popover' + (id ? ' id="' + id + '"' : '') + '>' +
-      '<div class="movable-header">' +
-        '<span class="movable-header-title">' + titleText + '</span>' +
-        '<span class="close-button"></span>' +
-      '</div>' +
-      '<div class="movable-body"></div>' +
-    '</div>'
-  );
+  const container = elem('div', { className: 'movable-window', popover: '' });
+  if (id) container.id = id;
+  const header = elem('div', { className: 'movable-header' });
+  const title = elem('span', { className: 'movable-header-title', textContent: titleText });
+  const close = elem('span', { className: 'close-button' });
+  header.append(title, close);
+  const body = elem('div', { className: 'movable-body' });
+  container.append(header, body);
 
   document.body.appendChild(container);
-
-  const header = container.querySelector('.movable-header');
-  const title = container.querySelector('.movable-header-title');
-  const body = container.querySelector('.movable-body');
-  const close = container.querySelector('.close-button');
 
   let startWindowPosition = null;
   let startMousePosition = null;

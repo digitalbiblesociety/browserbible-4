@@ -3,7 +3,6 @@
  */
 
 import { addNames } from '../bible/BibleData.js';
-import { deepMerge } from '../lib/helpers.esm.js';
 
 const textProviders = new Map();
 
@@ -149,7 +148,7 @@ export function getText(textid, callback, errorCallback) {
 
   provider.getTextInfo(textid, (data) => {
     const initialInfo = textInfoData[textid];
-    data = deepMerge({}, initialInfo, data);
+    data = { ...initialInfo, ...data };
 
     processText(data, providerName);
 

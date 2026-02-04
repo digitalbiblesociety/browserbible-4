@@ -4,8 +4,8 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 
 /**
  * Create an info window
@@ -13,17 +13,13 @@ import { EventEmitterMixin } from '../common/EventEmitter.js';
  * @returns {Object} InfoWindow API object
  */
 export function InfoWindow(id = null) {
-  const container = createElements(
-    '<div class="info-window" popover' + (id ? ' id="' + id + '"' : '') + '>' +
-      '<span class="close-button"></span>' +
-      '<div class="info-body"></div>' +
-    '</div>'
-  );
+  const container = elem('div', { className: 'info-window', popover: '' });
+  if (id) container.id = id;
+  const close = elem('span', { className: 'close-button' });
+  const body = elem('div', { className: 'info-body' });
+  container.append(close, body);
 
   document.body.appendChild(container);
-
-  const body = container.querySelector('.info-body');
-  const close = container.querySelector('.close-button');
 
   close.addEventListener('click', hide, false);
 
@@ -97,7 +93,7 @@ export function InfoWindow(id = null) {
     destroy
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
   ext._events = {};
 
   return ext;

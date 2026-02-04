@@ -4,8 +4,8 @@
  * Uses virtual scrolling for 60fps smooth rendering
  */
 
-import { createElements, deepMerge, offset } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 import { loadTexts, getText } from '../texts/TextLoader.js';
 
@@ -35,51 +35,19 @@ export function TextChooser() {
   const recentlyUsedKey = 'texts-recently-used';
   let recentlyUsed = AppSettings.getValue(recentlyUsedKey, { recent: [] });
 
-  const textChooser = createElements(
-    '<div class="text-chooser nav-drop-list" popover>' +
-      '<span class="up-arrow"></span>' +
-      '<span class="up-arrow-border"></span>' +
-      '<div class="text-chooser-header">' +
-        '<div class="text-chooser-selector">' +
-          '<span class="text-chooser-default selected i18n" data-mode="default" data-i18n="[html]windows.bible.default"></span>' +
-          '<span class="text-chooser-languages i18n" data-mode="languages" data-i18n="[html]windows.bible.languages"></span>' +
-          '<span class="text-chooser-countries i18n" data-mode="countries" data-i18n="[html]windows.bible.countries"></span>' +
-        '</div>' +
-        '<input type="text" class="text-chooser-filter-text i18n" data-i18n="[placeholder]windows.bible.filter" />' +
-        '<span class="close-button">Close</span>' +
-      '</div>' +
-      '<div class="text-chooser-main">' +
-        '<div class="text-chooser-scroll-content"></div>' +
-      '</div>' +
-    '</div>'
-  );
+  const textChooser = elem('div', { className: 'text-chooser nav-drop-list', popover: 'auto' });
 
-  const header = textChooser.querySelector('.text-chooser-header');
-  const main = textChooser.querySelector('.text-chooser-main');
-  const scrollContent = textChooser.querySelector('.text-chooser-scroll-content');
-  const listselector = textChooser.querySelector('.text-chooser-selector');
-  const filter = textChooser.querySelector('.text-chooser-filter-text');
-  const closeBtn = textChooser.querySelector('.close-button');
+  const header = elem('div', { className: 'text-chooser-header' });
+  const filter = elem('input', { type: 'text', className: 'text-chooser-filter-text i18n' });
+  filter.setAttribute('data-i18n', '[placeholder]windows.bible.filter');
 
-  // Add CSS containment for performance
-  main.style.contain = 'strict';
-  main.style.overflowY = 'auto';
-  main.style.willChange = 'scroll-position';
+  header.append(filter);
+  const main = elem('div', { className: 'text-chooser-main' });
+  const scrollContent = elem('div', { className: 'text-chooser-scroll-content' });
+  main.appendChild(scrollContent);
+  textChooser.append(header, main);
 
   document.body.appendChild(textChooser);
-
-  if (closeBtn) closeBtn.style.display = 'none';
-  if (listselector) listselector.style.display = 'none';
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', hide, false);
-  }
-
-  textChooser.addEventListener('toggle', (e) => {
-    if (e.newState === 'closed') {
-      ext.trigger('offclick', { type: 'offclick' });
-    }
-  });
 
   filter.addEventListener('input', handleFilterInput, false);
   filter.addEventListener('keydown', handleFilterKeydown, false);
@@ -190,32 +158,34 @@ export function TextChooser() {
   }
 
   function createRowElement(item, top) {
-    const row = document.createElement('div');
-    row.style.cssText = `position:absolute;top:${top}px;left:0;right:0;height:${ROW_HEIGHT}px;`;
+    const row = elem('div', {
+      style: { position: 'absolute', top: `${top}px`, left: '0', right: '0', height: `${ROW_HEIGHT}px` }
+    });
 
     if (item.type === 'header') {
       row.className = 'text-chooser-row-header';
-      row.setAttribute('data-lang-name', item.data);
-      row.innerHTML = `<span class="name">${item.data}</span>`;
+      row.dataset.langName = item.data;
+      row.appendChild(elem('span', { className: 'name', textContent: item.data }));
     } else {
       const text = item.data;
       const isSelected = selectedTextInfo && selectedTextInfo.id === text.id;
 
       row.className = 'text-chooser-row' + (isSelected ? ' selected' : '');
-      row.setAttribute('data-id', text.id);
+      row.dataset.id = text.id;
 
-      let iconsHtml = '';
+      row.appendChild(elem('span', { className: 'text-chooser-abbr', textContent: text.abbr }));
+      row.appendChild(elem('span', { className: 'text-chooser-name', textContent: text.name }));
+
       if (text.hasLemma) {
-        iconsHtml += '<span class="text-chooser-lemma"><span></span></span>';
+        const lemmaIcon = elem('span', { className: 'text-chooser-lemma' });
+        lemmaIcon.appendChild(elem('span'));
+        row.appendChild(lemmaIcon);
       }
       if (text.hasAudio || text.audioDirectory || text.fcbh_audio_ot || text.fcbh_audio_nt) {
-        iconsHtml += '<span class="text-chooser-audio"><span></span></span>';
+        const audioIcon = elem('span', { className: 'text-chooser-audio' });
+        audioIcon.appendChild(elem('span'));
+        row.appendChild(audioIcon);
       }
-
-      row.innerHTML =
-        `<span class="text-chooser-abbr">${text.abbr}</span>` +
-        `<span class="text-chooser-name">${text.name}</span>` +
-        iconsHtml;
     }
 
     return row;
@@ -312,14 +282,6 @@ export function TextChooser() {
     scheduleRender();
   }
 
-  function toggle() {
-    if (textChooser.matches(':popover-open')) {
-      hide();
-    } else {
-      show();
-    }
-  }
-
   function setTarget(_container, _target, _textType) {
     const needsRerender = _textType !== textType;
     container = _container;
@@ -331,61 +293,19 @@ export function TextChooser() {
     }
   }
 
-  function getTarget() {
-    return target;
-  }
-
-  function show() {
-    size();
-    textChooser.showPopover();
-
-    if (!listData) {
-      main.classList.add('loading-indicator');
-      loadTexts(function(data) {
-        listData = data;
-        main.classList.remove('loading-indicator');
-        processTexts(listData);
-      });
-    } else {
-      scheduleRender();
-    }
-
-    size();
-
-    if (filter.value !== '') {
-      filter.value = '';
-      filterText = '';
-      applyFilter();
-    }
-
-    if (!hasTouch) {
-      filter.focus();
-    }
-  }
-
-  function hide() {
-    textChooser.hidePopover();
-  }
-
   function setTextInfo(text) {
     selectedTextInfo = text;
     storeRecentlyUsed(selectedTextInfo);
     scheduleRender();
   }
 
-  function getTextInfo() {
-    return selectedTextInfo;
-  }
-
-  function size(w, h) {
-    if (target == null || container == null) return;
+  function position() {
+    if (target == null) return;
 
     const targetOffset = offset(target);
     const targetOuterHeight = target.offsetHeight;
     const selectorWidth = textChooser.offsetWidth;
-    const winHeight = window.innerHeight - 40;
     const winWidth = window.innerWidth;
-    const maxHeight = winHeight - (targetOffset.top + targetOuterHeight + 10);
 
     let top = targetOffset.top + targetOuterHeight + 10;
     let left = targetOffset.left;
@@ -395,51 +315,58 @@ export function TextChooser() {
       if (left < 0) left = 0;
     }
 
-    textChooser.style.height = maxHeight + 'px';
     textChooser.style.top = top + 'px';
     textChooser.style.left = left + 'px';
-
-    const mainHeight = maxHeight - header.offsetHeight;
-    main.style.height = mainHeight + 'px';
-    viewportHeight = mainHeight;
-
-    // Up arrow
-    const upArrowLeft = targetOffset.left - left + 20;
-    textChooser.querySelectorAll('.up-arrow, .up-arrow-border').forEach(arrow => {
-      arrow.style.left = upArrowLeft + 'px';
-    });
-
-    scheduleRender();
   }
 
-  function isVisible() {
-    return textChooser.matches(':popover-open');
-  }
+  // Handle popover open
+  textChooser.addEventListener('toggle', (e) => {
+    if (e.newState === 'open') {
+      position();
 
-  function node() {
-    return textChooser;
-  }
+      if (!listData) {
+        main.classList.add('loading-indicator');
+        loadTexts(function(data) {
+          listData = data;
+          main.classList.remove('loading-indicator');
+          processTexts(listData);
+        });
+      }
 
-  function close() {
-    hide();
-  }
+      if (filter.value !== '') {
+        filter.value = '';
+        filterText = '';
+        applyFilter();
+      }
+
+      if (!hasTouch) {
+        filter.focus();
+      }
+
+      requestAnimationFrame(() => {
+        viewportHeight = main.clientHeight;
+        scheduleRender();
+      });
+    } else {
+      ext.trigger('offclick', { type: 'offclick' });
+    }
+  });
 
   let ext = {
     setTarget,
-    getTarget,
-    show,
-    hide,
-    toggle,
-    isVisible,
-    node,
-    getTextInfo,
+    getTarget: () => target,
+    getTextInfo: () => selectedTextInfo,
     setTextInfo,
-    size,
-    close
+    // Expose native popover methods directly
+    show: () => textChooser.showPopover(),
+    hide: () => textChooser.hidePopover(),
+    toggle: () => textChooser.togglePopover(),
+    isVisible: () => textChooser.matches(':popover-open'),
+    node: () => textChooser,
+    size: () => {} // No-op, CSS handles sizing
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
-  ext._events = {};
+  mixinEventEmitter(ext);
 
   return ext;
 }

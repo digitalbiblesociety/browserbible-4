@@ -3,8 +3,8 @@
  * Highlights words based on morphological data (Strong's numbers, Greek/Hebrew morphology)
  */
 
-import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
@@ -282,29 +282,28 @@ const MorphologySelector = () => {
   let currentMorphologyKey = 'robinson';
   let currentMorphology = morphologies[currentMorphologyKey];
 
-  const morphSelector = createElements(
-    `<div class="morph-selector"><table>` +
-      `<thead><tr><th>Part of Speech</th></tr></thead>` +
-      `<tbody><tr></tr></tbody>` +
-    `</table></div>`
-  );
+  const morphSelector = elem('div', { className: 'morph-selector' });
+  const morphGrid = elem('div', { className: 'morph-grid', style: { display: 'grid', gridAutoColumns: 'auto', gridTemplateRows: 'auto auto' } });
+  const morphSelectorHeaderRow = elem('div', { className: 'morph-header-row', style: { display: 'contents' } });
+  const morphTh = elem('div', { className: 'morph-th', textContent: 'Part of Speech', style: { gridRow: '1' } });
+  morphSelectorHeaderRow.appendChild(morphTh);
+  const morphSelectorMainRow = elem('div', { className: 'morph-main-row', style: { display: 'contents' } });
+  morphGrid.append(morphSelectorHeaderRow, morphSelectorMainRow);
+  morphSelector.appendChild(morphGrid);
 
   document.body.appendChild(morphSelector);
   morphSelector.style.display = 'none';
-
-  const morphSelectorHeaderRow = morphSelector.querySelector('thead tr');
-  const morphSelectorMainRow = morphSelector.querySelector('tbody tr');
-  const morphSelectorPOS = createElements('<td class="morph-pos"></td>');
+  const morphSelectorPOS = elem('div', { className: 'morph-pos morph-td', style: { gridRow: '2' } });
   morphSelectorMainRow.appendChild(morphSelectorPOS);
 
   // Define drawSelectedPartOfSpeech before drawPartsOfSpeech (which calls it)
   const drawSelectedPartOfSpeech = () => {
-    const firstTh = morphSelectorHeaderRow.querySelector('th');
+    const firstTh = morphSelectorHeaderRow.querySelector('.morph-th');
     [...firstTh.parentElement.children].filter(s => s !== firstTh).forEach(sibling => {
       sibling.parentNode.removeChild(sibling);
     });
 
-    const firstTd = morphSelectorMainRow.querySelector('td');
+    const firstTd = morphSelectorMainRow.querySelector('.morph-td');
     [...firstTd.parentElement.children].filter(s => s !== firstTd).forEach(sibling => {
       sibling.parentNode.removeChild(sibling);
     });
@@ -324,22 +323,24 @@ const MorphologySelector = () => {
 
     if (!partOfSpeech) return;
 
-    const tr = selectedSpan.closest('tr');
+    const row = selectedSpan.closest('.morph-main-row');
     for (const declension of partOfSpeech.declensions) {
-      const th = createElements(`<th>${declension.declension}</th>`);
-      const td = document.createElement('td');
+      const th = elem('div', { className: 'morph-th', textContent: declension.declension, style: { gridRow: '1' } });
+      const td = elem('div', { className: 'morph-td', style: { gridRow: '2' } });
 
       morphSelectorHeaderRow.appendChild(th);
-      tr.appendChild(td);
+      row.appendChild(td);
 
       for (const part of declension.parts) {
-        const span = createElements(`<span data-value="${part.letter}"${declension.breakBefore ? ' data-breakbefore="true"' : ''}>${part.type}</span>`);
+        const span = elem('span', { textContent: part.type });
+        span.setAttribute('data-value', part.letter);
+        if (declension.breakBefore) span.setAttribute('data-breakbefore', 'true');
         td.appendChild(span);
       }
     }
 
-    const table = morphSelector.querySelector('table');
-    morphSelector.style.height = `${table.offsetHeight}px`;
+    const grid = morphSelector.querySelector('.morph-grid');
+    morphSelector.style.height = `${grid.offsetHeight}px`;
   };
 
   // Define drawPartsOfSpeech before setMorphology (which calls it)
@@ -347,7 +348,8 @@ const MorphologySelector = () => {
     morphSelectorPOS.innerHTML = '';
 
     for (const morph of currentMorphology) {
-      const span = createElements(`<span data-value="${morph.letter}">${morph.type}</span>`);
+      const span = elem('span', { textContent: morph.type });
+      span.setAttribute('data-value', morph.letter);
       morphSelectorPOS.appendChild(span);
     }
 
@@ -367,8 +369,9 @@ const MorphologySelector = () => {
   };
 
   const selectRemainderLetters = (remainder) => {
+    const tds = morphSelectorMainRow.querySelectorAll('.morph-td');
     for (let i = 0; i < remainder.length; i++) {
-      const td = morphSelectorMainRow.querySelector(`td:nth-child(${i + 2})`);
+      const td = tds[i + 1]; // Skip first (POS) cell
       const letterSpan = td?.querySelector(`span[data-value="${remainder[i]}"]`);
       if (letterSpan) letterSpan.classList.add('selected');
     }
@@ -408,7 +411,7 @@ const MorphologySelector = () => {
       });
     }
 
-    const parentTd = selectedSpan.closest('td');
+    const parentTd = selectedSpan.closest('.morph-td');
     if (parentTd?.classList.contains('morph-pos')) {
       drawSelectedPartOfSpeech();
     }
@@ -416,8 +419,8 @@ const MorphologySelector = () => {
     let selector = '';
     let lastPartOfSpeechWithSelection = -1;
 
-    const tr = selectedSpan.closest('tr');
-    const tds = tr.querySelectorAll('td');
+    const row = selectedSpan.closest('.morph-main-row');
+    const tds = row.querySelectorAll('.morph-td');
     tds.forEach((td, index) => {
       const selectedDeclension = td.querySelector('span.selected');
       if (selectedDeclension) {
@@ -502,80 +505,111 @@ export function VisualFilters(app) {
 
   const visualSettings = AppSettings.getValue(settingsKey, defaultSettings);
 
-  const visualNode = createElements(
-    `<div id="visualfilters-config">` +
-      `<input type="button" value="New Filter" />` +
-      `<table>` +
-        `<thead>` +
-          `<tr>` +
-            `<th class="visualfilters-active"></th>` +
-            `<th class="visualfilters-strongs i18n" data-i18n="[html]plugins.visualfilters.strongsnumber">Strong's</th>` +
-            `<th class="visualfilters-morph i18n" data-i18n="[html]plugins.visualfilters.morphology">Morphology</th>` +
-            `<th class="visualfilters-style i18n" data-i18n="[html]plugins.visualfilters.style">Style</th>` +
-            `<th class="visualfilters-remove"></th>` +
-          `</tr>` +
-        `</thead>` +
-        `<tbody></tbody>` +
-      `</table>` +
-    `</div>`
-  );
+  const visualNode = elem('div', { id: 'visualfilters-config' });
+  const addRowButton = elem('input', { type: 'button', value: 'New Filter' });
+  const visualGrid = elem('div', {
+    className: 'visualfilters-grid',
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr 1fr 1fr auto',
+      gap: '4px 8px',
+      alignItems: 'center'
+    }
+  });
+  const thActive = elem('div', { className: 'visualfilters-active visualfilters-th' });
+  const thStrongs = elem('div', { className: 'visualfilters-strongs visualfilters-th i18n', textContent: "Strong's" });
+  thStrongs.setAttribute('data-i18n', '[html]plugins.visualfilters.strongsnumber');
+  const thMorph = elem('div', { className: 'visualfilters-morph visualfilters-th i18n', textContent: 'Morphology' });
+  thMorph.setAttribute('data-i18n', '[html]plugins.visualfilters.morphology');
+  const thStyle = elem('div', { className: 'visualfilters-style visualfilters-th i18n', textContent: 'Style' });
+  thStyle.setAttribute('data-i18n', '[html]plugins.visualfilters.style');
+  const thRemove = elem('div', { className: 'visualfilters-remove visualfilters-th' });
+  visualGrid.append(thActive, thStrongs, thMorph, thStyle, thRemove);
+  const tbody = visualGrid; // tbody is now the grid itself (rows added directly)
+  visualNode.append(addRowButton, visualGrid);
 
   const filtersWindowBody = filtersWindow.body;
   filtersWindowBody.appendChild(visualNode);
 
   const morphSelector = MorphologySelector();
-  const tbody = visualNode.querySelector('tbody');
-  const addRowButton = visualNode.querySelector('input');
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
-  const openVisualizationsButton = createElements('<span class="config-button i18n" data-i18n="[html]plugins.visualfilters.button" id="config-visualfilters-button"></span>');
+  const openVisualizationsButton = elem('span', { className: 'config-button i18n', id: 'config-visualfilters-button' });
+  openVisualizationsButton.setAttribute('data-i18n', '[html]plugins.visualfilters.button');
 
   if (configToolsBody) {
     configToolsBody.appendChild(openVisualizationsButton);
   }
 
   // Define createRow before it's used in drawTransforms and addRowButton click handler
-  const createRow = () => createElements(
-    `<tr>` +
-      `<td class="visualfilters-active"><input type="checkbox" checked /></td>` +
-      `<td class="visualfilters-strongs"><input type="text" placeholder="G2424, H234" /></td>` +
-      `<td class="visualfilters-morph">` +
-        `<select><option value="morphhb">Hebrew</option><option value="robinson">Greek</option></select>` +
-        `<input type="text" placeholder="V-A?" />` +
-      `</td>` +
-      `<td class="visualfilters-style">` +
-        `<select class="style-type">` +
-          `<option value="text">Text Color</option>` +
-          `<option value="background">Background</option>` +
-          `<option value="underline">Underline</option>` +
-        `</select>` +
-        `<input type="color" class="style-color" value="#ff3333" />` +
-      `</td>` +
-      `<td class="visualfilters-remove"><span class="close-button"></span></td>` +
-    `</tr>`
-  );
+  // Returns a document fragment containing 5 grid cells (one row)
+  const createRow = () => {
+    const fragment = document.createDocumentFragment();
+    const tdActive = elem('div', { className: 'visualfilters-active visualfilters-cell' });
+    tdActive.appendChild(elem('input', { type: 'checkbox', checked: true }));
+    const tdStrongs = elem('div', { className: 'visualfilters-strongs visualfilters-cell' });
+    tdStrongs.appendChild(elem('input', { type: 'text', placeholder: 'G2424, H234' }));
+    const tdMorph = elem('div', { className: 'visualfilters-morph visualfilters-cell' });
+    const morphSelect = elem('select');
+    morphSelect.appendChild(elem('option', { value: 'morphhb', textContent: 'Hebrew' }));
+    morphSelect.appendChild(elem('option', { value: 'robinson', textContent: 'Greek' }));
+    tdMorph.appendChild(morphSelect);
+    tdMorph.appendChild(elem('input', { type: 'text', placeholder: 'V-A?' }));
+    const tdStyle = elem('div', { className: 'visualfilters-style visualfilters-cell' });
+    const styleSelect = elem('select', { className: 'style-type' });
+    styleSelect.appendChild(elem('option', { value: 'text', textContent: 'Text Color' }));
+    styleSelect.appendChild(elem('option', { value: 'background', textContent: 'Background' }));
+    styleSelect.appendChild(elem('option', { value: 'underline', textContent: 'Underline' }));
+    tdStyle.appendChild(styleSelect);
+    tdStyle.appendChild(elem('input', { type: 'color', className: 'style-color', value: '#ff3333' }));
+    const tdRemove = elem('div', { className: 'visualfilters-remove visualfilters-cell' });
+    tdRemove.appendChild(elem('span', { className: 'close-button' }));
+    fragment.append(tdActive, tdStrongs, tdMorph, tdStyle, tdRemove);
+    // Store reference to first cell so we can find this "row"
+    tdActive.dataset.rowStart = 'true';
+    return fragment;
+  };
+
+  // Helper to get row cells starting from a row-start cell
+  const getRowCells = (startCell) => {
+    const cells = [startCell];
+    let next = startCell.nextElementSibling;
+    // Get next 4 cells (5 cells total per row)
+    for (let i = 0; i < 4 && next; i++) {
+      cells.push(next);
+      next = next.nextElementSibling;
+    }
+    return cells;
+  };
 
   // Define saveTransforms before it's used in event handlers
   const saveTransforms = () => {
     visualSettings.transforms = [];
 
-    tbody.querySelectorAll('tr').forEach(row => {
+    // Find all row starts (skip header row by looking for visualfilters-cell)
+    tbody.querySelectorAll('.visualfilters-cell[data-row-start="true"]').forEach(startCell => {
+      const rowCells = getRowCells(startCell);
       const transform = {};
 
-      const activeInput = row.querySelector('.visualfilters-active input');
+      const activeCell = rowCells.find(c => c.classList.contains('visualfilters-active'));
+      const strongsCell = rowCells.find(c => c.classList.contains('visualfilters-strongs'));
+      const morphCell = rowCells.find(c => c.classList.contains('visualfilters-morph'));
+      const styleCell = rowCells.find(c => c.classList.contains('visualfilters-style'));
+
+      const activeInput = activeCell?.querySelector('input');
       transform.active = activeInput?.checked ?? false;
 
-      const strongsInput = row.querySelector('.visualfilters-strongs input');
+      const strongsInput = strongsCell?.querySelector('input');
       transform.strongs = strongsInput?.value ?? '';
 
-      const morphInput = row.querySelector('.visualfilters-morph input');
+      const morphInput = morphCell?.querySelector('input');
       transform.morph = morphInput?.value ?? '';
 
-      const morphSelect = row.querySelector('.visualfilters-morph select');
+      const morphSelect = morphCell?.querySelector('select');
       transform.morphType = morphSelect?.value ?? '';
 
-      const styleTypeSelect = row.querySelector('.visualfilters-style .style-type');
-      const styleColorInput = row.querySelector('.visualfilters-style .style-color');
+      const styleTypeSelect = styleCell?.querySelector('.style-type');
+      const styleColorInput = styleCell?.querySelector('.style-color');
       transform.styleType = styleTypeSelect?.value ?? 'text';
       transform.styleColor = styleColorInput?.value ?? '#ff3333';
 
@@ -601,30 +635,31 @@ export function VisualFilters(app) {
 
   // Define drawTransforms before it's called at the end
   const drawTransforms = () => {
-    tbody.innerHTML = '';
+    // Remove all data cells (keep header cells which don't have visualfilters-cell class)
+    tbody.querySelectorAll('.visualfilters-cell').forEach(cell => cell.remove());
 
     for (const transform of visualSettings.transforms) {
-      const row = createRow();
+      const fragment = createRow();
 
-      const activeInput = row.querySelector('.visualfilters-active input');
+      const activeInput = fragment.querySelector('.visualfilters-active input');
       if (activeInput) activeInput.checked = transform.active;
 
-      const strongsInput = row.querySelector('.visualfilters-strongs input');
+      const strongsInput = fragment.querySelector('.visualfilters-strongs input');
       if (strongsInput) strongsInput.value = transform.strongs;
 
-      const morphInput = row.querySelector('.visualfilters-morph input');
+      const morphInput = fragment.querySelector('.visualfilters-morph input');
       if (morphInput) morphInput.value = transform.morph;
 
-      const morphSelect = row.querySelector('.visualfilters-morph select');
+      const morphSelect = fragment.querySelector('.visualfilters-morph select');
       if (morphSelect) morphSelect.value = transform.morphType;
 
       // Populate new style controls
-      const styleTypeSelect = row.querySelector('.visualfilters-style .style-type');
-      const styleColorInput = row.querySelector('.visualfilters-style .style-color');
+      const styleTypeSelect = fragment.querySelector('.visualfilters-style .style-type');
+      const styleColorInput = fragment.querySelector('.visualfilters-style .style-color');
       if (styleTypeSelect) styleTypeSelect.value = transform.styleType || 'text';
       if (styleColorInput) styleColorInput.value = transform.styleColor || '#ff3333';
 
-      tbody.appendChild(row);
+      tbody.appendChild(fragment);
     }
   };
 
@@ -651,9 +686,17 @@ export function VisualFilters(app) {
   tbody.addEventListener('click', (e) => {
     const target = e.target.closest('.visualfilters-remove');
     if (!target) return;
-    const tr = target.closest('tr');
-    if (tr) {
-      tr.parentNode.removeChild(tr);
+
+    // Find the row start cell by walking backwards
+    let cell = target.classList.contains('visualfilters-cell') ? target : target.closest('.visualfilters-cell');
+    while (cell && cell.dataset.rowStart !== 'true') {
+      cell = cell.previousElementSibling;
+    }
+
+    if (cell) {
+      // Remove all 5 cells of this row
+      const rowCells = getRowCells(cell);
+      rowCells.forEach(c => c.remove());
     }
 
     saveTransforms();
@@ -722,7 +765,7 @@ export function VisualFilters(app) {
   let ext = {
     sendMessage: () => {}
   };
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload') {

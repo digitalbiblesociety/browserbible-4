@@ -4,9 +4,8 @@
  * Uses native popover API for click-off detection
  */
 
-import { createElements, offset, slideDown, slideUp, deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
-const hasTouch = 'ontouchend' in document;
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { BOOK_DATA, OT_BOOKS, NT_BOOKS, addNames, numbers as bibleNumbers } from '../bible/BibleData.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -22,80 +21,18 @@ export function TextNavigator() {
   let textInfo = null;
   let fullBookMode = false;
 
-  const changer = createElements(
-    '<div class="text-navigator nav-drop-list" popover>' +
-      '<span class="up-arrow"></span>' +
-      '<span class="up-arrow-border"></span>' +
-      '<div class="text-navigator-header">' +
-        '<span class="text-navigator-title">&nbsp;</span>' +
-        '<span class="text-navigator-back">Back</span>' +
-        '<span class="text-navigator-close">Close</span>' +
-      '</div>' +
-      '<div class="text-navigator-divisions"></div>' +
-    '</div>'
-  );
+  const changer = elem('div', { className: 'text-navigator nav-drop-list', popover: '' });
+  const header = elem('div', { className: 'text-navigator-header' });
+  const title = elem('span', { className: 'text-navigator-title', innerHTML: '&nbsp;' });
 
-  const header = changer.querySelector('.text-navigator-header');
-  const title = changer.querySelector('.text-navigator-title');
-  const back = changer.querySelector('.text-navigator-back');
-  const closeBtn = changer.querySelector('.text-navigator-close');
-  const fullname = Object.assign(document.createElement('div'), { className: 'text-navigator-fullname' });
+  header.append(title);
+  const divisions = elem('div', { className: 'text-navigator-divisions' });
+  changer.append(header, divisions);
 
   document.body.appendChild(changer);
 
-  back.style.display = 'none';
-  closeBtn.style.display = 'none';
-
-  // Handle popover toggle events (fires on light dismiss - click outside or Escape)
-  changer.addEventListener('toggle', (e) => {
-    if (e.newState === 'closed') {
-      fullname.style.display = 'none';
-    }
-  });
-
-  document.body.appendChild(fullname);
-  fullname.style.display = 'none';
-
-  if (!hasTouch) {
-    changer.addEventListener('mouseover', (e) => {
-      const node = e.target.closest('.text-navigator-division');
-      if (node) {
-        if (!fullBookMode) {
-          const name = node.getAttribute('data-name');
-          const nodeOffset = offset(node);
-
-          fullname.innerHTML = name;
-          fullname.style.backgroundColor = getComputedStyle(node).backgroundColor;
-          fullname.style.top = (nodeOffset.top - 1) + 'px';
-          fullname.style.left = nodeOffset.left + 'px';
-          fullname.style.display = '';
-          fullname.lastNode = node;
-        }
-      }
-    });
-
-    changer.addEventListener('mouseout', (e) => {
-      const target = e.target.closest('.text-navigator-division');
-      if (target) {
-        fullname.style.display = 'none';
-      }
-    });
-  }
-
-  fullname.addEventListener('click', function() {
-    if (fullname.lastNode) {
-      fullname.lastNode.click();
-      fullname.style.display = 'none';
-    }
-  }, false);
-
-  closeBtn.addEventListener('click', function() {
-    hide();
-  }, false);
-
   function hide() {
     changer.hidePopover();
-    fullname.style.display = 'none';
   }
 
   function toggle() {
@@ -176,17 +113,20 @@ export function TextNavigator() {
     return source.replace(/\s/i, '').substring(0, 3);
   }
 
-  function buildDivisionHtml(divisionid, divisionName, displayName) {
+  function buildDivisionElement(divisionid, divisionName, displayName) {
     const chapters = textInfo.sections.filter(c => c.substring(0, 2) === divisionid);
-    return '<div class="text-navigator-division divisionid-' + divisionid +
-      ' division-section-' + getBookSectionClass(divisionid) +
-      '" data-id="' + divisionid +
-      '" data-chapters="' + chapters.join(',') +
-      '" data-name="' + divisionName + '"><span>' + displayName + '</span></div>';
+    const div = elem('div', {
+      className: `text-navigator-division divisionid-${divisionid} division-section-${getBookSectionClass(divisionid)}`
+    });
+    div.dataset.id = divisionid;
+    div.dataset.chapters = chapters.join(',');
+    div.dataset.name = divisionName;
+    div.appendChild(elem('span', { textContent: displayName }));
+    return div;
   }
 
   function renderDivisions() {
-    const html = [];
+    const fragment = document.createDocumentFragment();
     const printed = { ot: false, nt: false };
     fullBookMode = true;
 
@@ -201,19 +141,20 @@ export function TextNavigator() {
       const divisionAbbr = textInfo.divisionAbbreviations?.[i] ?? null;
 
       if (OT_BOOKS.includes(divisionid) && !printed.ot) {
-        html.push('<div class="text-navigator-division-header">' + i18n.t('windows.bible.ot') + '</div>');
+        fragment.appendChild(elem('div', { className: 'text-navigator-division-header', textContent: i18n.t('windows.bible.ot') }));
         printed.ot = true;
       }
       if (NT_BOOKS.includes(divisionid) && !printed.nt) {
-        html.push('<div class="text-navigator-division-header">' + i18n.t('windows.bible.nt') + '</div>');
+        fragment.appendChild(elem('div', { className: 'text-navigator-division-header', textContent: i18n.t('windows.bible.nt') }));
         printed.nt = true;
       }
 
-      html.push(buildDivisionHtml(divisionid, divisionName, getDisplayName(divisionName, divisionAbbr)));
+      fragment.appendChild(buildDivisionElement(divisionid, divisionName, getDisplayName(divisionName, divisionAbbr)));
     }
 
     if (divsEl) {
-      divsEl.innerHTML = html.join('');
+      divsEl.innerHTML = '';
+      divsEl.appendChild(fragment);
       divsEl.style.display = '';
     }
 
@@ -228,9 +169,10 @@ export function TextNavigator() {
     if (divisionNode.classList.contains('selected')) {
       const sectionsEl = divisionNode.querySelector('.text-navigator-sections');
       if (sectionsEl) {
-        slideUp(sectionsEl, function() {
+        sectionsEl.classList.add('collapsed');
+        sectionsEl.addEventListener('transitionend', () => {
           divisionNode.classList.remove('selected');
-        });
+        }, { once: true });
       } else {
         divisionNode.classList.remove('selected');
       }
@@ -239,8 +181,6 @@ export function TextNavigator() {
 
     divisionNode.classList.add('selected');
     [...divisionNode.parentElement.children].filter(s => s !== divisionNode).forEach(sib => sib.classList.remove('selected'));
-
-    fullname.style.display = 'none';
 
     const divisions = changer.querySelector('.text-navigator-divisions');
     const positionBefore = divisionNode.offsetTop;
@@ -258,12 +198,16 @@ export function TextNavigator() {
     renderSections(true);
   });
 
-  function buildChapterHtml(chapters) {
+  function buildChapterElements(chapters) {
     const numbers = textInfo.numbers ?? bibleNumbers.default;
-    return chapters.map(code => {
+    const fragment = document.createDocumentFragment();
+    for (const code of chapters) {
       const num = parseInt(code.substring(2));
-      return '<span class="text-navigator-section section-' + code + '" data-id="' + code + '">' + numbers[num] + '</span>';
-    }).join('');
+      const span = elem('span', { className: `text-navigator-section section-${code}`, textContent: numbers[num] });
+      span.dataset.id = code;
+      fragment.appendChild(span);
+    }
+    return fragment;
   }
 
   function insertSectionNodes(selectedDiv, sectionNodes, animated) {
@@ -272,9 +216,11 @@ export function TextNavigator() {
 
     const isLast = selectedDiv && !selectedDiv.nextElementSibling;
     if (animated && !isLast) {
-      slideDown(sectionNodes);
+      // Force reflow then remove collapsed class to trigger animation
+      sectionNodes.offsetHeight;
+      sectionNodes.classList.remove('collapsed');
     } else {
-      sectionNodes.style.display = '';
+      sectionNodes.classList.remove('collapsed');
       if (isLast) {
         const divisionsEl = changer.querySelector('.text-navigator-divisions');
         if (divisionsEl) divisionsEl.scrollTop += 500;
@@ -287,9 +233,11 @@ export function TextNavigator() {
     const divisionname = selectedDiv?.getAttribute('data-name') ?? null;
     const chapters = selectedDiv?.getAttribute('data-chapters')?.split(',') ?? [];
 
-    title.innerHTML = divisionname;
-    const html = buildChapterHtml(chapters);
-    const sectionNodes = createElements('<div class="text-navigator-sections" style="display:none;">' + html + '</div>');
+    title.textContent = divisionname;
+    const inner = elem('div', { className: 'text-navigator-sections-inner' });
+    inner.appendChild(buildChapterElements(chapters));
+    const sectionNodes = elem('div', { className: 'text-navigator-sections collapsed' });
+    sectionNodes.appendChild(inner);
     insertSectionNodes(selectedDiv, sectionNodes, animated);
   }
 
@@ -352,9 +300,7 @@ export function TextNavigator() {
       changer.style.left = left + 'px';
 
       const upArrowLeft = targetOffset.left - left + 20;
-      changer.querySelectorAll('.up-arrow, .up-arrow-border').forEach(arrow => {
-        arrow.style.left = upArrowLeft + 'px';
-      });
+      changer.style.setProperty('--arrow-left', upArrowLeft + 'px');
 
       const headerHeight = header.offsetHeight;
       changer.querySelectorAll('.text-navigator-divisions, .text-navigator-sections').forEach(el => {
@@ -409,7 +355,7 @@ export function TextNavigator() {
     close
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
   ext._events = {};
 
   return ext;

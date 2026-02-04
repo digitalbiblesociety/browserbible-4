@@ -1,65 +1,7 @@
 /**
  * Vanilla JS Helper Library
- * jQuery-like utilities for DOM manipulation, events, and animations
+ * jQuery-like utilities for DOM manipulation and events
  */
-
-/**
- * Convert various input types to a DOM element
- * @param {Element|NodeList|Array|null} el - Element, array-like, or null
- * @returns {Element|null} DOM element or null
- */
-export function toElement(el) {
-  if (!el) return null;
-  if (el.nodeType) return el;
-  if (el[0]?.nodeType) return el[0];
-  return null;
-}
-
-/**
- * Query selector shorthand
- * @param {string} selector - CSS selector
- * @param {Element|Document} [context=document] - Context to search within
- * @returns {Element|null} First matching element
- */
-export function qs(selector, context) {
-  return (context || document).querySelector(selector);
-}
-
-function isPlainObject(obj) {
-  return obj !== null &&
-    typeof obj === 'object' &&
-    Object.prototype.toString.call(obj) === '[object Object]';
-}
-
-/**
- * Deep merge objects recursively
- * @param {Object} target - Target object to merge into
- * @param {...Object} sources - Source objects to merge from
- * @returns {Object} The modified target object
- */
-export function deepMerge(target, ...sources) {
-  sources.forEach(source => {
-    if (!source) return;
-
-    Object.keys(source).forEach(key => {
-      const sourceVal = source[key];
-      const targetVal = target[key];
-
-      if (isPlainObject(sourceVal)) {
-        if (!isPlainObject(targetVal)) {
-          target[key] = {};
-        }
-        deepMerge(target[key], sourceVal);
-      } else if (Array.isArray(sourceVal)) {
-        target[key] = sourceVal.slice();
-      } else {
-        target[key] = sourceVal;
-      }
-    });
-  });
-
-  return target;
-}
 
 /**
  * Shallow merge objects (Object.assign alternative)
@@ -126,15 +68,21 @@ export function siblings(el, selector) {
 }
 
 /**
- * Create DOM elements from HTML string
- * @param {string} html - HTML string
- * @returns {Element|DocumentFragment} Single element or fragment if multiple
+ * Create a DOM element with properties
+ * @param {string} tag - HTML tag name
+ * @param {Object} [props={}] - Properties to set on the element
+ * @returns {Element} The created element
  */
-export function createElements(html) {
-  const template = document.createElement('template');
-  template.innerHTML = html.trim();
-  const content = template.content;
-  return content.childNodes.length === 1 ? content.firstChild : content;
+export function elem(tag, props = {}) {
+  const el = document.createElement(tag);
+  for (const [key, val] of Object.entries(props)) {
+    if (key === 'style' && typeof val === 'object') {
+      Object.assign(el.style, val);
+    } else {
+      el[key] = val;
+    }
+  }
+  return el;
 }
 
 /**
@@ -206,69 +154,6 @@ export function on(el, events, selectorOrHandler, handler) {
 }
 
 
-/**
- * Animate element height from 0 to full (slide down)
- * @param {Element} el - Element to animate
- * @param {number|Function} [duration=300] - Animation duration in ms, or callback
- * @param {Function} [callback] - Called when animation completes
- */
-export function slideDown(el, duration, callback) {
-  if (!el) return;
-  if (typeof duration === 'function') {
-    callback = duration;
-    duration = 300;
-  }
-  duration = duration || 300;
-
-  el.style.display = '';
-  el.style.overflow = 'hidden';
-  const height = el.scrollHeight;
-  el.style.height = '0px';
-  el.style.transition = 'height ' + duration + 'ms';
-
-  el.getBoundingClientRect(); // force reflow
-
-  el.style.height = height + 'px';
-
-  setTimeout(() => {
-    el.style.height = '';
-    el.style.overflow = '';
-    el.style.transition = '';
-    if (callback) callback();
-  }, duration);
-}
-
-/**
- * Animate element height to 0 then hide (slide up)
- * @param {Element} el - Element to animate
- * @param {number|Function} [duration=300] - Animation duration in ms, or callback
- * @param {Function} [callback] - Called when animation completes
- */
-export function slideUp(el, duration, callback) {
-  if (!el) return;
-  if (typeof duration === 'function') {
-    callback = duration;
-    duration = 300;
-  }
-  duration = duration || 300;
-
-  el.style.overflow = 'hidden';
-  el.style.height = el.scrollHeight + 'px';
-  el.style.transition = 'height ' + duration + 'ms';
-
-  el.getBoundingClientRect(); // force reflow
-
-  el.style.height = '0px';
-
-  setTimeout(() => {
-    el.style.display = 'none';
-    el.style.height = '';
-    el.style.overflow = '';
-    el.style.transition = '';
-    if (callback) callback();
-  }, duration);
-}
-
 const dataStore = new WeakMap();
 
 /**
@@ -312,18 +197,13 @@ export function data(el, key, value) {
 }
 
 const helpers = {
-  toElement,
-  qs,
-  deepMerge,
   extend,
   offset,
   closest,
   siblings,
-  createElements,
+  elem,
   insertAfter,
   on,
-  slideDown,
-  slideUp,
   data
 };
 

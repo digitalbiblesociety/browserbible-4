@@ -3,7 +3,7 @@
  * Reset/restore button for window layout
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 
 /**
@@ -21,7 +21,8 @@ export function RestoreButton(_parentNode, _menu) {
 
   const buttonMenu = document.querySelector('#main-menu-windows-list');
 
-  const restoreButton = createElements('<span class="window-reset i18n" data-i18n="[html]menu.reset">Reset</span>');
+  const restoreButton = elem('span', { className: 'window-reset i18n', textContent: 'Reset' });
+  restoreButton.setAttribute('data-i18n', '[html]menu.reset');
 
   restoreButton.addEventListener('click', () => {
     if (config.windows !== undefined) {

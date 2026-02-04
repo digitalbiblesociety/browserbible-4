@@ -3,11 +3,11 @@
  * Adds media icons to verses and shows media popups
  */
 
-import { createElements, deepMerge } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 import { Reference } from '../bible/BibleReference.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 
 /**
  * Create a media library plugin
@@ -40,8 +40,8 @@ export const MediaLibraryPlugin = (app) => {
       html += `<li><a href="${fullUrl}" target="_blank"><img src="${thumbUrl}" /></a></li>`;
     }
 
-    bodyEl.appendChild(createElements(`<strong>${reference}</strong>`));
-    bodyEl.appendChild(createElements(`<ul class="inline-image-library-thumbs">${html}</ul>`));
+    bodyEl.appendChild(elem('strong', { textContent: reference }));
+    bodyEl.appendChild(elem('ul', { className: 'inline-image-library-thumbs', innerHTML: html }));
     mediaPopup.setClickTargets([icon]);
     mediaPopup.position(icon).show();
   };
@@ -138,7 +138,8 @@ export const MediaLibraryPlugin = (app) => {
 
             // add media
             if (mediaForVerse !== undefined) {
-              const iconEl = createElements(`<span class="inline-icon ${iconClassName} mediathumb" data-mediafolder="${mediaLibrary.folder}"></span>`);
+              const iconEl = elem('span', { className: `inline-icon ${iconClassName} mediathumb` });
+              iconEl.setAttribute('data-mediafolder', mediaLibrary.folder);
               const verseNumber = verse.querySelector('.verse-num, .v-num');
 
               if (verseNumber) {
@@ -189,7 +190,7 @@ export const MediaLibraryPlugin = (app) => {
   }
 
   let ext = {};
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload' && e.data.type === 'bible') {

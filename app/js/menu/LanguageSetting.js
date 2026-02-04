@@ -70,12 +70,10 @@ export function LanguageSetting(_parentNode, _menu) {
   };
 
   // handle clicks
-  list.addEventListener('change', () => {
+  list.addEventListener('change', async () => {
     const newLang = list.value;
 
-    i18n.setLng(newLang);
-    i18n.translatePage();
-
+    await i18n.setLng(newLang);
     localizeLanguages();
   }, false);
 

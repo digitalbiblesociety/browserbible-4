@@ -3,7 +3,7 @@
  * Font family selector
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -46,7 +46,7 @@ export function FontFamilySettings(_parentNode, _menu) {
       '}';
   }
 
-  const styleEl = createElements(`<style>${fontFamilyStyle}</style>`);
+  const styleEl = elem('style', { textContent: fontFamilyStyle });
   document.head.appendChild(styleEl);
 
   // Define setFontFamily before usage

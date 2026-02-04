@@ -3,7 +3,7 @@
  * Manages multiple resizable window instances with tabs and splitters
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getWindowTypeByClassName, getApp } from './registry.js';
 
@@ -26,21 +26,19 @@ export class Window {
 
     const parentNodeEl = parentNode?.nodeType ? parentNode : parentNode?.[0];
 
-    this.node = createElements(`<div class="window ${className} active"></div>`);
-    this.closeContainer = createElements('<div class="close-container"><span class="close-button"></span></div>');
-    this.tab = createElements(
-      `<div class="window-tab ${className} active">
-        <div class="window-tab-inner">
-          <span class="window-tab-label ${className}-tab">${className}</span>
-        </div>
-      </div>`
-    );
+    this.node = elem('div', { className: `window ${className} active` });
+    this.closeContainer = elem('div', { className: 'close-container' });
+    const closeBtn = elem('span', { className: 'close-button' });
+    this.closeContainer.appendChild(closeBtn);
+    this.tab = elem('div', { className: `window-tab ${className} active` });
+    const tabInner = elem('div', { className: 'window-tab-inner' });
+    const tabLabel = elem('span', { className: `window-tab-label ${className}-tab`, textContent: className });
+    tabInner.appendChild(tabLabel);
+    this.tab.appendChild(tabInner);
 
     parentNodeEl.appendChild(this.node);
     this.node.appendChild(this.closeContainer);
     document.body.appendChild(this.tab);
-
-    const closeBtn = this.closeContainer.querySelector('.close-button');
     closeBtn.addEventListener('click', () => {
       manager.remove(this.id);
     });

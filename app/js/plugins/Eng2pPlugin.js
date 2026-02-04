@@ -5,10 +5,10 @@
  * @author John Dyer (http://j.hn/)
  */
 
-import { createElements, deepMerge } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 
 // English second person plural data
@@ -216,7 +216,8 @@ export const Eng2pPlugin = (app) => {
       </tr>`;
   }
 
-  const configBlock = createElements(`<div class="config-options" id="config-eng2p">
+  const configBlock = elem('div', { className: 'config-options', id: 'config-eng2p' });
+  configBlock.innerHTML = `
     <p class="i18n" data-i18n="[html]plugins.eng2p.description"></p>
     <table>
       <tbody>
@@ -243,13 +244,14 @@ export const Eng2pPlugin = (app) => {
         ${optionsHtml}
       </tbody>
     </table>
-  </div>`);
+  `;
 
   const engWindowBody = engWindow.body;
   engWindowBody.appendChild(configBlock);
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
-  const button = createElements('<span class="config-button i18n" data-i18n="[html]plugins.eng2p.title" id="config-eng2p-button"></span>');
+  const button = elem('span', { className: 'config-button i18n', id: 'config-eng2p-button' });
+  button.setAttribute('data-i18n', '[html]plugins.eng2p.title');
 
   if (configToolsBody) {
     configToolsBody.appendChild(button);
@@ -369,7 +371,7 @@ export const Eng2pPlugin = (app) => {
     sendMessage() {}
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload' && e.data.type === 'bible') {

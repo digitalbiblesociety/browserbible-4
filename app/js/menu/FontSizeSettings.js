@@ -3,7 +3,7 @@
  * Font size slider control
  */
 
-import { createElements } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/Navigation.js';
@@ -27,7 +27,7 @@ export function FontSizeSettings(_parentNode, _menu) {
   for (let size = fontSizeMin; size <= fontSizeMax; size += fontSizeStep) {
     styleCode += `.config-font-size-${size} .reading-text { font-size: ${size}px; }`;
   }
-  const styleEl = createElements(`<style>${styleCode}</style>`);
+  const styleEl = elem('style', { textContent: styleCode });
   document.head.appendChild(styleEl);
 
   if (!config.enableFontSizeSelector) {
@@ -40,13 +40,26 @@ export function FontSizeSettings(_parentNode, _menu) {
   const defaultFontSizeSetting = { fontSize: fontSizeDefault };
   const fontSizeSetting = AppSettings.getValue(fontSizeKey, defaultFontSizeSetting);
 
-  const table = createElements(`<table id="font-size-table"><tr><td><span style="font-size:${fontSizeMin}px">A</span><td style="width:100%"></td><td><span style="font-size:${fontSizeMax}px">A</span></td></tr></table>`);
-  body?.appendChild(table);
+  const container = elem('div', {
+    id: 'font-size-container',
+    style: { display: 'flex', alignItems: 'center', gap: '8px' }
+  });
+  const span1 = elem('span', { textContent: 'A', style: { fontSize: `${fontSizeMin}px` } });
+  const sliderWrapper = elem('div', { style: { flex: '1' } });
+  const span2 = elem('span', { textContent: 'A', style: { fontSize: `${fontSizeMax}px` } });
+  container.append(span1, sliderWrapper, span2);
+  body?.appendChild(container);
 
   // HTML5 range control (IE10+, FF35+)
-  const rangeInput = createElements(`<input type="range" min="${fontSizeMin}" max="${fontSizeMax}" step="${fontSizeStep}" value="${fontSizeSetting.fontSize}" style="width: 100%;" />`);
-  const middleCell = body?.querySelectorAll('td')[1];
-  middleCell?.appendChild(rangeInput);
+  const rangeInput = elem('input', {
+    type: 'range',
+    min: fontSizeMin,
+    max: fontSizeMax,
+    step: fontSizeStep,
+    value: fontSizeSetting.fontSize,
+    style: { width: '100%' }
+  });
+  sliderWrapper.appendChild(rangeInput);
 
   // Define setFontSize before handleFontSizeChange
   const setFontSize = (newFontSize) => {

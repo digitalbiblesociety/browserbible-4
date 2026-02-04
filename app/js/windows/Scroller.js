@@ -3,8 +3,8 @@
  * Handles infinite scrolling of Bible text with chapter loading
  */
 
-import { createElements, offset, deepMerge } from '../lib/helpers.esm.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { elem, offset } from '../lib/helpers.esm.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import { Reference } from '../bible/BibleReference.js';
 import { loadSection } from '../texts/TextLoader.js';
@@ -114,7 +114,10 @@ export function Scroller(node) {
   let globalTimeout = null;
   let speedInterval = null;
 
-  const speedIndicator = createElements('<div class="scroller-speed" style="z-index: 50; position: absolute; top: 0; left: 0; width: 50; background: black; padding: 5px;color:#fff"></div>');
+  const speedIndicator = elem('div', {
+    className: 'scroller-speed',
+    style: { zIndex: 50, position: 'absolute', top: 0, left: 0, width: '50px', background: 'black', padding: '5px', color: '#fff' }
+  });
   if (nodeEl.parentNode) {
     nodeEl.parentNode.appendChild(speedIndicator);
   }
@@ -427,7 +430,11 @@ export function Scroller(node) {
       let styleLink = document.getElementById(styleId);
 
       if (!styleLink) {
-        styleLink = createElements(`<link id="${styleId}" rel="stylesheet" href="${config.baseContentUrl}content/texts/${textinfo.id}/${textinfo.stylesheet}" />`);
+        styleLink = elem('link', {
+          id: styleId,
+          rel: 'stylesheet',
+          href: `${config.baseContentUrl}content/texts/${textinfo.id}/${textinfo.stylesheet}`
+        });
         document.head.appendChild(styleLink);
       }
     }
@@ -492,7 +499,7 @@ export function Scroller(node) {
     broadcastCurrentContent
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
   ext._events = {};
 
   return ext;

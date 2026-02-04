@@ -1,23 +1,26 @@
 .text-chooser {
 	position: absolute;
-	top: 0;
-	left: 0;
 	z-index: 100;
 	background: var(--color-background);
 	font-family: var(--font-family-sans);
 	width: 320px;
+	height: calc(100vh - 100px);
 	font-size: 14px;
 	box-shadow: var(--shadow-popup);
 }
 
-/* Popover API overrides */
+/* Popover resets - allow manual positioning */
 .text-chooser[popover] {
-	position: absolute;
 	margin: 0;
 	padding: 0;
 	border: none;
-	overflow: visible;
 	inset: unset;
+}
+
+/* Flex layout only when open */
+.text-chooser:popover-open {
+	display: flex;
+	flex-direction: column;
 }
 
 .text-chooser::backdrop {
@@ -105,6 +108,8 @@ padding: 10px;
 }
 
 .text-chooser .text-chooser-main {
+	flex: 1;
+	min-height: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
@@ -289,54 +294,3 @@ table.collapsible .text-chooser-row-divider.collapsed {
 }
 
 
-/* language : country switcher */
-.text-chooser-selector {
-	padding: 0 0 5px;
-	color: #fff;
-	overflow: hidden;
-	text-align: center;
-
-}
-
-.text-chooser-selector span {
-	width: 33%;
-	border: solid 1px #999;
-	display: inline-block;
-	cursor: pointer;
-	padding: 3px 0;
-	font-size: 0.8em;
-	text-align: left;
-	padding-left: 28px;
-	background-size: 12px 12px;
-	background-position: 8px center;
-	background-repeat: no-repeat;
-}
-.text-chooser-selector span.text-chooser-default {
-	border-right-width: 0;
-	border-radius: 4px 0 0 4px;
-	background-image: url(../../css/images/openbook-white.svg);
-	background-position-y: 4px;
-}
-.text-chooser-selector span.text-chooser-languages {
-	border-right-width: 0;
-	background-image: url(../../css/images/languages-gray-light.svg);
-}
-.text-chooser-selector span.text-chooser-countries {
-	border-radius: 0 4px 4px 0;
-	background-image: url(../../css/images/earth-white.svg);
-}
-.text-chooser-selector span.selected {
-	background-color: #fff;
-	color: #999;
-}
-
-
-.text-chooser-selector span.text-chooser-default.selected {
-	background-image: url(../../css/images/openbook-gray-dark.svg);
-}
-.text-chooser-selector span.text-chooser-languages.selected {
-	background-image: url(../../css/images/languages-gray-dark.svg);
-}
-.text-chooser-selector span.text-chooser-countries.selected {
-	background-image: url(../../css/images/earth-gray-dark.svg);
-}

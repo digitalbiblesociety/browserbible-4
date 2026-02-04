@@ -21,7 +21,6 @@ import registry, {
   registerResource,
   runInitMethods,
   getApp,
-  getAllResources,
   VERSION
 } from './core/registry.js';
 
@@ -83,7 +82,7 @@ import './menu/index.js';
 // Startup
 // ============================================
 
-function startup() {
+async function startup() {
   // Hide initial text area
   const startupEl = document.getElementById('startup');
   if (startupEl) {
@@ -129,7 +128,7 @@ function showLocalFileError(e) {
   document.body.appendChild(modal);
 }
 
-function init() {
+async function init() {
   const cfg = getConfig();
 
   // Load config from querystring
@@ -167,7 +166,7 @@ function init() {
   // Create and initialize app
   const app = new App();
 
-  // Initialize i18n
+  // Initialize i18n (lazy loads language resources)
   let lngSetting = '';
   const i18nCookieValue = AppSettings.getCookieValue('i18next');
 
@@ -175,10 +174,9 @@ function init() {
     lngSetting = cfg.defaultLanguage;
   }
 
-  i18n.init({
+  await i18n.init({
     fallbackLng: 'en',
-    lng: lngSetting,
-    resStore: getAllResources()
+    lng: lngSetting
   });
 
   app.init();

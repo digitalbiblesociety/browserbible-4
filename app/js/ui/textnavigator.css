@@ -1,29 +1,3 @@
-.up-arrow {
-	position: absolute;
-	top: -10px;
-	left: 20px;
-	z-index: 102;
-	width: 0;
-	height: 0;
-	display: block;
-	border-bottom: 10px solid var(--color-background-active);
-	border-right: 10px solid transparent;
-	border-left: 10px solid transparent;
-}
-
-.up-arrow-border {
-	position: absolute;
-	top: -11px;
-	left: 20px;
-	z-index: 101;
-	width: 0;
-	height: 0;
-	display: block;
-	border-bottom: 10px solid var(--color-border);
-	border-right: 10px solid transparent;
-	border-left: 10px solid transparent;
-}
-
 /* NAV */
 .text-navigator {
 	width: 320px;
@@ -52,31 +26,29 @@
 	background: transparent;
 }
 
-.text-navigator .up-arrow {
+/* Up arrow using pseudo-elements */
+.text-navigator::before,
+.text-navigator::after {
+	content: '';
 	position: absolute;
 	top: -10px;
-	left: 20px;
-	z-index: 102;
+	left: var(--arrow-left, 20px);
 	width: 0;
 	height: 0;
-	display: block;
-	border-bottom: 10px solid var(--color-background-active);
 	border-right: 10px solid transparent;
 	border-left: 10px solid transparent;
+	pointer-events: none;
 }
 
-.text-navigator .up-arrow-border {
-	display: none;
-	position: absolute;
-	top: -11px;
-	left: 20px;
+.text-navigator::before {
 	z-index: 101;
-	width: 0;
-	height: 0;
-	display: block;
+	top: -11px;
 	border-bottom: 10px solid var(--color-border);
-	border-right: 10px solid transparent;
-	border-left: 10px solid transparent;
+}
+
+.text-navigator::after {
+	z-index: 102;
+	border-bottom: 10px solid var(--color-background-active);
 }
 
 .text-navigator .text-navigator-header {
@@ -102,6 +74,21 @@
 
 .text-navigator .text-navigator-sections {
 	padding: 4px 1px;
+}
+
+/* Slide animation using CSS Grid */
+.text-navigator .text-navigator-sections {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows 300ms ease-out;
+}
+
+.text-navigator .text-navigator-sections.collapsed {
+	grid-template-rows: 0fr;
+}
+
+.text-navigator .text-navigator-sections-inner {
+	overflow: hidden;
 }
 
 .text-navigator .text-navigator-division-header {
@@ -170,20 +157,27 @@
 	padding: 5px 10px 0 0;
 }
 
-.text-navigator-fullname {
+/* Hover tooltip for compact mode (not full book mode) */
+.text-navigator-divisions:not(.text-navigator-divisions-full) .text-navigator-division {
+	position: relative;
+}
+
+.text-navigator-divisions:not(.text-navigator-divisions-full) .text-navigator-division:hover::after {
+	content: attr(data-name);
 	position: absolute;
+	top: -1px;
+	left: 0;
 	z-index: 110;
-	border-bottom-color: var(--color-border);
 	height: 38px;
-	margin: 1px 1px 0 0;
 	border: solid 1px var(--color-border);
-	background: var(--color-background-hover);
+	background: inherit;
 	color: var(--color-text);
 	text-align: left;
 	padding: 10px 10px 0;
-	cursor: pointer;
 	pointer-events: none;
 	font-size: 14px;
+	white-space: nowrap;
+	box-sizing: border-box;
 }
 
 

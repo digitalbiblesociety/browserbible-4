@@ -1,22 +1,70 @@
 /**
  * Simple i18n (internationalization) module
  * Lightweight replacement for i18next without jQuery dependency
+ * Supports lazy loading of language resources
  */
 
 let currentLanguage = 'en';
 let fallbackLanguage = 'en';
 let resources = {};
+let resourceBasePath = './js/resources';
+const loadingPromises = new Map();
+
+/**
+ * Load a language resource file
+ * @param {string} lang - Language code
+ * @returns {Promise<Object|null>} The loaded resource or null on error
+ */
+async function loadLanguage(lang) {
+  // Return cached if already loaded
+  if (resources[lang]) {
+    return resources[lang];
+  }
+
+  // Return existing promise if already loading
+  if (loadingPromises.has(lang)) {
+    return loadingPromises.get(lang);
+  }
+
+  // Start loading
+  const promise = (async () => {
+    try {
+      const response = await fetch(`${resourceBasePath}/${lang}.json`);
+      if (!response.ok) {
+        console.warn(`Failed to load language resource: ${lang}`);
+        return null;
+      }
+      const data = await response.json();
+      resources[lang] = data;
+      return data;
+    } catch (err) {
+      console.warn(`Error loading language resource ${lang}:`, err);
+      return null;
+    } finally {
+      loadingPromises.delete(lang);
+    }
+  })();
+
+  loadingPromises.set(lang, promise);
+  return promise;
+}
 
 /**
  * Initialize the i18n system
  * @param {Object} [options={}] - Configuration options
- * @param {Object} [options.resStore] - Resource store with translations keyed by language
+ * @param {Object} [options.resStore] - Resource store with translations keyed by language (optional, for preloaded resources)
  * @param {string} [options.fallbackLng] - Fallback language code
  * @param {string} [options.lng] - Initial language code (auto-detected if not provided)
+ * @param {string} [options.basePath] - Base path for loading JSON files
+ * @returns {Promise<void>}
  */
-export function init(options = {}) {
+export async function init(options = {}) {
+  if (options.basePath) {
+    resourceBasePath = options.basePath;
+  }
+
   if (options.resStore) {
-    resources = options.resStore;
+    resources = { ...resources, ...options.resStore };
   }
 
   if (options.fallbackLng) {
@@ -34,8 +82,15 @@ export function init(options = {}) {
     }
   }
 
-  if (!resources[currentLanguage]) {
-    currentLanguage = fallbackLanguage;
+  // Load fallback language first
+  await loadLanguage(fallbackLanguage);
+
+  // Load current language if different from fallback
+  if (currentLanguage !== fallbackLanguage) {
+    const loaded = await loadLanguage(currentLanguage);
+    if (!loaded) {
+      currentLanguage = fallbackLanguage;
+    }
   }
 }
 
@@ -125,13 +180,19 @@ function setCookie(name, value, days) {
 /**
  * Change the current language and re-translate the page
  * @param {string} langCode - Language code to switch to
+ * @returns {Promise<boolean>} True if language was changed successfully
  */
-export function setLng(langCode) {
-  if (resources[langCode]) {
+export async function setLng(langCode) {
+  // Load the language if not already loaded
+  const loaded = await loadLanguage(langCode);
+
+  if (loaded) {
     currentLanguage = langCode;
     setCookie('i18next', langCode, 365);
     translatePage();
+    return true;
   }
+  return false;
 }
 
 /**
@@ -191,13 +252,34 @@ export function translatePage(container) {
   });
 }
 
+/**
+ * Check if a language is loaded
+ * @param {string} lang - Language code
+ * @returns {boolean}
+ */
+export function isLoaded(lang) {
+  return !!resources[lang];
+}
+
+/**
+ * Preload a language without switching to it
+ * @param {string} lang - Language code
+ * @returns {Promise<boolean>} True if loaded successfully
+ */
+export async function preload(lang) {
+  const loaded = await loadLanguage(lang);
+  return !!loaded;
+}
+
 export const i18n = {
   init,
   t,
   lng,
   setLng,
   translatePage,
-  translateElement
+  translateElement,
+  isLoaded,
+  preload
 };
 
 export default i18n;

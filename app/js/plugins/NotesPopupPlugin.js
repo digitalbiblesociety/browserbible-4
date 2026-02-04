@@ -3,11 +3,10 @@
  * Shows popup with footnotes and notes content
  */
 
-import { deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 const hasTouch = 'ontouchend' in document;
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import {
   getBibleRefClickHandler,
   getBibleRefMouseoverHandler,
@@ -106,7 +105,7 @@ export const NotesPopupPlugin = (app) => {
     }
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   return ext;
 };

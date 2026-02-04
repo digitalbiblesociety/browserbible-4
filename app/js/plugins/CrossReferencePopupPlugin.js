@@ -3,12 +3,11 @@
  * Shows popup with Bible reference content on hover/click
  */
 
-import { deepMerge } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 const hasTouch = 'ontouchend' in document;
 import { Reference } from '../bible/BibleReference.js';
-import { EventEmitterMixin } from '../common/EventEmitter.js';
+import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { PlaceKeeper, TextNavigation } from '../common/Navigation.js';
 
 // Store global handlers for cross-plugin communication
@@ -167,7 +166,7 @@ export const CrossReferencePopupPlugin = (app) => {
     }
   };
 
-  ext = deepMerge(ext, EventEmitterMixin);
+  mixinEventEmitter(ext);
 
   return ext;
 };
