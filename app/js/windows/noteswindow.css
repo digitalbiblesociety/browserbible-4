@@ -10,34 +10,37 @@ notes-window .notes-header {
 	border-bottom: 1px solid var(--border-color, #ccc);
 }
 
-notes-window .notes-sidebar-toggle {
-	font-size: 16px;
+notes-window .notes-header .header-button {
 	width: 32px;
 	height: 32px;
-	padding: 0;
+	padding: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-notes-window .notes-new-btn {
-	font-size: 18px;
-	font-weight: bold;
-	width: 32px;
-	height: 32px;
-	padding: 0;
+notes-window .notes-header .header-button svg {
+	width: 18px;
+	height: 18px;
 }
 
 notes-window .notes-link-btn {
-	font-size: 12px;
+	width: auto !important;
+	padding: 4px 8px !important;
+}
+
+notes-window .notes-link-btn svg {
+	width: 16px;
+	height: 16px;
 }
 
 notes-window .notes-download-container {
 	position: relative;
 }
 
-notes-window .notes-download-btn {
-	font-size: 14px;
-	width: 32px;
-	height: 32px;
-	padding: 0;
+notes-window .notes-download-btn svg {
+	width: 18px;
+	height: 18px;
 }
 
 notes-window .notes-download-menu {

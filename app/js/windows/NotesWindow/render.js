@@ -39,17 +39,25 @@ export function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// SVG Icons
+const ICONS = {
+  sidebar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>',
+  add: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>',
+  link: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>',
+  download: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>'
+};
+
 /**
  * Create the main window structure
  */
 export function renderWindowStructure() {
   // Header
   const header = elem('div', { className: 'window-header notes-header' },
-    elem('button', { className: 'notes-sidebar-toggle header-button', title: 'Toggle Sidebar', innerHTML: '&#9776;' }),
-    elem('button', { className: 'notes-new-btn header-button', title: 'New Note', textContent: '+' }),
-    elem('button', { className: 'notes-link-btn header-button', title: 'Link to Current Verse', textContent: 'Link' }),
+    elem('button', { className: 'notes-sidebar-toggle header-button', title: 'Toggle Sidebar', innerHTML: ICONS.sidebar }),
+    elem('button', { className: 'notes-new-btn header-button', title: 'New Note', innerHTML: ICONS.add }),
+    elem('button', { className: 'notes-link-btn header-button', title: 'Link to Current Verse', innerHTML: ICONS.link }),
     elem('div', { className: 'notes-download-container' },
-      elem('button', { className: 'notes-download-btn header-button', title: 'Download Notes', innerHTML: '&#8595;' }),
+      elem('button', { className: 'notes-download-btn header-button', title: 'Download Notes', innerHTML: ICONS.download }),
       elem('div', { className: 'notes-download-menu' },
         elem('div', { className: 'notes-download-item', dataset: { format: 'markdown' }, textContent: 'Download as Markdown' }),
         elem('div', { className: 'notes-download-item', dataset: { format: 'text' }, textContent: 'Download as Plain Text' }),
