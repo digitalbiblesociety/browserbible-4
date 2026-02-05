@@ -1,19 +1,32 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { cpSync, existsSync } from 'fs';
+import { cpSync, existsSync, readdirSync, mkdirSync } from 'fs';
 
-// Plugin to copy content folder after build
+// Plugin to copy content folder and resources after build
 function postBuildPlugin() {
   return {
     name: 'post-build',
     closeBundle() {
       // Copy content folder
-      const src = resolve(__dirname, 'app/content');
-      const dest = resolve(__dirname, 'dist/content');
-      if (existsSync(src)) {
+      const contentSrc = resolve(__dirname, 'app/content');
+      const contentDest = resolve(__dirname, 'dist/content');
+      if (existsSync(contentSrc)) {
         console.log('Copying content folder...');
-        cpSync(src, dest, { recursive: true });
+        cpSync(contentSrc, contentDest, { recursive: true });
         console.log('Content folder copied.');
+      }
+
+      // Copy i18n resource JSON files
+      const resourcesSrc = resolve(__dirname, 'app/js/resources');
+      const resourcesDest = resolve(__dirname, 'dist/js/resources');
+      if (existsSync(resourcesSrc)) {
+        console.log('Copying i18n resources...');
+        mkdirSync(resourcesDest, { recursive: true });
+        const files = readdirSync(resourcesSrc).filter(f => f.endsWith('.json'));
+        for (const file of files) {
+          cpSync(resolve(resourcesSrc, file), resolve(resourcesDest, file));
+        }
+        console.log(`Copied ${files.length} language resource files.`);
       }
     }
   };
