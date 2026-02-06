@@ -45,7 +45,8 @@ const ICONS = {
   add: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>',
   link: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>',
   download: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>',
-  upload: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>'
+  upload: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>',
+  print: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.75 7.234H5.25" /></svg>'
 };
 
 /**
@@ -67,6 +68,17 @@ export function renderWindowStructure() {
     ),
     elem('button', { className: 'notes-upload-btn header-button', title: 'Import Notes', innerHTML: ICONS.upload }),
     elem('input', { type: 'file', className: 'notes-upload-input', accept: '.md,.txt,.rtf', style: 'display:none' }),
+    elem('div', { className: 'notes-print-container' },
+      elem('button', { className: 'notes-print-btn header-button', title: 'Print Notes', innerHTML: ICONS.print }),
+      elem('div', { className: 'notes-print-menu' },
+        elem('div', { className: 'notes-print-item', dataset: { action: 'current' }, textContent: 'Print Current Note' }),
+        elem('div', { className: 'notes-print-item', dataset: { action: 'all' }, textContent: 'Print All Notes' }),
+        elem('label', { className: 'notes-print-option' },
+          elem('input', { type: 'checkbox', className: 'notes-print-verses-checkbox' }),
+          ' Include verse text'
+        )
+      )
+    ),
     elem('div', { className: 'notes-search-container' },
       elem('input', { type: 'text', className: 'notes-search app-input', placeholder: 'Search notes...' }),
       elem('div', { className: 'notes-search-suggestions' })
@@ -146,12 +158,12 @@ export function renderNoteListItem(note, isSelected) {
     dataset: { noteId: note.id }
   },
     elem('div', { className: 'notes-list-item-title', textContent: title }),
-    elem('div', { className: 'notes-list-item-meta', children: [
+    elem('div', { className: 'notes-list-item-meta' },
       elem('span', date),
       note.reference
         ? elem('span', { className: 'notes-list-item-badge', textContent: note.referenceDisplay || note.reference })
         : null
-    ] }),
+    ),
     elem('div', { className: 'notes-list-item-preview', textContent: preview })
   );
 

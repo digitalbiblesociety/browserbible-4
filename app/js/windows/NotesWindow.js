@@ -5,6 +5,7 @@
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { downloadNotes } from './NotesWindow/download.js';
 import { parseImportedFile } from './NotesWindow/upload.js';
+import { printNotes } from './NotesWindow/print.js';
 import {
   renderWindowStructure,
   renderNotesList,
@@ -66,6 +67,9 @@ export class NotesWindowComponent extends BaseWindow {
     this.refs.downloadMenu = this.$('.notes-download-menu');
     this.refs.uploadBtn = this.$('.notes-upload-btn');
     this.refs.uploadInput = this.$('.notes-upload-input');
+    this.refs.printBtn = this.$('.notes-print-btn');
+    this.refs.printMenu = this.$('.notes-print-menu');
+    this.refs.printVersesCheckbox = this.$('.notes-print-verses-checkbox');
     this.refs.filter = this.$('.notes-filter');
     this.refs.search = this.$('.notes-search');
     this.refs.searchSuggestions = this.$('.notes-search-suggestions');
@@ -113,6 +117,9 @@ export class NotesWindowComponent extends BaseWindow {
       if (!e.target.closest('.notes-download-container')) {
         this.refs.downloadMenu.classList.remove('visible');
       }
+      if (!e.target.closest('.notes-print-container')) {
+        this.refs.printMenu.classList.remove('visible');
+      }
     });
 
     // Upload button
@@ -126,6 +133,27 @@ export class NotesWindowComponent extends BaseWindow {
       if (file) {
         this.importFile(file);
         this.refs.uploadInput.value = '';
+      }
+    });
+
+    // Print button
+    this.addListener(this.refs.printBtn, 'click', () => {
+      this.refs.printMenu.classList.toggle('visible');
+    });
+
+    // Print menu items
+    this.addListener(this.refs.printMenu, 'click', (e) => {
+      const item = e.target.closest('.notes-print-item');
+      if (item) {
+        const action = item.dataset.action;
+        const includeVerseText = this.refs.printVersesCheckbox.checked;
+        this.refs.printMenu.classList.remove('visible');
+
+        if (action === 'current') {
+          this.printCurrentNote(includeVerseText);
+        } else if (action === 'all') {
+          this.printAllNotes(includeVerseText);
+        }
       }
     });
 
@@ -609,6 +637,39 @@ export class NotesWindowComponent extends BaseWindow {
       this.refs.status.textContent = `Imported ${imported.length} note${imported.length !== 1 ? 's' : ''}`;
     };
     reader.readAsText(file);
+  }
+
+  printCurrentNote(includeVerseText) {
+    if (!this.state.currentNoteId) {
+      this.refs.status.textContent = 'Select a note to print';
+      return;
+    }
+
+    const note = this.state.notes.find(n => n.id === this.state.currentNoteId);
+    if (!note) return;
+
+    this.refs.status.textContent = includeVerseText ? 'Preparing print with verses...' : '';
+    printNotes([note], { includeVerseText }).then(() => {
+      this.refs.status.textContent = '';
+    }).catch(err => {
+      console.error('[NotesWindow] printCurrentNote error:', err);
+      this.refs.status.textContent = 'Print error — see console';
+    });
+  }
+
+  printAllNotes(includeVerseText) {
+    if (this.state.notes.length === 0) {
+      this.refs.status.textContent = 'No notes to print';
+      return;
+    }
+
+    this.refs.status.textContent = includeVerseText ? 'Preparing print with verses...' : '';
+    printNotes(this.state.notes, { includeVerseText, title: 'All Notes' }).then(() => {
+      this.refs.status.textContent = '';
+    }).catch(err => {
+      console.error('[NotesWindow] printAllNotes error:', err);
+      this.refs.status.textContent = 'Print error — see console';
+    });
   }
 
   markDirty() {

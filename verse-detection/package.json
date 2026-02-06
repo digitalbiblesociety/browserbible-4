@@ -86,12 +86,6 @@
     "typescript": "^5.9.3",
     "vite": "^6.0.0"
   },
-  "peerDependencies": {
-    "browserbible-4": ">=4.0.0"
-  },
-  "peerDependenciesMeta": {
-    "browserbible-4": {
-      "optional": true
-    }
-  }
+  "peerDependencies": {},
+  "peerDependenciesMeta": {}
 }

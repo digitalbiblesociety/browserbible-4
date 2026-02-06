@@ -121,7 +121,8 @@ export default defineConfig({
       '@windows': resolve(__dirname, 'app/js/windows'),
       '@plugins': resolve(__dirname, 'app/js/plugins'),
       '@menu': resolve(__dirname, 'app/js/menu'),
-      '@ui': resolve(__dirname, 'app/js/ui')
+      '@ui': resolve(__dirname, 'app/js/ui'),
+      '@verse-detection': resolve(__dirname, 'verse-detection')
     }
   },
 

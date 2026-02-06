@@ -21,7 +21,9 @@
     "vd:build": "vite --config verse-detection/vite.config.ts build && vite --config verse-detection/vite.config.auto.ts build",
     "vd:preview": "vite --config verse-detection/vite.config.js preview verse-detection"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@browserbible/verse-detection": "workspace:*"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.49.0",

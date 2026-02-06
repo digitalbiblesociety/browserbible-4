@@ -72,6 +72,58 @@ notes-window .notes-download-item:hover {
 	background: var(--note-item-hover-bg, #f0f0f0);
 }
 
+notes-window .notes-print-container {
+	position: relative;
+}
+
+notes-window .notes-print-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+notes-window .notes-print-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background: var(--color-background, #fff);
+	border: 1px solid var(--border-color, #ccc);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	min-width: 180px;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+notes-window .notes-print-menu.visible {
+	display: block;
+}
+
+notes-window .notes-print-item {
+	padding: 8px 12px;
+	cursor: pointer;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+notes-window .notes-print-item:hover {
+	background: var(--note-item-hover-bg, #f0f0f0);
+}
+
+notes-window .notes-print-option {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 8px 12px;
+	font-size: 12px;
+	cursor: pointer;
+	border-top: 1px solid var(--border-color, #eee);
+}
+
+notes-window .notes-print-option:hover {
+	background: var(--note-item-hover-bg, #f0f0f0);
+}
+
 notes-window .notes-search-container {
 	flex: 1;
 	min-width: 100px;
