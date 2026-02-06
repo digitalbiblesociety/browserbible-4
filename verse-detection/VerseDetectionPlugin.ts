@@ -55,6 +55,7 @@ export interface ParsedVerseReference {
 	chapters: ParsedChapter[];
 	startIndex: number;
 	endIndex: number;
+	version?: string;  // e.g., "KJV", "ESV", "NIV"
 }
 
 /** Variation lookup result */
@@ -204,10 +205,13 @@ function buildVerseRegex(bookPatterns: Partial<Record<CanonicalBookName, string[
 	const chapterVerse = `${chapter}(?:\\s*[:.;]\\s*${verseList})?`; // 3:16 or just 3 (chapter only)
 	const chapterRange = `${chapterVerse}(?:\\s*[-\u2013\u2014]\\s*${chapterVerse})?`; // 1:1-2:3
 
-	// Full pattern: BookName + space + chapter/verse reference
+	// Optional parenthesized version suffix like (KJV), (ESV), (WEB)
+	const versionSuffix = '(?:\\s*\\(([A-Za-z0-9]{2,10})\\))?';
+
+	// Full pattern: BookName + space + chapter/verse reference + optional version
 	// Use Unicode word boundaries for multi-language support
 	// Allow for various spacing and punctuation contexts
-	const fullPattern = `(?:^|[\\s(\\[{،。、])((${bookPattern})\\.?\\s*(${chapterRange}))(?=[\\s.,;:!?)\\]}،。、]|$)`;
+	const fullPattern = `(?:^|[\\s(\\[{،。、])((${bookPattern})\\.?\\s*(${chapterRange})${versionSuffix})(?=[\\s.,;:!?)\\]}،。、]|$)`;
 
 	return new RegExp(fullPattern, 'giu');
 }
@@ -222,6 +226,7 @@ function parseVerseReference(match: RegExpExecArray, variationMap: Map<string, V
 	const fullMatch = match[1];
 	const bookMatch = match[2];
 	const referenceMatch = match[3];
+	const versionMatch = match[4];
 
 	const lookupResult = variationMap.get(bookMatch.toLowerCase().replace(/\.$/, ''));
 
@@ -234,7 +239,8 @@ function parseVerseReference(match: RegExpExecArray, variationMap: Map<string, V
 		reference: referenceMatch,
 		chapters: [],
 		startIndex: match.index + (match[0].length - match[1].length),
-		endIndex: match.index + match[0].length
+		endIndex: match.index + match[0].length,
+		version: versionMatch || undefined
 	};
 
 	// Parse chapter and verse numbers
@@ -586,7 +592,8 @@ export async function initVerseDetection(
 		return buildVerseUrlUtil({
 			book: verse.book,
 			reference: verse.reference,
-			detectedLanguage: verse.detectedLanguage
+			detectedLanguage: verse.detectedLanguage,
+			version: verse.version
 		}, finalConfig);
 	}
 
@@ -624,8 +631,9 @@ export async function initVerseDetection(
 			const verseNum = verseMatch ? verseMatch[1] : '';
 			const sectionId = bookCode && chapter ? `${bookCode}${chapter}` : '';
 
+			const versionAttr = verse.version ? ` data-version="${verse.version}"` : '';
 			const dataAttrs = linkConfig.addDataAttributes
-				? `data-verse-ref="${verse.book} ${verse.reference}" data-book="${verse.book}" data-book-code="${bookCode}" data-chapter="${chapter}" data-verse="${verseNum}" data-section-id="${sectionId}" data-detected-lang="${detectedLang}"`
+				? `data-verse-ref="${verse.book} ${verse.reference}" data-book="${verse.book}" data-book-code="${bookCode}" data-chapter="${chapter}" data-verse="${verseNum}" data-section-id="${sectionId}" data-detected-lang="${detectedLang}"${versionAttr}`
 				: '';
 
 			let href = 'javascript:void(0)';

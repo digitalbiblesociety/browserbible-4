@@ -69,7 +69,7 @@ export interface BrowserBibleApp {
 		baseContentUrl?: string;
 	};
 	navigateToRef?: (sectionId: string, verseId: string | null) => void;
-	trigger?: (event: string, data: { sectionId: string; verseId: string | null }) => void;
+	trigger?: (event: string, data: { sectionId: string; verseId: string | null; textId?: string }) => void;
 	getActiveWindow?: () => { textId?: string } | null;
 	on?: (event: string, callback: (lang: string) => void) => void;
 }
@@ -705,6 +705,8 @@ export class VersePopup {
 		const ref = target.dataset.verseRef;
 		if (!ref) return;
 
+		const version = target.dataset.version || undefined;
+
 		// In popup-only mode, never navigate
 		if (this.config.displayMode === 'popup') {
 			event.preventDefault();
@@ -733,7 +735,7 @@ export class VersePopup {
 		// Navigate (for 'link' and 'both' modes)
 		if (this.app && this.config.appIntegration.useAppNavigation) {
 			event.preventDefault();
-			this.navigateToVerse(ref);
+			this.navigateToVerse(ref, version);
 		}
 		// Otherwise let the link handle navigation normally (default anchor behavior)
 	}
@@ -770,7 +772,7 @@ export class VersePopup {
 	/**
 	 * Navigate to a verse using the app's navigation system
 	 */
-	private navigateToVerse(reference: string): void {
+	private navigateToVerse(reference: string, version?: string): void {
 		if (!this.app) return;
 
 		// Parse the reference to get book code and chapter
@@ -783,7 +785,8 @@ export class VersePopup {
 		} else if (typeof this.app.trigger === 'function') {
 			this.app.trigger('navigate', {
 				sectionId: parsed.sectionId,
-				verseId: parsed.verseId
+				verseId: parsed.verseId,
+				...(version ? { textId: version } : {})
 			});
 		}
 	}
@@ -798,8 +801,12 @@ export class VersePopup {
 		// Get detected language from data attribute
 		const detectedLang = target.dataset.detectedLang || this.config.language?.primary || 'en';
 
+		// Get explicit version override from data attribute (e.g., from "John 3:16 (KJV)")
+		const version = target.dataset.version || undefined;
+
 		// Check if text is available for this language before showing popup
-		const textId = this.getTextId(detectedLang);
+		// If an explicit version is provided, skip the language check (version overrides)
+		const textId = version || this.getTextId(detectedLang);
 		if (!textId) {
 			// No text available for this language - don't show popup
 			return;
@@ -830,7 +837,7 @@ export class VersePopup {
 
 		// Fetch and display verse content
 		try {
-			const content = await this.fetchVerseContent(ref, detectedLang);
+			const content = await this.fetchVerseContent(ref, detectedLang, version);
 			this.displayContent(ref, content);
 			// Reposition after content loads to account for actual size
 			requestAnimationFrame(() => {
@@ -929,9 +936,11 @@ export class VersePopup {
 	 * @param reference - Verse reference string
 	 * @param detectedLang - Detected language of the verse reference
 	 */
-	async fetchVerseContent(reference: string, detectedLang: string | null = null): Promise<string> {
-		// Include language in cache key for language-specific content
-		const cacheKey = detectedLang ? `${reference}:${detectedLang}` : reference;
+	async fetchVerseContent(reference: string, detectedLang: string | null = null, version?: string): Promise<string> {
+		// Include language and version in cache key for specific content
+		const cacheKey = version
+			? `${reference}:${version}`
+			: (detectedLang ? `${reference}:${detectedLang}` : reference);
 
 		// Check cache first
 		if (this.config.popup.cacheContent && this.cache.has(cacheKey)) {
@@ -953,7 +962,7 @@ export class VersePopup {
 		switch (sourceType) {
 			case 'app':
 				if (this.textLoader && this.app) {
-					content = await this.fetchFromTextLoader(parsed, detectedLang);
+					content = await this.fetchFromTextLoader(parsed, detectedLang, version);
 				} else {
 					throw new Error('App TextLoader not available');
 				}
@@ -961,7 +970,7 @@ export class VersePopup {
 			case 'local':
 			case 'remote':
 			default:
-				content = await this.fetchChapterAndExtractVerses(parsed, detectedLang);
+				content = await this.fetchChapterAndExtractVerses(parsed, detectedLang, version);
 				break;
 		}
 
@@ -991,10 +1000,11 @@ export class VersePopup {
 	 * @param parsed - Parsed verse reference
 	 * @param detectedLang - Detected language for text selection
 	 */
-	private async fetchChapterAndExtractVerses(parsed: ParsedReference, detectedLang: string | null = null): Promise<string> {
+	private async fetchChapterAndExtractVerses(parsed: ParsedReference, detectedLang: string | null = null, version?: string): Promise<string> {
 		const contentConfig = this.config.contentSource;
 		const baseUrl = contentConfig?.baseUrl || 'https://inscript.bible.cloud/content/texts';
-		const textId = this.getTextId(detectedLang);
+		// If an explicit version is provided, use it directly as textId
+		const textId = version || this.getTextId(detectedLang);
 
 		// If no text available for this language, throw a specific error
 		if (!textId) {
@@ -1029,10 +1039,10 @@ export class VersePopup {
 	 * @param parsed - Parsed verse reference
 	 * @param detectedLang - Detected language for text selection
 	 */
-	private fetchFromTextLoader(parsed: ParsedReference, detectedLang: string | null = null): Promise<string> {
+	private fetchFromTextLoader(parsed: ParsedReference, detectedLang: string | null = null, version?: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-			// Get text ID - prefer detected language version, fall back to current
-			const textId = this.getTextId(detectedLang);
+			// If an explicit version is provided, use it directly as textId
+			const textId = version || this.getTextId(detectedLang);
 			if (!textId) {
 				const langName = this.getLanguageName(detectedLang);
 				reject(new Error(`No Bible text available for ${langName}`));

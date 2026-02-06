@@ -12,6 +12,7 @@ export interface VerseReferenceForUrl {
 	book: string;
 	reference: string;
 	detectedLanguage?: string;
+	version?: string;
 }
 
 /** Configuration for text ID selection */
@@ -138,12 +139,15 @@ export function buildVerseUrl(
 	const appBaseUrl = config.appBaseUrl || '';
 	const textIdsByLanguage = config.contentSource?.textIdsByLanguage || {};
 
-	// Use detected language to get appropriate text ID
-	const textId = getTextIdForLanguage(
-		verse.detectedLanguage || 'en',
-		textIdsByLanguage,
-		config.defaultTextId
-	);
+	// If an explicit version is provided (e.g., from "John 3:16 (KJV)"), use it directly as textId
+	// Otherwise, use detected language to get appropriate text ID
+	const textId = verse.version
+		? verse.version
+		: getTextIdForLanguage(
+			verse.detectedLanguage || 'en',
+			textIdsByLanguage,
+			config.defaultTextId
+		);
 
 	// Parse chapter and verse from reference
 	const chapterMatch = verse.reference?.match(/^(\d+)/);
