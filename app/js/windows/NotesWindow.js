@@ -4,6 +4,7 @@
 
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { downloadNotes } from './NotesWindow/download.js';
+import { parseImportedFile } from './NotesWindow/upload.js';
 import {
   renderWindowStructure,
   renderNotesList,
@@ -63,6 +64,8 @@ export class NotesWindowComponent extends BaseWindow {
     this.refs.linkBtn = this.$('.notes-link-btn');
     this.refs.downloadBtn = this.$('.notes-download-btn');
     this.refs.downloadMenu = this.$('.notes-download-menu');
+    this.refs.uploadBtn = this.$('.notes-upload-btn');
+    this.refs.uploadInput = this.$('.notes-upload-input');
     this.refs.filter = this.$('.notes-filter');
     this.refs.search = this.$('.notes-search');
     this.refs.searchSuggestions = this.$('.notes-search-suggestions');
@@ -109,6 +112,20 @@ export class NotesWindowComponent extends BaseWindow {
     this.addListener(document, 'click', (e) => {
       if (!e.target.closest('.notes-download-container')) {
         this.refs.downloadMenu.classList.remove('visible');
+      }
+    });
+
+    // Upload button
+    this.addListener(this.refs.uploadBtn, 'click', () => {
+      this.refs.uploadInput.click();
+    });
+
+    // Upload file input change
+    this.addListener(this.refs.uploadInput, 'change', () => {
+      const file = this.refs.uploadInput.files[0];
+      if (file) {
+        this.importFile(file);
+        this.refs.uploadInput.value = '';
       }
     });
 
@@ -572,6 +589,26 @@ export class NotesWindowComponent extends BaseWindow {
     this.refs.status.textContent = 'Verse link removed';
 
     this.renderNotesList();
+  }
+
+  importFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result;
+      const imported = parseImportedFile(text, file.name);
+
+      if (imported.length === 0) {
+        this.refs.status.textContent = 'No notes found in file';
+        return;
+      }
+
+      this.state.notes.unshift(...imported);
+      this.saveNotes();
+      this.renderNotesList();
+      this.selectNote(imported[0].id);
+      this.refs.status.textContent = `Imported ${imported.length} note${imported.length !== 1 ? 's' : ''}`;
+    };
+    reader.readAsText(file);
   }
 
   markDirty() {
