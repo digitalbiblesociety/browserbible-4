@@ -4,7 +4,7 @@
 	box-shadow: var(--shadow-popup);
 }
 
-/* Popover API overrides */
+
 .movable-window[popover] {
 	position: absolute;
 	margin: 0;

@@ -8,7 +8,7 @@
 	}
 
 
-/* search */
+
 .search-main {
 	background: var(--color-background);
 	overflow: auto;
@@ -63,7 +63,7 @@
 	background-color: var(--color-primary-light);
 }
 
-/* visual */
+
 .search-usage {
 	margin: 0 0 20px;
 	font-size: 12px;
@@ -159,7 +159,7 @@
 }
 
 
-/* penta */
+
 .search-result-book-bar span.divisionid-GN,
 .search-result-book-bar span.divisionid-EX,
 .search-result-book-bar span.divisionid-LV,
@@ -187,14 +187,14 @@
 .search-result-book-bar span.divisionid-PS,
 .search-result-book-bar span.divisionid-PR,
 .search-result-book-bar span.divisionid-EC,
-.search-result-book-bar span.divisionid-SS,/* out of order in English! */
+.search-result-book-bar span.divisionid-SS,
 .search-result-book-bar span.divisionid-LM {
 	background: var(--color-division-wisdom);
 }
 
 .search-result-book-bar span.divisionid-IS,
 .search-result-book-bar span.divisionid-JR,
-/*.search-result-book-bar span.divisionid-LM, */
+
 .search-result-book-bar span.divisionid-EK,
 .search-result-book-bar span.divisionid-DN {
 	background: var(--color-division-major-prophets);
@@ -215,7 +215,7 @@
 	background: var(--color-division-minor-prophets);
 }
 
-/* gospels */
+
 .search-result-book-bar span.divisionid-MT,
 .search-result-book-bar span.divisionid-MK,
 .search-result-book-bar span.divisionid-LK,
@@ -258,108 +258,7 @@
 	background: var(--color-division-revelation);
 }
 
-/*
-.search-results table .divisionid-GN,
-.search-results table .divisionid-EX,
-.search-results table .divisionid-LV,
-.search-results table .divisionid-NU,
-.search-results table .divisionid-DT	 {
-border-left: solid 3px #9bd79b;
-}
 
-.search-results table .divisionid-JS,
-.search-results table .divisionid-JG,
-.search-results table .divisionid-RT,
-.search-results table .divisionid-S1,
-.search-results table .divisionid-S2,
-.search-results table .divisionid-K1,
-.search-results table .divisionid-K2,
-.search-results table .divisionid-R1,
-.search-results table .divisionid-R2,
-.search-results table .divisionid-ER,
-.search-results table .divisionid-NH,
-.search-results table .divisionid-ET {
-	border-left: solid 3px #8c8cca;
-}
-
-.search-results table .divisionid-JB,
-.search-results table .divisionid-PS,
-.search-results table .divisionid-PR,
-.search-results table .divisionid-EC,
-.search-results table .divisionid-SS,
-
-.search-results table .divisionid-LM {
-	border-left: solid 3px #c580c5;
-}
-
-.search-results table .divisionid-IS,
-.search-results table .divisionid-JR,
-
-.search-results table .divisionid-EK,
-.search-results table .divisionid-DN {
-	border-left: solid 3px #d38c8c;
-}
-
-.search-results table .divisionid-HS,
-.search-results table .divisionid-JL,
-.search-results table .divisionid-AM,
-.search-results table .divisionid-OB,
-.search-results table .divisionid-JH,
-.search-results table .divisionid-MC,
-.search-results table .divisionid-NM,
-.search-results table .divisionid-HK,
-.search-results table .divisionid-ZP,
-.search-results table .divisionid-HG,
-.search-results table .divisionid-ZC,
-.search-results table .divisionid-ML {
-	border-left: solid 3px #d1d16a;
-}
-
-
-
-.search-results table .divisionid-MT,
-.search-results table .divisionid-MK,
-.search-results table .divisionid-LK,
-.search-results table .divisionid-JN {
-	border-left: solid 3px #ffa2a2;
-}
-
-.search-results table .divisionid-AC {
-	border-left: solid 3px #c476aa;
-}
-
-
-.search-results table .divisionid-RM,
-.search-results table .divisionid-C1,
-.search-results table .divisionid-C2,
-.search-results table .divisionid-GL,
-.search-results table .divisionid-EP,
-.search-results table .divisionid-PP,
-.search-results table .divisionid-CL,
-.search-results table .divisionid-H1,
-.search-results table .divisionid-H2,
-.search-results table .divisionid-T1,
-.search-results table .divisionid-T2,
-.search-results table .divisionid-TT,
-.search-results table .divisionid-PM {
-	border-left: solid 3px #9c9ce1;
-}
-
-
-.search-results table .divisionid-HB,
-.search-results table .divisionid-JM,
-.search-results table .divisionid-P1,
-.search-results table .divisionid-P2,
-.search-results table .divisionid-J1,
-.search-results table .divisionid-J2,
-.search-results table .divisionid-J3,
-.search-results table .divisionid-JD {
-	border-left: solid 3px #8cc9c9;
-}
-.search-results table .divisionid-RV {
-	border-left: solid 3px #9575a1;
-}
-*/
 .highlight {
 	background: var(--color-highlight);
 }

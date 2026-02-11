@@ -9,7 +9,7 @@
 	box-shadow: var(--shadow-popup);
 }
 
-/* Popover resets - allow manual positioning */
+
 .text-chooser[popover] {
 	margin: 0;
 	padding: 0;
@@ -17,7 +17,7 @@
 	inset: unset;
 }
 
-/* Flex layout only when open */
+
 .text-chooser:popover-open {
 	display: flex;
 	flex-direction: column;
@@ -63,17 +63,7 @@
 	color: var(--color-input-placeholder);
 }
 
-/*
-OLD BUTTON
-.text-chooser-more {
-background: #2a85e8;
-color: #fff;
-margin: 20px;
-text-align: center;
-cursor: pointer;
-padding: 10px;
-}
- */
+
 .text-chooser .text-chooser-more-toggle {
 	margin: 0 0 0 10px;
 	font-size: 11px;
@@ -83,7 +73,7 @@ padding: 10px;
 	padding: 4px 4px 4px 18px;
 	width: 70px;
 	display: none;
-/* default */
+
 	background-color: #88c0d7;
 	background-image: url(../../css/images/more.svg);
 	background-repeat: no-repeat;
@@ -245,7 +235,7 @@ padding: 10px;
 }
 
 
-/* countries */
+
 .text-chooser-row-header.country td,
 .text-chooser-row-header.collapsible-language td {
 	position: relative;
@@ -265,7 +255,7 @@ padding: 10px;
 	padding-left: 25px;
 }
 
-/* collapse */
+
 table.collapsible .text-chooser-row-header {
 	cursor: pointer;
 }

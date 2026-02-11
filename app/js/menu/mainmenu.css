@@ -35,7 +35,7 @@
 	box-shadow: var(--shadow-popup);
 }
 
-/* Popover API overrides */
+
 #main-menu-dropdown[popover] {
 	position: absolute;
 	margin: 0;
@@ -62,32 +62,7 @@
 	overflow: hidden;
 }
 
-/*
-.main-menu-item {
-	cursor: pointer;
-	margin: 0;
-	padding: 8px 5px 8px 55px;
-	text-align: left;
-	background-size: 25px 25px;
-	background-position: 25px center;
-	background-repeat: no-repeat;
-	font-family: Avenir, Helvetica, Arial;
-	font-size: 12px;
-	float: left;
-	width: 150px;
-}
 
-
-#main-menu-windows-list .main-menu-item {
-	width: 75px;
-	margin: 0;
-	padding: 35px 0 10px 0;
-	background-size: 25px 25px;
-	background-position: center 8px;
-	text-align: center;
-
-}
-*/
 
 
 .main-menu-item {

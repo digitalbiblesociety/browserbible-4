@@ -1,4 +1,4 @@
-/* main bible verse, text formatting */
+
 .section,
 .chapter {
 	line-height: 1.8;
@@ -47,7 +47,7 @@
 }
 
 
-/* notes and cross references */
+
 .note,
 .cf {
 	display: inline;
@@ -107,17 +107,17 @@
 }
 
 .bibleref
-/*, .xt */{
+{
 	color: var(--color-cross-reference);
 	cursor: pointer;
 }
 
 .bibleref:hover
-/* ,.xt:hover */ {
+ {
 	text-decoration: underline;
 }
 
-/* Gospels red letters */
+
 .woc,
 .wj {
 	color: var(--color-red-letter);
@@ -135,7 +135,7 @@
 	display: none;
 }
 
-/* most books */
+
 .section .c,
 .section .chapter-num,
 .section .c-num {
@@ -171,7 +171,7 @@ div.c + div.q {
 	display: none;
 }
 
-/* Psalms */
+
 .PS .c {
 	font-size: 1.2em;
 	margin-top: 2em;
@@ -216,7 +216,7 @@ div.c + div.q .v-1 {
 }
 
 
-/* put chapter on other side */
+
 .section[dir=rtl] .c,
 .section[dir=rtl] .c {
 	float: right;
@@ -277,7 +277,7 @@ div.is1 {
 	text-align: center;
 }
 
-/* USFM */
+
 .mt {
 	display: block;
 	text-align: center;
@@ -303,7 +303,7 @@ div.is1 {
 	margin-top: 0;
 }
 
-/* introduction */
+
 .is {
 	margin-top: 1em;
 	text-align: center;
@@ -315,7 +315,7 @@ div.is1 {
 	text-indent: 1.5em;
 }
 
-/* commentaries */
+
 .comm-v-num {
 	font-weight: bold;
 	display: block;

@@ -3,11 +3,7 @@
 	margin-right: 7px;
 }
 
-/* Don't set the Libertine font on the config menu item as in all the other
- * options because that would cause the WOFF font files to load. For now this
- * will allow those external resources to lazy-load only if required. Instead
- * set just the local system font name in the off-chance they happen to have
- * it installed */
+
 #config-font-family-Libertine {
 	font-family: "Linux Libertine";
 }

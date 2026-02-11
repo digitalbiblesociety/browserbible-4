@@ -1,4 +1,4 @@
-/* Theme Toggle Buttons in Config */
+
 .config-theme-toggle {
 	display: inline-block;
 	width: 70px;
@@ -19,7 +19,7 @@
 	border: solid 2px var(--color-primary);
 }
 
-/* Theme preview colors for the toggle buttons themselves */
+
 #config-theme-default {
 	background-color: #fff;
 	color: #111;
@@ -40,13 +40,9 @@
 	color: #666;
 }
 
-/* ============================================
- * Theme-Specific Overrides
- * Most styling is handled by CSS variables in variables.css
- * These are only for complex selectors that can't use variables directly
- * ============================================ */
 
-/* Sepia theme specifics */
+
+
 .theme-sepia .window {
 	border-right-color: var(--color-border);
 }
@@ -58,7 +54,7 @@
 	color: var(--color-text);
 }
 
-/* Dark theme specifics */
+
 .theme-dark .window {
 	border-right: solid 1px var(--color-border-dark);
 	background-color: var(--color-border-dark);

@@ -12,7 +12,7 @@
 	border-bottom: solid 1px #6BA865;
 }
 
-/* SVG Map Container */
+
 .svg-map-container {
 	position: relative;
 	overflow: hidden;
@@ -163,12 +163,12 @@
 	font-size: 11px;
 }
 
-/* Map options button */
+
 .map-options-button {
 	background-image: url(../../css/images/gear.svg);
 }
 
-/* Dark mode */
+
 .dark .map-search-suggestions {
 	background: var(--header-background, #2a2a2a);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -183,7 +183,7 @@
 	background: var(--highlight-background, #3a3a3a);
 }
 
-/* Map Options Popover */
+
 .map-options-popover {
 	position: absolute;
 	background: var(--color-background);

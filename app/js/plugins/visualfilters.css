@@ -1,19 +1,19 @@
-/* Visual Filters Plugin Styles */
 
-/* Button in config panel */
+
+
 #config-visualfilters-button {
 	background: url(../../css/images/morphology.svg) left center no-repeat;
 	background-size: 20px 20px;
 	padding: 5px 0 5px 25px;
 }
 
-/* Main container */
+
 #visualfilters-config {
 	padding: var(--spacing-md);
 	font-size: var(--font-size-sm);
 }
 
-/* New Filter button */
+
 #visualfilters-config input[type="button"] {
 	background: var(--color-button-primary-background);
 	color: var(--color-button-primary-text);
@@ -30,7 +30,7 @@
 	background: var(--color-primary-hover);
 }
 
-/* Table styling */
+
 #visualfilters-config table {
 	border-collapse: collapse;
 	width: 100%;
@@ -55,7 +55,7 @@
 	border-bottom: none;
 }
 
-/* Active checkbox */
+
 .visualfilters-active {
 	width: 30px;
 }
@@ -67,7 +67,7 @@
 	accent-color: var(--color-primary);
 }
 
-/* Strong's number input */
+
 .visualfilters-strongs {
 	width: 100px;
 }
@@ -92,7 +92,7 @@
 	color: var(--color-input-placeholder);
 }
 
-/* Morphology column */
+
 .visualfilters-morph {
 	white-space: nowrap;
 }
@@ -130,7 +130,7 @@
 	border-color: var(--color-input-focus-border);
 }
 
-/* Style column */
+
 .visualfilters-style {
 	white-space: nowrap;
 }
@@ -177,7 +177,7 @@
 	border-radius: 2px;
 }
 
-/* Remove button */
+
 .visualfilters-remove {
 	width: 30px;
 	text-align: center;
@@ -198,7 +198,7 @@
 	opacity: 1;
 }
 
-/* Morphology Selector Popup */
+
 .morph-selector {
 	position: absolute;
 	top: 0;
@@ -253,7 +253,7 @@
 	color: var(--color-text-inverse);
 }
 
-/* Empty state message */
+
 #visualfilters-config tbody:empty::after {
 	content: "Click 'New Filter' to add a filter";
 	display: block;

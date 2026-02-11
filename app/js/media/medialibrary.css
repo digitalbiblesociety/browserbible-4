@@ -1,4 +1,4 @@
-/* IMAGE LIBRARY */
+
 .inline-icon {
 	display: inline-block;
 	width: 20px;
@@ -106,7 +106,7 @@
 	z-index: 100;
 }
 
-/* Video */
+
 .video-icon {
 	background-image: url(../../css/images/video.svg);
 }

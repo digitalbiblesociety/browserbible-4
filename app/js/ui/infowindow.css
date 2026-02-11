@@ -12,7 +12,7 @@
 	padding: 15px 0 15px 15px;
 }
 
-/* Popover API overrides */
+
 .info-window[popover] {
 	position: absolute;
 	margin: 0;

@@ -6,14 +6,14 @@
 	background-image: url(../../css/images/commentary.svg);
 }
 
-/* Scroller Container */
+
 .window .scroller-container {
 	position: relative;
 	width: 100%;
 	height: 100%;
 }
 
-/* Scroller Main */
+
 .window .scroller-main {
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -28,7 +28,7 @@
 	padding: 0 15px;
 }
 
-/* Scroller Info Popover */
+
 .window .scroller-info {
 	position: absolute;
 	left: 0;
@@ -52,7 +52,7 @@
 	background: transparent;
 }
 
-/* Popover Header */
+
 .window .scroller-info-header {
 	display: flex;
 	justify-content: space-between;
@@ -98,7 +98,7 @@
 	transform: scale(0.95);
 }
 
-/* Popover Content */
+
 .window .scroller-info-content {
 	flex: 1;
 	overflow-y: auto;
@@ -148,7 +148,7 @@
 	text-decoration: underline;
 }
 
-/* Empty State */
+
 .window .scroller-info-empty {
 	text-align: center;
 	padding: 40px 20px;
@@ -166,7 +166,7 @@
 	margin-top: 1em !important;
 }
 
-/* Loading Indicator in Popover */
+
 .window .scroller-info-content .loading-indicator {
 	text-align: center;
 	padding: 40px 20px;

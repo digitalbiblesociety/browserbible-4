@@ -9,7 +9,7 @@
 	height: 60px;
 	font-family: Avenir, Helvetica, Arial;
 	font-size: 12px;
-	z-index: 3; /* above the text pane which is 1 and 2 */
+	z-index: 3; 
 }
 
 .audio-window-container .audio-controller {
@@ -157,11 +157,7 @@
 	right: 10px;
 }
 
-/*
-.audio-controller .audio-title {
-left: 35px;
-}
-	*/
+
 .audio-controller .audio-title {
 	top: 20px;
 	left: 34px;
@@ -201,8 +197,7 @@ left: 35px;
 	width: 100%;
 }
 .audio-window-container .audio-slider {
-/*	top: inherit;
-	bottom: 0;*/
+
 }
 
 .audio-controller .audio-slider .audio-slider-current {

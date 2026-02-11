@@ -29,7 +29,7 @@ input:focus {
 	outline: none;
 }
 
-/* reused images */
+
 .close-container {
 	position: absolute;
 	top: 0;
@@ -333,7 +333,7 @@ input:focus {
 	border-top: solid 1px var(--color-border);
 }
 
-/* header */
+
 .window-overlay {
 	position: absolute;
 	top: 50px;
@@ -377,7 +377,7 @@ input:focus {
 	display: none;
 }
 
-/* Blur windows container when a movable-window popover is open */
+
 body:has(.movable-window:popover-open) .windows-container {
 	transition: filter .25s ease-in;
 	filter: blur(3px);

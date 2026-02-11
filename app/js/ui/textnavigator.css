@@ -1,4 +1,4 @@
-/* NAV */
+
 .text-navigator {
 	width: 320px;
 	position: absolute;
@@ -12,7 +12,7 @@
 	box-shadow: var(--shadow-popup);
 }
 
-/* Popover API overrides */
+
 .text-navigator[popover] {
 	position: absolute;
 	margin: 0;
@@ -26,7 +26,7 @@
 	background: transparent;
 }
 
-/* Up arrow using pseudo-elements */
+
 .text-navigator::before,
 .text-navigator::after {
 	content: '';
@@ -76,7 +76,7 @@
 	padding: 4px 1px;
 }
 
-/* Slide animation using CSS Grid */
+
 .text-navigator .text-navigator-sections {
 	display: grid;
 	grid-template-rows: 1fr;
@@ -157,7 +157,7 @@
 	padding: 5px 10px 0 0;
 }
 
-/* Hover tooltip for compact mode (not full book mode) */
+
 .text-navigator-divisions:not(.text-navigator-divisions-full) .text-navigator-division {
 	position: relative;
 }
@@ -181,7 +181,7 @@
 }
 
 
-/* Division section colors - border indicates category, selected uses hover background */
+
 .text-navigator .division-section-penta { border-color: var(--color-division-pentateuch); }
 .text-navigator .division-section-hist { border-color: var(--color-division-historical); }
 .text-navigator .division-section-poet { border-color: var(--color-division-wisdom); }
