@@ -24,13 +24,8 @@
 	user-select: none;
 }
 
-/* Map markers */
 .map-marker {
 	transition: opacity 0.3s ease;
-}
-
-.map-marker.hovered {
-	/* Markers with this class will be moved to end of parent for z-order */
 }
 
 .map-marker .marker-label {
@@ -52,7 +47,6 @@
 	opacity: 1;
 }
 
-/* Icon styling */
 .map-marker-icon {
 	transition: transform 0.2s ease, opacity 0.3s ease;
 }
@@ -62,7 +56,6 @@
 	filter: brightness(1.2);
 }
 
-/* Info popup */
 .map-info-popup {
 	position: absolute;
 	top: 10px;
@@ -111,7 +104,6 @@
 	color: var(--link-hover-color, #004499);
 }
 
-/* Dark mode adjustments */
 .dark .svg-map-container {
 	background: var(--window-background, #1a1a1a);
 }
@@ -125,7 +117,6 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Map header */
 .MapWindow .scroller-header-inner {
 	position: relative;
 }
@@ -134,7 +125,6 @@
 	flex: 1;
 }
 
-/* Search suggestions dropdown */
 .map-search-suggestions {
 	display: none;
 	position: absolute;

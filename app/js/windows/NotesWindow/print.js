@@ -1,20 +1,11 @@
-/**
- * NotesWindow Print Functions
- * Print notes with optional inline verse text via verse-detection
- */
-
 import { createVerseDetector } from '@verse-detection/VerseDetectionPlugin.js';
 import { BOOK_CODES } from '@verse-detection/BookCodes.js';
 
 const CONTENT_BASE_URL = 'https://inscript.bible.cloud/content/texts';
 const DEFAULT_TEXT_ID = 'ENGWEB';
 
-/**
- * Strip HTML tags to get plain text, preserving whitespace between block elements
- */
+
 function stripHtml(html) {
-  // Replace block-level tags (both opening and closing) with newlines
-  // so verse references at block boundaries don't run together
   const spaced = html
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/?(?:div|p|li|h[1-6]|blockquote|tr)[^>]*>/gi, '\n');
@@ -84,10 +75,6 @@ async function fetchVerseText(book, reference, textId) {
   }
 }
 
-/**
- * Extract specific verses from chapter HTML
- * Simplified version of VerseExtractor for print use
- */
 function extractVersesFromHtml(html, parsed) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -170,8 +157,6 @@ async function processNoteContentForPrint(htmlContent, includeVerseText) {
     console.log('[print] skipping verse fetch: includeVerseText=', includeVerseText, 'verses.length=', verses.length);
     return htmlContent;
   }
-
-  // Fetch all verse texts in parallel
   const verseTexts = await Promise.all(
     verses.map(async (verse) => {
       const textId = verse.version || DEFAULT_TEXT_ID;
@@ -184,7 +169,6 @@ async function processNoteContentForPrint(htmlContent, includeVerseText) {
     })
   );
 
-  // Build blockquotes for each verse
   const blockquotes = verseTexts
     .filter(v => v.text)
     .map(v => {
@@ -197,9 +181,6 @@ async function processNoteContentForPrint(htmlContent, includeVerseText) {
   return htmlContent + (blockquotes ? '\n' + blockquotes : '');
 }
 
-/**
- * Build print-friendly HTML document
- */
 function buildPrintHtml(title, notesHtml) {
   return `<!DOCTYPE html>
 <html>

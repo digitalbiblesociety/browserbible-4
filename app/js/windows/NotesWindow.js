@@ -7,9 +7,14 @@ import { downloadNotes } from './NotesWindow/download.js';
 import { parseImportedFile } from './NotesWindow/upload.js';
 import { printNotes } from './NotesWindow/print.js';
 import {
+  updateSearchSuggestions,
+  hideSearchSuggestions,
+  updateSuggestionSelection,
+  selectSuggestion
+} from './NotesWindow/search.js';
+import {
   renderWindowStructure,
   renderNotesList,
-  renderSearchSuggestions,
   stripHtml
 } from './NotesWindow/render.js';
 
@@ -166,7 +171,7 @@ export class NotesWindowComponent extends BaseWindow {
     // Search input
     this.addListener(this.refs.search, 'input', () => {
       this.state.searchQuery = this.refs.search.value;
-      this.updateSearchSuggestions();
+      updateSearchSuggestions(this.state, this.refs);
       this.renderNotesList();
     });
 
@@ -176,27 +181,27 @@ export class NotesWindowComponent extends BaseWindow {
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        this.updateSuggestionSelection(this.state.selectedSuggestionIndex + 1);
+        updateSuggestionSelection(this.state, this.refs, this.state.selectedSuggestionIndex + 1);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        this.updateSuggestionSelection(this.state.selectedSuggestionIndex - 1);
+        updateSuggestionSelection(this.state, this.refs, this.state.selectedSuggestionIndex - 1);
       } else if (e.key === 'Enter') {
         e.preventDefault();
         this.selectSuggestion(this.state.selectedSuggestionIndex);
       } else if (e.key === 'Escape') {
-        this.hideSearchSuggestions();
+        hideSearchSuggestions(this.state, this.refs);
       }
     });
 
     // Search blur - hide suggestions
     this.addListener(this.refs.search, 'blur', () => {
-      setTimeout(() => this.hideSearchSuggestions(), 150);
+      setTimeout(() => hideSearchSuggestions(this.state, this.refs), 150);
     });
 
     // Search focus - show suggestions if query exists
     this.addListener(this.refs.search, 'focus', () => {
       if (this.refs.search.value.trim()) {
-        this.updateSearchSuggestions();
+        updateSearchSuggestions(this.state, this.refs);
       }
     });
 
@@ -206,15 +211,6 @@ export class NotesWindowComponent extends BaseWindow {
       if (item) {
         const index = parseInt(item.dataset.index, 10);
         this.selectSuggestion(index);
-      }
-    });
-
-    // Suggestion hover
-    this.addListener(this.refs.searchSuggestions, 'mouseover', (e) => {
-      const item = e.target.closest('.notes-suggestion-item');
-      if (item) {
-        const index = parseInt(item.dataset.index, 10);
-        this.updateSuggestionSelection(index);
       }
     });
 
@@ -405,68 +401,12 @@ export class NotesWindowComponent extends BaseWindow {
     this.refs.sidebar.classList.toggle('hidden', !this.state.sidebarVisible);
   }
 
-  updateSearchSuggestions() {
-    const query = this.refs.search.value.trim().toLowerCase();
-
-    if (!query) {
-      this.hideSearchSuggestions();
-      return;
-    }
-
-    // Find matching notes
-    const matches = this.state.notes.filter(n => {
-      const titleMatch = (n.title || '').toLowerCase().includes(query);
-      const contentMatch = stripHtml(n.content || '').toLowerCase().includes(query);
-      return titleMatch || contentMatch;
-    }).slice(0, 5); // Limit to 5 suggestions
-
-    this.state.searchSuggestions = matches;
-    this.state.selectedSuggestionIndex = matches.length > 0 ? 0 : -1;
-
-    if (matches.length === 0) {
-      this.hideSearchSuggestions();
-      return;
-    }
-
-    // Render suggestions
-    this.refs.searchSuggestions.innerHTML = '';
-    this.refs.searchSuggestions.appendChild(
-      renderSearchSuggestions(matches, this.state.selectedSuggestionIndex)
-    );
-    this.refs.searchSuggestions.classList.add('visible');
-  }
-
-  hideSearchSuggestions() {
-    this.refs.searchSuggestions.classList.remove('visible');
-    this.refs.searchSuggestions.innerHTML = '';
-    this.state.searchSuggestions = [];
-    this.state.selectedSuggestionIndex = -1;
-  }
-
-  updateSuggestionSelection(newIndex) {
-    const count = this.state.searchSuggestions.length;
-    if (count === 0) return;
-
-    if (newIndex < 0) newIndex = count - 1;
-    if (newIndex >= count) newIndex = 0;
-
-    this.state.selectedSuggestionIndex = newIndex;
-
-    const items = this.refs.searchSuggestions.querySelectorAll('.notes-suggestion-item');
-    items.forEach((item, i) => {
-      item.classList.toggle('selected', i === newIndex);
-    });
-  }
-
   selectSuggestion(index) {
-    if (index < 0 || index >= this.state.searchSuggestions.length) return;
-
-    const note = this.state.searchSuggestions[index];
-    this.selectNote(note.id);
-    this.refs.search.value = '';
-    this.state.searchQuery = '';
-    this.hideSearchSuggestions();
-    this.renderNotesList();
+    const noteId = selectSuggestion(this.state, this.refs, index);
+    if (noteId) {
+      this.selectNote(noteId);
+      this.renderNotesList();
+    }
   }
 
   createNewNote() {

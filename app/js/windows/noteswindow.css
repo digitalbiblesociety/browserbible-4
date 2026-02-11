@@ -1,6 +1,4 @@
-#add-NotesWindow, .NotesWindow-tab {
-	background-image: url(../../css/images/notes.svg);
-}
+#add-NotesWindow, .NotesWindow-tab {background-image: url(../../css/images/notes.svg);}
 
 notes-window .notes-header {
 	display: flex;
@@ -194,6 +192,18 @@ notes-window .notes-sidebar-header {
 
 notes-window .notes-sidebar-header .notes-filter {
 	width: 100%;
+	border: solid 1px var(--color-border-light);
+    padding: 7px 6px 6px 10px;
+	background: var(--color-input-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 8px center;
+    padding-right: 24px;
+    margin: 0 5px 0 0;
+    color: var(--color-text-light);
+    appearance: none;
+    height: 30px;
+    border-radius: 0;
+    display: inline-block;
+    vertical-align: top;
+	position: relative;
 }
 
 notes-window .notes-list {

@@ -1,20 +1,9 @@
-/**
- * NotesWindow Download Functions
- * Export notes to various formats (Markdown, Plain Text, RTF)
- */
-
-/**
- * Extract plain text from HTML
- */
 function stripHtml(html) {
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText || '';
 }
 
-/**
- * Escape special RTF characters
- */
 function escapeRtf(text) {
   if (!text) return '';
   return text
@@ -23,14 +12,10 @@ function escapeRtf(text) {
     .replace(/\}/g, '\\}');
 }
 
-/**
- * Convert HTML content to Markdown
- */
 export function htmlToMarkdown(html) {
   if (!html) return '';
 
   let md = html;
-  // Convert common HTML to Markdown
   md = md.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n');
   md = md.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n');
   md = md.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n');
@@ -46,25 +31,18 @@ export function htmlToMarkdown(html) {
   md = md.replace(/<p[^>]*>/gi, '');
   md = md.replace(/<\/div>/gi, '\n');
   md = md.replace(/<div[^>]*>/gi, '');
-  // Strip remaining tags
   md = md.replace(/<[^>]+>/g, '');
-  // Decode HTML entities
   const txt = document.createElement('textarea');
   txt.innerHTML = md;
   md = txt.value;
-  // Clean up extra whitespace
   md = md.replace(/\n{3,}/g, '\n\n');
   return md.trim();
 }
 
-/**
- * Convert HTML content to RTF
- */
 export function htmlToRtf(html) {
   if (!html) return '';
 
   let rtf = html;
-  // Convert HTML formatting to RTF
   rtf = rtf.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '{\\b $1}');
   rtf = rtf.replace(/<b[^>]*>(.*?)<\/b>/gi, '{\\b $1}');
   rtf = rtf.replace(/<em[^>]*>(.*?)<\/em>/gi, '{\\i $1}');
@@ -77,20 +55,14 @@ export function htmlToRtf(html) {
   rtf = rtf.replace(/<div[^>]*>/gi, '');
   rtf = rtf.replace(/<li[^>]*>(.*?)<\/li>/gi, '\\par - $1');
   rtf = rtf.replace(/<\/?(ul|ol|h1|h2|h3)[^>]*>/gi, '\\par ');
-  // Strip remaining tags
   rtf = rtf.replace(/<[^>]+>/g, '');
-  // Decode HTML entities
   const txt = document.createElement('textarea');
   txt.innerHTML = rtf;
   rtf = txt.value;
-  // Escape RTF special chars
   rtf = escapeRtf(rtf);
   return rtf;
 }
 
-/**
- * Convert notes array to plain text format
- */
 export function notesToPlainText(notes) {
   const lines = [];
   const divider = '='.repeat(50);
@@ -111,9 +83,6 @@ export function notesToPlainText(notes) {
   return lines.join('\n');
 }
 
-/**
- * Convert notes array to Markdown format
- */
 export function notesToMarkdown(notes) {
   const lines = [];
 
@@ -134,35 +103,27 @@ export function notesToMarkdown(notes) {
   return lines.join('\n');
 }
 
-/**
- * Convert notes array to RTF format
- */
 export function notesToRtf(notes) {
   const lines = ['{\\rtf1\\ansi\\deff0'];
   lines.push('{\\fonttbl{\\f0 Times New Roman;}}');
 
   for (const note of notes) {
-    // Title
     lines.push(`{\\b\\fs28 ${escapeRtf(note.title || 'Untitled')}}`);
     lines.push('\\par');
 
-    // Reference
     if (note.referenceDisplay) {
       lines.push(`{\\i Verse: ${escapeRtf(note.referenceDisplay)}}`);
       lines.push('\\par');
     }
 
-    // Dates
     lines.push(`{\\fs18 Created: ${escapeRtf(new Date(note.created).toLocaleString())}}`);
     lines.push('\\par');
     lines.push(`{\\fs18 Modified: ${escapeRtf(new Date(note.modified).toLocaleString())}}`);
     lines.push('\\par\\par');
 
-    // Content
     lines.push(htmlToRtf(note.content || ''));
     lines.push('\\par');
 
-    // Divider
     lines.push('\\par{\\fs18 ________________________________________________}\\par\\par');
   }
 

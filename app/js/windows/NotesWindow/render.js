@@ -1,12 +1,10 @@
-/**
- * NotesWindow Render Functions
- * UI rendering using elem helper
- */
-
 import { elem } from '../../lib/helpers.esm.js';
 
 /**
- * Format a timestamp for display
+ * Format a timestamp for display in the notes list.
+ * Shows time (e.g. "2:30 PM") for today, short date (e.g. "Jan 5") otherwise.
+ * @param {number} timestamp - Unix timestamp in milliseconds
+ * @returns {string} Formatted date string
  */
 export function formatDate(timestamp) {
   const date = new Date(timestamp);
@@ -21,7 +19,9 @@ export function formatDate(timestamp) {
 }
 
 /**
- * Extract plain text from HTML
+ * Strip HTML tags and return plain text content.
+ * @param {string} html - HTML string to strip
+ * @returns {string} Plain text content
  */
 export function stripHtml(html) {
   const tmp = document.createElement('div');
@@ -30,7 +30,9 @@ export function stripHtml(html) {
 }
 
 /**
- * Escape HTML special characters
+ * Escape a string for safe insertion into HTML.
+ * @param {string} text - Raw text to escape
+ * @returns {string} HTML-escaped string
  */
 export function escapeHtml(text) {
   if (text == null) return '';
@@ -39,7 +41,6 @@ export function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// SVG Icons
 const ICONS = {
   sidebar: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M2 3.75A.75.75 0 0 1 2.75 3h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 3.75ZM2 8a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 8Zm0 4.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" /></svg>',
   add: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" /></svg>',
@@ -50,10 +51,11 @@ const ICONS = {
 };
 
 /**
- * Create the main window structure
+ * Build the full NotesWindow DOM structure: header toolbar, sidebar
+ * with filter/list, rich-text editor, and empty state.
+ * @returns {{ header: HTMLElement, main: HTMLElement }}
  */
 export function renderWindowStructure() {
-  // Header
   const header = elem('div', { className: 'window-header notes-header' },
     elem('button', { className: 'notes-sidebar-toggle header-button', title: 'Toggle Sidebar', innerHTML: ICONS.sidebar }),
     elem('button', { className: 'notes-new-btn header-button', title: 'New Note', innerHTML: ICONS.add }),
@@ -85,7 +87,6 @@ export function renderWindowStructure() {
     )
   );
 
-  // Sidebar
   const sidebar = elem('div', { className: 'notes-sidebar' },
     elem('div', { className: 'notes-sidebar-header' },
       elem('select', { className: 'notes-filter app-select' },
@@ -98,7 +99,6 @@ export function renderWindowStructure() {
     elem('div', { className: 'notes-list' })
   );
 
-  // Editor container
   const editorContainer = elem('div', { className: 'notes-editor-container' },
     elem('div', { className: 'notes-editor-header' },
       elem('input', { type: 'text', className: 'notes-title-input app-input', placeholder: 'Note title...' }),
@@ -128,7 +128,6 @@ export function renderWindowStructure() {
     )
   );
 
-  // Empty state
   const emptyState = elem('div', { className: 'notes-empty-state' },
     elem('p', 'No note selected'),
     elem('p', 'Select a note from the list or create a new one'),
@@ -146,7 +145,11 @@ export function renderWindowStructure() {
 }
 
 /**
- * Render a single note list item
+ * Render a single note as a sidebar list item showing title, date,
+ * verse badge (if linked), and a content preview.
+ * @param {{ id: string, title: string, content: string, modified: number, reference: string?, referenceDisplay: string? }} note
+ * @param {boolean} isSelected - Whether this note is currently active
+ * @returns {HTMLElement}
  */
 export function renderNoteListItem(note, isSelected) {
   const title = note.title || 'Untitled';
@@ -171,7 +174,11 @@ export function renderNoteListItem(note, isSelected) {
 }
 
 /**
- * Render the notes list
+ * Render the full sidebar notes list as a document fragment.
+ * Shows an "empty" message when there are no notes to display.
+ * @param {Array} notes - Filtered/sorted array of note objects
+ * @param {string|null} currentNoteId - ID of the currently selected note
+ * @returns {DocumentFragment|HTMLElement}
  */
 export function renderNotesList(notes, currentNoteId) {
   if (notes.length === 0) {
@@ -186,7 +193,11 @@ export function renderNotesList(notes, currentNoteId) {
 }
 
 /**
- * Render a single search suggestion item
+ * Render a single search suggestion dropdown item with title and content preview.
+ * @param {{ title: string, content: string }} note - Matching note
+ * @param {number} index - Position in the suggestions list (stored as data-index)
+ * @param {boolean} isSelected - Whether this suggestion is keyboard/hover highlighted
+ * @returns {HTMLElement}
  */
 export function renderSuggestionItem(note, index, isSelected) {
   const title = note.title || 'Untitled';
@@ -202,7 +213,10 @@ export function renderSuggestionItem(note, index, isSelected) {
 }
 
 /**
- * Render search suggestions list
+ * Render the search suggestions dropdown as a document fragment.
+ * @param {Array} matches - Notes matching the current search query (max 5)
+ * @param {number} selectedIndex - Index of the currently highlighted suggestion
+ * @returns {DocumentFragment}
  */
 export function renderSearchSuggestions(matches, selectedIndex) {
   const fragment = document.createDocumentFragment();
