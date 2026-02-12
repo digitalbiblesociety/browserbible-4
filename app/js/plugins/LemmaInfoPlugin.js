@@ -23,7 +23,7 @@ export const LemmaInfoPlugin = (app) => {
   document.body.appendChild(lemmaInfo);
 
   const windowsMain = document.querySelector('.windows-main');
-  if (!'ontouchend' in document && windowsMain) {
+  if (!('ontouchend' in document) && windowsMain) {
 
       windowsMain.addEventListener('mouseover', (e) => {
         const l = e.target.closest('.BibleWindow l');

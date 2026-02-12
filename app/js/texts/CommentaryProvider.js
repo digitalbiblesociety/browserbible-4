@@ -3,6 +3,7 @@
  */
 
 import { getConfig } from '../core/config.js';
+import { fetchTextInfo } from './fetchTextInfo.js';
 
 const providerName = 'commentary';
 const fullName = 'Local Commentaries';
@@ -27,27 +28,7 @@ export function getTextManifest(callback) {
 }
 
 export function getTextInfo(textid, callback, errorCallback) {
-	if (textData[textid] !== undefined) {
-		callback(textData[textid]);
-		return;
-	}
-
-	const config = getConfig();
-	const infoUrl = `${config.baseContentUrl}content/commentaries/${textid}/info.json`;
-
-	fetch(infoUrl)
-		.then(response => {
-			if (!response.ok) throw new Error(`HTTP ${response.status}`);
-			return response.json();
-		})
-		.then(data => {
-			textData[textid] = data;
-			callback(data);
-		})
-		.catch(error => {
-			console.error('ERROR CommentaryProvider.getTextInfo', infoUrl);
-			errorCallback?.(error);
-		});
+	fetchTextInfo(textData, 'content/commentaries', textid, callback, errorCallback);
 }
 
 export function loadSection(textid, sectionid, callback, errorCallback) {

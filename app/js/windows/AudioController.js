@@ -161,39 +161,25 @@ export function AudioController(id, container, toggleButton, scroller) {
     }
   }, false);
 
-  prevButton.addEventListener('click', () => {
-    audioDataManager.getPrevFragment(textInfo, audioInfo, fragmentid, (prevFragmentid) => {
-      if (prevFragmentid == null) return;
+  const skipToFragment = (getFragment) => {
+    getFragment(textInfo, audioInfo, fragmentid, (newFragmentid) => {
+      if (newFragmentid == null) return;
 
       if (scrollCheckbox.checked) {
         if (scroller?.load) {
-          scroller.load('text', prevFragmentid.split('_')[0], prevFragmentid);
+          scroller.load('text', newFragmentid.split('_')[0], newFragmentid);
         }
       }
 
-      if (fragmentAudioData == null || prevFragmentid != fragmentAudioData.fragmentid) {
-        loadAudio(prevFragmentid);
+      if (fragmentAudioData == null || newFragmentid != fragmentAudioData.fragmentid) {
+        loadAudio(newFragmentid);
         audio.addEventListener('loadeddata', playWhenLoaded);
       }
     });
-  }, false);
+  };
 
-  nextButton.addEventListener('click', () => {
-    audioDataManager.getNextFragment(textInfo, audioInfo, fragmentid, (nextFragmentid) => {
-      if (nextFragmentid == null) return;
-
-      if (scrollCheckbox.checked) {
-        if (scroller?.load) {
-          scroller.load('text', nextFragmentid.split('_')[0], nextFragmentid);
-        }
-      }
-
-      if (fragmentAudioData == null || nextFragmentid != fragmentAudioData.fragmentid) {
-        loadAudio(nextFragmentid);
-        audio.addEventListener('loadeddata', playWhenLoaded);
-      }
-    });
-  }, false);
+  prevButton.addEventListener('click', () => skipToFragment(audioDataManager.getPrevFragment.bind(audioDataManager)), false);
+  nextButton.addEventListener('click', () => skipToFragment(audioDataManager.getNextFragment.bind(audioDataManager)), false);
 
   if (scroller != null) {
     const updateLocation = (e) => {

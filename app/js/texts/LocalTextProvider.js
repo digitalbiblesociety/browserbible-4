@@ -3,6 +3,7 @@
  */
 
 import { getConfig } from '../core/config.js';
+import { fetchTextInfo } from './fetchTextInfo.js';
 import { TextSearch } from './Search.js';
 
 const providerName = 'local';
@@ -76,27 +77,7 @@ export function getTextManifest(callback) {
 }
 
 export function getTextInfo(textid, callback, errorCallback) {
-  if (textData[textid] !== undefined) {
-    callback(textData[textid]);
-    return;
-  }
-
-  const config = getConfig();
-  const infoUrl = `${config.baseContentUrl}content/texts/${textid}/info.json`;
-
-  fetch(infoUrl)
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      textData[textid] = data;
-      callback(data);
-    })
-    .catch(error => {
-      console.error('ERROR TextInfoLoader.getText', infoUrl);
-      errorCallback?.(error);
-    });
+  fetchTextInfo(textData, 'content/texts', textid, callback, errorCallback);
 }
 
 export function loadSection(textid, sectionid, callback, errorCallback) {

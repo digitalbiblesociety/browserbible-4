@@ -172,18 +172,14 @@ function parseMarkdownImport(text) {
 }
 
 /**
- * Parse a plain text export back into note objects
- * Exported format:
- *   ==================================================
- *   Title
- *   [verse ref]
- *   Created: datestring
- *   Modified: datestring
- *
- *   content...
+ * Parse sections with a title/metadata/content header format.
+ * Used by both plain text and RTF importers.
+ * @param {string} text - Full text to parse
+ * @param {string|RegExp} divider - Section divider pattern
+ * @param {RegExp} versePattern - Regex to match verse reference lines (capture group 1 = reference)
  */
-function parsePlainTextImport(text) {
-  const sections = text.split(/={50}/);
+function parseHeaderSections(text, divider, versePattern) {
+  const sections = text.split(divider);
   const notes = [];
 
   for (let section of sections) {
@@ -210,7 +206,7 @@ function parsePlainTextImport(text) {
 
       if (title && !modified) {
         // Verse reference
-        const verseMatch = line.match(/^\[(.+)\]$/);
+        const verseMatch = line.match(versePattern);
         if (verseMatch) {
           referenceDisplay = verseMatch[1].trim();
           reference = referenceDisplay;
@@ -247,7 +243,6 @@ function parsePlainTextImport(text) {
 
     const now = Date.now();
     const contentText = lines.slice(contentStartIndex).join('\n').trim();
-    // Plain text content: convert newlines to <br> for HTML
     const contentHtml = contentText
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -266,6 +261,13 @@ function parsePlainTextImport(text) {
   }
 
   return notes;
+}
+
+/**
+ * Parse a plain text export back into note objects
+ */
+function parsePlainTextImport(text) {
+  return parseHeaderSections(text, /={50}/, /^\[(.+)\]$/);
 }
 
 /**
@@ -300,93 +302,10 @@ function stripRtf(rtf) {
 
 /**
  * Parse an RTF export back into note objects
- * Exported format uses ________________________________________________ as divider
  */
 function parseRtfImport(text) {
   const plainText = stripRtf(text);
-  const divider = '________________________________________________';
-  const sections = plainText.split(divider);
-  const notes = [];
-
-  for (let section of sections) {
-    section = section.trim();
-    if (!section) continue;
-
-    const lines = section.split('\n');
-    let title = '';
-    let reference = null;
-    let referenceDisplay = null;
-    let created = null;
-    let modified = null;
-    let contentStartIndex = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-
-      // First non-empty line is the title
-      if (!title && line) {
-        title = line;
-        contentStartIndex = i + 1;
-        continue;
-      }
-
-      if (title && !modified) {
-        // Verse reference (RTF exports as "Verse: ref")
-        const verseMatch = line.match(/^Verse:\s*(.+)$/);
-        if (verseMatch) {
-          referenceDisplay = verseMatch[1].trim();
-          reference = referenceDisplay;
-          contentStartIndex = i + 1;
-          continue;
-        }
-
-        // Created date
-        const createdMatch = line.match(/^Created:\s*(.+)$/);
-        if (createdMatch) {
-          created = parseDate(createdMatch[1]);
-          contentStartIndex = i + 1;
-          continue;
-        }
-
-        // Modified date
-        const modifiedMatch = line.match(/^Modified:\s*(.+)$/);
-        if (modifiedMatch) {
-          modified = parseDate(modifiedMatch[1]);
-          contentStartIndex = i + 1;
-          continue;
-        }
-
-        // Empty line after metadata
-        if (line === '') {
-          contentStartIndex = i + 1;
-          continue;
-        }
-
-        // Non-metadata line means content starts
-        break;
-      }
-    }
-
-    const now = Date.now();
-    const contentText = lines.slice(contentStartIndex).join('\n').trim();
-    const contentHtml = contentText
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
-
-    notes.push({
-      id: generateId(),
-      title: title || 'Imported Note',
-      content: contentHtml,
-      reference,
-      referenceDisplay,
-      created: created || now,
-      modified: modified || now
-    });
-  }
-
-  return notes;
+  return parseHeaderSections(plainText, '________________________________________________', /^Verse:\s*(.+)$/);
 }
 
 /**

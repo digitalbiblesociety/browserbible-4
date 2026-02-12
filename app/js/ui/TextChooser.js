@@ -18,7 +18,6 @@ const BUFFER_ROWS = 5; // Extra rows to render above/below viewport
  * @returns {Object} TextChooser API object
  */
 export function TextChooser() {
-  let container = null;
   let textType = null;
   let target = null;
   let selectedTextInfo = null;
@@ -278,7 +277,6 @@ export function TextChooser() {
 
   function setTarget(_container, _target, _textType) {
     const needsRerender = _textType !== textType;
-    container = _container;
     target = _target;
     textType = _textType;
 
