@@ -1,5 +1,6 @@
 tests/
 app/content/texts/*.*
+app/content/lexicons/*
 dist/
 app/content/texts/
 !app/content/texts/README.md
