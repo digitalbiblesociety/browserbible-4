@@ -28,6 +28,14 @@
 	padding: 10px;
 }
 
+.search-top {
+	position: sticky;
+	top: -10px;
+	z-index: 1;
+	background: var(--color-background);
+	padding-top: 10px;
+}
+
 .search-wrapper table {
 	border-spacing: 0;
 	border-collapse: collapse;
@@ -129,7 +137,7 @@
 
 .search-division-chooser .division-list {
 	float: left;
-	width: 50%;
+	width: 33.33%;
 }
 
 .search-division-chooser .division-header {
