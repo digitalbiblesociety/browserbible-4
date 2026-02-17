@@ -433,7 +433,7 @@ export function Scroller(node) {
         styleLink = elem('link', {
           id: styleId,
           rel: 'stylesheet',
-          href: `${config.baseContentUrl}content/texts/${textinfo.id}/${textinfo.stylesheet}`
+          href: `${config.baseContentUrl}${config.textsPath}/${textinfo.id}/${textinfo.stylesheet}`
         });
         document.head.appendChild(styleLink);
       }

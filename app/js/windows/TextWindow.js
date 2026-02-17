@@ -188,7 +188,7 @@ export class TextWindowComponent extends BaseWindow {
       this.refs.infoContent.innerHTML = '<div class="loading-indicator">Loading information...</div>';
 
       try {
-        const response = await fetch(`${this.config.baseContentUrl}content/texts/${this.state.currentTextInfo.id}/about.html`);
+        const response = await fetch(`${this.config.baseContentUrl}${this.config.textsPath}/${this.state.currentTextInfo.id}/about.html`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const htmlString = await response.text();
@@ -374,7 +374,7 @@ export class TextWindowComponent extends BaseWindow {
   setTextInfoUI(textinfo) {
     if (textinfo.type === 'deafbible') {
       this.refs.textlistui.classList.add('app-list-image');
-      this.refs.textlistui.innerHTML = `<img src="content/texts/${textinfo.id}/${textinfo.id}.png" />`;
+      this.refs.textlistui.innerHTML = `<img src="${this.config.textsPath}/${textinfo.id}/${textinfo.id}.png" />`;
     } else {
       this.refs.textlistui.classList.remove('app-list-image');
       this.refs.textlistui.innerHTML = textinfo.abbr;

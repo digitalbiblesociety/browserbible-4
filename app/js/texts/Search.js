@@ -127,7 +127,7 @@ export class SearchIndexLoader {
     this._events = {};
 
     const config = getConfig();
-    this.baseContentPath = `${config.baseContentUrl}content/texts/`;
+    this.baseContentPath = `${config.baseContentUrl}${config.textsPath}/`;
     this.isStemEnabled = true;
 
     this.textInfo = null;
@@ -316,7 +316,7 @@ export class TextSearch {
     this._events = {};
 
     const config = getConfig();
-    this.baseContentPath = `${config.baseContentUrl}content/texts/`;
+    this.baseContentPath = `${config.baseContentUrl}${config.textsPath}/`;
     this.isLemmaRegExp = /[GgHh]\d{1,6}/g;
 
     this.isSearching = false;

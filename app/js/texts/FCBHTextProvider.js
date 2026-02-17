@@ -63,7 +63,8 @@ export function getTextManifest(callback) {
 
     textDataIsLoading = true;
 
-    fetch('content/texts/texts_fcbh.json')
+    const config = getConfig();
+    fetch(`${config.textsPath}/texts_fcbh.json`)
       .then(response => response.json())
       .then(data => {
         textData = data.textInfoData;

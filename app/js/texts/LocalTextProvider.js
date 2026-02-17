@@ -47,7 +47,7 @@ function processContent(content, textInfo, textid) {
 
 export function getTextManifest(callback) {
   const config = getConfig();
-  const textsUrl = `${config.baseContentUrl}content/texts/${config.textsIndexPath}`;
+  const textsUrl = `${config.baseContentUrl}${config.textsPath}/${config.textsIndexPath}`;
 
   fetch(textsUrl)
     .then(response => {
@@ -77,13 +77,14 @@ export function getTextManifest(callback) {
 }
 
 export function getTextInfo(textid, callback, errorCallback) {
-  fetchTextInfo(textData, 'content/texts', textid, callback, errorCallback);
+  const config = getConfig();
+  fetchTextInfo(textData, config.textsPath, textid, callback, errorCallback);
 }
 
 export function loadSection(textid, sectionid, callback, errorCallback) {
   getTextInfo(textid, textInfo => {
     const config = getConfig();
-    const url = `${config.baseContentUrl}content/texts/${textid}/${sectionid}.html`;
+    const url = `${config.baseContentUrl}${config.textsPath}/${textid}/${sectionid}.html`;
 
     fetch(url)
       .then(response => {

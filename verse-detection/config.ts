@@ -13,6 +13,10 @@ export type ContentSourceType = 'local' | 'remote' | 'app';
 /** Popup position preference */
 export type PopupPosition = 'auto' | 'above' | 'below';
 
+/** Dev mode: use texts_dev path when ?dev=true is in the URL */
+const _isDevMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === 'true';
+const _textsSegment = _isDevMode ? 'texts_dev' : 'texts';
+
 /** Content source configuration */
 export interface ContentSourceConfig {
 	/** Source type for verse content */
@@ -211,14 +215,14 @@ export const config: VerseDetectionConfig = {
 		 * Remote: 'https://inscript.bible.cloud/content/texts'
 		 * Local: './content/texts' or your local content folder
 		 */
-		baseUrl: 'https://inscript.bible.cloud/content/texts',
+		baseUrl: `https://inscript.bible.cloud/content/${_textsSegment}`,
 
 		/**
 		 * URL to the texts index JSON file
 		 * This file contains metadata about all available Bible versions
 		 * Used to dynamically build the textIdsByLanguage mapping
 		 */
-		textsIndexUrl: 'https://inscript.bible.cloud/content/texts/texts.json',
+		textsIndexUrl: `https://inscript.bible.cloud/content/${_textsSegment}/texts.json`,
 
 		/**
 		 * Default text/version ID for fetching chapter content

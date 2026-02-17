@@ -14,6 +14,7 @@ const defaultConfig = {
   ],
 
   baseContentUrl: 'https://inscript.bible.cloud/',
+  textsPath: 'content/texts',
   baseContentApiPath: '',
   baseContentApiKey: '',
   textsIndexPath: 'texts.json',
@@ -118,6 +119,11 @@ const customConfigs = {
 };
 
 const config = { ...defaultConfig };
+
+// Dev mode: use texts_dev path when ?dev=true is in the URL
+if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === 'true') {
+  config.textsPath = 'content/texts_dev';
+}
 
 /**
  * Get the current configuration object

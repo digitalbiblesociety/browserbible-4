@@ -1,7 +1,9 @@
 import { createVerseDetector } from '@verse-detection/VerseDetectionPlugin.js';
 import { BOOK_CODES } from '@verse-detection/BookCodes.js';
 
-const CONTENT_BASE_URL = 'https://inscript.bible.cloud/content/texts';
+import { getConfig } from '../../core/config.js';
+
+const CONTENT_BASE_URL = `https://inscript.bible.cloud/${getConfig().textsPath}`;
 const DEFAULT_TEXT_ID = 'ENGWEB';
 
 

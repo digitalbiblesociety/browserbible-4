@@ -1001,7 +1001,8 @@ export class VersePopup {
 	 */
 	private async fetchChapterAndExtractVerses(parsed: ParsedReference, detectedLang: string | null = null, version?: string): Promise<string> {
 		const contentConfig = this.config.contentSource;
-		const baseUrl = contentConfig?.baseUrl || 'https://inscript.bible.cloud/content/texts';
+		const devTexts = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === 'true' ? 'texts_dev' : 'texts';
+		const baseUrl = contentConfig?.baseUrl || `https://inscript.bible.cloud/content/${devTexts}`;
 		// If an explicit version is provided, use it directly as textId
 		const textId = version ?? this.getTextId(detectedLang);
 

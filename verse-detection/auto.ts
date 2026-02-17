@@ -59,8 +59,8 @@ async function autoInit(): Promise<void> {
 
 			contentSource: {
 				type: 'remote',
-				baseUrl: 'https://inscript.bible.cloud/content/texts',
-				textsIndexUrl: 'https://inscript.bible.cloud/content/texts/texts.json',
+				baseUrl: `https://inscript.bible.cloud/content/${new URLSearchParams(window.location.search).get('dev') === 'true' ? 'texts_dev' : 'texts'}`,
+				textsIndexUrl: `https://inscript.bible.cloud/content/${new URLSearchParams(window.location.search).get('dev') === 'true' ? 'texts_dev' : 'texts'}/texts.json`,
 				dynamicTextSelection: true,
 				autoSelectByLanguage: true,
 				preferredTextIdsByLanguage: {
