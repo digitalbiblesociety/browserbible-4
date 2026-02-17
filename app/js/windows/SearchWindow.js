@@ -7,7 +7,7 @@ import { offset } from '../lib/helpers.esm.js';
 
 import { getApp } from '../core/registry.js';
 import { i18n } from '../lib/i18n.js';
-import { BOOK_DATA, OT_BOOKS, NT_BOOKS, EXTRA_MATTER } from '../bible/BibleData.js';
+import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, EXTRA_MATTER } from '../bible/BibleData.js';
 import { Reference } from '../bible/BibleReference.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getText, loadTexts, startSearch } from '../texts/TextLoader.js';
@@ -35,7 +35,7 @@ export class SearchWindowComponent extends BaseWindow {
 
     this.textChooser = getGlobalTextChooser();
     this.divisionChooser = null;
-    this.divWidth = 320;
+    this.divWidth = 480;
   }
 
   async render() {
@@ -321,6 +321,7 @@ export class SearchWindowComponent extends BaseWindow {
     if (!this.state.selectedTextInfo?.divisions) return;
 
     let otListHtml = '';
+    let apListHtml = '';
     let ntListHtml = '';
 
     for (let i = 0, il = this.state.selectedTextInfo.divisions.length; i < il; i++) {
@@ -333,6 +334,8 @@ export class SearchWindowComponent extends BaseWindow {
 
       if (NT_BOOKS.indexOf(dbsBookCode) > -1) {
         ntListHtml += html;
+      } else if (AP_BOOKS.indexOf(dbsBookCode) > -1) {
+        apListHtml += html;
       } else {
         otListHtml += html;
       }
@@ -345,6 +348,12 @@ export class SearchWindowComponent extends BaseWindow {
         </label>
         <div class="division-list-items">${otListHtml}</div>
       </div>
+      <div class="division-list division-list-ap">
+        <label class="division-header">
+          <input type="checkbox" value="list-ap" checked />${i18n.t('windows.bible.dc')}</label>
+        </label>
+        <div class="division-list-items">${apListHtml}</div>
+      </div>
       <div class="division-list division-list-nt">
         <label class="division-header">
           <input type="checkbox" value="list-nt" checked />${i18n.t('windows.bible.nt')}</label>
@@ -356,10 +365,14 @@ export class SearchWindowComponent extends BaseWindow {
     this.divisionChooser.querySelector('.search-division-main').innerHTML = completeHtml;
 
     const hasOtBooks = this.divisionChooser.querySelectorAll('.division-list-ot .division-list-items input').length > 0;
+    const hasApBooks = this.divisionChooser.querySelectorAll('.division-list-ap .division-list-items input').length > 0;
     const hasNtBooks = this.divisionChooser.querySelectorAll('.division-list-nt .division-list-items input').length > 0;
 
     if (!hasOtBooks) {
       this.divisionChooser.querySelector('.division-list-ot').style.display = 'none';
+    }
+    if (!hasApBooks) {
+      this.divisionChooser.querySelector('.division-list-ap').style.display = 'none';
     }
     if (!hasNtBooks) {
       this.divisionChooser.querySelector('.division-list-nt').style.display = 'none';
@@ -383,6 +396,7 @@ export class SearchWindowComponent extends BaseWindow {
     }
 
     this.checkDivisionHeader(this.divisionChooser.querySelector('.division-list-ot'));
+    this.checkDivisionHeader(this.divisionChooser.querySelector('.division-list-ap'));
     this.checkDivisionHeader(this.divisionChooser.querySelector('.division-list-nt'));
   }
 
@@ -782,10 +796,11 @@ export class SearchWindowComponent extends BaseWindow {
 
   getData() {
     const otHeader = this.divisionChooser.querySelector('.division-list-ot .division-header input');
+    const apHeader = this.divisionChooser.querySelector('.division-list-ap .division-header input');
     const ntHeader = this.divisionChooser.querySelector('.division-list-nt .division-header input');
-    const bothChecked = otHeader?.checked && ntHeader?.checked;
+    const allChecked = (otHeader?.checked !== false) && (apHeader?.checked !== false) && (ntHeader?.checked !== false);
 
-    const divisions = bothChecked ? [] : this.getSelectedDivisions();
+    const divisions = allChecked ? [] : this.getSelectedDivisions();
 
     return {
       searchtext: this.refs.input.value.trim(),
