@@ -1,0 +1,385 @@
+/* FlashcardWindow styles */
+
+#add-FlashcardWindow, .FlashcardWindow-tab {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M77.3 20.3h-1.5v-1.6c0-2.5-2.1-4.6-4.7-4.6h-1.6v-1.6c0-2.6-2-4.7-4.7-4.7H22.7a4.7 4.7 0 0 0-4.7 4.7V75c0 2.6 2 4.7 4.7 4.7h1.5v1.5c0 2.6 2.1 4.7 4.7 4.7h1.6v1.6c0 2.6 2 4.7 4.7 4.7h42.1c2.6 0 4.7-2.1 4.7-4.7V25c0-2.6-2-4.7-4.7-4.7m0 3.1q1.5.1 1.6 1.6v43.7h-3.1V23.4zm-6.2-6.2q1.5.2 1.6 1.5v43.8h-3.2V17.2zM30.5 70.3H57q1.5.1 1.6 1.6c0 1.5-.7 1.5-1.6 1.5H30.5q-1.5-.2-1.6-1.5.1-1.8 1.6-1.6m-1.6-6.2q.1-1.5 1.6-1.6H57q1.5.1 1.6 1.6c0 1.5-.7 1.5-1.6 1.5H30.5q-1.5-.2-1.6-1.5m25.3-17a1.6 1.6 0 0 1-1.5 1.8q-.4 0-.7-.2l-8.3-3.6-8.2 3.6q-.8.4-1.6-.1-.7-.6-.6-1.4l.9-9-6-6.8q-.6-.7-.4-1.5.4-1.1 1.2-1l8.8-2 4.6-7.8c.6-1 2.1-1 2.7 0l4.6 7.8 8.8 2a1.6 1.6 0 0 1 .8 2.5l-6 6.8zm12.2 9.1v3.2H21.1v-3.2zm-39 25v-1.5h37.4c2.6 0 4.7-2.1 4.7-4.7v-9.4h3.2v15.6q-.1 1.5-1.6 1.6H28.9q-1.5-.1-1.6-1.6m50 7.9H35.1q-1.5-.1-1.6-1.6v-1.6H71c2.6 0 4.7-2 4.7-4.7V72h3.1v15.6q-.1 1.5-1.6 1.6'/%3E%3Cpath d='m47.3 29-3.6-6-3.5 6q-.4.7-1 .8l-7 1.5 4.8 5.3q.4.4.4 1.2l-.7 7L43 42l.6-.2q.4 0 .7.2l6.4 2.8-.7-7q0-.7.4-1.2l4.7-5.3-6.9-1.5q-.6 0-1-.7'/%3E%3C/svg%3E");
+}
+
+/* Header — reuses .app-input, .app-list, .header-icon from windows.css */
+
+flashcard-window .flashcard-header {
+	display: flex;
+	align-items: center;
+}
+
+flashcard-window .flashcard-header-spacer {
+	flex: 1;
+}
+
+/* Add to deck icon (plus) */
+flashcard-window .flashcard-add-btn {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23666'%3E%3Cpath d='M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z'/%3E%3C/svg%3E");
+}
+
+/* Add current verse icon (plus with link) */
+flashcard-window .flashcard-add-current-btn {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+flashcard-window .flashcard-mode-btn {
+	padding: 4px 12px;
+	border-radius: 4px;
+	font-size: 11px;
+	cursor: pointer;
+	background: transparent;
+	color: var(--color-text);
+	border: 1px solid var(--color-border);
+	margin: 0 2px;
+	height: 30px;
+	vertical-align: top;
+}
+
+flashcard-window .flashcard-mode-btn.active {
+	background: var(--color-primary);
+	color: #fff;
+	border-color: var(--color-primary);
+}
+
+flashcard-window .flashcard-status {
+	font-size: 11px;
+	color: var(--color-text-secondary, #888);
+	margin-left: 5px;
+}
+
+/* Main area */
+
+flashcard-window .flashcard-main {
+	overflow-y: auto;
+	padding: 0;
+}
+
+/* Deck / card list */
+
+flashcard-window .flashcard-deck {
+	padding: 0;
+}
+
+flashcard-window .flashcard-card-list {
+	padding: 0;
+}
+
+flashcard-window .flashcard-list-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--color-border);
+	cursor: default;
+}
+
+flashcard-window .flashcard-list-item:hover {
+	background: var(--color-highlight);
+}
+
+flashcard-window .flashcard-list-item-info {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	cursor: pointer;
+}
+
+flashcard-window .flashcard-list-item-ref {
+	font-weight: 600;
+	font-size: var(--font-size-sm);
+}
+
+flashcard-window .flashcard-list-item-version {
+	font-size: var(--font-size-xs);
+	color: var(--color-primary);
+	background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+	padding: 1px 6px;
+	border-radius: 3px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+flashcard-window .flashcard-list-item-meta {
+	display: flex;
+	gap: 12px;
+	font-size: var(--font-size-xs);
+	color: var(--color-text-secondary, #888);
+}
+
+flashcard-window .flashcard-list-item-delete {
+	background: none;
+	border: none;
+	color: var(--color-text-secondary, #888);
+	cursor: pointer;
+	font-size: 16px;
+	padding: 0 4px;
+	line-height: 1;
+}
+
+flashcard-window .flashcard-list-item-delete:hover {
+	color: var(--color-error, #d00);
+}
+
+/* Empty state */
+
+flashcard-window .flashcard-empty-state {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--color-text-secondary, #888);
+	font-size: var(--font-size-sm);
+}
+
+flashcard-window .flashcard-empty-state p {
+	margin: 4px 0;
+}
+
+/* Review area */
+
+flashcard-window .flashcard-review {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 16px;
+	gap: 16px;
+}
+
+flashcard-window .flashcard-progress {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-secondary, #888);
+}
+
+/* Card flip animation */
+
+flashcard-window .flashcard-card-container {
+	width: 100%;
+	max-width: 400px;
+	perspective: 800px;
+	cursor: pointer;
+}
+
+flashcard-window .flashcard-card {
+	position: relative;
+	width: 100%;
+	min-height: 200px;
+	transform-style: preserve-3d;
+	transition: transform var(--transition-normal, 0.25s) ease;
+}
+
+flashcard-window .flashcard-card.flipped {
+	transform: rotateY(180deg);
+}
+
+flashcard-window .flashcard-card-front,
+flashcard-window .flashcard-card-back {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	min-height: 200px;
+	backface-visibility: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	border-radius: 8px;
+	border: 2px solid var(--color-border);
+	background: var(--color-background);
+	box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.1));
+}
+
+flashcard-window .flashcard-card-back {
+	transform: rotateY(180deg);
+}
+
+flashcard-window .flashcard-card-reference {
+	font-size: var(--font-size-xl, 20px);
+	font-weight: 700;
+	color: var(--color-primary);
+	margin-bottom: 4px;
+}
+
+flashcard-window .flashcard-card-version {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-secondary, #888);
+	font-weight: 600;
+	margin-bottom: 12px;
+}
+
+flashcard-window .flashcard-hint-btn {
+	padding: 4px 14px;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	font-size: var(--font-size-xs);
+	cursor: pointer;
+	background: var(--color-button-background, var(--color-background));
+	color: var(--color-text-secondary, #888);
+	margin-bottom: 8px;
+	transition: background var(--transition-fast, 0.15s);
+}
+
+flashcard-window .flashcard-hint-btn:hover {
+	background: var(--color-highlight);
+	color: var(--color-text);
+}
+
+flashcard-window .flashcard-hint-btn.hidden {
+	display: none;
+}
+
+flashcard-window .flashcard-card-hint {
+	font-size: var(--font-size-sm);
+	color: var(--color-text);
+	font-style: italic;
+	margin-bottom: 8px;
+	opacity: 0;
+	transition: opacity var(--transition-fast, 0.15s);
+}
+
+flashcard-window .flashcard-card-hint.visible {
+	opacity: 1;
+}
+
+flashcard-window .flashcard-card-tap {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-secondary, #888);
+}
+
+flashcard-window .flashcard-card-text {
+	font-size: var(--font-size-md, 16px);
+	line-height: 1.6;
+	text-align: center;
+	color: var(--color-text);
+}
+
+/* Rating buttons */
+
+flashcard-window .flashcard-rating-buttons {
+	display: flex;
+	gap: 8px;
+	width: 100%;
+	max-width: 400px;
+}
+
+flashcard-window .flashcard-rate-btn {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	padding: 8px 4px;
+	border-radius: 6px;
+	border: 1px solid var(--color-border);
+	background: var(--color-button-background, var(--color-background));
+	color: var(--color-text);
+	cursor: pointer;
+	transition: background var(--transition-fast, 0.15s);
+}
+
+flashcard-window .flashcard-rate-btn:hover {
+	background: var(--color-highlight);
+}
+
+flashcard-window .flashcard-rate-btn[data-quality="0"] { border-color: var(--color-error, #d00); }
+flashcard-window .flashcard-rate-btn[data-quality="1"] { border-color: #e8a735; }
+flashcard-window .flashcard-rate-btn[data-quality="2"] { border-color: var(--color-success, #28a745); }
+flashcard-window .flashcard-rate-btn[data-quality="3"] { border-color: var(--color-primary); }
+
+flashcard-window .flashcard-rate-label {
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+}
+
+flashcard-window .flashcard-rate-detail {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-secondary, #888);
+}
+
+/* Toast notification */
+
+flashcard-window .flashcard-toast {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	transform: translateX(-50%) translateY(12px);
+	background: var(--color-text, #333);
+	color: var(--color-background, #fff);
+	padding: 10px 20px;
+	border-radius: 6px;
+	font-size: var(--font-size-sm);
+	box-shadow: var(--shadow-lg, 0 4px 16px rgba(0,0,0,0.2));
+	opacity: 0;
+	transition: opacity var(--transition-fast, 0.15s), transform var(--transition-fast, 0.15s);
+	z-index: 100;
+	pointer-events: none;
+	white-space: nowrap;
+}
+
+flashcard-window .flashcard-toast.visible {
+	opacity: 1;
+	transform: translateX(-50%) translateY(0);
+}
+
+/* Verse Navigator — third level (verse grid) */
+
+/* Fade non-selected chapter numbers when a chapter is picked */
+.verse-navigator .has-verse-selection .text-navigator-section {
+	opacity: 0.5;
+	transition: opacity var(--transition-fast, 0.15s);
+}
+
+.verse-navigator .has-verse-selection .text-navigator-section.selected {
+	opacity: 1;
+}
+
+/* Verse grid inserted inline after the selected chapter */
+.verse-navigator .verse-navigator-verses {
+	clear: both;
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows 300ms ease-out;
+	padding: 4px 0;
+	border-top: 1px solid var(--color-border);
+	border-bottom: 1px solid var(--color-border);
+	margin: 4px 0;
+}
+
+.verse-navigator .verse-navigator-verses.collapsed {
+	grid-template-rows: 0fr;
+	padding: 0;
+	border-color: transparent;
+	margin: 0;
+}
+
+.verse-navigator .verse-navigator-verses-inner {
+	overflow: hidden;
+}
+
+.verse-navigator .verse-navigator-verse {
+	float: left;
+	width: 36px;
+	height: 36px;
+	margin: 1px 1px 0 0;
+	color: var(--color-text);
+	text-align: center;
+	padding: 10px 0 0;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.verse-navigator .verse-navigator-verse:hover {
+	font-weight: bold;
+	background: var(--color-background-hover);
+	border-radius: 3px;
+}
+
+/* Hidden utility */
+
+flashcard-window .hidden {
+	display: none !important;
+}

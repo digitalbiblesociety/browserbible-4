@@ -104,6 +104,9 @@
       "notes": {
         "label": "Notes"
       },
+      "flashcard": {
+        "label": "Flashcards"
+      },
       "audio": {
         "label": "Audio",
         "options": "Audio Options",

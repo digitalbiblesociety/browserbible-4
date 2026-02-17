@@ -7,7 +7,7 @@
 import { elem, offset } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
-import { BOOK_DATA, OT_BOOKS, NT_BOOKS, addNames, numbers as bibleNumbers } from '../bible/BibleData.js';
+import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, addNames, numbers as bibleNumbers } from '../bible/BibleData.js';
 import { Reference } from '../bible/BibleReference.js';
 
 /**
@@ -120,14 +120,30 @@ export function TextNavigator() {
 
   function renderDivisions() {
     const fragment = document.createDocumentFragment();
-    const printed = { ot: false, nt: false };
+    const printed = { ot: false, nt: false, ap: false };
     fullBookMode = true;
 
     const divsEl = changer.querySelector('.text-navigator-divisions');
     if (divsEl) divsEl.classList.toggle('text-navigator-divisions-full', fullBookMode);
 
+    // Sort divisions into OT, AP, NT order regardless of input order
+    const otDivs = [];
+    const apDivs = [];
+    const ntDivs = [];
+    const otherDivs = [];
+
     for (let i = 0; i < textInfo.divisions.length; i++) {
       const divisionid = textInfo.divisions[i];
+      const entry = { divisionid, index: i };
+      if (OT_BOOKS.includes(divisionid)) otDivs.push(entry);
+      else if (NT_BOOKS.includes(divisionid)) ntDivs.push(entry);
+      else if (AP_BOOKS.includes(divisionid)) apDivs.push(entry);
+      else otherDivs.push(entry);
+    }
+
+    const sortedDivs = [...otDivs, ...apDivs, ...ntDivs, ...otherDivs];
+
+    for (const { divisionid, index: i } of sortedDivs) {
       if (!BOOK_DATA[divisionid]) continue;
 
       const divisionName = textInfo.divisionNames?.[i] ?? null;
@@ -136,6 +152,10 @@ export function TextNavigator() {
       if (OT_BOOKS.includes(divisionid) && !printed.ot) {
         fragment.appendChild(elem('div', { className: 'text-navigator-division-header', textContent: i18n.t('windows.bible.ot') }));
         printed.ot = true;
+      }
+      if (AP_BOOKS.includes(divisionid) && !printed.ap) {
+        fragment.appendChild(elem('div', { className: 'text-navigator-division-header', textContent: i18n.t('windows.bible.dc') }));
+        printed.ap = true;
       }
       if (NT_BOOKS.includes(divisionid) && !printed.nt) {
         fragment.appendChild(elem('div', { className: 'text-navigator-division-header', textContent: i18n.t('windows.bible.nt') }));
