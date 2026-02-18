@@ -6,6 +6,7 @@
 
 import { getConfig } from '../core/config.js';
 import { elem } from '../lib/helpers.esm.js';
+import { getWindowIcon } from '../core/windowIcons.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 
 const STORAGE_KEY = 'browserbible_highlights';
@@ -328,8 +329,11 @@ export const HighlighterPlugin = (app) => {
 
   const toggleButton = elem('div', {
     className: 'main-menu-item highlighter-toggle',
-    textContent: 'Highlight'
   });
+  const highlighterIconSpan = elem('span', { className: 'main-menu-icon' });
+  highlighterIconSpan.innerHTML = getWindowIcon('highlighter') || '';
+  toggleButton.appendChild(highlighterIconSpan);
+  toggleButton.appendChild(document.createTextNode('Highlight'));
 
   document.querySelector('#main-menu-features')?.appendChild(toggleButton);
 

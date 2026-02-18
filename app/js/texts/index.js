@@ -26,6 +26,7 @@ import { LocalTextProvider } from './LocalTextProvider.js';
 import { FCBHTextProvider } from './FCBHTextProvider.js';
 import { DBSTextProvider } from './DBSTextProvider.js';
 import { CommentaryProvider } from './CommentaryProvider.js';
+import { DbsAudioTextProvider } from './DbsAudioTextProvider.js';
 
 import {
   TextSearch,
@@ -37,6 +38,7 @@ registerTextProvider('local', LocalTextProvider);
 registerTextProvider('fcbh', FCBHTextProvider);
 registerTextProvider('dbs', DBSTextProvider);
 registerTextProvider('commentary', CommentaryProvider);
+registerTextProvider('dbs-audio', DbsAudioTextProvider);
 
 export const texts = {
   TextLoader,
@@ -44,6 +46,7 @@ export const texts = {
   FCBHTextProvider,
   DBSTextProvider,
   CommentaryProvider,
+  DbsAudioTextProvider,
   TextSearch,
   SearchIndexLoader,
   SearchTools,
@@ -70,6 +73,7 @@ export {
   FCBHTextProvider,
   DBSTextProvider,
   CommentaryProvider,
+  DbsAudioTextProvider,
   TextSearch,
   SearchIndexLoader,
   SearchTools,

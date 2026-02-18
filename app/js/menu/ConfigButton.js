@@ -7,6 +7,7 @@
 import { elem } from '../lib/helpers.esm.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
+import { getWindowIcon } from '../core/windowIcons.js';
 
 /**
  * Create config button and dialog
@@ -16,7 +17,13 @@ import { MovableWindow } from '../ui/MovableWindow.js';
  */
 export function ConfigButton(_parentNode, _menu) {
   const container = document.querySelector('.windows-container');
-  const configButton = elem('div', { className: 'main-menu-item image-config i18n', dataset: { i18n: '[html]menu.labels.settings' } });
+  const configButton = elem('div', { className: 'main-menu-item' });
+  const configIconSpan = elem('span', { className: 'main-menu-icon' });
+  configIconSpan.innerHTML = getWindowIcon('settings') || '';
+  configButton.appendChild(configIconSpan);
+  const configTextSpan = elem('span', { className: 'i18n' });
+  configTextSpan.dataset.i18n = '[html]menu.labels.settings';
+  configButton.appendChild(configTextSpan);
   const mainMenuFeatures = document.querySelector('#main-menu-features');
 
   const configWindow = new MovableWindow(300, 380, i18n.t('menu.labels.settings'), 'config-window');

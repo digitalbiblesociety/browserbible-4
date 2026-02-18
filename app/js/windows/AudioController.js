@@ -8,6 +8,11 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { Reference } from '../bible/BibleReference.js';
 import { AudioDataManager } from '../media/AudioDataManager.js';
+import playSvg from '../../css/images/audio/play-icon.svg?raw';
+import pauseSvg from '../../css/images/audio/pause-icon.svg?raw';
+import prevSvg from '../../css/images/audio/previous-icon.svg?raw';
+import nextSvg from '../../css/images/audio/next-icon.svg?raw';
+import gearSvg from '../../css/images/gear.svg?raw';
 
 /**
  * Create an audio controller for text windows
@@ -25,14 +30,18 @@ export function AudioController(id, container, toggleButton, scroller) {
   const audioSliderLoaded = elem('div', { className: 'audio-slider-loaded' });
   const audioSliderHandle = elem('span', { className: 'audio-slider-handle' });
   const audioSlider = elem('div', { className: 'audio-slider' }, audioSliderCurrent, audioSliderLoaded, audioSliderHandle);
-  const prevButton = elem('input', { type: 'button', className: 'audio-prev', value: 'Prev' });
-  const playButton = elem('input', { type: 'button', className: 'audio-play', value: 'Play' });
-  const nextButton = elem('input', { type: 'button', className: 'audio-next', value: 'Next' });
+  const prevButton = elem('div', { className: 'audio-prev' });
+  prevButton.innerHTML = prevSvg;
+  const playButton = elem('div', { className: 'audio-play' });
+  playButton.innerHTML = playSvg;
+  const nextButton = elem('div', { className: 'audio-next' });
+  nextButton.innerHTML = nextSvg;
   const currenttime = elem('span', { className: 'audio-currenttime' }, '00:00');
   const duration = elem('span', { className: 'audio-duration' }, '00:00');
   const title = elem('span', { className: 'audio-title' });
   const subtitle = elem('span', { className: 'audio-subtitle' });
-  const optionsButton = elem('input', { type: 'button', className: 'audio-options-button image-config-light' });
+  const optionsButton = elem('div', { className: 'audio-options-button' });
+  optionsButton.innerHTML = gearSvg;
   let block = elem('div', { className: 'audio-controller' }, audio, audioSlider, prevButton, playButton, nextButton, currenttime, duration, title, subtitle, optionsButton);
   containerEl.appendChild(block);
 
@@ -62,6 +71,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   let sectionHeight = 0;
   let sectionNode = null;
   let hasAudio = false;
+  let lastTimestampVerse = 0;
 
   scrollCheckbox.checked = true;
   autoplayCheckbox.checked = true;
@@ -144,7 +154,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   }
 
   playButton.addEventListener('click', () => {
-    if (audio.src == '' || audio.src == null) {
+    if (!audio.getAttribute('src')) {
       if (loadAudioWhenPlayIsPressed) {
         audio.src = fragmentAudioData.url;
         audio.load();
@@ -215,7 +225,7 @@ export function AudioController(id, container, toggleButton, scroller) {
         audioDataManager.getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption, (newFragmentAudioData) => {
           if (fragmentAudioData == null || newFragmentAudioData == null || fragmentAudioData.id != newFragmentAudioData.id) {
             if (!newFragmentAudioData || newFragmentAudioData.url == null) {
-              audio.src = null;
+              audio.removeAttribute('src');
               title.innerHTML = '[No audio]';
 
               if (toggleButtonEl) {
@@ -228,6 +238,7 @@ export function AudioController(id, container, toggleButton, scroller) {
             } else {
               if (toggleButtonEl) toggleButtonEl.style.display = '';
               fragmentAudioData = newFragmentAudioData;
+              lastTimestampVerse = 0;
             }
 
             if (block.style.display !== 'none') {
@@ -256,7 +267,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   const handlePlayPlaying = () => {
     const thisAudio = audio;
 
-    playButton.setAttribute('value', 'Pause');
+    playButton.innerHTML = pauseSvg;
     playButton.classList.add('playing');
 
     // Pause all other audio/video elements when this one starts playing
@@ -271,7 +282,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   audio.addEventListener('playing', handlePlayPlaying, false);
 
   const handlePauseEnded = () => {
-    playButton.setAttribute('value', 'Play');
+    playButton.innerHTML = playSvg;
     playButton.classList.remove('playing');
   };
 
@@ -279,7 +290,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   audio.addEventListener('ended', handlePauseEnded, false);
 
   audio.addEventListener('loadstart', () => {
-    playButton.setAttribute('value', 'Play');
+    playButton.innerHTML = playSvg;
     playButton.classList.remove('playing');
 
     audioSliderHandle.style.left = '0%';
@@ -314,15 +325,47 @@ export function AudioController(id, container, toggleButton, scroller) {
     }
     if (!sectionNode) return;
 
+    const pane = containerEl.querySelector('.scroller-main');
+    if (!pane) return;
+
+    // Verse-level sync when timestamps are available
+    if (fragmentAudioData?.timestamps) {
+      let currentVerse = 1;
+      for (const ts of fragmentAudioData.timestamps) {
+        if (audio.currentTime >= ts.time) {
+          currentVerse = ts.verse;
+        } else {
+          break;
+        }
+      }
+
+      if (currentVerse !== lastTimestampVerse) {
+        lastTimestampVerse = currentVerse;
+
+        const verses = sectionNode.querySelectorAll('.v');
+        const verseEl = (currentVerse > 0 && currentVerse <= verses.length)
+          ? verses[currentVerse - 1]
+          : null;
+
+        if (verseEl) {
+          const paneTop = offset(pane).top;
+          const scrollTop = pane.scrollTop;
+          const verseTop = offset(verseEl).top;
+          const verseTopAdjusted = verseTop - paneTop + scrollTop;
+
+          scroller.setFocus(true);
+          pane.scrollTop = verseTopAdjusted;
+        }
+      }
+      return;
+    }
+
+    // Proportional estimation fallback
     sectionHeight = sectionNode.offsetHeight;
 
-    // Skip intro music - chapter 1 has longer intro
     const chapter = parseInt(sectionid.substring(2), 10);
     const skipSeconds = (chapter == 1) ? 10 : 8;
     const fraction = (audio.currentTime - skipSeconds) / (audio.duration - skipSeconds);
-
-    const pane = containerEl.querySelector('.scroller-main');
-    if (!pane) return;
 
     const paneTop = offset(pane).top;
     const scrollTop = pane.scrollTop;
@@ -420,7 +463,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     sectionid = '';
     fragmentAudioData = null;
 
-    if (audioInfo.type == 'local') {
+    if (audioInfo.type == 'local' || audioInfo.type == 'dbs') {
       optionsDramaticBox.style.display = 'none';
     } else if (audioInfo.type == 'fcbh') {
       configureFcbhDramaOptions(audioInfo);
@@ -446,11 +489,12 @@ export function AudioController(id, container, toggleButton, scroller) {
       if (!audio.paused && !audio.ended) {
         try {
           audio.pause();
-          audio.src = null;
         } catch (e) {
           // ignore
         }
       }
+      audio.removeAttribute('src');
+      audio.load();
 
       if (textInfo.type == 'bible') {
         audioDataManager.getAudioInfo(textInfo, handleAudioInfoResult);

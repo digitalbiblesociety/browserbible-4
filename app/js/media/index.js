@@ -4,7 +4,8 @@
  */
 
 import { getConfig } from '../core/config.js';
-import { AudioDataManager, LocalAudio } from './AudioDataManager.js';
+import { AudioDataManager } from './AudioDataManager.js';
+import './audioProviders.js';
 import ArclightApi, { JesusFilmMediaApi } from './ArclightApi.js';
 
 export const JesusFilmApi = ArclightApi;
@@ -113,6 +114,6 @@ if (typeof window !== 'undefined') {
   window.MediaLibrary = MediaLibrary;
 }
 
-export { AudioDataManager, LocalAudio };
+export { AudioDataManager };
 
-export default { AudioDataManager, LocalAudio, JesusFilmApi, ArclightApi, JesusFilmMediaApi, MediaLibrary };
+export default { AudioDataManager, JesusFilmApi, ArclightApi, JesusFilmMediaApi, MediaLibrary };

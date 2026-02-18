@@ -2,7 +2,7 @@
 
 /* Menu button icon */
 .highlighter-toggle {
-	background-image: url(../../css/images/highlighter.svg);
+	color: var(--color-primary-light);
 }
 
 .highlighter-toggle.active {
@@ -82,8 +82,8 @@ html.dark .highlighter-toggle.active {
 	background-color: var(--color-highlight);
 }
 
-/* Sepia theme adjustments */
-.theme-sepia .highlighter-toggle.active,
-html.sepia .highlighter-toggle.active {
+/* Earthsong theme adjustments */
+.theme-earthsong .highlighter-toggle.active,
+html.earthsong .highlighter-toggle.active {
 	background-color: var(--color-highlight);
 }

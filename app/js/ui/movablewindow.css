@@ -20,6 +20,7 @@
 
 .movable-header {
 	background: var(--color-header-background);
+	color: var(--color-header-text);
 	height: 30px;
 	padding: 5px;
 }
@@ -27,6 +28,7 @@
 .movable-body {
 	overflow: auto;
 	background: var(--color-background);
+	color: var(--color-text);
 }
 
 .movable-window .close-button {

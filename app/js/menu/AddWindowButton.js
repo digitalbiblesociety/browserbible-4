@@ -6,6 +6,7 @@
 import { getConfig } from '../core/config.js';
 import { getAllWindowTypes, getApp } from '../core/registry.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
+import { getWindowIcon } from '../core/windowIcons.js';
 
 // Store init data for buttons
 const buttonData = new WeakMap();
@@ -49,9 +50,21 @@ export function AddWindowButton(_parentNode, _menu) {
   let addButton;
   for (const tool of windowTools) {
     addButton = document.createElement('div');
-    addButton.className = 'main-menu-item window-add i18n';
+    addButton.className = 'main-menu-item window-add';
     addButton.id = `add-${tool.type}`;
-    addButton.setAttribute('data-i18n', `[html]windows.${tool.label}.label`);
+
+    const iconSvg = getWindowIcon(tool.type);
+    if (iconSvg) {
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'main-menu-icon';
+      iconSpan.innerHTML = iconSvg;
+      addButton.appendChild(iconSpan);
+    }
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'i18n';
+    textSpan.setAttribute('data-i18n', `[html]windows.${tool.label}.label`);
+    addButton.appendChild(textSpan);
 
     if (buttonMenu) {
       buttonMenu.appendChild(addButton);
@@ -69,14 +82,17 @@ export function AddWindowButton(_parentNode, _menu) {
 
       const app = getApp();
 
-      // when starting a bible or commentary window, try to match it up with the others
-      if (settings.type === 'BibleWindow' || settings.type === 'CommentaryWindow') {
+      // when starting a bible, commentary, or audio window, try to match it up with the others
+      if (settings.type === 'BibleWindow' || settings.type === 'CommentaryWindow' || settings.type === 'AudioWindow') {
         const firstBCWindow = app?.windowManager?.getWindows().filter(w => w.className === 'BibleWindow' || w.className === 'CommentaryWindow')[0] ?? null;
         const currentData = firstBCWindow?.getData() ?? null;
 
         if (currentData !== null) {
           settings.data.fragmentid = currentData.fragmentid;
           settings.data.sectionid = currentData.sectionid;
+          if (settings.type === 'AudioWindow') {
+            settings.data._activeBibleTextid = currentData.textid;
+          }
         } else {
           const fragmentid = config.newWindowFragmentid ?? 'JN1_1';
           const sectionid = fragmentid.split('_')[0];

@@ -1,6 +1,6 @@
 /**
  * ThemeSetting
- * Theme selector (default, sepia, dark)
+ * Theme selector (default, earthsong, dark)
  */
 
 import { elem } from '../lib/helpers.esm.js';
@@ -22,7 +22,7 @@ export function ThemeSetting(_parentNode, _menu) {
 
   const body = document.querySelector('#config-type .config-body');
   const themesBlock = elem('div', { id: 'config-themes' });
-  const themeNames = ['default', 'sepia', 'dark'];
+  const themeNames = ['default', 'earthsong', 'dark'];
   const defaultThemeSetting = { themeName: themeNames[0] };
   const themeKey = 'config-theme';
   const themeSetting = AppSettings.getValue(themeKey, defaultThemeSetting);

@@ -1,8 +1,3 @@
-#add-MediaWindow, .MediaWindow-tab {
-	background-image: url(../../css/images/pictures.svg);
-}
-
-
 .media-filters {
 	display: flex;
 	gap: 4px;

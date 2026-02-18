@@ -324,6 +324,7 @@ export function TextNavigator() {
 
   function setTextInfo(value) {
     textInfo = value;
+    if (!textInfo) return;
 
     if (textInfo.title) {
       changer.querySelector('.text-navigator-header').innerHTML = textInfo.title;

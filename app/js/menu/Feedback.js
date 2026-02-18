@@ -7,6 +7,7 @@ import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
+import feedbackSvg from '../../css/images/feedback.svg?raw';
 
 /**
  * Create feedback button and dialog
@@ -22,11 +23,13 @@ export function Feedback(_parentNode, _menu) {
   }
 
   const container = document.querySelector('.windows-container');
-  const feedbackButton = elem('div', {
-    className: 'main-menu-item feedback-logo i18n',
-    textContent: 'Feedback',
-    dataset: { i18n: '[html]menu.labels.feedback' }
-  });
+  const feedbackButton = elem('div', { className: 'main-menu-item feedback-logo' });
+  const feedbackIconSpan = elem('span', { className: 'main-menu-icon' });
+  feedbackIconSpan.innerHTML = feedbackSvg;
+  feedbackButton.appendChild(feedbackIconSpan);
+  const feedbackTextSpan = elem('span', { className: 'i18n' });
+  feedbackTextSpan.dataset.i18n = '[html]menu.labels.feedback';
+  feedbackButton.appendChild(feedbackTextSpan);
   const mainMenuFeatures = document.querySelector('#main-menu-features');
   const modalOverlay = elem('div', { className: 'modal-overlay', style: { display: 'none' } });
   const feedbackWindow = new MovableWindow(Math.min(window.innerWidth, 500), 300, i18n.t('menu.labels.feedback'));

@@ -8,7 +8,7 @@ import { Reference } from '../bible/BibleReference.js';
 import { AudioController } from './AudioController.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
-import { getText } from '../texts/TextLoader.js';
+import { getText, getTextInfoData } from '../texts/TextLoader.js';
 
 const hasTouch = 'ontouchend' in document;
 
@@ -223,6 +223,8 @@ export class AudioWindowComponent extends BaseWindow {
   }
 
   updateText(newTextInfo) {
+    if (!newTextInfo) return;
+
     this.refs.textlistui.innerHTML = newTextInfo.abbr;
     this.updateTabLabel(newTextInfo.abbr);
     this.textNavigator?.setTextInfo(newTextInfo);
@@ -234,18 +236,21 @@ export class AudioWindowComponent extends BaseWindow {
   async loadInitialText() {
     const initData = this.initData || {};
 
-    if (!initData || Object.keys(initData).length === 0) {
-      return;
+    // Set location from initData or default
+    const fragmentid = initData.fragmentid || this.config.newWindowFragmentid || 'JN1_1';
+    if (fragmentid) {
+      this.changeLocation(fragmentid);
     }
 
-    if (initData.fragmentid && initData.fragmentid !== '') {
-      this.changeLocation(initData.fragmentid);
-    }
-
+    // Use explicit textid if provided (e.g., restoring from saved state)
     let textid = initData.textid;
+
+    // Otherwise, find the best audio Bible
     if (!textid || textid === '') {
-      textid = this.config.newBibleWindowVersion;
+      textid = this._findBestAudioBible(initData._activeBibleTextid);
     }
+
+    if (!textid) return;
 
     try {
       const loadedTextInfo = await getTextAsync(textid);
@@ -254,6 +259,50 @@ export class AudioWindowComponent extends BaseWindow {
     } catch (err) {
       console.error('Error loading text:', textid, err);
     }
+  }
+
+  /**
+   * Find the best audio Bible to open.
+   * Priority: 1) matching the active Bible window's text, 2) same language, 3) English
+   * @param {string} [activeBibleTextid] - providerid of the active Bible window's text
+   * @returns {string|null} textid (providerid) to load
+   */
+  _findBestAudioBible(activeBibleTextid) {
+    const allTexts = getTextInfoData() || [];
+    const audioTexts = allTexts.filter(t =>
+      t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt
+    );
+
+    if (audioTexts.length === 0) return null;
+
+    // If we have an active Bible window's text, try to match it
+    if (activeBibleTextid) {
+      const plainId = activeBibleTextid.includes(':')
+        ? activeBibleTextid.split(':')[1]
+        : activeBibleTextid;
+
+      // Exact match: the active Bible text itself has audio
+      const exactMatch = audioTexts.find(t =>
+        t.id === plainId || t.abbr === plainId
+      );
+      if (exactMatch) return exactMatch.providerid || exactMatch.id;
+
+      // Same language: find an audio Bible in the same language as the active text
+      const activeTextInfo = allTexts.find(t =>
+        t.id === plainId || t.abbr === plainId
+      );
+      if (activeTextInfo?.lang) {
+        const langMatch = audioTexts.find(t => t.lang === activeTextInfo.lang);
+        if (langMatch) return langMatch.providerid || langMatch.id;
+      }
+    }
+
+    // Default: English audio Bible
+    const englishAudio = audioTexts.find(t => t.lang === 'eng');
+    if (englishAudio) return englishAudio.providerid || englishAudio.id;
+
+    // Last resort: first available audio Bible
+    return audioTexts[0].providerid || audioTexts[0].id;
   }
 
   size(width, height) {

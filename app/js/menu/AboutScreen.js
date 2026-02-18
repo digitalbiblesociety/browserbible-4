@@ -1,6 +1,7 @@
 import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 import { elem } from '../lib/helpers.esm.js';
+import { getWindowIcon } from '../core/windowIcons.js';
 
 const WINDOW_SIZE = { widthRatio: 0.8, heightRatio: 0.7 };
 
@@ -12,11 +13,13 @@ const aboutHtml = `
 `;
 
 export function AboutScreen() {
-  const aboutButton = elem('div', {
-    className: 'main-menu-item about-logo i18n',
-    textContent: 'About'
-  });
-  aboutButton.dataset.i18n = '[html]menu.labels.about';
+  const aboutButton = elem('div', { className: 'main-menu-item' });
+  const aboutIconSpan = elem('span', { className: 'main-menu-icon' });
+  aboutIconSpan.innerHTML = getWindowIcon('about') || '';
+  aboutButton.appendChild(aboutIconSpan);
+  const aboutTextSpan = elem('span', { className: 'i18n' });
+  aboutTextSpan.dataset.i18n = '[html]menu.labels.about';
+  aboutButton.appendChild(aboutTextSpan);
 
   document.querySelector('#main-menu-features')?.appendChild(aboutButton);
 

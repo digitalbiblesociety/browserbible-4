@@ -4,6 +4,7 @@
 
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
 import { offset } from '../lib/helpers.esm.js';
+import gearSvg from '../../css/images/gear.svg?raw';
 
 import { getApp } from '../core/registry.js';
 import { i18n } from '../lib/i18n.js';
@@ -63,6 +64,8 @@ export class SearchWindowComponent extends BaseWindow {
       </div>
       <div class="search-footer window-footer"></div>
     `;
+
+    this.querySelector('.search-options-button').innerHTML = gearSvg;
 
     // Create division chooser popover (appended to body)
     this.divisionChooser = this.createElement(`

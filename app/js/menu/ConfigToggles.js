@@ -8,6 +8,24 @@ import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 
+import versesSvg from '../../css/images/toggles/verses.svg?raw';
+import chaptersSvg from '../../css/images/toggles/chapters.svg?raw';
+import titlesSvg from '../../css/images/toggles/titles.svg?raw';
+import notesSvg from '../../css/images/toggles/notes.svg?raw';
+import christwordsSvg from '../../css/images/toggles/christwords.svg?raw';
+import justifySvg from '../../css/images/toggles/justify.svg?raw';
+import mediaSvg from '../../css/images/toggles/media.svg?raw';
+
+const toggleIcons = {
+  verses: versesSvg,
+  chapters: chaptersSvg,
+  titles: titlesSvg,
+  notes: notesSvg,
+  wordsofchrist: christwordsSvg,
+  justify: justifySvg,
+  media: mediaSvg,
+};
+
 /**
  * Create toggle settings controls
  * @param {HTMLElement} parentNode - Parent container
@@ -61,7 +79,15 @@ export function ConfigToggles(_parentNode, _menu) {
     const toggleDefaultSetting = { checked: defaultValue };
     const toggleSetting = AppSettings.getValue(toggleId, toggleDefaultSetting);
     const input = elem('input', { id: `config-toggle-${toggleId}-input`, type: 'checkbox', value: toggleId });
-    const label = elem('label', { htmlFor: `config-toggle-${toggleId}-input`, title: toggleName }, toggleName);
+    const label = elem('label', { htmlFor: `config-toggle-${toggleId}-input`, title: toggleName });
+
+    const svgMarkup = toggleIcons[toggleId];
+    if (svgMarkup) {
+      label.innerHTML = svgMarkup;
+    } else {
+      label.textContent = toggleName;
+    }
+
     const toggle = elem('div', { id: `config-toggle-${toggleId}`, className: 'config-toggle' }, input, label);
 
     body?.appendChild(toggle);

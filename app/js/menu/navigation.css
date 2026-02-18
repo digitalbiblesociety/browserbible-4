@@ -2,26 +2,24 @@
 	position: absolute;
 	top: 15px;
 	right: 300px;
-	background-size: 32px 32px;
-	background-repeat: no-repeat;
-	background-position: center center;
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	background-image: url(../../css/images/arrow-right-gray-light.svg);
 }
 
 #main-back-button {
 	position: absolute;
 	top: 15px;
 	right: 330px;
-	background-size: 32px 32px;
-	background-repeat: no-repeat;
-	background-position: center center;
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	background-image: url(../../css/images/arrow-left-gray-light.svg);
+}
+
+#main-forward-button svg,
+#main-back-button svg {
+	width: 100%;
+	height: 100%;
 }
 
 #main-back-button.inactive,
@@ -46,13 +44,21 @@
 	background: var(--color-primary);
 	color: var(--color-text-inverse);
 	z-index: 1000;
-
-	background-size: 22px 22px;
-	background-repeat: no-repeat;
-	background-position: 5px center;
-	background-image: url(../../css/images/arrow-left-gray-light.svg);
-
 	cursor: pointer;
+}
+
+.compact-back-icon {
+	position: absolute;
+	left: 5px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 22px;
+	height: 22px;
+}
+
+.compact-back-icon svg {
+	width: 100%;
+	height: 100%;
 }
 #compact-back-button-label {
 	display: inline-block;

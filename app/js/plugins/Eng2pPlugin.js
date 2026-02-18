@@ -10,6 +10,7 @@ import { getConfig } from '../core/config.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
+import twoPeopleSvg from '../../css/images/two-people.svg?raw';
 
 // English second person plural data
 const eng2p = {
@@ -251,6 +252,9 @@ export const Eng2pPlugin = (app) => {
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
   const button = elem('span', { className: 'config-button i18n', id: 'config-eng2p-button', dataset: { i18n: '[html]plugins.eng2p.title' } });
+  const e2pIconSpan = elem('span', { className: 'config-button-icon' });
+  e2pIconSpan.innerHTML = twoPeopleSvg;
+  button.prepend(e2pIconSpan);
 
   if (configToolsBody) {
     configToolsBody.appendChild(button);

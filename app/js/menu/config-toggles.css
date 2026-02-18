@@ -17,14 +17,15 @@
 	display: inline-block;
 	width: 32px;
 	height: 32px;
-	text-indent: -9999px;
 	cursor: pointer;
 	opacity: .5;
 	border: solid 1px #eee;
-	background-size: 100% 100%;
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-color: #fff;
+	color: var(--color-primary-light);
+}
+
+.config-toggle label svg {
+	width: 100%;
+	height: 100%;
 }
 
 .toggle-on label {
@@ -71,14 +72,6 @@
 	-o-hyphens: auto;
 	hyphens: auto;
 }
-
-#config-toggle-verses label 		{background-image: url(../../css/images/toggles/verses.svg)}
-#config-toggle-chapters label 		{background-image: url(../../css/images/toggles/chapters.svg)}
-#config-toggle-justify label 		{background-image: url(../../css/images/toggles/justify.svg)}
-#config-toggle-titles label 		{background-image: url(../../css/images/toggles/titles.svg)}
-#config-toggle-wordsofchrist label 	{background-image: url(../../css/images/toggles/christwords.svg)}
-#config-toggle-notes label 			{background-image: url(../../css/images/toggles/notes.svg);}
-#config-toggle-media label 			{background-image: url(../../css/images/toggles/media.svg)}
 
 .toggle-titles-off .is1,
 .toggle-titles-off .is2,

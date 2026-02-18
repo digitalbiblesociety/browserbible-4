@@ -8,6 +8,7 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
+import morphologySvg from '../../css/images/morphology.svg?raw';
 
 /**
  * Convert hyphenated CSS property names to camelCase
@@ -529,6 +530,9 @@ export function VisualFilters(app) {
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
   const openVisualizationsButton = elem('span', { className: 'config-button i18n', id: 'config-visualfilters-button', dataset: { i18n: '[html]plugins.visualfilters.button' } });
+  const vfIconSpan = elem('span', { className: 'config-button-icon' });
+  vfIconSpan.innerHTML = morphologySvg;
+  openVisualizationsButton.prepend(vfIconSpan);
 
   if (configToolsBody) {
     configToolsBody.appendChild(openVisualizationsButton);

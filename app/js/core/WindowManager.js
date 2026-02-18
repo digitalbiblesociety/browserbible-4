@@ -6,6 +6,7 @@
 import { elem } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getWindowTypeByClassName, getApp } from './registry.js';
+import { getWindowIcon } from './windowIcons.js';
 
 /**
  * Individual window instance within the manager
@@ -29,7 +30,14 @@ export class Window {
     this.node = elem('div', { className: `window ${className} active` });
     const closeBtn = elem('span', { className: 'close-button' });
     this.closeContainer = elem('div', { className: 'close-container' }, closeBtn);
-    const tabLabel = elem('span', { className: `window-tab-label ${className}-tab` }, className);
+    const tabLabel = elem('span', { className: `window-tab-label ${className}-tab` });
+    const iconSvg = getWindowIcon(className);
+    if (iconSvg) {
+      const iconSpan = elem('span', { className: 'window-tab-icon' });
+      iconSpan.innerHTML = iconSvg;
+      tabLabel.appendChild(iconSpan);
+    }
+    tabLabel.appendChild(document.createTextNode(className));
     const tabInner = elem('div', { className: 'window-tab-inner' }, tabLabel);
     this.tab = elem('div', { className: `window-tab ${className} active` }, tabInner);
 

@@ -1,11 +1,14 @@
 #main-fullscreen-button {
-	background-image: url(../../css/images/fullscreen.svg);
 	position: absolute;
 	top: 15px;
 	right: 15px;
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
+}
+#main-fullscreen-button svg {
+	width: 100%;
+	height: 100%;
 }
 
 .supports-fullscreen #main-search-box {right: 60px;}

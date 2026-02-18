@@ -1,10 +1,8 @@
-#add-NotesWindow, .NotesWindow-tab {background-image: url(../../css/images/notes.svg);}
-
 notes-window .notes-header {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	border-bottom: 1px solid var(--border-color, #ccc);
+	border-bottom: 1px solid var(--color-border);
 }
 
 notes-window .notes-header .header-button {
@@ -28,8 +26,8 @@ notes-window .notes-download-menu {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	background: var(--color-background, #fff);
-	border: 1px solid var(--border-color, #ccc);
+	background: var(--color-background);
+	border: 1px solid var(--color-border);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	z-index: 1000;
 	min-width: 180px;
@@ -49,7 +47,7 @@ notes-window .notes-download-item {
 }
 
 notes-window .notes-download-item:hover {
-	background: var(--note-item-hover-bg, #f0f0f0);
+	background: var(--color-background-hover);
 }
 
 notes-window .notes-print-container {
@@ -61,8 +59,8 @@ notes-window .notes-print-menu {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	background: var(--color-background, #fff);
-	border: 1px solid var(--border-color, #ccc);
+	background: var(--color-background);
+	border: 1px solid var(--color-border);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	z-index: 1000;
 	min-width: 180px;
@@ -82,7 +80,7 @@ notes-window .notes-print-item {
 }
 
 notes-window .notes-print-item:hover {
-	background: var(--note-item-hover-bg, #f0f0f0);
+	background: var(--color-background-hover);
 }
 
 notes-window .notes-print-option {
@@ -92,11 +90,11 @@ notes-window .notes-print-option {
 	padding: 8px 12px;
 	font-size: 12px;
 	cursor: pointer;
-	border-top: 1px solid var(--border-color, #eee);
+	border-top: 1px solid var(--color-border-light);
 }
 
 notes-window .notes-print-option:hover {
-	background: var(--note-item-hover-bg, #f0f0f0);
+	background: var(--color-background-hover);
 }
 
 notes-window .notes-search-container {
@@ -116,8 +114,8 @@ notes-window .notes-search-suggestions {
 	top: 100%;
 	left: 0;
 	right: 0;
-	background: var(--color-background, #fff);
-	border: 1px solid var(--border-color, #ccc);
+	background: var(--color-background);
+	border: 1px solid var(--color-border);
 	border-top: none;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	max-height: 200px;
@@ -133,7 +131,7 @@ notes-window .notes-suggestion-item {
 	padding: 8px 10px;
 	cursor: pointer;
 	font-size: 12px;
-	border-bottom: 1px solid var(--border-color, #eee);
+	border-bottom: 1px solid var(--color-border-light);
 }
 
 notes-window .notes-suggestion-item:last-child {
@@ -141,11 +139,11 @@ notes-window .notes-suggestion-item:last-child {
 }
 
 notes-window .notes-suggestion-item:hover {
-	background: var(--note-item-hover-bg, #f0f0f0);
+	background: var(--color-background-hover);
 }
 
 notes-window .notes-suggestion-item.selected {
-	background: var(--accent-color, #4a90d9);
+	background: var(--color-primary);
 	color: #fff;
 }
 
@@ -171,9 +169,9 @@ notes-window .notes-main {
 notes-window .notes-sidebar {
 	width: 250px;
 	min-width: 200px;
-	border-right: 1px solid var(--border-color, #ccc);
+	border-right: 1px solid var(--color-border);
 	overflow-y: auto;
-	background: var(--sidebar-bg, #f5f5f5);
+	background: var(--color-background-alt);
 	transition: width 0.2s ease, min-width 0.2s ease, opacity 0.2s ease;
 }
 
@@ -187,7 +185,7 @@ notes-window .notes-sidebar.hidden {
 
 notes-window .notes-sidebar-header {
 	padding: 8px;
-	border-bottom: 1px solid var(--border-color, #ccc);
+	border-bottom: 1px solid var(--color-border);
 }
 
 notes-window .notes-sidebar-header .notes-filter {
@@ -215,17 +213,17 @@ notes-window .notes-list-item {
 	cursor: pointer;
 	border-radius: 4px;
 	margin-bottom: 4px;
-	background: var(--note-item-bg, #fff);
+	background: var(--color-background);
 	border: 1px solid transparent;
 }
 
 notes-window .notes-list-item:hover {
-	background: var(--note-item-hover-bg, #e8e8e8);
+	background: var(--color-background-hover);
 }
 
 notes-window .notes-list-item.selected {
-	background: var(--note-item-selected-bg, #d0e0f0);
-	border-color: var(--accent-color, #4a90d9);
+	background: var(--color-highlight);
+	border-color: var(--color-primary);
 }
 
 notes-window .notes-list-item-title {
@@ -238,7 +236,7 @@ notes-window .notes-list-item-title {
 
 notes-window .notes-list-item-meta {
 	font-size: 11px;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 	display: flex;
 	gap: 8px;
 	align-items: center;
@@ -246,7 +244,7 @@ notes-window .notes-list-item-meta {
 
 notes-window .notes-list-item-preview {
 	font-size: 12px;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -254,8 +252,8 @@ notes-window .notes-list-item-preview {
 }
 
 notes-window .notes-list-item-badge {
-	background: var(--badge-bg, #4a90d9);
-	color: var(--badge-color, #fff);
+	background: var(--color-primary);
+	color: var(--color-text-inverse);
 	padding: 2px 6px;
 	border-radius: 10px;
 	font-size: 10px;
@@ -277,7 +275,7 @@ notes-window .notes-editor-header {
 	align-items: center;
 	gap: 8px;
 	padding: 8px;
-	border-bottom: 1px solid var(--border-color, #ccc);
+	border-bottom: 1px solid var(--color-border);
 }
 
 notes-window .notes-title-input {
@@ -291,12 +289,12 @@ notes-window .notes-title-input {
 
 notes-window .notes-title-input:focus {
 	outline: none;
-	background: var(--input-bg, #fff);
+	background: var(--color-input-background);
 }
 
 notes-window .notes-reference-badge {
-	background: var(--badge-bg, #4a90d9);
-	color: var(--badge-color, #fff);
+	background: var(--color-primary);
+	color: var(--color-text-inverse);
 	padding: 4px 10px;
 	border-radius: 12px;
 	font-size: 12px;
@@ -313,7 +311,7 @@ notes-window .notes-unlink-btn {
 	border: none;
 	font-size: 16px;
 	cursor: pointer;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 	padding: 0 4px;
 }
 
@@ -322,21 +320,21 @@ notes-window .notes-unlink-btn.visible {
 }
 
 notes-window .notes-unlink-btn:hover {
-	color: var(--danger-color, #d00);
+	color: var(--color-error-dark);
 }
 
 notes-window .notes-delete-btn {
 	font-size: 12px;
 	background: transparent;
-	color: var(--danger-color, #d00);
-	border: 1px solid var(--danger-color, #d00);
+	color: var(--color-error-dark);
+	border: 1px solid var(--color-error-dark);
 	padding: 4px 8px;
 	border-radius: 4px;
 	cursor: pointer;
 }
 
 notes-window .notes-delete-btn:hover {
-	background: var(--danger-color, #d00);
+	background: var(--color-error-dark);
 	color: #fff;
 }
 
@@ -344,15 +342,15 @@ notes-window .notes-richtext-toolbar {
 	display: flex;
 	gap: 4px;
 	padding: 8px;
-	border-bottom: 1px solid var(--border-color, #ccc);
-	background: var(--toolbar-bg, #f8f8f8);
+	border-bottom: 1px solid var(--color-border);
+	background: var(--color-background-alt);
 }
 
 notes-window .notes-richtext-toolbar button {
 	width: 28px;
 	height: 28px;
-	border: 1px solid var(--border-color, #ccc);
-	background: var(--button-bg, #fff);
+	border: 1px solid var(--color-border);
+	background: var(--color-button-background);
 	cursor: pointer;
 	border-radius: 4px;
 	display: flex;
@@ -361,12 +359,12 @@ notes-window .notes-richtext-toolbar button {
 }
 
 notes-window .notes-richtext-toolbar button:hover {
-	background: var(--button-hover-bg, #e8e8e8);
+	background: var(--color-button-hover-background);
 }
 
 notes-window .toolbar-separator {
 	width: 1px;
-	background: var(--border-color, #ccc);
+	background: var(--color-border);
 	margin: 0 4px;
 }
 
@@ -380,7 +378,7 @@ notes-window .notes-editor {
 
 notes-window .notes-editor:empty:before {
 	content: attr(placeholder);
-	color: var(--text-muted, #999);
+	color: var(--color-text-muted);
 }
 
 notes-window .notes-editor h2 {
@@ -397,9 +395,9 @@ notes-window .notes-editor-footer {
 	display: flex;
 	justify-content: space-between;
 	padding: 8px;
-	border-top: 1px solid var(--border-color, #ccc);
+	border-top: 1px solid var(--color-border);
 	font-size: 11px;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 }
 
 notes-window .notes-empty-state {
@@ -408,7 +406,7 @@ notes-window .notes-empty-state {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 }
 
 notes-window .notes-empty-state.hidden {
@@ -418,16 +416,16 @@ notes-window .notes-empty-state.hidden {
 notes-window .notes-storage-warning {
 	margin-top: 16px;
 	padding: 8px 12px;
-	background: var(--warning-bg, #fff3cd);
-	border: 1px solid var(--warning-border, #ffc107);
+	background: oklch(0.93 0.07 85);
+	border: 1px solid var(--color-warning);
 	border-radius: 4px;
 	font-size: 12px;
-	color: var(--warning-text, #856404);
+	color: var(--color-text);
 	max-width: 300px;
 }
 
 notes-window .notes-empty-list {
 	padding: 20px;
 	text-align: center;
-	color: var(--text-muted, #666);
+	color: var(--color-text-muted);
 }

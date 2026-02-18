@@ -114,7 +114,7 @@ export class TextComparisonWindow extends BaseWindow {
         <input type="text" class="app-input comparison-nav-input" value="" placeholder="John 3:16" />
         <div class="comparison-select-group">
           <span class="text-list-title comparison-source-title"></span>
-          <select class="comparison-target-select"></select>
+          <span class="comparison-target-select-wrapper"><select class="comparison-target-select"></select></span>
         </div>
       </div>
       <div class="comparison-main"></div>

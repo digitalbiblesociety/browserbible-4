@@ -7,15 +7,25 @@
 	border-radius: 4px;
 	margin-right: 5px;
 	opacity: .5;
-	background-size: 20px 20px;
+	background-color: currentColor;
 }
 
 .image-icon {
-	background-image: url(../../css/images/pictures.svg);
+	mask-image: url(../../css/images/pictures.svg);
+	mask-size: 20px 20px;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url(../../css/images/pictures.svg);
+	-webkit-mask-size: 20px 20px;
+	-webkit-mask-repeat: no-repeat;
 }
 
 .map-icon {
-	background-image: url(../../css/images/map.svg);
+	mask-image: url(../../css/images/map.svg);
+	mask-size: 20px 20px;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url(../../css/images/map.svg);
+	-webkit-mask-size: 20px 20px;
+	-webkit-mask-repeat: no-repeat;
 }
 
 .inline-image-library-thumbs,
@@ -108,7 +118,12 @@
 
 
 .video-icon {
-	background-image: url(../../css/images/video.svg);
+	mask-image: url(../../css/images/video.svg);
+	mask-size: 20px 20px;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url(../../css/images/video.svg);
+	-webkit-mask-size: 20px 20px;
+	-webkit-mask-repeat: no-repeat;
 }
 
 .image-library-thumbs li span.media-video-play {

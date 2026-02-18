@@ -6,6 +6,7 @@
 import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { getWindowType, getApp } from '../core/registry.js';
+import linkSvg from '../../css/images/link.svg?raw';
 
 // URL parameter prefixes that are managed per-window and should be excluded from merging
 const WINDOW_PARAM_PREFIXES = ['win', 'textid', 'searchtext', 'fragmentid'];
@@ -90,6 +91,7 @@ export function ConfigUrl() {
 
   const body = document.querySelector('#main-menu-features');
   const linkButton = elem('span', { className: 'url-copy-button' });
+  linkButton.innerHTML = linkSvg;
   const urlInput = elem('input', { type: 'text', id: 'config-global-url-input', readOnly: true });
   const urlBox = elem('div', { id: 'config-global-url' }, linkButton, urlInput);
 

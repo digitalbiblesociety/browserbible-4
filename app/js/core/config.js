@@ -50,6 +50,10 @@ const defaultConfig = {
   dbsTextExclusions: [],
   dbsSearchEnabled: false,
 
+  // DBS Audio
+  dbsAudioEnabled: true,
+  dbsAudioUrl: 'https://audio.dbs.org',
+
   // Window defaults
   enableAudioWindow: true,
   audioWindowDefaultBibleFragmentid: 'JN1_1',

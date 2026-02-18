@@ -147,6 +147,12 @@ export function getText(textid, callback, errorCallback) {
   }
 
   provider.getTextInfo(textid, (data) => {
+    if (!data) {
+      if (errorCallback) errorCallback(new Error(`No data for "${textid}"`));
+      else if (callback) callback(null);
+      return;
+    }
+
     const initialInfo = textInfoData[textid];
     data = { ...initialInfo, ...data };
 

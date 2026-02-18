@@ -5,6 +5,7 @@
 import { BaseWindow, registerWindowComponent } from '../BaseWindow.js';
 import { offset } from '../../lib/helpers.esm.js';
 import { Reference } from '../../bible/BibleReference.js';
+import gearSvg from '../../../css/images/gear.svg?raw';
 import { fuzzySearchLocations } from './fuzzy-search.js';
 import { SVG_WIDTH, SVG_HEIGHT, COLLISION_DETECTION_ENABLED } from './constants.js';
 import { geoToSvg, svgToGeo } from './geo-utils.js';
@@ -51,6 +52,8 @@ export class MapWindowComponent extends BaseWindow {
       </div>
       <div class="window-maps svg-map-container"></div>
     `;
+
+    this.querySelector('.map-options-button').innerHTML = gearSvg;
 
     // Create map options popover (appended to body)
     this.mapOptionsPopover = this.createElement(`

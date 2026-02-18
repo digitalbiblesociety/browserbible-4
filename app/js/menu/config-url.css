@@ -12,16 +12,21 @@
 }
 
 #config-global-url .url-copy-button {
-	background-image: url(../../css/images/link.svg);
 	width: 20px;
 	height: 20px;
 	min-width: 20px;
 	display: inline-block;
-	background-size: 20px 20px;
 	margin: 0 8px 0 0;
 	cursor: pointer;
 	opacity: 0.7;
 	transition: opacity var(--transition-fast);
+	color: var(--color-text-muted);
+}
+
+#config-global-url .url-copy-button svg {
+	width: 20px;
+	height: 20px;
+	display: block;
 }
 
 #config-global-url .url-copy-button:hover {

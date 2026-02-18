@@ -10,6 +10,8 @@ import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
 import { getText, loadTexts } from '../texts/TextLoader.js';
 import { TextNavigation } from '../common/TextNavigation.js';
+import infoSvg from '../../css/images/info.svg?raw';
+import audioEarSvg from '../../css/images/audio-ear.svg?raw';
 
 export { registerWindowComponent } from './BaseWindow.js';
 
@@ -68,6 +70,9 @@ export class TextWindowComponent extends BaseWindow {
         </div>
       </div>
     `;
+
+    this.querySelector('.info-button').innerHTML = infoSvg;
+    this.querySelector('.audio-button').innerHTML = audioEarSvg;
   }
 
   cacheRefs() {

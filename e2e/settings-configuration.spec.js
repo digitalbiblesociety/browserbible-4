@@ -167,7 +167,7 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     const bodyClasses = await page.locator('body').getAttribute('class');
     expect(bodyClasses).toContain('theme-dark');
     expect(bodyClasses).not.toContain('theme-default');
-    expect(bodyClasses).not.toContain('theme-sepia');
+    expect(bodyClasses).not.toContain('theme-earthsong');
 
     // Verify dark theme button is selected
     const darkThemeClasses = await darkThemeButton.getAttribute('class');
@@ -238,7 +238,7 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     expect(bodyClassesAfter).toContain('theme-dark');
   });
 
-  test('should verify sepia theme applies correctly', async ({ page }) => {
+  test('should verify earthsong theme applies correctly', async ({ page }) => {
     // Open settings
     const mainMenuButton = page.locator('#main-menu-button');
     await mainMenuButton.click();
@@ -248,21 +248,21 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    // Click sepia theme
-    const sepiaThemeButton = page.locator('#config-theme-sepia');
-    await expect(sepiaThemeButton).toBeVisible();
-    await sepiaThemeButton.click();
+    // Click earthsong theme
+    const earthsongThemeButton = page.locator('#config-theme-earthsong');
+    await expect(earthsongThemeButton).toBeVisible();
+    await earthsongThemeButton.click();
     await page.waitForTimeout(300);
 
-    // Verify body has sepia theme class
+    // Verify body has earthsong theme class
     const bodyClasses = await page.locator('body').getAttribute('class');
-    expect(bodyClasses).toContain('theme-sepia');
+    expect(bodyClasses).toContain('theme-earthsong');
     expect(bodyClasses).not.toContain('theme-default');
     expect(bodyClasses).not.toContain('theme-dark');
 
-    // Verify sepia theme button is selected
-    const sepiaThemeClasses = await sepiaThemeButton.getAttribute('class');
-    expect(sepiaThemeClasses).toContain('config-theme-toggle-selected');
+    // Verify earthsong theme button is selected
+    const earthsongThemeClasses = await earthsongThemeButton.getAttribute('class');
+    expect(earthsongThemeClasses).toContain('config-theme-toggle-selected');
   });
 });
 

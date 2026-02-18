@@ -1,8 +1,5 @@
 /* FlashcardWindow styles */
 
-#add-FlashcardWindow, .FlashcardWindow-tab {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M77.3 20.3h-1.5v-1.6c0-2.5-2.1-4.6-4.7-4.6h-1.6v-1.6c0-2.6-2-4.7-4.7-4.7H22.7a4.7 4.7 0 0 0-4.7 4.7V75c0 2.6 2 4.7 4.7 4.7h1.5v1.5c0 2.6 2.1 4.7 4.7 4.7h1.6v1.6c0 2.6 2 4.7 4.7 4.7h42.1c2.6 0 4.7-2.1 4.7-4.7V25c0-2.6-2-4.7-4.7-4.7m0 3.1q1.5.1 1.6 1.6v43.7h-3.1V23.4zm-6.2-6.2q1.5.2 1.6 1.5v43.8h-3.2V17.2zM30.5 70.3H57q1.5.1 1.6 1.6c0 1.5-.7 1.5-1.6 1.5H30.5q-1.5-.2-1.6-1.5.1-1.8 1.6-1.6m-1.6-6.2q.1-1.5 1.6-1.6H57q1.5.1 1.6 1.6c0 1.5-.7 1.5-1.6 1.5H30.5q-1.5-.2-1.6-1.5m25.3-17a1.6 1.6 0 0 1-1.5 1.8q-.4 0-.7-.2l-8.3-3.6-8.2 3.6q-.8.4-1.6-.1-.7-.6-.6-1.4l.9-9-6-6.8q-.6-.7-.4-1.5.4-1.1 1.2-1l8.8-2 4.6-7.8c.6-1 2.1-1 2.7 0l4.6 7.8 8.8 2a1.6 1.6 0 0 1 .8 2.5l-6 6.8zm12.2 9.1v3.2H21.1v-3.2zm-39 25v-1.5h37.4c2.6 0 4.7-2.1 4.7-4.7v-9.4h3.2v15.6q-.1 1.5-1.6 1.6H28.9q-1.5-.1-1.6-1.6m50 7.9H35.1q-1.5-.1-1.6-1.6v-1.6H71c2.6 0 4.7-2 4.7-4.7V72h3.1v15.6q-.1 1.5-1.6 1.6'/%3E%3Cpath d='m47.3 29-3.6-6-3.5 6q-.4.7-1 .8l-7 1.5 4.8 5.3q.4.4.4 1.2l-.7 7L43 42l.6-.2q.4 0 .7.2l6.4 2.8-.7-7q0-.7.4-1.2l4.7-5.3-6.9-1.5q-.6 0-1-.7'/%3E%3C/svg%3E");
-}
 
 /* Header — reuses .app-input, .app-list, .header-icon from windows.css */
 
@@ -17,12 +14,28 @@ flashcard-window .flashcard-header-spacer {
 
 /* Add to deck icon (plus) */
 flashcard-window .flashcard-add-btn {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23666'%3E%3Cpath d='M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z'/%3E%3C/svg%3E");
+	background-color: var(--color-text-muted);
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z'/%3E%3C/svg%3E");
+	mask-size: 20px 20px;
+	mask-position: center;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z'/%3E%3C/svg%3E");
+	-webkit-mask-size: 20px 20px;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
 }
 
 /* Add current verse icon (plus with link) */
 flashcard-window .flashcard-add-current-btn {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+	background-color: var(--color-text-muted);
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath fill-rule='evenodd' d='M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+	mask-size: 20px 20px;
+	mask-position: center;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath fill-rule='evenodd' d='M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+	-webkit-mask-size: 20px 20px;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
 }
 
 flashcard-window .flashcard-mode-btn {
@@ -46,7 +59,7 @@ flashcard-window .flashcard-mode-btn.active {
 
 flashcard-window .flashcard-status {
 	font-size: 11px;
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 	margin-left: 5px;
 }
 
@@ -108,13 +121,13 @@ flashcard-window .flashcard-list-item-meta {
 	display: flex;
 	gap: 12px;
 	font-size: var(--font-size-xs);
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 }
 
 flashcard-window .flashcard-list-item-delete {
 	background: none;
 	border: none;
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 	cursor: pointer;
 	font-size: 16px;
 	padding: 0 4px;
@@ -130,7 +143,7 @@ flashcard-window .flashcard-list-item-delete:hover {
 flashcard-window .flashcard-empty-state {
 	text-align: center;
 	padding: 40px 20px;
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 	font-size: var(--font-size-sm);
 }
 
@@ -150,7 +163,7 @@ flashcard-window .flashcard-review {
 
 flashcard-window .flashcard-progress {
 	font-size: var(--font-size-sm);
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 }
 
 /* Card flip animation */
@@ -206,7 +219,7 @@ flashcard-window .flashcard-card-reference {
 
 flashcard-window .flashcard-card-version {
 	font-size: var(--font-size-sm);
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 	font-weight: 600;
 	margin-bottom: 12px;
 }
@@ -218,7 +231,7 @@ flashcard-window .flashcard-hint-btn {
 	font-size: var(--font-size-xs);
 	cursor: pointer;
 	background: var(--color-button-background, var(--color-background));
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 	margin-bottom: 8px;
 	transition: background var(--transition-fast, 0.15s);
 }
@@ -247,7 +260,7 @@ flashcard-window .flashcard-card-hint.visible {
 
 flashcard-window .flashcard-card-tap {
 	font-size: var(--font-size-xs);
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 }
 
 flashcard-window .flashcard-card-text {
@@ -297,7 +310,7 @@ flashcard-window .flashcard-rate-label {
 
 flashcard-window .flashcard-rate-detail {
 	font-size: var(--font-size-xs);
-	color: var(--color-text-secondary, #888);
+	color: var(--color-text-muted);
 }
 
 /* Toast notification */

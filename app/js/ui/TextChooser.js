@@ -8,6 +8,8 @@ import { elem, offset } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 import { loadTexts, getText } from '../texts/TextLoader.js';
+import audioEarSvg from '../../css/images/audio-ear.svg?raw';
+import morphSvg from '../../css/images/morphology-gray-dark.svg?raw';
 
 const hasTouch = 'ontouchend' in document;
 const ROW_HEIGHT = 32; // Fixed row height for virtual scrolling
@@ -174,10 +176,14 @@ export function TextChooser() {
       row.appendChild(elem('span', { className: 'text-chooser-name' }, text.name));
 
       if (text.hasLemma) {
-        row.appendChild(elem('span', { className: 'text-chooser-lemma' }, elem('span')));
+        const lemmaSpan = elem('span', { className: 'text-chooser-lemma' });
+        lemmaSpan.innerHTML = morphSvg;
+        row.appendChild(lemmaSpan);
       }
       if (text.hasAudio || text.audioDirectory || text.fcbh_audio_ot || text.fcbh_audio_nt) {
-        row.appendChild(elem('span', { className: 'text-chooser-audio' }, elem('span')));
+        const audioSpan = elem('span', { className: 'text-chooser-audio' });
+        audioSpan.innerHTML = audioEarSvg;
+        row.appendChild(audioSpan);
       }
     }
 

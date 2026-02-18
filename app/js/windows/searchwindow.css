@@ -1,8 +1,3 @@
-#add-SearchWindow, .SearchWindow-tab {
-	background-image: url(../../css/images/search.svg);
-}
-
-
 	.compact-ui .SearchWindow .search-text {
 		width: 100px;
 	}
@@ -110,7 +105,6 @@
 }
 
 .search-options-button {
-	background-image: url(../../css/images/gear.svg);
 }
 
 .search-division-chooser {

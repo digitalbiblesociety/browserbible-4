@@ -27,8 +27,23 @@
 
 .config-button {
 	cursor: pointer;
-	display: block;
+	display: flex;
+	align-items: center;
+	gap: 5px;
 	font-size: 12px;
+}
+
+.config-button-icon {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+	color: var(--color-text-muted);
+}
+
+.config-button-icon svg {
+	width: 20px;
+	height: 20px;
+	display: block;
 }
 
 .config-button:hover {

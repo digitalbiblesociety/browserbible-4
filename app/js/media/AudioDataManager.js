@@ -1,56 +1,62 @@
 /**
  * AudioDataManager
- * Unified audio API that delegates to registered audio sources
+ * Unified audio API that delegates to registered audio providers.
+ * Providers implement async methods (BaseAudioProvider interface).
+ * This manager wraps them in the callback API that AudioController expects.
  */
 
-import { getConfig } from '../core/config.js';
-import { getAudioSources, registerAudioSource } from '../core/registry.js';
+import { getAudioSources } from '../core/registry.js';
 
 /**
- * Create an audio data manager that tries each registered source until one provides data
+ * Create an audio data manager that tries each registered provider until one provides data
  * @returns {{getAudioInfo: Function, getFragmentAudio: Function, getNextFragment: Function, getPrevFragment: Function}}
  */
 export function AudioDataManager() {
   const getAudioInfo = (textInfo, callback) => {
     const audioSources = getAudioSources();
-    let index = 0;
-
-    const doNext = () => {
-      if (index >= audioSources.length) {
-        callback(null);
-        return;
-      }
-
-      const audioSource = audioSources[index];
-      audioSource.getAudioInfo(textInfo, receiveData);
-    };
-
-    const receiveData = (audioInfo) => {
-      if (audioInfo != null) {
-        audioInfo.audioSourceIndex = index;
-        callback(audioInfo);
-      } else {
-        index++;
-        if (index < audioSources.length) {
-          doNext();
-        } else {
-          callback(null);
-        }
-      }
-    };
 
     if (audioSources.length === 0) {
       callback(null);
       return;
     }
 
-    doNext();
+    let index = 0;
+
+    const tryNext = async () => {
+      if (index >= audioSources.length) {
+        callback(null);
+        return;
+      }
+
+      try {
+        const audioInfo = await audioSources[index].getAudioInfo(textInfo);
+        if (audioInfo != null) {
+          audioInfo.audioSourceIndex = index;
+          callback(audioInfo);
+        } else {
+          index++;
+          tryNext();
+        }
+      } catch (err) {
+        console.warn(`AudioDataManager: provider ${audioSources[index]?.name ?? index} threw for "${textInfo?.id}"`, err);
+        index++;
+        tryNext();
+      }
+    };
+
+    tryNext();
   };
 
   const getFragmentAudio = (textInfo, audioInfo, fragmentid, audioOption, callback) => {
     const audioSources = getAudioSources();
     if (audioInfo?.audioSourceIndex !== undefined) {
-      audioSources[audioInfo.audioSourceIndex].getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption, callback);
+      audioSources[audioInfo.audioSourceIndex]
+        .getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption)
+        .then(result => callback(result))
+        .catch(err => {
+          console.warn('AudioDataManager: getFragmentAudio failed', err);
+          callback(null);
+        });
     } else {
       callback(null);
     }
@@ -59,7 +65,13 @@ export function AudioDataManager() {
   const getNextFragment = (textInfo, audioInfo, fragmentid, callback) => {
     const audioSources = getAudioSources();
     if (audioInfo?.audioSourceIndex !== undefined) {
-      audioSources[audioInfo.audioSourceIndex].getNextFragment(textInfo, audioInfo, fragmentid, callback);
+      audioSources[audioInfo.audioSourceIndex]
+        .getNextFragment(textInfo, audioInfo, fragmentid)
+        .then(result => callback(result))
+        .catch(err => {
+          console.warn('AudioDataManager: getNextFragment failed', err);
+          callback(null);
+        });
     } else {
       callback(null);
     }
@@ -68,7 +80,13 @@ export function AudioDataManager() {
   const getPrevFragment = (textInfo, audioInfo, fragmentid, callback) => {
     const audioSources = getAudioSources();
     if (audioInfo?.audioSourceIndex !== undefined) {
-      audioSources[audioInfo.audioSourceIndex].getPrevFragment(textInfo, audioInfo, fragmentid, callback);
+      audioSources[audioInfo.audioSourceIndex]
+        .getPrevFragment(textInfo, audioInfo, fragmentid)
+        .then(result => callback(result))
+        .catch(err => {
+          console.warn('AudioDataManager: getPrevFragment failed', err);
+          callback(null);
+        });
     } else {
       callback(null);
     }
@@ -81,140 +99,5 @@ export function AudioDataManager() {
     getPrevFragment
   };
 }
-
-/**
- * Local audio source - loads from JSON manifests at content/audio/{textId}/info.json
- */
-export const LocalAudio = (() => {
-  const getAudioInfo = (textInfo, callback) => {
-    const config = getConfig();
-    let checkDirectory = textInfo.id;
-
-    if (textInfo.audioDirectory !== undefined) {
-      if (textInfo.audioDirectory === '') {
-        callback(null);
-        return;
-      } else {
-        checkDirectory = textInfo.audioDirectory;
-      }
-    }
-
-    fetch(`${config.baseContentUrl}content/audio/${checkDirectory}/info.json`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
-      })
-      .then((audioInfo) => {
-        if (audioInfo === undefined) {
-          callback(null);
-          return;
-        }
-
-        audioInfo.type = 'local';
-        audioInfo.directory = checkDirectory;
-
-        if (!audioInfo.title) {
-          audioInfo.title = 'Local';
-        }
-
-        callback(audioInfo);
-      })
-      .catch(() => {
-        callback(null);
-      });
-  };
-
-  const findFragmentData = (audioInfo, fragmentid) => {
-    const verseParts = fragmentid.split('_');
-    const sectionid = verseParts[0];
-    const verseNumber = parseInt(verseParts[1], 10);
-    let fragmentIndex = 0;
-    let fragmentData = null;
-
-    for (const [i, fragmentFileinfo] of audioInfo.fragments.entries()) {
-      const startFragmentParts = fragmentFileinfo.start.split('_');
-      const startSectionid = startFragmentParts[0];
-
-      if (sectionid === startSectionid) {
-        const startVerseNumber = parseInt(startFragmentParts[1], 10);
-        const endFragmentParts = fragmentFileinfo.end.split('_');
-        const endVerseNumber = parseInt(endFragmentParts[1], 10);
-
-        if (verseNumber >= startVerseNumber && verseNumber <= endVerseNumber) {
-          fragmentIndex = i;
-          fragmentData = fragmentFileinfo;
-          break;
-        }
-      }
-    }
-
-    if (fragmentData != null) {
-      fragmentData.index = fragmentIndex;
-    }
-
-    return fragmentData;
-  };
-
-  const getFragmentAudio = (textInfo, audioInfo, fragmentid, audioOption, callback) => {
-    const config = getConfig();
-    const fragmentData = findFragmentData(audioInfo, fragmentid);
-
-    if (fragmentData == null) {
-      callback(null);
-      return;
-    }
-
-    const ext = Array.isArray(fragmentData.exts) ? fragmentData.exts[0] : fragmentData.exts;
-    const audioData = {
-      url: `${config.baseContentUrl}content/audio/${audioInfo.directory}/${fragmentData.filename}.${ext}`,
-      id: fragmentData.index,
-      start: fragmentData.start,
-      end: fragmentData.end
-    };
-
-    callback(audioData);
-  };
-
-  const getNextFragment = (textInfo, audioInfo, fragmentid, callback) => {
-    const fragmentData = findFragmentData(audioInfo, fragmentid);
-
-    if (fragmentData == null) {
-      callback(null);
-      return;
-    }
-
-    if (fragmentData.index < audioInfo.fragments.length - 1) {
-      const nextFragmentData = audioInfo.fragments[fragmentData.index + 1];
-      callback(nextFragmentData.start);
-    } else {
-      callback(null);
-    }
-  };
-
-  const getPrevFragment = (textInfo, audioInfo, fragmentid, callback) => {
-    const fragmentData = findFragmentData(audioInfo, fragmentid);
-
-    if (fragmentData == null) {
-      callback(null);
-      return;
-    }
-
-    if (fragmentData.index > 0) {
-      const prevFragmentData = audioInfo.fragments[fragmentData.index - 1];
-      callback(prevFragmentData.start);
-    } else {
-      callback(null);
-    }
-  };
-
-  return {
-    getAudioInfo,
-    getFragmentAudio,
-    getNextFragment,
-    getPrevFragment
-  };
-})();
-
-registerAudioSource(LocalAudio);
 
 export default AudioDataManager;

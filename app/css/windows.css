@@ -134,20 +134,31 @@ input:focus {
 
 .window-tab-label {
 	position: absolute;
-	display: block;
-	background-size: 15px 15px;
-	background-repeat: no-repeat;
-	background-position: left center;
+	display: flex;
+	align-items: center;
 	top: 2px;
 	left: 0;
 	height: 20px;
 	width: 65px;
-	padding-left: 20px;
 	padding-top: 4px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	font-size: 11px;
+}
+
+.window-tab-icon {
+	width: 15px;
+	height: 15px;
+	flex-shrink: 0;
+	margin-right: 5px;
+	color: var(--color-primary-light);
+}
+
+.window-tab-icon svg {
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 
 .window .window-header {
@@ -207,21 +218,40 @@ input:focus {
 	padding-right: 20px;
 	cursor: pointer;
 	border-radius: 0;
-	background-image: url(images/arrow-down.svg);
-	background-position: right center;
-	background-repeat: no-repeat;
+	position: relative;
+}
+.app-list::after {
+	content: '';
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 10px;
+	height: 6px;
+	background-color: currentColor;
+	mask-image: url(images/arrow-down.svg);
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	-webkit-mask-image: url(images/arrow-down.svg);
+	-webkit-mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	opacity: 0.6;
 }
 
 .header-icon {
 	margin: 3px;
 	width: 24px;
 	height: 24px;
-	background-size: 20px 20px;
-	background-position: center center;
-	background-repeat: no-repeat;
 	cursor: pointer;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	vertical-align: top;
+}
+.header-icon svg {
+	width: 20px;
+	height: 20px;
+	margin: 2px;
 }
 
 .window .header-icon,
@@ -235,11 +265,9 @@ input:focus {
 }
 
 .info-button {
-	background-image: url(images/info.svg);
 }
 
 .audio-button {
-	background-image: url(images/audio-ear.svg);
 }
 
 .window .window-header .header-button {
