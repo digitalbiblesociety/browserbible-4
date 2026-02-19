@@ -2,11 +2,14 @@
 
 :root {
 
+  --color-header-icon: #fff;
+  --color-header-icon-primary: oklch(0.6 0.1 245);
+  --color-header-icon-inactive: #fff;
+  
   --color-primary: oklch(0.6155 0.1712 254);
   --color-primary-light: oklch(0.6 0.1 245);
   --color-primary-dark: oklch(0.4923 0.1506 256.4);
   --color-primary-hover: oklch(0.6644 0.1701 253.4);
-
 
   --color-text: oklch(0.3211 0 0);
   --color-text-dark: oklch(0.1776 0 0);
@@ -15,19 +18,16 @@
   --color-text-lighter: oklch(0.683 0 0);
   --color-text-inverse: oklch(1 0 0);
 
-
   --color-background: oklch(1 0 0);
   --color-background-alt: oklch(0.9791 0 0);
   --color-background-hover: oklch(0.9521 0 0);
   --color-background-active: oklch(0.931 0 0);
   --color-background-overlay: oklch(0 0 0 / 0.5);
 
-
   --color-border: oklch(0.8452 0 0);
   --color-border-light: oklch(0.8975 0 0);
   --color-border-lighter: oklch(0.9491 0 0);
   --color-border-dark: oklch(0.683 0 0);
-
 
   --color-highlight: oklch(0.9784 0.1244 108.5);
   --color-highlight-alt: oklch(0.9784 0.1244 108.5);
@@ -38,19 +38,16 @@
   --color-warning: oklch(0.7939 0.1349 73);
   --color-info: oklch(0.7591 0.1028 220.1);
 
-
   --color-red-letter: oklch(0.4634 0.1902 29.2);
   --color-footnote: oklch(0.6593 0.0973 264.4);
   --color-cross-reference: oklch(0.6593 0.0973 264.4);
   --color-verse-number: oklch(0.683 0 0);
   --color-chapter-number: oklch(0.5103 0 0);
 
-
   --color-lemma-match: oklch(0.6155 0.1712 254);
   --color-lemma-highlight: oklch(0.9218 0.0187 227.3);
   --color-location-match: oklch(0.855 0.0654 142.9);
   --color-location-border: oklch(0.6729 0.1151 142.2);
-
 
   --color-division-pentateuch: oklch(0.8227 0.1032 144.6);
   --color-division-historical: oklch(0.6642 0.0914 283.6);
@@ -63,7 +60,6 @@
   --color-division-general-epistles: oklch(0.7946 0.0624 196);
   --color-division-revelation: oklch(0.6089 0.0747 316.7);
 
-
   --color-header-background: oklch(0.9791 0 0);
   --color-header-text: oklch(0.3211 0 0);
   --color-footer-background: oklch(0.9791 0 0);
@@ -74,17 +70,14 @@
   --color-menu-hover: oklch(0.9551 0 0);
   --color-menu-active: oklch(0.9067 0 0);
 
-
   --color-selection-background: oklch(0.5103 0 0);
   --color-divider-background: oklch(0.6268 0 0);
   --color-badge-background: oklch(0.5103 0 0);
-
 
   --color-input-background: oklch(1 0 0);
   --color-input-border: oklch(0.8452 0 0);
   --color-input-focus-border: oklch(0.6155 0.1712 254);
   --color-input-placeholder: oklch(0.683 0 0);
-
 
   --color-button-background: oklch(0.9791 0 0);
   --color-button-text: oklch(0.3211 0 0);
@@ -93,24 +86,20 @@
   --color-button-primary-background: oklch(0.6155 0.1712 254);
   --color-button-primary-text: oklch(1 0 0);
 
-
   --color-scrollbar-track: oklch(0.9581 0 0);
   --color-scrollbar-thumb: oklch(0.8109 0 0);
   --color-scrollbar-thumb-hover: oklch(0.709 0 0);
-
 
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.1);
   --shadow-md: 0 2px 4px oklch(0 0 0 / 0.15);
   --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.2);
   --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.25);
 
-
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-
 
   --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-family-serif: "Gentium Plus", "Linux Libertine", Georgia, serif;
@@ -123,7 +112,6 @@
   --font-size-lg: 18px;
   --font-size-xl: 24px;
 
-
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
   --transition-slow: 0.4s ease;
@@ -132,6 +120,10 @@
 
 .theme-dark,
 html.dark {
+  --color-header-icon: oklch(1 0 0);
+  --color-header-icon-primary: oklch(0.6868 0.157 252.9);
+  --color-header-icon-inactive: oklch(0.738 0 0);
+
   --color-primary: oklch(0.6868 0.157 252.9);
   --color-primary-light: oklch(0.3998 0.0663 249.8);
   --color-primary-dark: oklch(0.6155 0.1712 254);
@@ -211,6 +203,10 @@ html.dark {
 
 .theme-earthsong,
 html.earthsong {
+  --color-header-icon: oklch(0.8756 0.0454 67.2);
+  --color-header-icon-primary: oklch(67.52% 0.136 43.42);
+  --color-header-icon-inactive: oklch(0.556 0.0193 76);
+
   --color-primary: oklch(67.52% 0.136 43.42);
   --color-primary-light: oklch(82.72% 0.154 81.74);
   --color-primary-dark: oklch(5% 0.06 249);
@@ -290,6 +286,10 @@ html.earthsong {
 
 @media (prefers-color-scheme: dark) {
   html.auto {
+    --color-header-icon: oklch(1 0 0);
+    --color-header-icon-primary: oklch(0.6868 0.157 252.9);
+    --color-header-icon-inactive: oklch(0.738 0 0);
+
     --color-primary: oklch(0.6868 0.157 252.9);
     --color-primary-light: oklch(0.3998 0.0663 249.8);
     --color-primary-dark: oklch(0.6155 0.1712 254);

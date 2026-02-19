@@ -1,15 +1,12 @@
 #main-fullscreen-button {
-	position: absolute;
-	top: 15px;
-	right: 15px;
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
+	color: var(--color-header-icon);
 }
 #main-fullscreen-button svg {
 	width: 100%;
 	height: 100%;
 }
 
-.supports-fullscreen #main-search-box {right: 60px;}
 .compact-ui #main-fullscreen-button {display: none;}

@@ -10,9 +10,6 @@ export class MainMenu {
     this.node = headerNode;
     this.components = [];
 
-    const logo = elem('div', { id: 'app-logo' });
-    this.node.appendChild(logo);
-
     this.menuContainer = elem('div', { className: 'main-menu-container' });
     this.node.appendChild(this.menuContainer);
 

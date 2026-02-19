@@ -67,6 +67,8 @@ input:focus {
 
 .windows-header {
 	background-color: var(--color-toolbar-background);
+	display: flex;
+	align-items: center;
 	height: 60px;
 	padding-right: 10px;
 }
@@ -86,7 +88,7 @@ input:focus {
 
 .window-splitter {
 	position: absolute;
-	top: 0;
+	top: 60px;
 	width: 8px;
 	background: transparent;
 	cursor: col-resize;
@@ -334,10 +336,6 @@ input:focus {
 
 	.compact-ui.app-mobile-fullscreen .window-tab {
 		top: 39px;
-	}
-
-	.compact-ui.app-mobile-fullscreen #main-menu-button {
-		top: 0px;
 	}
 
 	.compact-ui.app-mobile-fullscreen #main-menu-dropdown {

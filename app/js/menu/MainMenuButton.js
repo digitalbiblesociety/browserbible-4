@@ -6,8 +6,6 @@
 
 import { elem } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
-import menuSvg from '../../css/images/menu-gray.svg?raw';
-
 /**
  * Create the main menu button
  * @param {HTMLElement} parentNode - Parent container
@@ -17,7 +15,6 @@ import menuSvg from '../../css/images/menu-gray.svg?raw';
 export function MainMenuButton(parentNode, _menu) {
   const mainMenuLogo = elem('div', { id: 'app-logo' });
   const mainMenuButton = elem('div', { id: 'main-menu-button' });
-  mainMenuButton.innerHTML = menuSvg;
   const heading1 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.addwindow' } }, 'Add Window');
   const windowsList = elem('div', { id: 'main-menu-windows-list', className: 'main-menu-list' });
   const heading2 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.options' } });
@@ -25,8 +22,8 @@ export function MainMenuButton(parentNode, _menu) {
   const mainMenuDropDown = elem('div', { id: 'main-menu-dropdown', popover: '' }, heading1, windowsList, heading2, features);
 
   if (parentNode) {
-    parentNode.appendChild(mainMenuLogo);
     parentNode.appendChild(mainMenuButton);
+    parentNode.appendChild(mainMenuLogo);
   }
   document.body.appendChild(mainMenuDropDown);
 

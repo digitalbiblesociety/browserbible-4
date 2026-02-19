@@ -23,6 +23,7 @@ import { MainMenu } from './MainMenu.js';
 
 // Register menu components
 registerMenuComponent('MainMenuButton', MainMenuButton);
+registerMenuComponent('NavigationButtons', NavigationButtons);
 registerMenuComponent('MainSearchBox', MainSearchBox);
 registerMenuComponent('FullScreenButton', FullScreenButton);
 registerMenuComponent('AddWindowButton', AddWindowButton);
@@ -30,7 +31,6 @@ registerMenuComponent('ConfigButton', ConfigButton);
 registerMenuComponent('AboutScreen', AboutScreen);
 registerMenuComponent('Feedback', Feedback);
 registerMenuComponent('RestoreButton', RestoreButton);
-registerMenuComponent('NavigationButtons', NavigationButtons);
 registerMenuComponent('FontSizeSettings', FontSizeSettings);
 registerMenuComponent('FontFamilySettings', FontFamilySettings);
 registerMenuComponent('ThemeSetting', ThemeSetting);

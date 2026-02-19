@@ -9,23 +9,21 @@ import { TextNavigation } from '../common/TextNavigation.js';
 import arrowRightSvg from '../../css/images/arrow-right-gray-light.svg?raw';
 import arrowLeftSvg from '../../css/images/arrow-left-gray-light.svg?raw';
 
-export function NavigationButtons() {
+export function NavigationButtons(parentNode) {
   const config = getConfig();
   if (!config.enableNavigationButtons) return null;
 
   const d = document;
-  const windowsHeader = d.querySelector('.windows-header');
-  if (!windowsHeader) return null;
-
-  const forwardButton = d.createElement('div');
-  forwardButton.id = 'main-forward-button';
-  forwardButton.className = 'inactive';
-  forwardButton.innerHTML = arrowRightSvg;
 
   const backButton = d.createElement('div');
   backButton.id = 'main-back-button';
   backButton.className = 'inactive';
   backButton.innerHTML = arrowLeftSvg;
+
+  const forwardButton = d.createElement('div');
+  forwardButton.id = 'main-forward-button';
+  forwardButton.className = 'inactive';
+  forwardButton.innerHTML = arrowRightSvg;
 
   const compactBackButton = d.createElement('div');
   compactBackButton.id = 'compact-back-button';
@@ -39,8 +37,8 @@ export function NavigationButtons() {
   compactLabel.id = 'compact-back-button-label';
   compactBackButton.appendChild(compactLabel);
 
-  windowsHeader.appendChild(forwardButton);
-  windowsHeader.appendChild(backButton);
+  parentNode.appendChild(backButton);
+  parentNode.appendChild(forwardButton);
   d.body.appendChild(compactBackButton);
 
   const back = () => TextNavigation.back();

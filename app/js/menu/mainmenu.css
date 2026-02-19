@@ -1,28 +1,45 @@
 #app-logo {
-	position: absolute;
-	top: 0;
-	left: 60px;
 	height: 60px;
+}
+
+.main-menu-container {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+	position: relative;
 }
 
 #main-menu-button {
 	cursor: pointer;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 60px;
-	height: 60px;
-	z-index: 9;
-	border: solid 1px transparent;
-	-x-border-width: 1px 1px 0 1px;
+	position: relative;
+	width: 32px;
+	height: 32px;
+	margin-right: auto;
 }
-#main-menu-button svg {
-	width: 26px;
-	height: 26px;
+
+#main-menu-button::before,
+#main-menu-button::after,
+#main-menu-button {
+	background-image: linear-gradient(var(--color-header-icon), var(--color-header-icon));
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 20px 2px;
+}
+#main-menu-button::before,
+#main-menu-button::after {
+	content: '';
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	width: 20px;
+	height: 2px;
+	left: calc(50% - 10px);
+	background: var(--color-header-icon);
+}
+#main-menu-button::before {
+	top: calc(50% - 7px);
+}
+#main-menu-button::after {
+	top: calc(50% + 5px);
 }
 #main-menu-button.active {
 	background-color: var(--color-badge-background);
@@ -38,7 +55,6 @@
 	left: 0px;
 	box-shadow: var(--shadow-popup);
 }
-
 
 #main-menu-dropdown[popover] {
 	position: absolute;
@@ -65,9 +81,6 @@
 .main-menu-list {
 	overflow: hidden;
 }
-
-
-
 
 .main-menu-item {
 	cursor: pointer;
@@ -104,8 +117,6 @@
 	background-color: var(--color-menu-hover);
 }
 
-
-
 	.compact-ui #app-logo {
 		display: none;
 	}
@@ -113,7 +124,6 @@
 	.compact-ui #main-menu-button {
 		height: 40px;
 		width: 40px;
-		top: 0px;
 	}
 
 	.compact-ui #main-menu-dropdown {
