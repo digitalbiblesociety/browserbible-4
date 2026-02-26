@@ -31,6 +31,12 @@
         "tools": "Tools"
       },
       "reset": "restore",
+      "commandpalette": {
+        "placeholder": "Type a command or Bible reference...",
+        "help_reference": "Type a Bible reference to navigate",
+        "help_commands": "Type > to search commands",
+        "no_results": "No results found"
+      },
       "themes": {
         "default": "Normal",
         "shiloh": "Shiloh",

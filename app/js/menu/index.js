@@ -20,6 +20,7 @@ import { ConfigToggles } from './ConfigToggles.js';
 import { ConfigUrl } from './ConfigUrl.js';
 import { LanguageSetting } from './LanguageSetting.js';
 import { MainMenu } from './MainMenu.js';
+import { CommandPalette } from './CommandPalette.js';
 
 // Register menu components
 registerMenuComponent('MainMenuButton', MainMenuButton);
@@ -37,6 +38,7 @@ registerMenuComponent('ThemeSetting', ThemeSetting);
 registerMenuComponent('LanguageSetting', LanguageSetting);
 registerMenuComponent('ConfigToggles', ConfigToggles);
 registerMenuComponent('ConfigUrl', ConfigUrl);
+registerMenuComponent('CommandPalette', CommandPalette);
 
 // Re-export everything
 export {
@@ -55,7 +57,8 @@ export {
   FontSizeSettings,
   ConfigToggles,
   ConfigUrl,
-  LanguageSetting
+  LanguageSetting,
+  CommandPalette
 };
 
 export default {
@@ -75,4 +78,5 @@ export default {
   LanguageSetting,
   ConfigToggles,
   ConfigUrl,
+  CommandPalette,
 };
