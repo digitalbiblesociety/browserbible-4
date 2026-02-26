@@ -7,7 +7,7 @@
 	padding: 15px;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
-	background-color: #fff;
+	background-color: var(--color-background);
 }
 
 .parallels-main table {
@@ -21,11 +21,11 @@
 	font-weight: normal;
 	padding: 2px;
 	vertical-align: top;
-	-x-border: 1px solid #ddd;
+	-x-border: 1px solid var(--color-border);
 }
 
 .parallels-main td {
-	border: 1px solid #ddd;
+	border: 1px solid var(--color-border);
 	border-width: 0 1px;
 	padding: 8px;
 }
@@ -57,7 +57,7 @@
 
 .parallels-main .passage-notloaded {
 	cursor: pointer;
-	color: #2a85e8;
+	color: var(--color-primary);
 }
 
 .parallel-entry-header {
@@ -83,8 +83,8 @@
 	display: inline-block;
 	margin: 0 10px 10px 0;
 	padding: 8px 10px;
-	background-color: #2a85e8;
-	color: #fff;
+	background-color: var(--color-primary);
+	color: var(--color-background);
 	font-size: 90%;
 	cursor: pointer;
 }

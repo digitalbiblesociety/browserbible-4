@@ -1,6 +1,6 @@
 /**
  * ThemeSetting
- * Theme selector (default, earthsong, dark)
+ * Theme selector (default, shiloh, jabbok, gethsemane)
  */
 
 import { elem } from '../lib/helpers.esm.js';
@@ -22,7 +22,7 @@ export function ThemeSetting(_parentNode, _menu) {
 
   const body = document.querySelector('#config-type .config-body');
   const themesBlock = elem('div', { id: 'config-themes' });
-  const themeNames = ['default', 'earthsong', 'dark'];
+  const themeNames = ['default', 'shiloh', 'jabbok', 'gethsemane'];
   const defaultThemeSetting = { themeName: themeNames[0] };
   const themeKey = 'config-theme';
   const themeSetting = AppSettings.getValue(themeKey, defaultThemeSetting);

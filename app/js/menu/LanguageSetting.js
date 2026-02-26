@@ -28,7 +28,6 @@ export function LanguageSetting(_parentNode, _menu) {
 
   if (body) {
     body.appendChild(list);
-    body.appendChild(elem('div', { className: 'clear' }));
   }
 
   // make sure English isn't first!

@@ -70,7 +70,7 @@ export function getTextManifest(callback) {
             <p>Problem loading <code>${textsUrl}</code></p>
             <p>Error: ${error.message}</p>
           </div>`;
-        modal.show().center();
+        modal.show();
       }
       callback(null);
     });

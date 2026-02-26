@@ -15,7 +15,7 @@
     cursor: default;
 }
 .statistics-content .word:hover {
-	background: #FF8;
+	background: var(--color-highlight);
 }
 
 .statistics-content {
@@ -35,6 +35,6 @@
 }
 
 .statistics-wordcloud span:hover {
-	background: rgba(255, 255, 0, 0.5);
+	background: var(--color-highlight);
     cursor: default;
 }

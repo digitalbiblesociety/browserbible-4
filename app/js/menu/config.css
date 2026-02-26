@@ -1,28 +1,23 @@
-#main-config-button {
-	right: 60px;
-}
-
-#config-window .movable-body {
-	overflow: hidden;
-}
-
 #main-config-box {
-	padding: 25px 25px 0 25px;
-	overflow: hidden;
+	padding: 1rem;
 }
 
-.config-section {
-	margin: 0 0 15px;
-	clear: both;
+.settings-fieldset {
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+	padding: 0.75rem;
+	margin: 0 0 1rem;
 }
 
-.config-header {
-	display: block;
-	font-weight: normal;
-	color: var(--color-text-light);
-	border-bottom: solid 1px var(--color-text-light);
-	margin: 0 0 5px;
-	font-size: 14px;
+.settings-fieldset:last-child {
+	margin-bottom: 0;
+}
+
+.settings-legend {
+	padding: 0 0.5rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--color-text-muted);
 }
 
 .config-button {
@@ -50,6 +45,72 @@
 	color: var(--color-primary);
 }
 
-#font-size-table td {
-	height: 40px;
+/* Font Size Control */
+.font-size-control {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 0;
+}
+
+.font-size-icon {
+	color: var(--color-text-muted);
+	flex-shrink: 0;
+	font-weight: 600;
+}
+
+.font-size-small {
+	font-size: 12px;
+}
+
+.font-size-large {
+	font-size: 20px;
+}
+
+/* Settings Slider */
+.settings-slider {
+	flex: 1;
+	height: 6px;
+	background: var(--color-background-active);
+	border-radius: 3px;
+	outline: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.settings-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 18px;
+	height: 18px;
+	background: var(--color-primary);
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+	background: var(--color-primary);
+	transform: scale(1.1);
+}
+
+.settings-slider::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	background: var(--color-primary);
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.settings-slider::-moz-range-thumb:hover {
+	background: var(--color-primary);
+	transform: scale(1.1);
+}
+
+.settings-slider::-moz-range-track {
+	background: var(--color-background-active);
+	border-radius: 3px;
 }

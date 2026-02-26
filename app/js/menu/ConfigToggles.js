@@ -36,6 +36,8 @@ export function ConfigToggles(_parentNode, _menu) {
   const config = getConfig();
 
   const body = document.querySelector('#config-type .config-body');
+  const togglesContainer = elem('div', { className: 'config-toggles' });
+  body?.appendChild(togglesContainer);
   const toggleNames = config.settingToggleNames ?? [];
   const toggleDefaults = config.settingToggleDefaults ?? [];
 
@@ -90,7 +92,7 @@ export function ConfigToggles(_parentNode, _menu) {
 
     const toggle = elem('div', { id: `config-toggle-${toggleId}`, className: 'config-toggle' }, input, label);
 
-    body?.appendChild(toggle);
+    togglesContainer.appendChild(toggle);
     if (input) {
       // Use regular function here because we need `this` binding for the event handler
       input.addEventListener('click', function() {

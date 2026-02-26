@@ -1,110 +1,49 @@
-
-
 :root {
-
-  --color-header-icon: #fff;
-  --color-header-icon-primary: oklch(0.6 0.1 245);
-  --color-header-icon-inactive: #fff;
-  
-  --color-primary: oklch(0.6155 0.1712 254);
-  --color-primary-light: oklch(0.6 0.1 245);
-  --color-primary-dark: oklch(0.4923 0.1506 256.4);
-  --color-primary-hover: oklch(0.6644 0.1701 253.4);
-
-  --color-text: oklch(0.3211 0 0);
-  --color-text-dark: oklch(0.1776 0 0);
-  --color-text-muted: oklch(0.5103 0 0);
-  --color-text-light: oklch(0.6268 0 0);
-  --color-text-lighter: oklch(0.683 0 0);
-  --color-text-inverse: oklch(1 0 0);
-
-  --color-background: oklch(1 0 0);
-  --color-background-alt: oklch(0.9791 0 0);
-  --color-background-hover: oklch(0.9521 0 0);
-  --color-background-active: oklch(0.931 0 0);
-  --color-background-overlay: oklch(0 0 0 / 0.5);
-
-  --color-border: oklch(0.8452 0 0);
-  --color-border-light: oklch(0.8975 0 0);
-  --color-border-lighter: oklch(0.9491 0 0);
-  --color-border-dark: oklch(0.683 0 0);
-
-  --color-highlight: oklch(0.9784 0.1244 108.5);
-  --color-highlight-alt: oklch(0.9784 0.1244 108.5);
-  --color-success: oklch(0.855 0.0654 142.9);
-  --color-success-dark: oklch(0.6729 0.1151 142.2);
-  --color-error: oklch(0.7371 0.0755 33.6);
-  --color-error-dark: oklch(0.4634 0.1902 29.2);
-  --color-warning: oklch(0.7939 0.1349 73);
-  --color-info: oklch(0.7591 0.1028 220.1);
-
-  --color-red-letter: oklch(0.4634 0.1902 29.2);
-  --color-footnote: oklch(0.6593 0.0973 264.4);
-  --color-cross-reference: oklch(0.6593 0.0973 264.4);
-  --color-verse-number: oklch(0.683 0 0);
-  --color-chapter-number: oklch(0.5103 0 0);
-
-  --color-lemma-match: oklch(0.6155 0.1712 254);
-  --color-lemma-highlight: oklch(0.9218 0.0187 227.3);
-  --color-location-match: oklch(0.855 0.0654 142.9);
-  --color-location-border: oklch(0.6729 0.1151 142.2);
-
-  --color-division-pentateuch: oklch(0.8227 0.1032 144.6);
-  --color-division-historical: oklch(0.6642 0.0914 283.6);
-  --color-division-wisdom: oklch(0.6943 0.1244 326.8);
-  --color-division-major-prophets: oklch(0.7117 0.0871 19.4);
-  --color-division-minor-prophets: oklch(0.8395 0.1263 108.8);
-  --color-division-gospels: oklch(0.8053 0.1109 19.8);
-  --color-division-acts: oklch(0.6661 0.1176 340.6);
-  --color-division-paul-epistles: oklch(0.7191 0.0997 283.6);
-  --color-division-general-epistles: oklch(0.7946 0.0624 196);
-  --color-division-revelation: oklch(0.6089 0.0747 316.7);
-
-  --color-header-background: oklch(0.9791 0 0);
-  --color-header-text: oklch(0.3211 0 0);
-  --color-footer-background: oklch(0.9791 0 0);
-  --color-footer-text: oklch(0.5103 0 0);
+  --color-primary:            oklch(0.6155 0.1712 254);
+  --color-background:         oklch(1 0 0);
+  --color-background-alt:     oklch(0.98 0 0);
+  --color-background-hover:   oklch(0.95 0 0);
+  --color-background-active:  oklch(0.93 0 0);
+  --color-text:               oklch(0.32 0 0);
+  --color-text-muted:         oklch(0.51 0 0);
+  --color-border:             oklch(0.84 0 0);
+  --color-highlight:          oklch(0.98 0.12 108);
+  --color-success:            oklch(0.85 0.06 143);
+  --color-error:              oklch(0.74 0.07 34);
+  --color-red-letter:         oklch(0.46 0.19 29);
+  --color-footnote:           oklch(0.65 0.09 264);
   --color-toolbar-background: oklch(0.1776 0 0);
-  --color-toolbar-text: oklch(1 0 0);
-  --color-menu-background: oklch(1 0 0);
-  --color-menu-hover: oklch(0.9551 0 0);
-  --color-menu-active: oklch(0.9067 0 0);
 
-  --color-selection-background: oklch(0.5103 0 0);
-  --color-divider-background: oklch(0.6268 0 0);
-  --color-badge-background: oklch(0.5103 0 0);
+  /* Division colors — hues 36° apart, L and C vary per theme */
+  --color-division-pentateuch:       oklch(0.75 0.11 144);
+  --color-division-historical:       oklch(0.75 0.11 216);
+  --color-division-wisdom:           oklch(0.75 0.11 324);
+  --color-division-major-prophets:   oklch(0.75 0.11 0);
+  --color-division-minor-prophets:   oklch(0.75 0.11 108);
+  --color-division-gospels:          oklch(0.75 0.11 36);
+  --color-division-acts:             oklch(0.75 0.11 180);
+  --color-division-paul-epistles:    oklch(0.75 0.11 252);
+  --color-division-general-epistles: oklch(0.75 0.11 72);
+  --color-division-revelation:       oklch(0.75 0.11 288);
 
-  --color-input-background: oklch(1 0 0);
-  --color-input-border: oklch(0.8452 0 0);
-  --color-input-focus-border: oklch(0.6155 0.1712 254);
-  --color-input-placeholder: oklch(0.683 0 0);
-
-  --color-button-background: oklch(0.9791 0 0);
-  --color-button-text: oklch(0.3211 0 0);
-  --color-button-border: oklch(0.8452 0 0);
-  --color-button-hover-background: oklch(0.931 0 0);
-  --color-button-primary-background: oklch(0.6155 0.1712 254);
-  --color-button-primary-text: oklch(1 0 0);
-
-  --color-scrollbar-track: oklch(0.9581 0 0);
-  --color-scrollbar-thumb: oklch(0.8109 0 0);
-  --color-scrollbar-thumb-hover: oklch(0.709 0 0);
-
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.1);
-  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.15);
-  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.2);
+  /* Shadows */
+  --shadow-sm:    0 1px 2px oklch(0 0 0 / 0.1);
+  --shadow-md:    0 2px 4px oklch(0 0 0 / 0.15);
+  --shadow-lg:    0 4px 8px oklch(0 0 0 / 0.2);
   --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.25);
 
+  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-family-serif: "Gentium Plus", "Linux Libertine", Georgia, serif;
+  /* Typography */
+  --font-family-sans:   -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-serif:  "Gentium Plus", "Linux Libertine", Georgia, serif;
   --font-family-hebrew: "Ezra SIL", "SBL Hebrew", serif;
-  --font-family-greek: "Gentium Plus", "SBL Greek", serif;
+  --font-family-greek:  "Gentium Plus", "SBL Greek", serif;
 
   --font-size-xs: 11px;
   --font-size-sm: 13px;
@@ -112,248 +51,133 @@
   --font-size-lg: 18px;
   --font-size-xl: 24px;
 
-  --transition-fast: 0.15s ease;
+  /* Transitions */
+  --transition-fast:   0.15s ease;
   --transition-normal: 0.25s ease;
-  --transition-slow: 0.4s ease;
+  --transition-slow:   0.4s ease;
 }
 
 
-.theme-dark,
-html.dark {
-  --color-header-icon: oklch(1 0 0);
-  --color-header-icon-primary: oklch(0.6868 0.157 252.9);
-  --color-header-icon-inactive: oklch(0.738 0 0);
-
-  --color-primary: oklch(0.6868 0.157 252.9);
-  --color-primary-light: oklch(0.3998 0.0663 249.8);
-  --color-primary-dark: oklch(0.6155 0.1712 254);
-
-  --color-text: oklch(0.9067 0 0);
-  --color-text-dark: oklch(1 0 0);
-  --color-text-muted: oklch(0.738 0 0);
-  --color-text-light: oklch(0.6268 0 0);
-  --color-text-lighter: oklch(0.5103 0 0);
-  --color-text-inverse: oklch(0.1776 0 0);
-
-  --color-background: oklch(0.1776 0 0);
-  --color-background-alt: oklch(0.2178 0 0);
-  --color-background-hover: oklch(0.252 0 0);
-  --color-background-active: oklch(0.3211 0 0);
-  --color-background-overlay: oklch(0 0 0 / 0.7);
-
-  --color-border: oklch(0.3867 0 0);
-  --color-border-light: oklch(0.3211 0 0);
-  --color-border-lighter: oklch(0.252 0 0);
-  --color-border-dark: oklch(0.4495 0 0);
-
-  --color-highlight: oklch(0.4531 0.0931 95.6);
-  --color-highlight-alt: oklch(0.3932 0.0805 92.6);
-  --color-success: oklch(0.4225 0.091 142.5);
-  --color-success-dark: oklch(0.5734 0.1211 142.4);
-  --color-error: oklch(0.3877 0.0833 21.7);
-  --color-error-dark: oklch(0.6308 0.1298 21.4);
-
-  --color-red-letter: oklch(0.7044 0.1872 23.2);
-  --color-footnote: oklch(0.7184 0.0817 263.9);
-  --color-cross-reference: oklch(0.7184 0.0817 263.9);
-  --color-verse-number: oklch(0.5693 0 0);
-  --color-chapter-number: oklch(0.6268 0 0);
-
-  --color-lemma-match: oklch(0.6868 0.157 252.9);
-  --color-lemma-highlight: oklch(0.3998 0.0663 249.8);
-  --color-location-match: oklch(0.4225 0.091 142.5);
-  --color-location-border: oklch(0.5734 0.1211 142.4);
-
-  --color-header-background: oklch(0.2178 0 0);
-  --color-header-text: oklch(0.9067 0 0);
-  --color-footer-background: oklch(0.2178 0 0);
-  --color-footer-text: oklch(0.738 0 0);
+.theme-jabbok,
+html.jabbok {
+  --color-primary:            oklch(0.6868 0.157 252.9);
+  --color-background:         oklch(0.1776 0 0);
+  --color-background-alt:     oklch(0.2178 0 0);
+  --color-background-hover:   oklch(0.252 0 0);
+  --color-background-active:  oklch(0.3211 0 0);
+  --color-text:               oklch(0.9067 0 0);
+  --color-text-muted:         oklch(0.738 0 0);
+  --color-border:             oklch(0.3867 0 0);
+  --color-highlight:          oklch(0.4531 0.0931 95.6);
+  --color-success:            oklch(0.4225 0.091 142.5);
+  --color-error:              oklch(0.3877 0.0833 21.7);
+  --color-red-letter:         oklch(0.7044 0.1872 23.2);
+  --color-footnote:           oklch(0.7184 0.0817 263.9);
   --color-toolbar-background: oklch(0 0 0);
-  --color-toolbar-text: oklch(1 0 0);
-  --color-menu-background: oklch(0.252 0 0);
-  --color-menu-hover: oklch(0.3211 0 0);
-  --color-menu-active: oklch(0.3867 0 0);
 
-  --color-selection-background: oklch(0.3867 0 0);
-  --color-divider-background: oklch(0.4495 0 0);
-  --color-badge-background: oklch(0.3867 0 0);
-
-  --color-input-background: oklch(0.252 0 0);
-  --color-input-border: oklch(0.3867 0 0);
-  --color-input-focus-border: oklch(0.6868 0.157 252.9);
-  --color-input-placeholder: oklch(0.5103 0 0);
-
-  --color-button-background: oklch(0.3211 0 0);
-  --color-button-text: oklch(0.9067 0 0);
-  --color-button-border: oklch(0.3867 0 0);
-  --color-button-hover-background: oklch(0.3867 0 0);
-  --color-button-primary-background: oklch(0.6868 0.157 252.9);
-  --color-button-primary-text: oklch(1 0 0);
-
-  --color-scrollbar-track: oklch(0.252 0 0);
-  --color-scrollbar-thumb: oklch(0.3867 0 0);
-  --color-scrollbar-thumb-hover: oklch(0.4495 0 0);
-
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
-  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.4);
-  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.5);
-  --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.6);
+  /* Division colors — L=0.65 C=0.10 */
+  --color-division-pentateuch:       oklch(0.65 0.10 144);
+  --color-division-historical:       oklch(0.65 0.10 216);
+  --color-division-wisdom:           oklch(0.65 0.10 324);
+  --color-division-major-prophets:   oklch(0.65 0.10 0);
+  --color-division-minor-prophets:   oklch(0.65 0.10 108);
+  --color-division-gospels:          oklch(0.65 0.10 36);
+  --color-division-acts:             oklch(0.65 0.10 180);
+  --color-division-paul-epistles:    oklch(0.65 0.10 252);
+  --color-division-general-epistles: oklch(0.65 0.10 72);
+  --color-division-revelation:       oklch(0.65 0.10 288);
 }
 
 
-.theme-earthsong,
-html.earthsong {
-  --color-header-icon: oklch(0.8756 0.0454 67.2);
-  --color-header-icon-primary: oklch(67.52% 0.136 43.42);
-  --color-header-icon-inactive: oklch(0.556 0.0193 76);
+.theme-shiloh,
+html.shiloh {
+  --color-primary:            oklch(0.65 0.13 43);
+  --color-background:         oklch(0.30 0.01 70);
+  --color-background-alt:     oklch(0.32 0.01 70);
+  --color-background-hover:   oklch(0.4 0.01 67);
+  --color-background-active:  oklch(0.4 0.01 67);
+  --color-text:               oklch(0.9 0.04 70);
+  --color-text-muted:         oklch(0.6 0.05 70);
+  --color-border:             oklch(0.41 0.01 67.5);
+  --color-highlight:          oklch(0.8 0.15 81);
+  --color-success:            oklch(0.8 0.15 130);
+  --color-error:              oklch(0.6 0.15 20);
+  --color-red-letter:         oklch(0.6 0.15 20);
+  --color-footnote:           oklch(0.5 0.07 250);
+  --color-toolbar-background: oklch(0.2842 0.008 59.35);
 
-  --color-primary: oklch(67.52% 0.136 43.42);
-  --color-primary-light: oklch(82.72% 0.154 81.74);
-  --color-primary-dark: oklch(5% 0.06 249);
+  /* Division colors — L=0.60 C=0.07 */
+  --color-division-pentateuch:       oklch(0.60 0.07 144);
+  --color-division-historical:       oklch(0.60 0.07 216);
+  --color-division-wisdom:           oklch(0.60 0.07 324);
+  --color-division-major-prophets:   oklch(0.60 0.07 0);
+  --color-division-minor-prophets:   oklch(0.60 0.07 108);
+  --color-division-gospels:          oklch(0.60 0.07 36);
+  --color-division-acts:             oklch(0.60 0.07 180);
+  --color-division-paul-epistles:    oklch(0.60 0.07 252);
+  --color-division-general-epistles: oklch(0.60 0.07 72);
+  --color-division-revelation:       oklch(0.60 0.07 288);
+}
 
-  --color-text: oklch(0.8756 0.0454 67.2);
-  --color-text-dark: oklch(1 0 0);
-  --color-text-muted: oklch(77.14% 0.034 67.28);
-  --color-text-light: oklch(0.556 0.0193 76);
-  --color-text-lighter: oklch(0.48 0.015 76);
-  --color-text-inverse: oklch(0.3167 0.0113 67.4);
+.theme-gethsemane,
+html.gethsemane {
+  --color-primary:            oklch(0.719 0.1322 264.2);
+  --color-background:         oklch(0.2263 0.0214 280.49);
+  --color-background-alt:     oklch(0.3056 0.0369 273.23);
+  --color-background-hover:   oklch(0.3322 0.0642 268.45);
+  --color-background-active:  oklch(0.3593 0.0513 273.18);
+  --color-text:               oklch(0.8456 0.0611 274.76);
+  --color-text-muted:         oklch(0.4818 0.0558 273.91);
+  --color-border:             oklch(0.4094 0.0546 274.27);
+  --color-highlight:          oklch(0.7839 0.1057 75.43);
+  --color-success:            oklch(0.7953 0.1395 130.14);
+  --color-error:              oklch(0.7227 0.1589 10.28);
+  --color-red-letter:         oklch(0.7227 0.1589 10.28);
+  --color-footnote:           oklch(0.82 0.1051 235.72);
+  --color-toolbar-background: oklch(0.2029 0.016 279.29);
 
-  --color-background: oklch(0.3167 0.0113 67.4);
-  --color-background-alt: oklch(0.28 0.01 80);
-  --color-background-hover: oklch(0.3907 0.0129 67.4);
-  --color-background-active: oklch(0.3755 0.0085 53.2);
-  --color-background-overlay: oklch(0 0 0 / 0.6);
-
-  --color-border: oklch(0.556 0.0193 76);
-  --color-border-light: oklch(0.45 0.015 70);
-  --color-border-lighter: oklch(0.38 0.012 68);
-  --color-border-dark: oklch(0.62 0.02 76);
-
-  --color-highlight: oklch(0.45 0.1 81.7);
-  --color-highlight-alt: oklch(0.38 0.085 81.7);
-  --color-success: oklch(0.4 0.09 131);
-  --color-success-dark: oklch(0.65 0.13 131);
-  --color-error: oklch(0.38 0.08 17);
-  --color-error-dark: oklch(0.65 0.14 17);
-
-  --color-red-letter: oklch(0.582 0.1713 17.1);
-  --color-footnote: oklch(0.5572 0.0659 249.1);
-  --color-cross-reference: oklch(0.5572 0.0659 249.1);
-  --color-verse-number: oklch(0.556 0.0193 76);
-  --color-chapter-number: oklch(0.63 0.025 70);
-
-  --color-lemma-match: oklch(0.5572 0.0659 249.1);
-  --color-lemma-highlight: oklch(0.35 0.05 249);
-  --color-location-match: oklch(0.4 0.09 131);
-  --color-location-border: oklch(0.65 0.13 131);
-
-  --color-header-background: oklch(0.3413 0.0121 62.2);
-  --color-header-text: oklch(0.8756 0.0454 67.2);
-  --color-footer-background: oklch(0.3413 0.0121 62.2);
-  --color-footer-text: oklch(0.7714 0.0343 67.3);
-  --color-toolbar-background: oklch(0.2454 0.0087 75.2);
-  --color-toolbar-text: oklch(0.8756 0.0454 67.2);
-  --color-menu-background: oklch(0.3413 0.0121 62.2);
-  --color-menu-hover: oklch(0.3907 0.0129 67.4);
-  --color-menu-active: oklch(0.45 0.015 67);
-
-  --color-selection-background: oklch(0.42 0.015 67);
-  --color-divider-background: oklch(0.556 0.0193 76);
-  --color-badge-background: oklch(0.556 0.0193 76);
-
-  --color-input-background: oklch(0.3413 0.0121 62.2);
-  --color-input-border: oklch(0.556 0.0193 76);
-  --color-input-focus-border: oklch(0.5572 0.0659 249.1);
-  --color-input-placeholder: oklch(0.556 0.0193 76);
-
-  --color-button-background: oklch(0.3907 0.0129 67.4);
-  --color-button-text: oklch(0.8756 0.0454 67.2);
-  --color-button-border: oklch(0.556 0.0193 76);
-  --color-button-hover-background: oklch(0.45 0.015 67);
-  --color-button-primary-background: oklch(0.5572 0.0659 249.1);
-  --color-button-primary-text: oklch(0.8756 0.0454 67.2);
-
-  --color-scrollbar-track: oklch(0.3413 0.0121 62.2);
-  --color-scrollbar-thumb: oklch(0.556 0.0193 76);
-  --color-scrollbar-thumb-hover: oklch(0.62 0.02 76);
-
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
-  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.4);
-  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.5);
-  --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.6);
+  /* Division colors — L=0.62 C=0.09 */
+  --color-division-pentateuch:       oklch(0.62 0.09 144);
+  --color-division-historical:       oklch(0.62 0.09 216);
+  --color-division-wisdom:           oklch(0.62 0.09 324);
+  --color-division-major-prophets:   oklch(0.62 0.09 0);
+  --color-division-minor-prophets:   oklch(0.62 0.09 108);
+  --color-division-gospels:          oklch(0.62 0.09 36);
+  --color-division-acts:             oklch(0.62 0.09 180);
+  --color-division-paul-epistles:    oklch(0.62 0.09 252);
+  --color-division-general-epistles: oklch(0.62 0.09 72);
+  --color-division-revelation:       oklch(0.62 0.09 288);
 }
 
 
 @media (prefers-color-scheme: dark) {
   html.auto {
-    --color-header-icon: oklch(1 0 0);
-    --color-header-icon-primary: oklch(0.6868 0.157 252.9);
-    --color-header-icon-inactive: oklch(0.738 0 0);
-
-    --color-primary: oklch(0.6868 0.157 252.9);
-    --color-primary-light: oklch(0.3998 0.0663 249.8);
-    --color-primary-dark: oklch(0.6155 0.1712 254);
-
-    --color-text: oklch(0.9067 0 0);
-    --color-text-dark: oklch(1 0 0);
-    --color-text-muted: oklch(0.738 0 0);
-    --color-text-light: oklch(0.6268 0 0);
-    --color-text-lighter: oklch(0.5103 0 0);
-    --color-text-inverse: oklch(0.1776 0 0);
-
-    --color-background: oklch(0.1776 0 0);
-    --color-background-alt: oklch(0.2178 0 0);
-    --color-background-hover: oklch(0.252 0 0);
-    --color-background-active: oklch(0.3211 0 0);
-    --color-background-overlay: oklch(0 0 0 / 0.7);
-
-    --color-border: oklch(0.3867 0 0);
-    --color-border-light: oklch(0.3211 0 0);
-    --color-border-lighter: oklch(0.252 0 0);
-    --color-border-dark: oklch(0.4495 0 0);
-
-    --color-highlight: oklch(0.4531 0.0931 95.6);
-    --color-highlight-alt: oklch(0.3932 0.0805 92.6);
-
-    --color-red-letter: oklch(0.7044 0.1872 23.2);
-    --color-footnote: oklch(0.7184 0.0817 263.9);
-    --color-cross-reference: oklch(0.7184 0.0817 263.9);
-    --color-verse-number: oklch(0.5693 0 0);
-    --color-chapter-number: oklch(0.6268 0 0);
-
-    --color-header-background: oklch(0.2178 0 0);
-    --color-header-text: oklch(0.9067 0 0);
-    --color-footer-background: oklch(0.2178 0 0);
-    --color-footer-text: oklch(0.738 0 0);
+    /* Same as .theme-jabbok */
+    --color-primary:            oklch(0.6868 0.157 252.9);
+    --color-background:         oklch(0.1776 0 0);
+    --color-background-alt:     oklch(0.2178 0 0);
+    --color-background-hover:   oklch(0.252 0 0);
+    --color-background-active:  oklch(0.3211 0 0);
+    --color-text:               oklch(0.9067 0 0);
+    --color-text-muted:         oklch(0.738 0 0);
+    --color-border:             oklch(0.3867 0 0);
+    --color-highlight:          oklch(0.4531 0.0931 95.6);
+    --color-success:            oklch(0.4225 0.091 142.5);
+    --color-error:              oklch(0.3877 0.0833 21.7);
+    --color-red-letter:         oklch(0.7044 0.1872 23.2);
+    --color-footnote:           oklch(0.7184 0.0817 263.9);
     --color-toolbar-background: oklch(0 0 0);
-    --color-toolbar-text: oklch(1 0 0);
-    --color-menu-background: oklch(0.252 0 0);
-    --color-menu-hover: oklch(0.3211 0 0);
-    --color-menu-active: oklch(0.3867 0 0);
 
-    --color-selection-background: oklch(0.3867 0 0);
-    --color-divider-background: oklch(0.4495 0 0);
-    --color-badge-background: oklch(0.3867 0 0);
-
-    --color-input-background: oklch(0.252 0 0);
-    --color-input-border: oklch(0.3867 0 0);
-    --color-input-focus-border: oklch(0.6868 0.157 252.9);
-    --color-input-placeholder: oklch(0.5103 0 0);
-
-    --color-button-background: oklch(0.3211 0 0);
-    --color-button-text: oklch(0.9067 0 0);
-    --color-button-border: oklch(0.3867 0 0);
-    --color-button-hover-background: oklch(0.3867 0 0);
-    --color-button-primary-background: oklch(0.6868 0.157 252.9);
-    --color-button-primary-text: oklch(1 0 0);
-
-    --color-scrollbar-track: oklch(0.252 0 0);
-    --color-scrollbar-thumb: oklch(0.3867 0 0);
-    --color-scrollbar-thumb-hover: oklch(0.4495 0 0);
-
-    --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
-    --shadow-md: 0 2px 4px oklch(0 0 0 / 0.4);
-    --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.5);
-    --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.6);
+    /* Division colors — same as jabbok */
+    --color-division-pentateuch:       oklch(0.65 0.10 144);
+    --color-division-historical:       oklch(0.65 0.10 216);
+    --color-division-wisdom:           oklch(0.65 0.10 324);
+    --color-division-major-prophets:   oklch(0.65 0.10 0);
+    --color-division-minor-prophets:   oklch(0.65 0.10 108);
+    --color-division-gospels:          oklch(0.65 0.10 36);
+    --color-division-acts:             oklch(0.65 0.10 180);
+    --color-division-paul-epistles:    oklch(0.65 0.10 252);
+    --color-division-general-epistles: oklch(0.65 0.10 72);
+    --color-division-revelation:       oklch(0.65 0.10 288);
   }
 }

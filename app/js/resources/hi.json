@@ -17,8 +17,9 @@
       "reset": "रीसेट",
       "themes": {
         "default": "साधारण",
-        "earthsong": "Earthsong",
-        "dark": "कम रोशनी"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "तकरीबन",

@@ -53,7 +53,7 @@ flashcard-window .flashcard-mode-btn {
 
 flashcard-window .flashcard-mode-btn.active {
 	background: var(--color-primary);
-	color: #fff;
+	color: var(--color-background);
 	border-color: var(--color-primary);
 }
 
@@ -135,7 +135,7 @@ flashcard-window .flashcard-list-item-delete {
 }
 
 flashcard-window .flashcard-list-item-delete:hover {
-	color: var(--color-error, #d00);
+	color: var(--color-error);
 }
 
 /* Empty state */
@@ -230,7 +230,7 @@ flashcard-window .flashcard-hint-btn {
 	border-radius: 4px;
 	font-size: var(--font-size-xs);
 	cursor: pointer;
-	background: var(--color-button-background, var(--color-background));
+	background: var(--color-background-alt);
 	color: var(--color-text-muted);
 	margin-bottom: 8px;
 	transition: background var(--transition-fast, 0.15s);
@@ -288,7 +288,7 @@ flashcard-window .flashcard-rate-btn {
 	padding: 8px 4px;
 	border-radius: 6px;
 	border: 1px solid var(--color-border);
-	background: var(--color-button-background, var(--color-background));
+	background: var(--color-background-alt);
 	color: var(--color-text);
 	cursor: pointer;
 	transition: background var(--transition-fast, 0.15s);
@@ -298,9 +298,9 @@ flashcard-window .flashcard-rate-btn:hover {
 	background: var(--color-highlight);
 }
 
-flashcard-window .flashcard-rate-btn[data-quality="0"] { border-color: var(--color-error, #d00); }
-flashcard-window .flashcard-rate-btn[data-quality="1"] { border-color: #e8a735; }
-flashcard-window .flashcard-rate-btn[data-quality="2"] { border-color: var(--color-success, #28a745); }
+flashcard-window .flashcard-rate-btn[data-quality="0"] { border-color: var(--color-error); }
+flashcard-window .flashcard-rate-btn[data-quality="1"] { border-color: var(--color-highlight); }
+flashcard-window .flashcard-rate-btn[data-quality="2"] { border-color: var(--color-success); }
 flashcard-window .flashcard-rate-btn[data-quality="3"] { border-color: var(--color-primary); }
 
 flashcard-window .flashcard-rate-label {
@@ -320,8 +320,8 @@ flashcard-window .flashcard-toast {
 	bottom: 16px;
 	left: 50%;
 	transform: translateX(-50%) translateY(12px);
-	background: var(--color-text, #333);
-	color: var(--color-background, #fff);
+	background: var(--color-text);
+	color: var(--color-background);
 	padding: 10px 20px;
 	border-radius: 6px;
 	font-size: var(--font-size-sm);

@@ -22,7 +22,6 @@ export function Feedback(_parentNode, _menu) {
     return;
   }
 
-  const container = document.querySelector('.windows-container');
   const feedbackButton = elem('div', { className: 'main-menu-item feedback-logo' });
   const feedbackIconSpan = elem('span', { className: 'main-menu-icon' });
   feedbackIconSpan.innerHTML = feedbackSvg;
@@ -71,7 +70,6 @@ export function Feedback(_parentNode, _menu) {
   const hideFeedback = () => {
     feedbackWindow.hide();
     modalOverlay.style.display = 'none';
-    container?.classList.remove('blur');
   };
 
   const validateForm = () => {
@@ -108,7 +106,6 @@ export function Feedback(_parentNode, _menu) {
     } else {
       feedbackWindow.show();
       feedbackWindow.size(Math.min(500, window.innerWidth - 40), 300);
-      feedbackWindow.center();
 
       message.style.display = 'none';
       feedbackBody.querySelectorAll('input,textarea,select').forEach(el => {
@@ -121,7 +118,6 @@ export function Feedback(_parentNode, _menu) {
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
 
-      container?.classList.add('blur');
       modalOverlay.style.width = `${winWidth}px`;
       modalOverlay.style.height = `${winHeight}px`;
       modalOverlay.style.display = '';

@@ -42,7 +42,7 @@
 	font-weight: bold;
 	font-size: 70%;
 	vertical-align: top;
-	color: var(--color-verse-number);
+	color: var(--color-text-muted);
 	font-family: var(--font-family-sans);
 }
 
@@ -83,7 +83,7 @@
 
 .chapter .note .key:hover,
 .chapter .cf.key:hover {
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	background: var(--color-primary);
 }
 
@@ -108,7 +108,7 @@
 
 .bibleref
 {
-	color: var(--color-cross-reference);
+	color: var(--color-footnote);
 	cursor: pointer;
 }
 
@@ -147,7 +147,7 @@
 	margin-bottom: 0;
 	margin-right: .2em;
 	font-family: var(--font-family-sans);
-	color: var(--color-chapter-number);
+	color: var(--color-text-muted);
 }
 
 [dir=rtl] .c,

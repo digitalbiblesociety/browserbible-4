@@ -51,8 +51,7 @@ export function AboutScreen() {
 
     win
       .size(WINDOW_SIZE.widthRatio * innerWidth, WINDOW_SIZE.heightRatio * innerHeight)
-      .show()
-      .center();
+      .show();
   });
 
   return aboutButton;

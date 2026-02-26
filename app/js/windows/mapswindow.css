@@ -1,11 +1,11 @@
 .MapWindow .window-close-button {
-	background-color: #e5bfb7;
+	background-color: var(--color-error);
 }
 
 .linked-location {
 	cursor: pointer;
-	background: #B7DBB4;
-	border-bottom: solid 1px #6BA865;
+	background: var(--color-success);
+	border-bottom: solid 1px var(--color-success);
 }
 
 
@@ -31,7 +31,7 @@
 }
 
 .map-marker .marker-label-text {
-	font-family: var(--font-family, sans-serif);
+	font-family: var(--font-family-sans, sans-serif);
 	font-weight: 500;
 }
 
@@ -61,7 +61,7 @@
 	overflow-y: auto;
 	background: var(--color-background);
 	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	box-shadow: var(--shadow-popup);
 	z-index: 10;
 	opacity: 0;
 	visibility: hidden;
@@ -89,7 +89,7 @@
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.5;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 }
 
 .map-popup-content .verse {
@@ -97,7 +97,7 @@
 }
 
 .map-popup-content .verse:hover {
-	color: var(--color-primary-dark);
+	color: var(--color-primary);
 }
 
 
@@ -115,9 +115,9 @@
 	top: 100%;
 	left: 0;
 	right: 0;
-	background: var(--color-header-background);
+	background: var(--color-background-alt);
 	border-radius: 0 0 4px 4px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	box-shadow: var(--shadow-popup);
 	z-index: 100;
 	max-height: 300px;
 	overflow-y: auto;
@@ -130,7 +130,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	color: var(--color-header-text);
+	color: var(--color-text);
 }
 
 .map-suggestion-item:last-child {
@@ -159,13 +159,13 @@
 	background: var(--color-background);
 	font-size: 80%;
 	box-shadow: var(--shadow-popup);
-	border: 1px solid var(--color-border, #ccc);
+	border: 1px solid var(--color-border);
 	margin: 0;
 	inset: auto;
 }
 
 .map-options-popover .map-options-header {
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	background: var(--color-background-active);
 	padding: 8px;
 	font-weight: bold;

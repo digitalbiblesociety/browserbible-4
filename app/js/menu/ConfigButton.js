@@ -16,7 +16,6 @@ import { getWindowIcon } from '../core/windowIcons.js';
  * @returns {void}
  */
 export function ConfigButton(_parentNode, _menu) {
-  const container = document.querySelector('.windows-container');
   const configButton = elem('div', { className: 'main-menu-item' });
   const configIconSpan = elem('span', { className: 'main-menu-icon' });
   configIconSpan.innerHTML = getWindowIcon('settings') || '';
@@ -26,19 +25,11 @@ export function ConfigButton(_parentNode, _menu) {
   configButton.appendChild(configTextSpan);
   const mainMenuFeatures = document.querySelector('#main-menu-features');
 
-  const configWindow = new MovableWindow(300, 380, i18n.t('menu.labels.settings'), 'config-window');
+  const configWindow = new MovableWindow(null, null, i18n.t('menu.labels.settings'), 'config-window');
   mainMenuFeatures?.appendChild(configButton);
 
-  configWindow.onToggle((e) => {
-    if (e.newState === 'closed') {
-      container?.classList.remove('blur');
-    } else {
-      container?.classList.add('blur');
-    }
-  });
-
   const showConfig = () => {
-    configWindow.show().center();
+    configWindow.show();
     // Properly close the main menu popover
     const mainMenuDropdown = document.querySelector('#main-menu-dropdown');
     if (mainMenuDropdown?.matches(':popover-open')) {
@@ -63,16 +54,14 @@ export function ConfigButton(_parentNode, _menu) {
   const configBody = configWindow.body;
   configBody.innerHTML = `
     <div id="main-config-box">
-      <div class="config-section" id="config-type">
-        <span class="config-header i18n" data-i18n="[html]menu.config.font"></span>
+      <fieldset class="settings-fieldset" id="config-type">
+        <legend class="settings-legend i18n" data-i18n="[html]menu.config.font"></legend>
         <div class="config-body"></div>
-        <div class="clear"></div>
-      </div>
-      <div class="config-section" id="config-tools">
-        <span class="config-header i18n" data-i18n="[html]menu.config.tools"></span>
+      </fieldset>
+      <fieldset class="settings-fieldset" id="config-tools">
+        <legend class="settings-legend i18n" data-i18n="[html]menu.config.tools"></legend>
         <div class="config-body"></div>
-        <div class="clear"></div>
-      </div>
+      </fieldset>
     </div>
   `;
 }

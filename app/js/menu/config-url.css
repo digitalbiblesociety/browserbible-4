@@ -8,7 +8,8 @@
 
 #main-menu-dropdown #config-global-url {
 	margin: 0;
-	padding: 10px 0 10px 15px;
+	padding: 0.5rem 0.75rem;
+	border-top: 1px solid var(--color-border);
 }
 
 #config-global-url .url-copy-button {
@@ -40,9 +41,9 @@
 	height: 28px;
 	padding: 6px 8px;
 	margin: 0;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text-muted);
 	font-size: var(--font-size-xs);
 	-webkit-appearance: none;
@@ -56,15 +57,15 @@
 
 #config-global-url input:focus {
 	outline: none;
-	border-color: var(--color-input-focus-border);
+	border-color: var(--color-primary);
 }
 
 #config-global-url input.copied {
 	background: var(--color-success);
-	border-color: var(--color-success-dark);
+	border-color: var(--color-success);
 }
 
 #config-global-url input::placeholder {
-	color: var(--color-input-placeholder);
+	color: var(--color-border);
 	font-style: italic;
 }

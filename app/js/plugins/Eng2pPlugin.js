@@ -271,7 +271,7 @@ export const Eng2pPlugin = (app) => {
       configWindow.hidePopover();
     }
 
-    engWindow.show().center();
+    engWindow.show();
   });
 
   // SET DEFAULT

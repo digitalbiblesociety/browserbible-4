@@ -158,20 +158,20 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     await page.waitForTimeout(500);
 
     // Click dark theme
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await expect(darkThemeButton).toBeVisible();
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await expect(jabbokThemeButton).toBeVisible();
+    await jabbokThemeButton.click();
     await page.waitForTimeout(300);
 
     // Verify body has dark theme class
     const bodyClasses = await page.locator('body').getAttribute('class');
-    expect(bodyClasses).toContain('theme-dark');
+    expect(bodyClasses).toContain('theme-jabbok');
     expect(bodyClasses).not.toContain('theme-default');
-    expect(bodyClasses).not.toContain('theme-earthsong');
+    expect(bodyClasses).not.toContain('theme-shiloh');
 
     // Verify dark theme button is selected
-    const darkThemeClasses = await darkThemeButton.getAttribute('class');
-    expect(darkThemeClasses).toContain('config-theme-toggle-selected');
+    const jabbokThemeClasses = await jabbokThemeButton.getAttribute('class');
+    expect(jabbokThemeClasses).toContain('config-theme-toggle-selected');
   });
 
   test('should toggle dark mode off and verify light theme', async ({ page }) => {
@@ -184,13 +184,13 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(300);
 
     // Verify dark mode is on
     let bodyClasses = await page.locator('body').getAttribute('class');
-    expect(bodyClasses).toContain('theme-dark');
+    expect(bodyClasses).toContain('theme-jabbok');
 
     // Switch back to default theme
     const defaultThemeButton = page.locator('#config-theme-default');
@@ -200,7 +200,7 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     // Verify default theme is active
     bodyClasses = await page.locator('body').getAttribute('class');
     expect(bodyClasses).toContain('theme-default');
-    expect(bodyClasses).not.toContain('theme-dark');
+    expect(bodyClasses).not.toContain('theme-jabbok');
 
     // Verify default theme button is selected
     const defaultThemeClasses = await defaultThemeButton.getAttribute('class');
@@ -217,13 +217,13 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(500);
 
     // Verify dark mode applied
     const bodyClassesBefore = await page.locator('body').getAttribute('class');
-    expect(bodyClassesBefore).toContain('theme-dark');
+    expect(bodyClassesBefore).toContain('theme-jabbok');
 
     // Wait for settings to save
     await page.waitForTimeout(1000);
@@ -235,10 +235,10 @@ test.describe('Settings & Configuration - Theme Settings', () => {
 
     // Verify dark theme persisted
     const bodyClassesAfter = await page.locator('body').getAttribute('class');
-    expect(bodyClassesAfter).toContain('theme-dark');
+    expect(bodyClassesAfter).toContain('theme-jabbok');
   });
 
-  test('should verify earthsong theme applies correctly', async ({ page }) => {
+  test('should verify shiloh theme applies correctly', async ({ page }) => {
     // Open settings
     const mainMenuButton = page.locator('#main-menu-button');
     await mainMenuButton.click();
@@ -248,21 +248,21 @@ test.describe('Settings & Configuration - Theme Settings', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    // Click earthsong theme
-    const earthsongThemeButton = page.locator('#config-theme-earthsong');
-    await expect(earthsongThemeButton).toBeVisible();
-    await earthsongThemeButton.click();
+    // Click shiloh theme
+    const shilohThemeButton = page.locator('#config-theme-shiloh');
+    await expect(shilohThemeButton).toBeVisible();
+    await shilohThemeButton.click();
     await page.waitForTimeout(300);
 
-    // Verify body has earthsong theme class
+    // Verify body has shiloh theme class
     const bodyClasses = await page.locator('body').getAttribute('class');
-    expect(bodyClasses).toContain('theme-earthsong');
+    expect(bodyClasses).toContain('theme-shiloh');
     expect(bodyClasses).not.toContain('theme-default');
-    expect(bodyClasses).not.toContain('theme-dark');
+    expect(bodyClasses).not.toContain('theme-jabbok');
 
-    // Verify earthsong theme button is selected
-    const earthsongThemeClasses = await earthsongThemeButton.getAttribute('class');
-    expect(earthsongThemeClasses).toContain('config-theme-toggle-selected');
+    // Verify shiloh theme button is selected
+    const shilohThemeClasses = await shilohThemeButton.getAttribute('class');
+    expect(shilohThemeClasses).toContain('config-theme-toggle-selected');
   });
 });
 
@@ -296,13 +296,13 @@ test.describe('Settings & Configuration - Theme Applies to All Windows', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(300);
 
     // Verify theme applied to body (affects all windows)
     const bodyClasses = await page.locator('body').getAttribute('class');
-    expect(bodyClasses).toContain('theme-dark');
+    expect(bodyClasses).toContain('theme-jabbok');
 
     // Verify all windows are visible and functional with dark theme
     for (let i = 0; i < windowCount; i++) {

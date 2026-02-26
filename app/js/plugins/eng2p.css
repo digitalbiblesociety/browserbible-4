@@ -1,23 +1,23 @@
 .eng2p-original {
 	text-decoration: line-through;
-	color: #444;
+	color: var(--color-text-muted);
 	display: none;
 }
 
 .eng2p-corrected {
-	color: #393;
+	color: var(--color-success);
 }
 .lemma-highlight .eng2p-corrected {
-	color: #02d602;
+	color: var(--color-success);
 }
 
 .eng2p-highlight,
 .eng2p-highlight-demo {
-	color: #393;
+	color: var(--color-success);
 }
 
 .eng2p-verbs::before {
-	background: #393;
+	background: var(--color-success);
 	content: '';
 	width: 10px;
 	height: 10px;
@@ -51,7 +51,7 @@
 
 #config-eng2p td,
 #config-eng2p th {
-	border: solid 1px #ddd;
+	border: solid 1px var(--color-border);
 	padding: 2px;
 	text-align: left;
 }

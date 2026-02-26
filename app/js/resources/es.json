@@ -30,8 +30,9 @@
       },
       "themes": {
         "default": "Normal",
-        "earthsong": "Earthsong",
-        "dark": "Luz baja"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       }
     },
     "plugins": {

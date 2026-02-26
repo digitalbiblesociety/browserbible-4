@@ -28,7 +28,7 @@
 
 .text-chooser .text-chooser-header {
 	padding: 8px;
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	position: relative;
 	background: var(--color-background-active);
 	overflow: hidden;
@@ -50,8 +50,8 @@
 	pointer-events: none;
 }
 .text-chooser .text-chooser-filter-text {
-	background-color: var(--color-input-background);
-	border: solid 2px var(--color-input-border);
+	background-color: var(--color-background);
+	border: solid 2px var(--color-border);
 	border-radius: 6px;
 	color: var(--color-text);
 	padding: 6px 12px 6px 36px;
@@ -66,24 +66,24 @@
 
 .text-chooser .text-chooser-filter-text:focus {
 	border-color: var(--color-primary);
-	box-shadow: 0 0 0 3px rgba(42, 133, 232, 0.1);
+	box-shadow: 0 0 0 3px var(--color-background-hover);
 }
 
 .text-chooser .text-chooser-filter-text::placeholder {
-	color: var(--color-input-placeholder);
+	color: var(--color-border);
 }
 
 .text-chooser .text-chooser-more-toggle {
 	margin: 0 0 0 10px;
 	font-size: 11px;
-	color: #fff;
+	color: var(--color-background);
 	text-align: center;
 	cursor: pointer;
 	padding: 4px 4px 4px 18px;
 	width: 70px;
 	display: none;
 	position: relative;
-	background-color: #88c0d7;
+	background-color: var(--color-primary);
 }
 
 .text-chooser .text-chooser-main {
@@ -111,7 +111,7 @@
 
 .text-chooser .text-chooser-close:hover {
 	background-color: none;
-	border: solid 1px #aaa;
+	border: solid 1px var(--color-border);
 }
 
 .text-chooser table {
@@ -148,7 +148,7 @@
 }
 
 .text-chooser-row.filtered {
-	background: var(--color-primary-light);
+	background: var(--color-background-hover);
 }
 
 .text-chooser-row.filtered-hidden,
@@ -161,7 +161,7 @@
 }
 
 .text-chooser-row.selected {
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 }
 
 .text-chooser-row .text-chooser-abbr {
@@ -184,7 +184,7 @@
 }
 
 .text-chooser-row .text-chooser-name {
-	color: var(--color-primary-light);
+	color: var(--color-primary);
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -232,8 +232,8 @@ table.collapsible .text-chooser-row.collapsed {
 }
 
 .text-chooser-row-divider {
-	background: var(--color-divider-background);
-	color: var(--color-text-inverse);
+	background: var(--color-border);
+	color: var(--color-background);
 }
 .text-chooser-row-divider span.name{
 	padding: 3px 10px;

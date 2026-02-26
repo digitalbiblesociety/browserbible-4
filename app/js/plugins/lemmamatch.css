@@ -1,6 +1,6 @@
 l.lemma-highlight,
 .lemma-highlight,
 .lemma-highlight:hover {
-	background: var(--color-lemma-match);
-	color: var(--color-text-inverse);
+	background: var(--color-primary);
+	color: var(--color-background);
 }

@@ -1,9 +1,9 @@
 /**
  * MovableWindow
- * A draggable popup window component
+ * A popup window component
  */
 
-import { elem, offset } from '../lib/helpers.esm.js';
+import { elem } from '../lib/helpers.esm.js';
 
 /**
  * Create a movable window
@@ -23,32 +23,11 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
 
   document.body.appendChild(container);
 
-  let startWindowPosition = null;
-  let startMousePosition = null;
-
-  header.addEventListener('mousedown', function(e) {
-    document.addEventListener('mousemove', move, false);
-    document.addEventListener('mouseup', mouseup, false);
-
-    startWindowPosition = offset(container);
-    startMousePosition = { x: e.clientX, y: e.clientY };
-  }, false);
-
-  function mouseup() {
-    document.removeEventListener('mousemove', move, false);
-    document.removeEventListener('mouseup', mouseup, false);
-  }
-
-  function move(e) {
-    container.style.top = (startWindowPosition.top - (startMousePosition.y - e.clientY)) + 'px';
-    container.style.left = (startWindowPosition.left - (startMousePosition.x - e.clientX)) + 'px';
-  }
-
   close.addEventListener('click', hide, false);
 
   function size(w, h) {
-    body.style.width = w + 'px';
-    body.style.height = h + 'px';
+    if (w) container.style.width = w + 'px';
+    if (h) body.style.height = h + 'px';
     return ext;
   }
 
@@ -71,21 +50,6 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
     return ext;
   }
 
-  function center() {
-    const infoWidth = container.offsetWidth;
-    const infoHeight = container.offsetHeight;
-    let top = window.innerHeight / 2 - infoHeight / 2;
-    let left = window.innerWidth / 2 - infoWidth / 2;
-
-    if (top < 0) top = 0;
-    if (left < 0) left = 0;
-
-    container.style.top = top + 'px';
-    container.style.left = left + 'px';
-
-    return ext;
-  }
-
   function destroy() {
     if (container.parentNode) {
       container.parentNode.removeChild(container);
@@ -101,13 +65,11 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
     container,
     body,
     title,
-    center,
     closeButton: close,
     destroy
   };
 
   size(width, height);
-  center();
 
   return ext;
 }

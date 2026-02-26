@@ -2,7 +2,7 @@
 
 /* Menu button icon */
 .highlighter-toggle {
-	color: var(--color-primary-light);
+	color: var(--color-primary);
 }
 
 .highlighter-toggle.active {
@@ -30,7 +30,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 6px 8px;
-	background: var(--color-menu-background);
+	background: var(--color-background);
 	border: 1px solid var(--color-border);
 	border-radius: 20px;
 	box-shadow: var(--shadow-popup);
@@ -51,7 +51,7 @@
 }
 
 .highlighter-palette .color-swatch.selected {
-	border-color: var(--color-text-dark);
+	border-color: var(--color-text);
 }
 
 .highlighter-palette .eraser {
@@ -72,18 +72,18 @@
 
 .highlighter-palette .eraser:hover {
 	transform: scale(1.2);
-	border-color: var(--color-error-dark);
-	color: var(--color-error-dark);
+	border-color: var(--color-error);
+	color: var(--color-error);
 }
 
-/* Dark theme adjustments */
-.theme-dark .highlighter-toggle.active,
-html.dark .highlighter-toggle.active {
+/* Jabbok theme adjustments */
+.theme-jabbok .highlighter-toggle.active,
+html.jabbok .highlighter-toggle.active {
 	background-color: var(--color-highlight);
 }
 
-/* Earthsong theme adjustments */
-.theme-earthsong .highlighter-toggle.active,
-html.earthsong .highlighter-toggle.active {
+/* Shiloh theme adjustments */
+.theme-shiloh .highlighter-toggle.active,
+html.shiloh .highlighter-toggle.active {
 	background-color: var(--color-highlight);
 }

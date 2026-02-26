@@ -214,9 +214,12 @@ export class TextWindowComponent extends BaseWindow {
       }
     }
 
-    // Position the info panel relative to this window (popover is in top layer)
-    const containerLeft = this.refs.container.getBoundingClientRect().left;
-    this.refs.info.style.left = `${containerLeft}px`;
+    // Position the info panel to fill this window (popover is in top layer)
+    const rect = this.refs.container.getBoundingClientRect();
+    this.refs.info.style.top = `${rect.top}px`;
+    this.refs.info.style.left = `${rect.left}px`;
+    this.refs.info.style.width = `${rect.width}px`;
+    this.refs.info.style.height = `${rect.height}px`;
 
     this.refs.info.showPopover();
   }

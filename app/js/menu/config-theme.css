@@ -1,196 +1,55 @@
+#config-themes {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding: 0.5rem 0;
+}
 
 .config-theme-toggle {
-	display: inline-block;
-	width: 70px;
-	padding: 6px;
-	margin: 10px 10px 0 0;
-	border: solid 1px var(--color-border-dark);
-	font-size: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding: 0.4rem 0.6rem;
+	border: 1.5px solid var(--color-border);
+	border-radius: 6px;
+	font-size: 11px;
 	text-align: center;
-	overflow: hidden;
-	white-space: nowrap;
 	cursor: pointer;
+	transition: all 0.2s ease;
 }
+
 .config-theme-toggle:hover {
 	border-color: var(--color-primary);
 }
 
 .config-theme-toggle-selected {
-	border: solid 2px var(--color-primary);
+	border-width: 2px;
+	border-color: var(--color-primary);
 }
-
 
 #config-theme-default {
 	background-color: oklch(1 0 0);
 	color: oklch(0.1776 0 0);
 }
 
-#config-theme-earthsong {
-	background-color: oklch(0.3167 0.0113 67.4);
-	color: oklch(0.8756 0.0454 67.2);
+#config-theme-shiloh {
+	background-color: #36312C;
+	color: #EBD1B7;
 }
 
-#config-theme-dark {
+#config-theme-jabbok {
 	background-color: oklch(0.1776 0 0);
 	color: oklch(1 0 0);
+}
+
+#config-theme-gethsemane {
+	background-color: #1a1b26;
+	color: #7aa2f7;
 }
 
 #config-theme-auto {
 	background: linear-gradient(135deg, oklch(1 0 0) 50%, oklch(0.1776 0 0) 50%);
 	color: oklch(0.5103 0 0);
-}
-
-
-
-
-.theme-earthsong .window {
-	border-right-color: var(--color-border);
-}
-
-.theme-earthsong .window .scroller-main,
-.theme-earthsong .window .search-main,
-.theme-earthsong .window .window-main {
-	background-color: var(--color-background);
-	color: var(--color-text);
-}
-
-
-.theme-dark .window,
-.theme-earthsong .window {
-	border-right: solid 1px var(--color-border-dark);
-	background-color: var(--color-border-dark);
-}
-
-.theme-dark .window .scroller-main,
-.theme-dark .window .search-main,
-.theme-dark .window .window-main,
-.theme-earthsong .window .scroller-main,
-.theme-earthsong .window .search-main,
-.theme-earthsong .window .window-main {
-	background: var(--color-background);
-	color: var(--color-text);
-}
-
-.theme-dark .window .window-header,
-.theme-dark .window .window-footer,
-.theme-earthsong .window .window-header,
-.theme-earthsong .window .window-footer {
-	background: var(--color-header-background);
-	border-bottom: solid 1px var(--color-border);
-	color: var(--color-text);
-}
-
-.theme-dark .window-tab-label,
-.theme-earthsong .window-tab-label {
-	color: var(--color-text);
-}
-.theme-dark .window-tab-inner,
-.theme-earthsong .window-tab-inner {
-	border-color: transparent transparent var(--color-border) transparent;
-}
-.theme-dark .window-tab.active .window-tab-inner,
-.theme-earthsong .window-tab.active .window-tab-inner {
-	border-color: transparent transparent var(--color-header-background) transparent;
-}
-
-.theme-dark .close-container,
-.theme-earthsong .close-container {
-	background: var(--color-header-background);
-}
-
-.theme-dark .scroller-info,
-.theme-earthsong .scroller-info {
-	background: var(--color-background);
-	color: var(--color-text);
-	box-shadow: 0 0 30px var(--color-background-alt) inset;
-}
-
-.theme-dark .v-num,
-.theme-dark .verse-num,
-.theme-earthsong .v-num,
-.theme-earthsong .verse-num {
-	color: var(--color-verse-number);
-}
-
-.theme-dark .selected-verse,
-.theme-earthsong .selected-verse {
-	background: var(--color-selection-background);
-}
-
-.theme-dark .info-window,
-.theme-earthsong .info-window {
-	color: var(--color-text);
-	background: var(--color-background-active);
-	border: solid 1px var(--color-background);
-	box-shadow: var(--shadow-popup);
-}
-
-.theme-dark .window .window-header .header-input,
-.theme-dark .window .window-header .header-list,
-.theme-earthsong .window .window-header .header-input,
-.theme-earthsong .window .window-header .header-list {
-	background-color: var(--color-input-background);
-	border: solid 1px var(--color-input-border);
-}
-
-.compact-ui .theme-dark .window .window-header .header-input,
-.compact-ui .theme-dark .window .window-header .header-list,
-.compact-ui .theme-earthsong .window .window-header .header-input,
-.compact-ui .theme-earthsong .window .window-header .header-list {
-	background-color: transparent;
-	border: solid 1px transparent;
-}
-
-.theme-dark #main-search-input,
-.theme-earthsong #main-search-input {
-	background-color: var(--color-input-background);
-	border: solid 1px var(--color-input-border);
-}
-
-.theme-dark .window-overlay,
-.theme-earthsong .window-overlay {
-	color: var(--color-text);
-	background: var(--color-background-active);
-	border: solid 1px var(--color-background);
-	box-shadow: var(--shadow-popup);
-}
-
-.theme-dark .image-library-thumbs li a,
-.theme-earthsong .image-library-thumbs li a {
-	color: var(--color-border);
-}
-
-.theme-dark .inline-icon,
-.theme-earthsong .inline-icon {
-	background-color: var(--color-border);
-}
-
-.theme-dark .search-result-book-bar span,
-.theme-earthsong .search-result-book-bar span {
-	border-right-color: var(--color-background);
-}
-
-.theme-dark .search-wrapper table tr:hover,
-.theme-earthsong .search-wrapper table tr:hover {
-	background-color: var(--color-background-hover);
-}
-
-.theme-dark .highlight,
-.theme-earthsong .highlight {
-	background-color: var(--color-highlight);
-}
-
-.theme-dark h3.is1,
-.theme-dark div.s,
-.theme-dark div.is1,
-.theme-earthsong h3.is1,
-.theme-earthsong div.s,
-.theme-earthsong div.is1 {
-	color: var(--color-text);
-}
-
-.theme-dark .comparison-main,
-.theme-earthsong .comparison-main {
-	background: var(--color-background);
-	color: var(--color-text);
 }

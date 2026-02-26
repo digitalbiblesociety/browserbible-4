@@ -1,21 +1,52 @@
-.config-font-family {
-	display: inline-block;
-	margin-right: 7px;
+.config-font-families {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding: 0.5rem 0;
 }
 
+.config-font-family {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding: 0.4rem 0.6rem;
+	border: 1.5px solid var(--color-border);
+	background: var(--color-background);
+	color: var(--color-text-muted);
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: 1.1rem;
+	font-weight: 500;
+	line-height: 1;
+}
 
-#config-font-family-Libertine {
+.config-font-family input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.config-font-family:hover {
+	background: var(--color-background-hover);
+	border-color: var(--color-primary);
+}
+
+.config-font-family:has(input:checked) {
+	background: var(--color-primary);
+	border-color: var(--color-primary);
+	color: var(--color-background);
+}
+
+#config-font-family-libertine {
 	font-family: "Linux Libertine";
 }
 
-.config-font-family-Libertine .section,
-.config-font-family-Libertine #font-size-table {
+.config-font-family-libertine .section,
+.config-font-family-libertine #font-size-table {
 	font-family: Libertine;
 	font-variant-ligatures: common-ligatures discretionary-ligatures contextual;
-	-moz-font-feature-settings: "onum=1, zero=1, liga=1, dlig=1, clig=1, salt=1, ss02=1";
-	-moz-font-feature-settings: "onum" 1, "zero" 1, "liga" 1, "dlig" 1, "clig" 1, "salt" 1, "ss02" 1;
-	-ms-font-feature-settings: "onum" 1, "zero" 1, "liga" 1, "dlig" 1, "clig" 1, "salt" 1, "ss02" 1;
-	-o-font-feature-settings: "onum" 1, "zero" 1, "liga" 1, "dlig" 1, "clig" 1, "salt" 1, "ss02" 1;
-	-webkit-font-feature-settings: "onum" 1, "zero" 1, "liga" 1, "dlig" 1, "clig" 1, "salt" 1, "ss02" 1;
 	font-feature-settings: "onum" 1, "zero" 1, "liga" 1, "dlig" 1, "clig" 1, "salt" 1, "ss02" 1;
 }

@@ -13,8 +13,9 @@
       "reset": "リセット",
       "themes": {
         "default": "通常の",
-        "earthsong": "Earthsong",
-        "dark": "微光"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "約",

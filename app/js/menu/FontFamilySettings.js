@@ -69,11 +69,13 @@ export function FontFamilySettings(_parentNode, _menu) {
     return;
   }
 
-  body?.insertAdjacentHTML('beforeend', fontSettingHtml);
+  const fontFamiliesContainer = elem('div', { className: 'config-font-families' });
+  fontFamiliesContainer.innerHTML = fontSettingHtml;
+  body?.appendChild(fontFamiliesContainer);
 
   // handle clicks using event delegation
-  if (body) {
-    body.addEventListener('change', (e) => {
+  if (fontFamiliesContainer) {
+    fontFamiliesContainer.addEventListener('change', (e) => {
       const target = e.target.closest('input[name=config-font-family]');
       if (target) {
         const newFontFamilyValue = target.value;
@@ -83,7 +85,7 @@ export function FontFamilySettings(_parentNode, _menu) {
   }
 
   // set default
-  const defaultRadio = body ? body.querySelector(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`) : null;
+  const defaultRadio = fontFamiliesContainer.querySelector(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`);
   defaultRadio?.click();
 }
 

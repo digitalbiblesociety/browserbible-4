@@ -3,7 +3,7 @@
 	bottom: 0;
 	left: 0;
 	width: 100%;
-	background: var(--color-header-background);
+	background: var(--color-background-alt);
 	border-top: solid 1px var(--color-border);
 	padding: 5px;
 	height: 60px;
@@ -60,7 +60,7 @@
 .audio-controller .audio-prev,
 .audio-controller .audio-next {
 	border: none;
-	background-color: var(--color-button-background);
+	background-color: var(--color-background-alt);
 	border-radius: 50px;
 	text-indent: -9999px;
 	background-position: center center;
@@ -72,7 +72,7 @@
 .audio-controller .audio-play:hover,
 .audio-controller .audio-prev:hover,
 .audio-controller .audio-next:hover {
-	background-color: var(--color-button-hover-background);
+	background-color: var(--color-background-active);
 	cursor: pointer;
 }
 
@@ -156,7 +156,7 @@
 	top: 35px;
 	left: 34px;
 	font-size: 90%;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 }
 
 .audio-controller .audio-options-button {
@@ -183,7 +183,7 @@
 }
 
 .audio-controller .audio-slider {
-	background: var(--color-scrollbar-track);
+	background: var(--color-background-alt);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -203,7 +203,7 @@
 }
 
 .audio-controller .audio-slider .audio-slider-loaded {
-	background: var(--color-primary-light);
+	background: var(--color-primary);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -213,10 +213,10 @@
 .audio-controller .audio-slider .audio-slider-handle {
 	display: block;
 	border-radius: 2px;
-	border: solid 1px var(--color-border-dark);
+	border: solid 1px var(--color-border);
 	width: 16px;
 	height: 14px;
-	background: var(--color-scrollbar-thumb);
+	background: var(--color-border);
 	position: absolute;
 	top: -2px;
 	left: 0;

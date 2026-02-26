@@ -55,7 +55,7 @@
 
 .search-wrapper table tr:hover {
 	cursor: pointer;
-	background-color: var(--color-primary-light);
+	background-color: var(--color-background-hover);
 }
 
 
@@ -70,7 +70,7 @@
 
 .search-visual {
 	height: 42px;
-	border-bottom: solid 1px var(--color-border-dark);
+	border-bottom: solid 1px var(--color-border);
 	padding: 0 5px;
 	margin-bottom: 25px;
 	margin-top: 20px;
@@ -112,12 +112,12 @@
 	background: var(--color-background);
 	font-size: 80%;
 	box-shadow: var(--shadow-popup);
-	border: 1px solid var(--color-border, #ccc);
+	border: 1px solid var(--color-border);
 	margin: 0;
 	inset: auto;
 }
 .search-division-chooser .search-division-header {
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	background: var(--color-background-active);
 	padding: 8px;
 	font-weight: bold;
@@ -279,7 +279,7 @@
 	font-size: .7em;
 	top: 0;
 	padding: 3px;
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	text-align: right;
 }
 

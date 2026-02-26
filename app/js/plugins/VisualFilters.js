@@ -671,7 +671,6 @@ export function VisualFilters(app) {
 
   openVisualizationsButton.addEventListener('click', () => {
     filtersWindow.show();
-    filtersWindow.center();
 
     // Close the config window popover when opening visual filters
     const configWindow = document.querySelector('#config-window');

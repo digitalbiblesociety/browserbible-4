@@ -1,6 +1,6 @@
 .selected-lemma {
-	background: var(--color-lemma-match);
-	color: var(--color-text-inverse);
+	background: var(--color-primary);
+	color: var(--color-background);
 }
 
 .lemma-word {

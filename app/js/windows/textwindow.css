@@ -22,7 +22,7 @@
 
 .window .scroller-info {
 	position: absolute;
-	left: 0;
+	inset: unset;
 	background: var(--color-background);
 	border: none;
 	border-radius: 0;
@@ -68,7 +68,7 @@
 	border: none;
 	font-size: 24px;
 	line-height: 1;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 	cursor: pointer;
 	padding: 0;
 	width: 28px;
@@ -131,7 +131,7 @@
 }
 
 .window .scroller-info-content a {
-	color: var(--color-link, #0066cc);
+	color: var(--color-primary);
 	text-decoration: none;
 }
 
@@ -143,7 +143,7 @@
 .window .scroller-info-empty {
 	text-align: center;
 	padding: 40px 20px;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 }
 
 .window .scroller-info-empty p {
@@ -161,7 +161,7 @@
 .window .scroller-info-content .loading-indicator {
 	text-align: center;
 	padding: 40px 20px;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 	font-style: italic;
 }
 

@@ -13,7 +13,7 @@
 	vertical-align: middle;
 	-webkit-appearance: none;
 	border-radius: 0;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text);
 }
 
@@ -29,7 +29,7 @@
 	vertical-align: middle;
 	border-width: 1px 1px 1px 0;
 	border: 0;
-	background: var(--color-header-icon-primary) url(../../css/images/search-button.svg) center center no-repeat;
+	background: var(--color-primary) url(../../css/images/search-button.svg) center center no-repeat;
 	appearance: none;
 	border-radius: 0;
 }
@@ -58,12 +58,12 @@
 }
 
 .suggestion-item:hover {
-	background-color: var(--color-primary-light);
+	background-color: var(--color-background-hover);
 }
 
 .suggestion-item.selected {
 	background-color: var(--color-primary);
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 }
 
 

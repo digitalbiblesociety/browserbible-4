@@ -13,8 +13,9 @@
       "reset": "إعادة ضبط",
       "themes": {
         "default": "افتراضي",
-        "earthsong": "Earthsong",
-        "dark": "خلفيفة غامقة"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "حول",

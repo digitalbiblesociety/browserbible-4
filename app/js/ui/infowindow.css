@@ -7,7 +7,7 @@
 	top: 100px;
 	left: 100px;
 	font-size: 14px;
-	color: var(--color-text-dark);
+	color: var(--color-text);
 	font-family: var(--font-family-sans);
 	padding: 15px 0 15px 15px;
 }
@@ -38,5 +38,5 @@
 .info-window .close-button:hover {
 	background-color: var(--color-error);
 	background-position: 0 -20px;
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 }

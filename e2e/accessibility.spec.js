@@ -260,8 +260,8 @@ test.describe('Accessibility - Color and Contrast', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(500);
 
     // Verify text is still readable

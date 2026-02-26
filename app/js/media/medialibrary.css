@@ -62,17 +62,17 @@
 .image-library-thumbs li a {
 	display: block;
 	text-decoration: none;
-	color: #333;
+	color: var(--color-text);
 	line-height: 1;
 	position: relative;
 }
 
 .image-library-thumbs li a:hover {
-	color: #28e;
+	color: var(--color-primary);
 }
 
 .image-library-thumbs li a:hover img {
-	border: solid 2px #28e;
+	border: solid 2px var(--color-primary);
 }
 
 .image-library-thumbs li {

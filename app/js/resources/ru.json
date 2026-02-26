@@ -13,8 +13,9 @@
       "reset": "сброс",
       "themes": {
         "default": "Нормальный",
-        "earthsong": "Earthsong",
-        "dark": "Низкая освещенность"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "О",

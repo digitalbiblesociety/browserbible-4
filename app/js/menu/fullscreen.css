@@ -2,7 +2,7 @@
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	color: var(--color-header-icon);
+	color: oklch(1 0 0);
 }
 #main-fullscreen-button svg {
 	width: 100%;

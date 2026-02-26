@@ -21,15 +21,15 @@ test.describe('Data Persistence - Settings Storage', () => {
     await page.waitForTimeout(500);
 
     // Switch to dark theme
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(1000); // Wait for settings to be saved
 
     // Verify theme changed in DOM (this is the key verification)
-    const hasDarkClass = await page.evaluate(() => {
-      return document.body.classList.contains('theme-dark');
+    const hasJabbokClass = await page.evaluate(() => {
+      return document.body.classList.contains('theme-jabbok');
     });
-    expect(hasDarkClass).toBe(true);
+    expect(hasJabbokClass).toBe(true);
 
     // Verify localStorage is functional (settings may be saved on delay or on window close)
     const localStorageWorks = await page.evaluate(() => {
@@ -57,8 +57,8 @@ test.describe('Data Persistence - Settings Storage', () => {
     await settingsButton.click();
     await page.waitForTimeout(500);
 
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(500);
 
     // Close settings
@@ -73,13 +73,13 @@ test.describe('Data Persistence - Settings Storage', () => {
     await page.waitForSelector('.chapter', { timeout: 30000 });
     await page.waitForTimeout(1000);
 
-    // Verify theme persisted (theme class is 'theme-dark')
-    const isDarkTheme = await page.evaluate(() => {
-      return document.body.classList.contains('theme-dark') ||
-             document.documentElement.classList.contains('theme-dark');
+    // Verify theme persisted (theme class is 'theme-jabbok')
+    const isJabbokTheme = await page.evaluate(() => {
+      return document.body.classList.contains('theme-jabbok') ||
+             document.documentElement.classList.contains('theme-jabbok');
     });
 
-    expect(isDarkTheme).toBe(true);
+    expect(isJabbokTheme).toBe(true);
   });
 
   test('should save font size settings to localStorage', async ({ page }) => {
@@ -305,8 +305,8 @@ test.describe('Data Persistence - Settings Reset', () => {
     await page.waitForTimeout(500);
 
     // Change theme
-    const darkThemeButton = page.locator('#config-theme-dark');
-    await darkThemeButton.click();
+    const jabbokThemeButton = page.locator('#config-theme-jabbok');
+    await jabbokThemeButton.click();
     await page.waitForTimeout(500);
 
     // Clear localStorage and reload
@@ -316,12 +316,12 @@ test.describe('Data Persistence - Settings Reset', () => {
     await page.waitForTimeout(1000);
 
     // Verify defaults restored (light theme)
-    const isDarkTheme = await page.evaluate(() => {
+    const isJabbokTheme = await page.evaluate(() => {
       return document.documentElement.classList.contains('dark-theme') ||
              document.body.classList.contains('dark-theme');
     });
 
     // After clear, should be light theme (default)
-    expect(isDarkTheme).toBe(false);
+    expect(isJabbokTheme).toBe(false);
   });
 });

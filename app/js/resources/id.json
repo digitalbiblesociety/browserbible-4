@@ -13,8 +13,9 @@
       "reset": "ulang",
       "themes": {
         "default": "Normal",
-        "earthsong": "Earthsong",
-        "dark": "Cahaya Rendah"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "Tentang",

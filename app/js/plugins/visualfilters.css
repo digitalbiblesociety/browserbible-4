@@ -13,8 +13,8 @@
 
 
 #visualfilters-config input[type="button"] {
-	background: var(--color-button-primary-background);
-	color: var(--color-button-primary-text);
+	background: var(--color-primary);
+	color: var(--color-background);
 	border: none;
 	padding: var(--spacing-sm) var(--spacing-md);
 	border-radius: 4px;
@@ -25,7 +25,7 @@
 }
 
 #visualfilters-config input[type="button"]:hover {
-	background: var(--color-primary-hover);
+	background: var(--color-primary);
 }
 
 
@@ -40,13 +40,13 @@
 	font-size: var(--font-size-xs);
 	font-weight: normal;
 	color: var(--color-text-muted);
-	border-bottom: 1px solid var(--color-border-light);
+	border-bottom: 1px solid var(--color-border);
 }
 
 #visualfilters-config tbody td {
 	padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 0;
 	vertical-align: middle;
-	border-bottom: 1px solid var(--color-border-lighter);
+	border-bottom: 1px solid var(--color-border);
 }
 
 #visualfilters-config tbody tr:last-child td {
@@ -73,9 +73,9 @@
 .visualfilters-strongs input[type="text"] {
 	width: 90px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	transition: border-color var(--transition-fast);
@@ -83,11 +83,11 @@
 
 .visualfilters-strongs input[type="text"]:focus {
 	outline: none;
-	border-color: var(--color-input-focus-border);
+	border-color: var(--color-primary);
 }
 
 .visualfilters-strongs input[type="text"]::placeholder {
-	color: var(--color-input-placeholder);
+	color: var(--color-border);
 }
 
 
@@ -98,9 +98,9 @@
 .visualfilters-morph select {
 	width: 80px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	cursor: pointer;
@@ -109,15 +109,15 @@
 
 .visualfilters-morph select:focus {
 	outline: none;
-	border-color: var(--color-input-focus-border);
+	border-color: var(--color-primary);
 }
 
 .visualfilters-morph input[type="text"] {
 	width: 70px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	cursor: pointer;
@@ -125,7 +125,7 @@
 
 .visualfilters-morph input[type="text"]:focus {
 	outline: none;
-	border-color: var(--color-input-focus-border);
+	border-color: var(--color-primary);
 }
 
 
@@ -136,9 +136,9 @@
 .visualfilters-style .style-type {
 	width: 100px;
 	padding: 6px 8px;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	cursor: pointer;
@@ -147,16 +147,16 @@
 
 .visualfilters-style .style-type:focus {
 	outline: none;
-	border-color: var(--color-input-focus-border);
+	border-color: var(--color-primary);
 }
 
 .visualfilters-style .style-color {
 	width: 40px;
 	height: 32px;
 	padding: 2px;
-	border: 1px solid var(--color-input-border);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	background: var(--color-input-background);
+	background: var(--color-background);
 	cursor: pointer;
 	vertical-align: middle;
 }
@@ -183,6 +183,8 @@
 
 #visualfilters-config .close-button {
 	position: relative;
+	top: auto;
+	right: auto;
 	display: inline-block;
 	width: 20px;
 	height: 20px;
@@ -190,6 +192,7 @@
 	opacity: 0.5;
 	cursor: pointer;
 	transition: opacity var(--transition-fast);
+	vertical-align: middle;
 }
 
 #visualfilters-config .close-button:hover {
@@ -248,7 +251,7 @@
 
 .morph-selector tbody span.selected {
 	background: var(--color-primary);
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 }
 
 

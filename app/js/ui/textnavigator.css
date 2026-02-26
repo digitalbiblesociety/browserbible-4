@@ -92,18 +92,16 @@
 }
 
 .text-navigator .text-navigator-division-header {
-	clear: both;
-	height: 30px;
-	padding: 10px 0 0 5px;
+	padding: 10px 0;
+	color: var(--color-text-muted);
 	font-weight: bold;
 }
 
 .text-navigator .text-navigator-division {
-	float: left;
 	width: 38px;
 	height: 38px;
 	margin: 1px 1px 0 0;
-	-border: solid 1px transparent;
+	border: solid 1px transparent;
 	background: var(--color-background-alt);
 	color: var(--color-text);
 	text-align: center;
@@ -111,7 +109,6 @@
 	cursor: pointer;
 	border-style: solid;
 	border-width: 0 0 0 10px;
-
 }
 
 
@@ -211,7 +208,7 @@
 
 .text-navigator .text-navigator-section:hover,
 .text-navigator .text-navigator-section.selected {
-
+	background-color: var(--color-background-active);
 	font-weight: bold;
 }
 

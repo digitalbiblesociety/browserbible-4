@@ -36,6 +36,6 @@
 .audio-error-message {
 	font-size: 14px;
 	line-height: 1.6;
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 	max-width: 400px;
 }

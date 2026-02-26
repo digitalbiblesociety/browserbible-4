@@ -1,4 +1,3 @@
 .selected-verse {
-	background: #d9e8ef;
-
+	background: var(--color-background-hover);
 }

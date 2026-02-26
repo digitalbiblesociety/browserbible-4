@@ -12,13 +12,13 @@
 	display: inline-block;
 	margin: 0 10px 10px 0;
 	padding: 8px 10px;
-	background-color: #28e;
-	color: #fff;
+	background-color: var(--color-primary);
+	color: var(--color-background);
 	font-size: 90%;
 	cursor: pointer;
 	border: none;
 	font-size: 12px;
 }
 
-.feedback-body input[type="button"]:hover 	{background-color: #7af}
-.feedback-body .invalid 					{border-color: #f66;background: #fcc}
+.feedback-body input[type="button"]:hover 	{background-color: var(--color-primary)}
+.feedback-body .invalid 					{border-color: var(--color-error);background: var(--color-error)}

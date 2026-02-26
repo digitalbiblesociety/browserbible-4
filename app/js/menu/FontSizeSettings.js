@@ -42,17 +42,17 @@ export function FontSizeSettings(_parentNode, _menu) {
 
   const container = elem('div', {
     id: 'font-size-container',
-    style: { display: 'flex', alignItems: 'center', gap: '8px' }
+    className: 'font-size-control'
   });
-  const span1 = elem('span', { style: { fontSize: `${fontSizeMin}px` } }, 'A');
+  const span1 = elem('span', { className: 'font-size-icon font-size-small' }, 'A');
   const sliderWrapper = elem('div', { style: { flex: '1' } });
-  const span2 = elem('span', { style: { fontSize: `${fontSizeMax}px` } }, 'A');
+  const span2 = elem('span', { className: 'font-size-icon font-size-large' }, 'A');
   container.append(span1, sliderWrapper, span2);
   body?.appendChild(container);
 
-  // HTML5 range control (IE10+, FF35+)
   const rangeInput = elem('input', {
     type: 'range',
+    className: 'settings-slider',
     min: fontSizeMin,
     max: fontSizeMax,
     step: fontSizeStep,

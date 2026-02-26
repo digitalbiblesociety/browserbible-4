@@ -3,7 +3,7 @@
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	color: var(--color-header-icon);
+	color: oklch(1 0 0);
 }
 
 #main-forward-button svg,
@@ -14,7 +14,7 @@
 
 #main-back-button.inactive,
 #main-forward-button.inactive  {
-	color: var(--color-header-icon-inactive);
+	color: oklch(1 0 0);
 	opacity: 0.5;
 	cursor: inherit;
 }
@@ -33,7 +33,7 @@
 	left: 0;
 	width: 100%;
 	background: var(--color-primary);
-	color: var(--color-text-inverse);
+	color: var(--color-background);
 	z-index: 1000;
 	cursor: pointer;
 }

@@ -13,8 +13,9 @@
       "reset": "restabelecer",
       "themes": {
         "default": "Normal",
-        "earthsong": "Earthsong",
-        "dark": "Low Light"
+        "shiloh": "Shiloh",
+        "jabbok": "Jabbok",
+        "gethsemane": "Gethsemane"
       },
       "labels": {
         "about": "Sobre",

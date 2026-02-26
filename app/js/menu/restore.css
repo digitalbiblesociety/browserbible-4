@@ -15,5 +15,5 @@
 }
 
 .window-reset:hover {
-	color: #0071ff;
+	color: var(--color-primary);
 }
