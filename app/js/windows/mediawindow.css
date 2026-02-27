@@ -209,7 +209,7 @@
 	bottom: 5px;
 	right: 5px;
 	color: var(--color-background);
-	font-family: arial;
+	font-family: var(--font-family-sans);
 	font-size: 10px;
 	text-shadow: 0 0 1px #000;
 	text-align: right;
@@ -217,16 +217,17 @@
 
 
 .media-library-thumbs b {
-	display: block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 40px;
 	height: 40px;
 	border-radius: 20px;
-	margin-left: -20px;
-	margin-top: -20px;
+	position: absolute;
 	top: 50%;
 	left: 50%;
-	position: absolute;
-	background: rgba(0,0,0,0.7);
+	translate: -50% -50%;
+	background: oklch(0 0 0 / 0.7);
 }
 
 .media-library-thumbs a:hover b {
@@ -235,16 +236,12 @@
 
 
 .media-library-thumbs b i {
-	width: 1px;
-	height: 1px;
-	background: transparent;
+	width: 0;
+	height: 0;
 	border-style: solid;
-	border-color: transparent transparent transparent rgba(255,255,255,1);
+	border-color: transparent transparent transparent oklch(1 0 0);
 	border-width: 8px 0 8px 13px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin: -8px 0 0 -5px;
+	margin-left: 2px;
 }
 
 

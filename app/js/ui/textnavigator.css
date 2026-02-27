@@ -4,7 +4,7 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	z-index: 100;
+	z-index: var(--z-popover);
 	background: var(--color-background);
 	padding: 0;
 	font-family: var(--font-family-sans);
@@ -41,13 +41,13 @@
 }
 
 .text-navigator::before {
-	z-index: 101;
+	z-index: var(--z-base);
 	top: -11px;
 	border-bottom: 10px solid var(--color-border);
 }
 
 .text-navigator::after {
-	z-index: 102;
+	z-index: var(--z-above);
 	border-bottom: 10px solid var(--color-background-active);
 }
 
@@ -68,7 +68,6 @@
 .text-navigator .text-navigator-divisions,
 .text-navigator .text-navigator-sections {
 	overflow: auto;
-	-webkit-overflow-scrolling: touch;
 	padding: 4px;
 }
 
@@ -91,6 +90,7 @@
 	overflow: hidden;
 	display: flex;
 	flex-wrap: wrap;
+	gap: 1px;
 }
 
 .text-navigator .text-navigator-division-header {
@@ -110,16 +110,17 @@
 	padding: 10px 0 0;
 	cursor: pointer;
 	border-style: solid;
-	border-width: 0 0 0 10px;
+	border-width: 0;
+	border-inline-start-width: 10px;
 }
 
 
 .text-navigator .text-navigator-division.selected {
 	width: auto;
 	height: auto;
-	text-align: left;
+	text-align: start;
 	margin: 1px 0;
-	padding-left: 4px;
+	padding-inline-start: 4px;
 }
 .text-navigator .text-navigator-division.selected > span  {
 	font-weight: bold;
@@ -136,21 +137,21 @@
 
 .text-navigator-divisions-full .text-navigator-division {
 	display: block;
-	text-align: left;
+	text-align: start;
 	width: auto;
 	min-height: 30px;
 	height: auto;
 	overflow: auto;
-	padding: 5px 0 0 10px;
+	padding: 5px 0 0;
+	padding-inline-start: 10px;
 }
 .text-navigator-divisions-full  .text-navigator-division.selected {
-	padding: 5px 0 0 10px;
+	padding: 5px 0 0;
+	padding-inline-start: 10px;
 }
 
 .text-navigator-divisions-full[dir=rtl] .text-navigator-division {
-	text-align: right;
-	border-width: 0 5px 0 0;
-	padding: 5px 10px 0 0;
+	border-inline-start-width: 5px;
 }
 
 
@@ -162,13 +163,13 @@
 	content: attr(data-name);
 	position: absolute;
 	top: -1px;
-	left: 0;
-	z-index: 110;
+	inset-inline-start: 0;
+	z-index: var(--z-chrome);
 	height: 38px;
 	border: solid 1px var(--color-border);
 	background: inherit;
 	color: var(--color-text);
-	text-align: left;
+	text-align: start;
 	padding: 10px 10px 0;
 	pointer-events: none;
 	font-size: 14px;
@@ -196,7 +197,6 @@
 .text-navigator .text-navigator-section {
 	width: 36px;
 	height: 36px;
-	margin: 1px 1px 0 0;
 	color: var(--color-text);
 	text-align: center;
 	padding: 10px 0 0;

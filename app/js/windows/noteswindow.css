@@ -28,8 +28,8 @@ notes-window .notes-download-menu {
 	left: 0;
 	background: var(--color-background);
 	border: 1px solid var(--color-border);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	z-index: 1000;
+	box-shadow: var(--shadow-popup);
+	z-index: var(--z-menu);
 	min-width: 180px;
 	border-radius: 4px;
 	overflow: hidden;
@@ -61,8 +61,8 @@ notes-window .notes-print-menu {
 	left: 0;
 	background: var(--color-background);
 	border: 1px solid var(--color-border);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	z-index: 1000;
+	box-shadow: var(--shadow-popup);
+	z-index: var(--z-menu);
 	min-width: 180px;
 	border-radius: 4px;
 	overflow: hidden;
@@ -111,16 +111,14 @@ notes-window .notes-search {
 notes-window .notes-search-suggestions {
 	display: none;
 	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
+	inset: 100% 0 auto;
 	background: var(--color-background);
 	border: 1px solid var(--color-border);
 	border-top: none;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-popup);
 	max-height: 200px;
 	overflow-y: auto;
-	z-index: 1000;
+	z-index: var(--z-menu);
 }
 
 notes-window .notes-search-suggestions.visible {
@@ -199,8 +197,7 @@ notes-window .notes-sidebar-header .notes-filter {
     appearance: none;
     height: 30px;
     border-radius: 0;
-    display: inline-block;
-    vertical-align: top;
+    display: block;
 	position: relative;
 }
 

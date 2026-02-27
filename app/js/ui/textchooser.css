@@ -1,6 +1,6 @@
 .text-chooser {
 	position: absolute;
-	z-index: 100;
+	z-index: var(--z-popover);
 	background: var(--color-background);
 	font-family: var(--font-family-sans);
 	width: 320px;
@@ -39,14 +39,14 @@
 	position: absolute;
 	left: 18px;
 	top: 50%;
-	transform: translateY(-50%);
+	translate: 0 -50%;
 	width: 18px;
 	height: 18px;
 	background-color: var(--color-text-muted);
 	mask-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='11' cy='11' r='8'%3e%3c/circle%3e%3cpath d='m21 21-4.35-4.35'%3e%3c/path%3e%3c/svg%3e");
 	mask-size: contain;
 	mask-repeat: no-repeat;
-	z-index: 1;
+	z-index: var(--z-base);
 	pointer-events: none;
 }
 .text-chooser .text-chooser-filter-text {
@@ -91,7 +91,6 @@
 	min-height: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	-webkit-overflow-scrolling: touch;
 	border: solid 1px var(--color-border);
 	contain: strict;
 	will-change: scroll-position;
@@ -223,7 +222,6 @@ table.collapsible .text-chooser-row-header.collapsed td::after {
 	width: 6px;
 	height: 10px;
 	mask-image: url(../../css/images/arrow-right.svg);
-	-webkit-mask-image: url(../../css/images/arrow-right.svg);
 }
 
 

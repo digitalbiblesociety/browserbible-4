@@ -1,6 +1,4 @@
 * {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -33,17 +31,17 @@ input:focus {
 	width: 40px;
 	height: 40px;
 	background: var(--color-background-alt);
-	z-index: 10;
+	z-index: var(--z-chrome);
 }
 .compact-ui .close-container {
 	height: 39px;
 }
 
 .close-button {
-	font-family: arial;
+	font-family: var(--font-family-sans);
 	font-size: 15px;
 	position: absolute;
-	z-index: 10;
+	z-index: var(--z-chrome);
 	top: 15px;
 	right: 10px;
 	cursor: pointer;
@@ -92,7 +90,7 @@ input:focus {
 	width: 8px;
 	background: transparent;
 	cursor: col-resize;
-	z-index: 100;
+	z-index: var(--z-popover);
 	user-select: none;
 }
 
@@ -116,7 +114,7 @@ input:focus {
 	border-style: solid;
 	border-color: transparent transparent var(--color-border) transparent;
 	border-width: 0 11px 21px 11px;
-	z-index: 1;
+	z-index: var(--z-base);
 	cursor: pointer;
 }
 
@@ -131,7 +129,7 @@ input:focus {
 	border-width: 0 10px 25px 10px;
 }
 
-.window-tab.active {z-index: 2;border-color: transparent transparent transparent transparent;}
+.window-tab.active {z-index: var(--z-above);border-color: transparent transparent transparent transparent;}
 .window-tab.active .window-tab-inner {border-color: transparent transparent var(--color-background-alt) transparent;}
 
 .window-tab-label {
@@ -165,7 +163,7 @@ input:focus {
 	background: var(--color-background-alt);
 	border-bottom: solid 1px var(--color-border);
 	height: 50px;
-	z-index: 1;
+	z-index: var(--z-base);
 	font-family: var(--font-family-sans);
 	font-size: 12px;
 	white-space: nowrap;
@@ -185,8 +183,7 @@ input:focus {
 	background: var(--color-background);
 	margin: 0 5px 0 0;
 	color: var(--color-text-muted);
-	-webkit-appearance: none;
-	-moz-appearance: none;
+	appearance: none;
 	height: 30px;
 	border-radius: 0;
 	display: inline-block;
@@ -223,16 +220,13 @@ input:focus {
 	position: absolute;
 	right: 4px;
 	top: 50%;
-	transform: translateY(-50%);
+	translate: 0 -50%;
 	width: 10px;
 	height: 6px;
 	background-color: currentColor;
 	mask-image: url(images/arrow-down.svg);
 	mask-size: contain;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url(images/arrow-down.svg);
-	-webkit-mask-size: contain;
-	-webkit-mask-repeat: no-repeat;
 	opacity: 0.6;
 }
 
@@ -262,12 +256,6 @@ input:focus {
 	border-radius: 20px;
 }
 
-.info-button {
-}
-
-.audio-button {
-}
-
 .window .window-header .header-button {
 	padding: 8px 4px 6px 4px;
 	background: transparent;
@@ -292,12 +280,12 @@ input:focus {
 		display: block;
 	}
 	.compact-ui .windows-main .window {
-		z-index: 1;
+		z-index: var(--z-base);
 		position: absolute;
 		top: 40px;
 	}
 	.compact-ui .windows-main .window.active {
-		z-index: 2;
+		z-index: var(--z-above);
 	}
 	.compact-ui .window .window-header .app-input {
 		width: 90px;
@@ -368,11 +356,8 @@ input:focus {
 	border: solid 1px var(--color-border);
 	box-shadow: var(--shadow-popup);
 	display: none;
-	z-index: 50;
+	z-index: var(--z-overlay);
 	overflow: auto;
-}
-
-#about {
 }
 
 #about h1 {
@@ -394,7 +379,7 @@ input:focus {
 .modal-overlay {
 	background: oklch(0 0 0 / 0.5);
 	position: absolute;
-	z-index: 10;
+	z-index: var(--z-chrome);
 	top: 0;
 	left: 0;
 	display: none;

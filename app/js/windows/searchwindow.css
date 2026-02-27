@@ -7,7 +7,6 @@
 .search-main {
 	background: var(--color-background);
 	overflow: auto;
-	-webkit-overflow-scrolling: touch;
 }
 
 .search-main .loading-indicator {
@@ -26,7 +25,7 @@
 .search-top {
 	position: sticky;
 	top: -10px;
-	z-index: 1;
+	z-index: var(--z-base);
 	background: var(--color-background);
 	padding-top: 10px;
 }
@@ -80,7 +79,7 @@
 .search-visual-label {
 	position: absolute;
 	font-size: 10px;
-	z-index: 1000;
+	z-index: var(--z-menu);
 	min-width: 50px;
 	height: 20px;
 	display: none;
@@ -101,9 +100,6 @@
 	display: block;
 	background: var(--color-border);
 	border-right: solid 1px var(--color-background);
-}
-
-.search-options-button {
 }
 
 .search-division-chooser {

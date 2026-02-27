@@ -1,15 +1,13 @@
 .audio-controller {
 	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
+	inset: auto 0 0 0;
 	background: var(--color-background-alt);
 	border-top: solid 1px var(--color-border);
 	padding: 5px;
 	height: 60px;
-	font-family: Avenir, Helvetica, Arial;
+	font-family: var(--font-family-sans);
 	font-size: 12px;
-	z-index: 3; 
+	z-index: var(--z-panel);
 }
 
 .audio-window-container .audio-controller {
@@ -33,9 +31,9 @@
 	padding: 10px;
 	height: 100px;
 	box-shadow: var(--shadow-popup);
-	font-family: Avenir, Helvetica, Arial;
+	font-family: var(--font-family-sans);
 	font-size: 12px;
-	z-index: 4;
+	z-index: var(--z-panel-above);
 }
 
 .audio-options label {
@@ -43,12 +41,9 @@
 }
 
 .audio-options .audio-dramatic-option {
+	display: flex;
+	gap: 10px;
 	margin-top: 5px;
-}
-
-.audio-options .audio-dramatic-option label {
-	display: inline-block;
-	margin-right: 10px;
 }
 
 .audio-options .close-button {
@@ -62,7 +57,9 @@
 	border: none;
 	background-color: var(--color-background-alt);
 	border-radius: 50px;
-	text-indent: -9999px;
+	overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
 	background-position: center center;
 	background-repeat: no-repeat;
 	position: absolute;
@@ -81,36 +78,30 @@
 	width: 40px;
 	height: 40px;
 	top: 15px;
-	margin-left: -20px;
+	translate: -50% 0;
 }
 
 .audio-window-container .audio-controller .audio-play {
 	width: 100px;
 	height: 100px;
-	margin-left: -50px;
+	translate: -50% 0;
 	top: 40px;
 }
 
-.audio-controller .audio-play.playing {
-}
-
-.audio-window-container .audio-controller .audio-play.playing {
-}
 
 .audio-controller .audio-prev,
 .audio-controller .audio-next {
 	width: 30px;
 	height: 30px;
-	margin-left: 5px;
 	top: 20px;
 }
 
 .audio-controller .audio-prev {
-	margin-left: -52px;
+	left: calc(50% - 52px);
 }
 
 .audio-controller .audio-next {
-	margin-left: 24px;
+	left: calc(50% + 24px);
 }
 
 .audio-window-container .audio-controller .audio-prev,
@@ -121,11 +112,11 @@
 	top: 40px;
 }
 .audio-window-container .audio-controller .audio-prev {
-	margin-left: -114px;
+	left: calc(50% - 114px);
 }
 
 .audio-window-container .audio-controller .audio-next {
-	margin-left: 54px;
+	left: calc(50% + 54px);
 }
 
 .audio-controller .audio-currenttime,
@@ -169,9 +160,9 @@
 	cursor: pointer;
 }
 
-.audio-controller .audio-play svg { width: 25px; height: 25px; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); }
+.audio-controller .audio-play svg { width: 25px; height: 25px; position: absolute; left: 8px; top: 50%; translate: 0 -50%; }
 .audio-window-container .audio-controller .audio-play svg { width: 70px; height: 70px; left: 15px; }
-.audio-controller .audio-prev svg, .audio-controller .audio-next svg { width: 15px; height: 15px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.audio-controller .audio-prev svg, .audio-controller .audio-next svg { width: 15px; height: 15px; position: absolute; top: 50%; left: 50%; translate: -50% -50%; }
 .audio-window-container .audio-controller .audio-prev svg, .audio-window-container .audio-controller .audio-next svg { width: 30px; height: 30px; }
 .audio-controller .audio-options-button svg { width: 20px; height: 20px; }
 
@@ -185,13 +176,8 @@
 .audio-controller .audio-slider {
 	background: var(--color-background-alt);
 	position: absolute;
-	top: 0;
-	left: 0;
+	inset: 0 0 auto;
 	height: 10px;
-	width: 100%;
-}
-.audio-window-container .audio-slider {
-
 }
 
 .audio-controller .audio-slider .audio-slider-current {
@@ -220,6 +206,6 @@
 	position: absolute;
 	top: -2px;
 	left: 0;
-	margin-left: -8px;
+	translate: -50% 0;
 	cursor: ew-resize;
 }

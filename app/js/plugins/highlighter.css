@@ -25,7 +25,7 @@
 /* Color palette popup */
 .highlighter-palette {
 	position: fixed;
-	z-index: 1000;
+	z-index: var(--z-menu);
 	display: flex;
 	align-items: center;
 	gap: 4px;
@@ -42,11 +42,11 @@
 	border-radius: 50%;
 	border: 2px solid transparent;
 	cursor: pointer;
-	transition: transform var(--transition-fast), border-color var(--transition-fast);
+	transition: scale var(--transition-fast), border-color var(--transition-fast);
 }
 
 .highlighter-palette .color-swatch:hover {
-	transform: scale(1.2);
+	scale: 1.2;
 	border-color: var(--color-text-muted);
 }
 
@@ -67,11 +67,11 @@
 	font-size: 12px;
 	line-height: 1;
 	color: var(--color-text-muted);
-	transition: transform var(--transition-fast);
+	transition: scale var(--transition-fast);
 }
 
 .highlighter-palette .eraser:hover {
-	transform: scale(1.2);
+	scale: 1.2;
 	border-color: var(--color-error);
 	color: var(--color-error);
 }

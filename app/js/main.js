@@ -106,7 +106,7 @@ function showLocalFileError(e) {
   // Import MovableWindow dynamically for error display
   const modal = document.createElement('div');
   modal.className = 'local-file-error';
-  modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;color:#fff;padding:20px;max-width:500px;z-index:9999;';
+  modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;color:#fff;padding:20px;max-width:500px;z-index:var(--z-top);';
 
   const ua = navigator.userAgent.toLowerCase();
   let errorMessage = '';

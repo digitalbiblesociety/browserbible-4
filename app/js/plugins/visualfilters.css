@@ -92,6 +92,9 @@
 
 
 .visualfilters-morph {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-xs);
 	white-space: nowrap;
 }
 
@@ -104,7 +107,6 @@
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	cursor: pointer;
-	margin-right: var(--spacing-xs);
 }
 
 .visualfilters-morph select:focus {
@@ -130,6 +132,9 @@
 
 
 .visualfilters-style {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-xs);
 	white-space: nowrap;
 }
 
@@ -142,7 +147,6 @@
 	color: var(--color-text);
 	font-size: var(--font-size-sm);
 	cursor: pointer;
-	margin-right: var(--spacing-xs);
 }
 
 .visualfilters-style .style-type:focus {
@@ -207,7 +211,7 @@
 	min-width: 200px;
 	max-height: 300px;
 	overflow: auto;
-	z-index: 1100;
+	z-index: var(--z-menu-above);
 	background: var(--color-background);
 	border: 1px solid var(--color-border);
 	border-radius: 6px;

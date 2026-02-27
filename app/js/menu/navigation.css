@@ -3,7 +3,7 @@
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	color: oklch(1 0 0);
+	color: var(--color-toolbar-text);
 }
 
 #main-forward-button svg,
@@ -14,7 +14,7 @@
 
 #main-back-button.inactive,
 #main-forward-button.inactive  {
-	color: oklch(1 0 0);
+	color: var(--color-toolbar-text);
 	opacity: 0.5;
 	cursor: inherit;
 }
@@ -29,22 +29,19 @@
 #compact-back-button {
 	display: none;
 	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
+	inset: auto 0 0 0;
 	background: var(--color-primary);
 	color: var(--color-background);
-	z-index: 1000;
+	z-index: var(--z-menu);
 	cursor: pointer;
+	align-items: center;
 }
 
 .compact-back-icon {
-	position: absolute;
-	left: 5px;
-	top: 50%;
-	transform: translateY(-50%);
+	margin-inline-start: 5px;
 	width: 22px;
 	height: 22px;
+	flex-shrink: 0;
 }
 
 .compact-back-icon svg {
@@ -52,10 +49,10 @@
 	height: 100%;
 }
 #compact-back-button-label {
-	padding: 8px 8px 8px 30px;
+	padding: 8px;
 	font-size: 10px;
 }
 
 .compact-ui #compact-back-button.active {
-	display: block;
+	display: flex;
 }

@@ -2,11 +2,11 @@
 	position: absolute;
 	padding: 5px;
 	background: var(--color-background-alt);
-	z-index: 100;
+	z-index: var(--z-popover);
 	top: 100px;
 	left: 100px;
 	font-size: 12px;
 	color: var(--color-text);
-	font-family: Avenir, Helvetica;
+	font-family: var(--font-family-sans);
 	border-bottom: solid 1px var(--color-border);
 }

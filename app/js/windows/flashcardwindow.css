@@ -19,10 +19,6 @@ flashcard-window .flashcard-add-btn {
 	mask-size: 20px 20px;
 	mask-position: center;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z'/%3E%3C/svg%3E");
-	-webkit-mask-size: 20px 20px;
-	-webkit-mask-position: center;
-	-webkit-mask-repeat: no-repeat;
 }
 
 /* Add current verse icon (plus with link) */
@@ -32,10 +28,6 @@ flashcard-window .flashcard-add-current-btn {
 	mask-size: 20px 20px;
 	mask-position: center;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath fill-rule='evenodd' d='M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z' clip-rule='evenodd'/%3E%3Cpath fill-rule='evenodd' d='M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
-	-webkit-mask-size: 20px 20px;
-	-webkit-mask-position: center;
-	-webkit-mask-repeat: no-repeat;
 }
 
 flashcard-window .flashcard-mode-btn {
@@ -180,11 +172,11 @@ flashcard-window .flashcard-card {
 	width: 100%;
 	min-height: 200px;
 	transform-style: preserve-3d;
-	transition: transform var(--transition-normal, 0.25s) ease;
+	transition: rotate var(--transition-normal, 0.25s) ease;
 }
 
 flashcard-window .flashcard-card.flipped {
-	transform: rotateY(180deg);
+	rotate: y 180deg;
 }
 
 flashcard-window .flashcard-card-front,
@@ -203,11 +195,11 @@ flashcard-window .flashcard-card-back {
 	border-radius: 8px;
 	border: 2px solid var(--color-border);
 	background: var(--color-background);
-	box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.1));
+	box-shadow: var(--shadow-md, 0 2px 8px oklch(0 0 0 / 0.1));
 }
 
 flashcard-window .flashcard-card-back {
-	transform: rotateY(180deg);
+	rotate: y 180deg;
 }
 
 flashcard-window .flashcard-card-reference {
@@ -319,23 +311,23 @@ flashcard-window .flashcard-toast {
 	position: absolute;
 	bottom: 16px;
 	left: 50%;
-	transform: translateX(-50%) translateY(12px);
+	translate: -50% 12px;
 	background: var(--color-text);
 	color: var(--color-background);
 	padding: 10px 20px;
 	border-radius: 6px;
 	font-size: var(--font-size-sm);
-	box-shadow: var(--shadow-lg, 0 4px 16px rgba(0,0,0,0.2));
+	box-shadow: var(--shadow-lg, 0 4px 16px oklch(0 0 0 / 0.2));
 	opacity: 0;
-	transition: opacity var(--transition-fast, 0.15s), transform var(--transition-fast, 0.15s);
-	z-index: 100;
+	transition: opacity var(--transition-fast, 0.15s), translate var(--transition-fast, 0.15s);
+	z-index: var(--z-popover);
 	pointer-events: none;
 	white-space: nowrap;
 }
 
 flashcard-window .flashcard-toast.visible {
 	opacity: 1;
-	transform: translateX(-50%) translateY(0);
+	translate: -50% 0;
 }
 
 /* Verse Navigator — third level (verse grid) */

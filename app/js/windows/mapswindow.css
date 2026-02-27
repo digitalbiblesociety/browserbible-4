@@ -36,7 +36,7 @@
 }
 
 .map-marker .marker-label-bg {
-	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+	filter: drop-shadow(0 2px 4px oklch(0 0 0 / 0.2));
 }
 
 .map-marker:hover .marker-label {
@@ -44,11 +44,11 @@
 }
 
 .map-marker-icon {
-	transition: transform 0.2s ease, opacity 0.3s ease;
+	transition: scale 0.2s ease, opacity 0.3s ease;
 }
 
 .map-marker:hover .map-marker-icon {
-	transform: scale(1.15);
+	scale: 1.15;
 	filter: brightness(1.2);
 }
 
@@ -62,17 +62,17 @@
 	background: var(--color-background);
 	border-radius: 8px;
 	box-shadow: var(--shadow-popup);
-	z-index: 10;
+	z-index: var(--z-chrome);
 	opacity: 0;
 	visibility: hidden;
-	transform: translateY(-10px);
-	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+	translate: 0 -10px;
+	transition: opacity 0.2s ease, translate 0.2s ease, visibility 0.2s;
 }
 
 .map-info-popup.visible {
 	opacity: 1;
 	visibility: visible;
-	transform: translateY(0);
+	translate: 0;
 }
 
 .map-popup-content {
@@ -112,13 +112,11 @@
 .map-search-suggestions {
 	display: none;
 	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
+	inset: 100% 0 auto;
 	background: var(--color-background-alt);
 	border-radius: 0 0 4px 4px;
 	box-shadow: var(--shadow-popup);
-	z-index: 100;
+	z-index: var(--z-popover);
 	max-height: 300px;
 	overflow-y: auto;
 }
@@ -146,11 +144,6 @@
 	color: var(--color-text-muted);
 	font-size: 11px;
 }
-
-
-.map-options-button {
-}
-
 
 
 

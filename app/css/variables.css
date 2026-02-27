@@ -13,6 +13,7 @@
   --color-red-letter:         oklch(0.46 0.19 29);
   --color-footnote:           oklch(0.65 0.09 264);
   --color-toolbar-background: oklch(0.1776 0 0);
+  --color-toolbar-text:       oklch(1 0 0);
 
   /* Division colors — hues 36° apart, L and C vary per theme */
   --color-division-pentateuch:       oklch(0.75 0.11 144);
@@ -55,6 +56,18 @@
   --transition-fast:   0.15s ease;
   --transition-normal: 0.25s ease;
   --transition-slow:   0.4s ease;
+
+  /* Z-index layers */
+  --z-base:        1;      /* sticky headers, base ordering within a panel */
+  --z-above:       2;      /* active tabs, content above base */
+  --z-panel:       3;      /* info panels, audio controller over content */
+  --z-panel-above: 4;      /* popups over panels (audio options) */
+  --z-chrome:      10;     /* close buttons, map popups, modal overlays */
+  --z-overlay:     50;     /* window overlay panels */
+  --z-popover:     100;    /* text navigator, text chooser, splitter, suggestions */
+  --z-menu:        1000;   /* dropdown menus, movable windows, tooltips */
+  --z-menu-above:  1100;   /* morph selector (above other menus) */
+  --z-top:         9999;   /* command palette */
 }
 
 

@@ -4,7 +4,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-top);
   background: oklch(0 0 0 / 0.5);
   padding-top: 15vh;
   justify-content: center;

@@ -40,16 +40,15 @@
 
 .deaf-video-header {
 	width: 100%;
-	-x-background: var(--color-toolbar-background);;
+	display: flex;
+	gap: 2%;
 }
 
 .deaf-video-header input[type=button] {
-	margin: 2% 0 2% 2%;
-	width: 32%;
-	display: inline-block;
+	flex: 1;
+	margin: 2% 0;
 	height: 58px;
-	-webkit-appearance: none;
-	--background-color: var(--color-background-alt);
+	appearance: none;
 	background-color: var(--color-background);
 	border: solid 1px var(--color-border);
 	cursor: pointer;
@@ -57,9 +56,6 @@
 	text-align: right;
 	padding: 10px;
 	background-position-x: 10px;
-}
-.deaf-video-header input[type=button]:first-child {
-	margin-left: 0;
 }
 
 .deaf-video-header input[type=button]:hover {

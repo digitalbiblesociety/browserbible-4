@@ -41,7 +41,7 @@ export const CrossReferencePopupPlugin = (app) => {
   const referencePopup = InfoWindow('CrossReferencePopup');
 
   const containerEl = referencePopup.container;
-  containerEl.style.zIndex = '1000';
+  containerEl.classList.add('info-window-elevated');
 
   const getFragmentidFromNode = (node) => {
     const possibleTexts = [node.getAttribute('data-id'), node.getAttribute('title'), node.innerHTML];

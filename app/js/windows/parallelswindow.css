@@ -6,7 +6,6 @@
 .parallels-main {
 	padding: 15px;
 	overflow: auto;
-	-webkit-overflow-scrolling: touch;
 	background-color: var(--color-background);
 }
 
@@ -17,7 +16,7 @@
 
 .parallels-main td,
 .parallels-main th {
-	text-align: left;
+	text-align: start;
 	font-weight: normal;
 	padding: 2px;
 	vertical-align: top;
@@ -28,11 +27,6 @@
 	border: 1px solid var(--color-border);
 	border-width: 0 1px;
 	padding: 8px;
-}
-
-.parallels-main table[dir=rtl] td,
-.parallels-main table[dir=rtl] th {
-	text-align: right;
 }
 
 .parallels-main .section-title {
@@ -72,16 +66,14 @@
 	display: none;
 }
 
-.parallels-list {
-}
-
 .parallels-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
 	margin: 5px 0;
 }
 
 .parallels-buttons span {
-	display: inline-block;
-	margin: 0 10px 10px 0;
 	padding: 8px 10px;
 	background-color: var(--color-primary);
 	color: var(--color-background);

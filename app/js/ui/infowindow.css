@@ -3,7 +3,7 @@
 	background: var(--color-background);
 	border: solid 1px var(--color-border);
 	box-shadow: var(--shadow-popup);
-	z-index: 100;
+	z-index: var(--z-popover);
 	top: 100px;
 	left: 100px;
 	font-size: 14px;
@@ -28,6 +28,10 @@
 	max-height: 200px;
 	overflow: auto;
 	padding: 0 15px 0 0;
+}
+
+.info-window.info-window-elevated {
+	z-index: var(--z-menu);
 }
 
 .info-window .close-button {

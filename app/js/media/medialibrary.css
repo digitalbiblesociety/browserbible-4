@@ -14,18 +14,12 @@
 	mask-image: url(../../css/images/pictures.svg);
 	mask-size: 20px 20px;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url(../../css/images/pictures.svg);
-	-webkit-mask-size: 20px 20px;
-	-webkit-mask-repeat: no-repeat;
 }
 
 .map-icon {
 	mask-image: url(../../css/images/map.svg);
 	mask-size: 20px 20px;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url(../../css/images/map.svg);
-	-webkit-mask-size: 20px 20px;
-	-webkit-mask-repeat: no-repeat;
 }
 
 .inline-image-library-thumbs,
@@ -113,7 +107,7 @@
 
 .big-image {
 	position: absolute;
-	z-index: 100;
+	z-index: var(--z-popover);
 }
 
 
@@ -121,9 +115,6 @@
 	mask-image: url(../../css/images/video.svg);
 	mask-size: 20px 20px;
 	mask-repeat: no-repeat;
-	-webkit-mask-image: url(../../css/images/video.svg);
-	-webkit-mask-size: 20px 20px;
-	-webkit-mask-repeat: no-repeat;
 }
 
 .image-library-thumbs li span.media-video-play {

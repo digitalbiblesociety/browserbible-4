@@ -11,7 +11,7 @@
 	padding: 0;
 	border: solid 1px var(--color-border);
 	vertical-align: middle;
-	-webkit-appearance: none;
+	appearance: none;
 	border-radius: 0;
 	background: var(--color-background);
 	color: var(--color-text);
@@ -41,12 +41,12 @@
 #main-search-suggestions {
 	background: var(--color-background);
 	border: solid 1px var(--color-border);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-popup);
 	width: 200px;
 	position: absolute;
 	right: 95px;
 	top: 44px;
-	z-index: 1000;
+	z-index: var(--z-menu);
 }
 
 .suggestion-item {
