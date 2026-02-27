@@ -158,9 +158,7 @@
 
 
 .window .scroller-info-content .loading-indicator {
-	text-align: center;
 	padding: 40px 20px;
-	color: var(--color-text-muted);
 	font-style: italic;
 }
 
