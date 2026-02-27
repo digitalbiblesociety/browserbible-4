@@ -3,23 +3,57 @@
     "name": "中文",
     "menu": {
       "search": {
-        "placeholder": "搜索"
+        "placeholder": "搜索",
+        "suggestversion": "在新窗口中打开 <strong>{0}</strong>",
+        "suggestreference": "在 {1} 中转到 <strong>{0}</strong>",
+        "suggestsearch": "在 {1} 中搜索 \"<strong>{0}</strong>\""
       },
       "config": {
         "font": "字体",
         "settings": "设置",
         "tools": "工具"
       },
-      "reset": "复位"
+      "reset": "复位",
+      "labels": {
+        "about": "关于",
+        "addwindow": "添加窗口",
+        "settings": "设置",
+        "feedback": "反馈",
+        "options": "选项"
+      },
+      "feedback": {
+        "name": "姓名",
+        "email": "邮箱",
+        "comments": "您的评论",
+        "feature": "功能建议",
+        "bug": "错误报告",
+        "other": "其他",
+        "send": "发送",
+        "thankyou": "感谢您的反馈"
+      },
+      "themes": {
+        "default": "默认",
+        "shiloh": "示罗",
+        "jabbok": "雅博",
+        "gethsemane": "客西马尼"
+      }
     },
     "plugins": {
       "visualfilters": {
         "button": "视觉过滤器",
-        "title": "视觉过滤器"
+        "title": "视觉过滤器",
+        "strongsnumber": "Strong's #",
+        "morphology": "词形",
+        "newfilter": "新过滤器",
+        "style": "样式"
       },
       "eng2p": {
         "button": "英语第二人称复数",
-        "title": "英语第二人称复数"
+        "title": "英语第二人称复数",
+        "description": "现代英语不区分<em>单数的你</em>和<em>复数的你</em>，因此这个插件使用地区性英语等价词来表示希伯来语和希腊语形式。"
+      },
+      "lemmapopup": {
+        "findalloccurrences": "查找所有出现 (大约 __count__)"
       }
     },
     "windows": {
@@ -28,7 +62,15 @@
         "filter": "过滤器...",
         "ot": "旧约",
         "nt": "新约圣经",
-        "dc": "经书"
+        "dc": "经书",
+        "audio": "有音频",
+        "countries": "国家",
+        "default": "推荐",
+        "languages": "语言",
+        "lemma": "希腊语/希伯来语",
+        "less": "更少",
+        "more": "更多",
+        "recentlyused": "最近使用"
       },
       "commentary": {
         "label": "解说"
@@ -42,7 +84,8 @@
         "placeholder": "搜索",
         "button": "搜索",
         "results": "结果",
-        "verses": "诗"
+        "verses": "诗",
+        "options": "搜索选项"
       },
       "media": {
         "label": "媒体"
@@ -55,7 +98,30 @@
         "synctext": "同步文本（测试版）",
         "autoplay": "自动播放下一个",
         "drama": "戏剧",
-        "nondrama": "非戏剧"
+        "nondrama": "非戏剧",
+        "label": "音频"
+      },
+      "comparison": {
+        "label": "对照"
+      },
+      "deafbible": {
+        "label": "聋人圣经"
+      },
+      "flashcard": {
+        "label": "闪卡"
+      },
+      "parallel": {
+        "hideall": "隐藏全部",
+        "label": "平行经文",
+        "loading": "加载中...",
+        "showall": "显示全部"
+      },
+      "stats": {
+        "frequentwords": "常用词",
+        "label": "统计"
+      },
+      "videobible": {
+        "label": "视频圣经"
       }
     },
     "names": {

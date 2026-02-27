@@ -762,6 +762,16 @@ export class SearchWindowComponent extends BaseWindow {
   async loadInitialText() {
     const initData = this.initData || {};
 
+    // Default textid from the leftmost Bible window when not provided
+    if (!initData.textid) {
+      const app = getApp();
+      const firstBible = app?.windowManager?.getWindows()?.find(w => w.className === 'BibleWindow');
+      const bibleData = firstBible?.getData();
+      if (bibleData?.textid) {
+        initData.textid = bibleData.textid;
+      }
+    }
+
     if (initData.textid) {
       try {
         const data = await getTextAsync(initData.textid);
@@ -774,6 +784,8 @@ export class SearchWindowComponent extends BaseWindow {
         if (initData.searchtext && initData.searchtext !== '') {
           this.refs.input.value = initData.searchtext;
           this.doSearch();
+        } else {
+          this.refs.input.focus();
         }
       } catch (err) {
         console.error('Error loading text:', initData.textid, err);
@@ -784,6 +796,7 @@ export class SearchWindowComponent extends BaseWindow {
         if (texts?.length > 0) {
           this.setTextInfo(texts[0], true);
         }
+        this.refs.input.focus();
       } catch (err) {
         console.error('Error loading texts:', err);
       }

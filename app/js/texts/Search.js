@@ -401,12 +401,7 @@ export class TextSearch {
           for (const result of data.results) {
             const fragmentid = Object.keys(result)[0];
             const html = result[fragmentid];
-
-            const matchResult = this.findMatchesInVerse(html);
-
-            if (matchResult.foundMatch) {
-              this.searchFinalResults.push({ fragmentid, html: matchResult.html });
-            }
+            this.searchFinalResults.push({ fragmentid, html });
           }
 
           this.trigger('complete', {

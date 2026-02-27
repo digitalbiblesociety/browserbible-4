@@ -52,8 +52,6 @@
 	height: 100%;
 }
 #compact-back-button-label {
-	display: inline-block;
-	float: left;
 	padding: 8px 8px 8px 30px;
 	font-size: 10px;
 }

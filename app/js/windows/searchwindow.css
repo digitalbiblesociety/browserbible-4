@@ -69,6 +69,7 @@
 }
 
 .search-visual {
+	display: flex;
 	height: 42px;
 	border-bottom: solid 1px var(--color-border);
 	padding: 0 5px;
@@ -92,8 +93,6 @@
 
 .search-result-book-bar {
 	height: 40px;
-	display: block;
-	float: left;
 	cursor: pointer;
 }
 
@@ -127,11 +126,8 @@
 	padding: 10px;
 	max-height: 250px;
 	overflow: auto;
-}
-
-.search-division-chooser .division-list {
-	float: left;
-	width: 33.33%;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
 }
 
 .search-division-chooser .division-header {

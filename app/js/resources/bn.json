@@ -3,7 +3,10 @@
     "name": "বাংলা",
     "menu": {
       "search": {
-        "placeholder": "অনুসন্ধান"
+        "placeholder": "অনুসন্ধান",
+        "suggestversion": "নতুন উইন্ডোতে <strong>{0}</strong> খুলুন",
+        "suggestreference": "{1}-এ <strong>{0}</strong>-এ যান",
+        "suggestsearch": "{1}-এ \"<strong>{0}</strong>\" অনুসন্ধান করুন"
       },
       "config": {
         "font": "ফন্ট",
@@ -13,9 +16,9 @@
       "reset": "রিসেট করুন",
       "themes": {
         "default": "স্বাভাবিক",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "শীলো",
+        "jabbok": "যব্বোক",
+        "gethsemane": "গেৎশিমানী"
       },
       "labels": {
         "about": "প্রায়",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "ইংরেজি 2nd ব্যক্তি বহুবচন",
-        "title": "ইংরেজি দ্বিতীয় ব্যক্তি বহুবচন"
+        "title": "ইংরেজি দ্বিতীয় ব্যক্তি বহুবচন",
+        "description": "আধুনিক ইংরেজি <em>তুমি একবচন</em> এবং <em>তোমরা বহুবচন</em> এর মধ্যে পার্থক্য করে না, তাই এই প্লাগইনটি হিব্রু এবং গ্রীক রূপগুলি উপস্থাপন করতে আঞ্চলিক ইংরেজি সমতুল্য ব্যবহার করে।"
       },
       "lemmapopup": {
         "findalloccurrences": "সব ঘটনার খুঁজুন (আনুমানিক __count__)"
@@ -63,7 +67,10 @@
         "less": "কম",
         "recentlyused": "সম্প্রতি ব্যবহৃত",
         "languages": "ভাষা",
-        "countries": "দেশ সমূহ"
+        "countries": "দেশ সমূহ",
+        "audio": "অডিও উপলব্ধ",
+        "default": "বৈশিষ্ট্যযুক্ত",
+        "lemma": "গ্রীক/হিব্রু"
       },
       "commentary": {
         "label": "ভাষ্য"
@@ -91,7 +98,8 @@
         "synctext": "সিঙ্ক টেক্সট (বিটা)",
         "autoplay": "অটোপ্লে পরবর্তী",
         "drama": "নাটক",
-        "nondrama": "অ নাটক"
+        "nondrama": "অ নাটক",
+        "label": "অডিও"
       },
       "parallel": {
         "label": "সমান্তরাল",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "তুলনা"
+      },
+      "deafbible": {
+        "label": "বধির বাইবেল"
+      },
+      "flashcard": {
+        "label": "ফ্ল্যাশকার্ড"
+      },
+      "stats": {
+        "frequentwords": "ঘন ঘন শব্দ",
+        "label": "পরিসংখ্যান"
+      },
+      "videobible": {
+        "label": "ভিডিও বাইবেল"
       }
     },
     "names": {

@@ -168,7 +168,8 @@
 }
 
 .media-library-thumbs {
-	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
 	opacity: 0;
 	transition: opacity 0.15s ease;
 }
@@ -179,10 +180,9 @@
 
 .media-library-thumbs a {
 	display: block;
-	float: left;
 	position: relative;
 	overflow: hidden;
-	height: 80px; 
+	height: 80px;
 }
 
 .media-library-thumbs a img {

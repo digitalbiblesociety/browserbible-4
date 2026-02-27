@@ -9,6 +9,7 @@ let fallbackLanguage = 'en';
 let resources = {};
 let resourceBasePath = './js/resources';
 const loadingPromises = new Map();
+const RTL_LANGUAGES = new Set(['ar', 'ur', 'he', 'fa']);
 
 /**
  * Load a language resource file
@@ -92,6 +93,18 @@ export async function init(options = {}) {
       currentLanguage = fallbackLanguage;
     }
   }
+
+  updateDocumentDirection();
+}
+
+/**
+ * Update the document root element's lang and dir attributes
+ */
+function updateDocumentDirection() {
+  if (typeof document === 'undefined') return;
+  const dir = RTL_LANGUAGES.has(currentLanguage) ? 'rtl' : 'ltr';
+  document.documentElement.lang = currentLanguage;
+  document.documentElement.dir = dir;
 }
 
 function getNestedValue(obj, path) {
@@ -189,6 +202,7 @@ export async function setLng(langCode) {
   if (loaded) {
     currentLanguage = langCode;
     setCookie('i18next', langCode, 365);
+    updateDocumentDirection();
     translatePage();
     return true;
   }
@@ -198,6 +212,7 @@ export async function setLng(langCode) {
 /**
  * Translate a single element using its data-i18n attribute
  * Supports attribute targeting: [attr]key (e.g., [title]tooltip.help)
+ * Sets lang and dir attributes to match the current language
  * @param {Element} el - Element with data-i18n attribute
  */
 export function translateElement(el) {
@@ -236,6 +251,9 @@ export function translateElement(el) {
     default:
       el.setAttribute(target, translation);
   }
+
+  el.lang = currentLanguage;
+  el.dir = RTL_LANGUAGES.has(currentLanguage) ? 'rtl' : 'ltr';
 }
 
 /**
@@ -271,6 +289,15 @@ export async function preload(lang) {
   return !!loaded;
 }
 
+/**
+ * Get the loaded resource data for a specific language
+ * @param {string} lang - Language code
+ * @returns {Object|null} The resource data or null if not loaded
+ */
+export function getResource(lang) {
+  return resources[lang] ?? null;
+}
+
 export const i18n = {
   init,
   t,
@@ -279,7 +306,8 @@ export const i18n = {
   translatePage,
   translateElement,
   isLoaded,
-  preload
+  preload,
+  getResource
 };
 
 export default i18n;

@@ -3,7 +3,10 @@
     "name": "اردو",
     "menu": {
       "search": {
-        "placeholder": "تلاش"
+        "placeholder": "تلاش",
+        "suggestversion": "نئی ونڈو میں <strong>{0}</strong> کھولیں",
+        "suggestreference": "{1} میں <strong>{0}</strong> پر جائیں",
+        "suggestsearch": "{1} میں \"<strong>{0}</strong>\" تلاش کریں"
       },
       "config": {
         "font": "فونٹ",
@@ -13,9 +16,9 @@
       "reset": "ری سیٹ",
       "themes": {
         "default": "عمومی",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "شیلا",
+        "jabbok": "یبوق",
+        "gethsemane": "گتسمنی"
       },
       "labels": {
         "about": "کے بارے میں",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "انگریزی کے 2nd شخص تعدد",
-        "title": "انگریزی دوسری ہستی تعدد"
+        "title": "انگریزی دوسری ہستی تعدد",
+        "description": "جدید انگریزی <em>واحد آپ</em> اور <em>جمع آپ</em> میں فرق نہیں کرتی، اس لیے یہ پلگ ان عبرانی اور یونانی شکلوں کی نمائندگی کے لیے علاقائی انگریزی مساوات استعمال کرتا ہے۔"
       },
       "lemmapopup": {
         "findalloccurrences": "تمام واقعات تلاش (تقریبا __count__)"
@@ -63,7 +67,10 @@
         "less": "کم",
         "recentlyused": "حال ہی میں استعمال کیا جاتا ہے",
         "languages": "زبانیں",
-        "countries": "ممالک"
+        "countries": "ممالک",
+        "audio": "آڈیو دستیاب",
+        "default": "نمایاں",
+        "lemma": "یونانی/عبرانی"
       },
       "commentary": {
         "label": "تفسیر"
@@ -91,7 +98,8 @@
         "synctext": "ہم آہنگی متن (بیٹا)",
         "autoplay": "autoplay کے اگلا",
         "drama": "ڈرامہ",
-        "nondrama": "غیر ڈرامہ"
+        "nondrama": "غیر ڈرامہ",
+        "label": "آڈیو"
       },
       "parallel": {
         "label": "مماثلتیں",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "کمپیریزن"
+      },
+      "deafbible": {
+        "label": "بہرے کی بائبل"
+      },
+      "flashcard": {
+        "label": "فلیش کارڈز"
+      },
+      "stats": {
+        "frequentwords": "کثرت سے استعمال ہونے والے الفاظ",
+        "label": "اعداد و شمار"
+      },
+      "videobible": {
+        "label": "ویڈیو بائبل"
       }
     },
     "names": {

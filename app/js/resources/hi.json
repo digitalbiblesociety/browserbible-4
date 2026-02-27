@@ -3,7 +3,10 @@
     "name": "हिन्दी",
     "menu": {
       "search": {
-        "placeholder": "खोज"
+        "placeholder": "खोज",
+        "suggestversion": "नई विंडो में <strong>{0}</strong> खोलें",
+        "suggestreference": "{1} में <strong>{0}</strong> पर जाएं",
+        "suggestsearch": "{1} में \"<strong>{0}</strong>\" खोजें"
       },
       "config": {
         "font": "फ़ॉन्ट",
@@ -17,9 +20,9 @@
       "reset": "रीसेट",
       "themes": {
         "default": "साधारण",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "शीलो",
+        "jabbok": "यब्बोक",
+        "gethsemane": "गतसमनी"
       },
       "labels": {
         "about": "तकरीबन",
@@ -50,7 +53,8 @@
       },
       "eng2p": {
         "button": "अंग्रेजी 2 व्यक्ति बहुवचन",
-        "title": "अंग्रेजी 2 व्यक्ति बहुवचन"
+        "title": "अंग्रेजी 2 व्यक्ति बहुवचन",
+        "description": "आधुनिक अंग्रेजी <em>एकवचन तुम</em> और <em>बहुवचन तुम</em> में अंतर नहीं करती, इसलिए यह प्लगइन हिब्रू और ग्रीक रूपों का प्रतिनिधित्व करने के लिए क्षेत्रीय अंग्रेजी समकक्षों का उपयोग करता है।"
       },
       "lemmapopup": {
         "findalloccurrences": "सभी घटनाओं का पता (लगभग __count__)"
@@ -67,7 +71,10 @@
         "less": "कम",
         "recentlyused": "हाल ही में प्रयुक्त",
         "languages": "भाषाएँ",
-        "countries": "देश"
+        "countries": "देश",
+        "audio": "ऑडियो उपलब्ध",
+        "default": "विशेष",
+        "lemma": "ग्रीक/हिब्रू"
       },
       "commentary": {
         "label": "टीका"
@@ -95,7 +102,8 @@
         "synctext": "सिंक पाठ ( बीटा )",
         "autoplay": "ऑटोप्ले अगला",
         "drama": "ड्रामा",
-        "nondrama": "गैर ड्रामा"
+        "nondrama": "गैर ड्रामा",
+        "label": "ऑडियो"
       },
       "parallel": {
         "label": "समानताएं",
@@ -105,6 +113,19 @@
       },
       "comparison": {
         "label": "तुलना"
+      },
+      "deafbible": {
+        "label": "बधिर बाइबिल"
+      },
+      "flashcard": {
+        "label": "फ्लैशकार्ड"
+      },
+      "stats": {
+        "frequentwords": "बारंबार शब्द",
+        "label": "आँकड़े"
+      },
+      "videobible": {
+        "label": "वीडियो बाइबिल"
       }
     },
     "names": {

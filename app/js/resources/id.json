@@ -3,7 +3,10 @@
     "name": "Bahasa Indonesia",
     "menu": {
       "search": {
-        "placeholder": "Pencarian"
+        "placeholder": "Pencarian",
+        "suggestversion": "Buka <strong>{0}</strong> di jendela baru",
+        "suggestreference": "Pergi ke <strong>{0}</strong> di {1}",
+        "suggestsearch": "Cari \"<strong>{0}</strong>\" di {1}"
       },
       "config": {
         "font": "Fon",
@@ -13,9 +16,9 @@
       "reset": "ulang",
       "themes": {
         "default": "Normal",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "Silo",
+        "jabbok": "Yabok",
+        "gethsemane": "Getsemani"
       },
       "labels": {
         "about": "Tentang",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "English 2 Orang Plural",
-        "title": "English Kedua Orang Plural"
+        "title": "English Kedua Orang Plural",
+        "description": "Bahasa Inggris modern tidak membedakan antara <em>kamu tunggal</em> dan <em>kamu jamak</em>, jadi plugin ini menggunakan padanan bahasa Inggris regional untuk mewakili bentuk Ibrani dan Yunani."
       },
       "lemmapopup": {
         "findalloccurrences": "Cari semua kejadian (sekitar __count__)"
@@ -63,7 +67,10 @@
         "less": "Kurang",
         "recentlyused": "Baru Digunakan",
         "languages": "Bahasa",
-        "countries": "Negara"
+        "countries": "Negara",
+        "audio": "Audio tersedia",
+        "default": "Unggulan",
+        "lemma": "Yunani/Ibrani"
       },
       "commentary": {
         "label": "Komentar"
@@ -91,7 +98,8 @@
         "synctext": "Sync Text (beta)",
         "autoplay": "Autoplay Berikutnya",
         "drama": "Drama",
-        "nondrama": "Non-Drama"
+        "nondrama": "Non-Drama",
+        "label": "Audio"
       },
       "parallel": {
         "label": "Parallels",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "Perbandingan"
+      },
+      "deafbible": {
+        "label": "Alkitab Tuli"
+      },
+      "flashcard": {
+        "label": "Kartu Flash"
+      },
+      "stats": {
+        "frequentwords": "Kata-kata sering",
+        "label": "Statistik"
+      },
+      "videobible": {
+        "label": "Video Alkitab"
       }
     },
     "names": {

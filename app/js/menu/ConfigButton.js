@@ -26,6 +26,8 @@ export function ConfigButton(_parentNode, _menu) {
   const mainMenuFeatures = document.querySelector('#main-menu-features');
 
   const configWindow = new MovableWindow(null, null, i18n.t('menu.labels.settings'), 'config-window');
+  configWindow.title.classList.add('i18n');
+  configWindow.title.dataset.i18n = '[html]menu.labels.settings';
   mainMenuFeatures?.appendChild(configButton);
 
   const showConfig = () => {

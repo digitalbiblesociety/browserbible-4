@@ -5,8 +5,26 @@
 
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
-import { getAllResources } from '../core/registry.js';
 import { elem } from '../lib/helpers.esm.js';
+import { AVAILABLE_LANGUAGES } from '../resources/index.js';
+
+/**
+ * Get a nested value from a resource's translation object
+ * @param {string} lang - Language code
+ * @param {string} key - Dot-notation key (e.g. "names.en")
+ * @returns {string|null}
+ */
+function getLangTranslation(lang, key) {
+  const resource = i18n.getResource(lang);
+  if (!resource) return null;
+
+  let current = resource.translation;
+  for (const part of key.split('.')) {
+    if (current == null) return null;
+    current = current[part];
+  }
+  return typeof current === 'string' ? current : null;
+}
 
 /**
  * Create language setting controls
@@ -23,50 +41,44 @@ export function LanguageSetting(_parentNode, _menu) {
 
   const body = document.querySelector('#config-tools .config-body');
   const list = elem('select', { id: 'config-language', className: 'app-list' });
-  const resources = getAllResources();
-  const langKeys = Object.keys(resources);
 
   if (body) {
     body.appendChild(list);
   }
 
-  // make sure English isn't first!
-  langKeys.sort((a, b) => a.localeCompare(b));
+  const langKeys = [...AVAILABLE_LANGUAGES].sort((a, b) => a.localeCompare(b));
 
   for (const langKey of langKeys) {
-    const langName = resources[langKey].translation.name;
-
-    const option = elem('option', { value: langKey, textContent: langName });
+    const option = elem('option', { value: langKey, textContent: langKey });
     list.appendChild(option);
   }
 
-  // Define localizeLanguages before usage
-  const localizeLanguages = () => {
+  // Preload all languages then update option labels with native names
+  const localizeLanguages = async () => {
     const usersLanguage = i18n.lng();
     const fallbackLang = config.languageSelectorFallbackLang ?? 'en';
 
-    // go through options and add new info
-    const options = list.querySelectorAll('option');
-    options.forEach((option) => {
+    // Preload all languages in parallel
+    await Promise.all(langKeys.map(lang => i18n.preload(lang)));
+
+    for (const option of list.querySelectorAll('option')) {
       const langValue = option.getAttribute('value');
-      const resourceData = resources[langValue]?.translation ?? null;
-      if (!resourceData) return;
 
-      const name = resourceData.name;
-      const fallbackName = resourceData.names?.[fallbackLang] ?? null;
-      const localizedName = resourceData.names?.[usersLanguage] ?? null;
+      const name = getLangTranslation(langValue, 'name');
+      if (!name) continue;
+
       let fullname = name;
+      const localizedName = getLangTranslation(langValue, `names.${usersLanguage}`);
+      const fallbackName = getLangTranslation(langValue, `names.${fallbackLang}`);
 
-      // use the localized name if possible
-      if (localizedName !== null && typeof localizedName !== 'undefined' && localizedName !== fullname) {
+      if (localizedName && localizedName !== fullname) {
         fullname += ` (${localizedName})`;
-      // fallback to english
-      } else if (fallbackName !== null && typeof fallbackName !== 'undefined' && fullname !== fallbackName) {
+      } else if (fallbackName && fallbackName !== fullname) {
         fullname += ` (${fallbackName})`;
       }
 
-      option.innerHTML = fullname;
-    });
+      option.textContent = fullname;
+    }
   };
 
   // handle clicks

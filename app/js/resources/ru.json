@@ -3,7 +3,10 @@
     "name": "русский",
     "menu": {
       "search": {
-        "placeholder": "Поиск"
+        "placeholder": "Поиск",
+        "suggestversion": "Открыть <strong>{0}</strong> в новом окне",
+        "suggestreference": "Перейти к <strong>{0}</strong> в {1}",
+        "suggestsearch": "Искать \"<strong>{0}</strong>\" в {1}"
       },
       "config": {
         "font": "Шрифт",
@@ -13,9 +16,9 @@
       "reset": "сброс",
       "themes": {
         "default": "Нормальный",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "Силом",
+        "jabbok": "Иавок",
+        "gethsemane": "Гефсимания"
       },
       "labels": {
         "about": "О",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "Английский 2-го лица множественного числа",
-        "title": "Английский Второе Лицо Множественное"
+        "title": "Английский Второе Лицо Множественное",
+        "description": "Современный английский не различает <em>ты (единственное)</em> и <em>вы (множественное)</em>, поэтому этот плагин использует региональные английские эквиваленты для представления еврейских и греческих форм."
       },
       "lemmapopup": {
         "findalloccurrences": "Найти все вхождения (примерно __count__)"
@@ -63,7 +67,10 @@
         "less": "Меньше",
         "recentlyused": "Недавно использованные",
         "languages": "Языки",
-        "countries": "Страны"
+        "countries": "Страны",
+        "audio": "Аудио доступно",
+        "default": "Рекомендуемые",
+        "lemma": "Греческий/Иврит"
       },
       "commentary": {
         "label": "Комментарий"
@@ -91,7 +98,8 @@
         "synctext": "Синхронизация текст (бета-версия)",
         "autoplay": "Автозапуск Следующая",
         "drama": "Драма",
-        "nondrama": "Номера для Драма"
+        "nondrama": "Номера для Драма",
+        "label": "Аудио"
       },
       "parallel": {
         "label": "Parallels",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "Сравнение"
+      },
+      "deafbible": {
+        "label": "Библия для глухих"
+      },
+      "flashcard": {
+        "label": "Карточки"
+      },
+      "stats": {
+        "frequentwords": "Частые слова",
+        "label": "Статистика"
+      },
+      "videobible": {
+        "label": "Видео Библия"
       }
     },
     "names": {

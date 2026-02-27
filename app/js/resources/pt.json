@@ -3,7 +3,10 @@
     "name": "português",
     "menu": {
       "search": {
-        "placeholder": "Pesquisa"
+        "placeholder": "Pesquisa",
+        "suggestversion": "Abrir <strong>{0}</strong> em nova janela",
+        "suggestreference": "Ir para <strong>{0}</strong> em {1}",
+        "suggestsearch": "Pesquisar \"<strong>{0}</strong>\" em {1}"
       },
       "config": {
         "font": "Fonte",
@@ -13,9 +16,9 @@
       "reset": "restabelecer",
       "themes": {
         "default": "Normal",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "Siló",
+        "jabbok": "Jaboque",
+        "gethsemane": "Getsêmani"
       },
       "labels": {
         "about": "Sobre",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "Inglês 2 Pessoa Plural",
-        "title": "Inglês Segunda Pessoa Plural"
+        "title": "Inglês Segunda Pessoa Plural",
+        "description": "O inglês moderno não distingue entre <em>você singular</em> e <em>vocês plural</em>, então este plugin usa equivalentes regionais em inglês para representar as formas hebraicas e gregas."
       },
       "lemmapopup": {
         "findalloccurrences": "Encontre todas as ocorrências (aproximadamente __count__)"
@@ -63,7 +67,10 @@
         "less": "Menos",
         "recentlyused": "Recently Used",
         "languages": "Idiomas",
-        "countries": "Países"
+        "countries": "Países",
+        "audio": "Áudio disponível",
+        "default": "Destaque",
+        "lemma": "Grego/Hebraico"
       },
       "commentary": {
         "label": "Comentário"
@@ -91,7 +98,8 @@
         "synctext": "Sincronização Texto (beta)",
         "autoplay": "Autoplay Próxima",
         "drama": "Drama",
-        "nondrama": "Não Drama"
+        "nondrama": "Não Drama",
+        "label": "Áudio"
       },
       "parallel": {
         "label": "Parallels",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "Comparação"
+      },
+      "deafbible": {
+        "label": "Bíblia para surdos"
+      },
+      "flashcard": {
+        "label": "Cartões"
+      },
+      "stats": {
+        "frequentwords": "Palavras frequentes",
+        "label": "Estatísticas"
+      },
+      "videobible": {
+        "label": "Vídeo Bíblia"
       }
     },
     "names": {

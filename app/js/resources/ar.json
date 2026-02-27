@@ -3,7 +3,10 @@
     "name": "العربية",
     "menu": {
       "search": {
-        "placeholder": "بحث"
+        "placeholder": "بحث",
+        "suggestversion": "فتح <strong>{0}</strong> في نافذة جديدة",
+        "suggestreference": "الذهاب إلى <strong>{0}</strong> في {1}",
+        "suggestsearch": "بحث \"<strong>{0}</strong>\" في {1}"
       },
       "config": {
         "font": "الخط",
@@ -13,9 +16,9 @@
       "reset": "إعادة ضبط",
       "themes": {
         "default": "افتراضي",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "شِيلُوه",
+        "jabbok": "يَبُّوق",
+        "gethsemane": "جَثْسَيْمَانِي"
       },
       "labels": {
         "about": "حول",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "استخدام كلمة أنت للجمع في الإنجليزية",
-        "title": "استخدام كلمة أنت للجمع في الإنجليزية"
+        "title": "استخدام كلمة أنت للجمع في الإنجليزية",
+        "description": "اللغة الإنجليزية الحديثة لا تميز بين <em>أنت المفرد</em> و <em>أنت الجمع</em>، لذا يستخدم هذا الملحق مكافئات إنجليزية إقليمية لتمثيل الأشكال العبرية واليونانية."
       },
       "lemmapopup": {
         "findalloccurrences": "بحث كل الحالات"
@@ -63,7 +67,10 @@
         "less": "أقل",
         "recentlyused": "المستخدمة مؤخرا",
         "languages": "اللغات",
-        "countries": "الدول"
+        "countries": "الدول",
+        "audio": "الصوت متاح",
+        "default": "مميز",
+        "lemma": "يونانية/عبرية"
       },
       "commentary": {
         "label": "تفاسير"
@@ -91,7 +98,8 @@
         "synctext": "تحريك النص مع الصوت",
         "autoplay": "تشغيل الأصحاح التالي تلقائياً",
         "drama": "قراءة درامية",
-        "nondrama": "قراءة غير درامية"
+        "nondrama": "قراءة غير درامية",
+        "label": "صوت"
       },
       "parallel": {
         "label": "المتوازيات",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "مقارنة"
+      },
+      "deafbible": {
+        "label": "الكتاب المقدس للصم"
+      },
+      "flashcard": {
+        "label": "بطاقات تعليمية"
+      },
+      "stats": {
+        "frequentwords": "الكلمات المتكررة",
+        "label": "إحصائيات"
+      },
+      "videobible": {
+        "label": "الكتاب المقدس المرئي"
       }
     },
     "names": {

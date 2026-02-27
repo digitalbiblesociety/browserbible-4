@@ -3,7 +3,10 @@
     "name": "Français",
     "menu": {
       "search": {
-        "placeholder": "Recherche"
+        "placeholder": "Recherche",
+        "suggestversion": "Ouvrir <strong>{0}</strong> dans une nouvelle fenêtre",
+        "suggestreference": "Aller à <strong>{0}</strong> dans {1}",
+        "suggestsearch": "Rechercher \"<strong>{0}</strong>\" dans {1}"
       },
       "config": {
         "font": "Style",
@@ -13,9 +16,9 @@
       "reset": "remettre",
       "themes": {
         "default": "Normal",
-        "shiloh": "Shiloh",
+        "shiloh": "Silo",
         "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "gethsemane": "Gethsémané"
       },
       "labels": {
         "about": "Sur",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "Anglais 2ème personne pluriel",
-        "title": "Anglais Deuxième personne pluriel"
+        "title": "Anglais Deuxième personne pluriel",
+        "description": "L'anglais moderne ne distingue pas entre <em>tu singulier</em> et <em>vous pluriel</em>, ce plugin utilise donc des équivalents anglais régionaux pour représenter les formes hébraïques et grecques."
       },
       "lemmapopup": {
         "findalloccurrences": "Trouver toutes les occurrences (environ __count__)"
@@ -63,7 +67,10 @@
         "less": "Moins",
         "recentlyused": "Récemment utilisés",
         "languages": "Langues",
-        "countries": "Pays"
+        "countries": "Pays",
+        "audio": "Audio disponible",
+        "default": "En vedette",
+        "lemma": "Grec/Hébreu"
       },
       "commentary": {
         "label": "Commentaire"
@@ -91,7 +98,8 @@
         "synctext": "Synchronisation du texte (beta)",
         "autoplay": "Autoplay Suivant",
         "drama": "Drame",
-        "nondrama": "Non Drame"
+        "nondrama": "Non Drame",
+        "label": "Audio"
       },
       "parallel": {
         "label": "Parallels",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "Comparaison"
+      },
+      "deafbible": {
+        "label": "Bible des sourds"
+      },
+      "flashcard": {
+        "label": "Cartes mémoire"
+      },
+      "stats": {
+        "frequentwords": "Mots fréquents",
+        "label": "Statistiques"
+      },
+      "videobible": {
+        "label": "Vidéo Bible"
       }
     },
     "names": {

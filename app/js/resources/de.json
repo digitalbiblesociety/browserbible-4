@@ -3,7 +3,10 @@
     "name": "Deutsch",
     "menu": {
       "search": {
-        "placeholder": "Suche"
+        "placeholder": "Suche",
+        "suggestversion": "<strong>{0}</strong> in neuem Fenster öffnen",
+        "suggestreference": "Gehe zu <strong>{0}</strong> in {1}",
+        "suggestsearch": "\"<strong>{0}</strong>\" in {1} suchen"
       },
       "config": {
         "font": "Schriftart",
@@ -30,7 +33,7 @@
       },
       "themes": {
         "default": "Normal",
-        "shiloh": "Shiloh",
+        "shiloh": "Silo",
         "jabbok": "Jabbok",
         "gethsemane": "Gethsemane"
       }
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "2. Person Plural Englisch",
-        "title": "Englisch Zweite Person Plural"
+        "title": "Englisch Zweite Person Plural",
+        "description": "Modernes Englisch unterscheidet nicht zwischen <em>du (Singular)</em> und <em>ihr (Plural)</em>, daher verwendet dieses Plugin regionale englische Entsprechungen zur Darstellung der hebräischen und griechischen Formen."
       },
       "lemmapopup": {
         "findalloccurrences": "Alle Vorkommen (etwa __count__)"
@@ -71,7 +75,8 @@
         "languages": "Sprachen",
         "countries": "Länder",
         "lemma": "Griechisch/Hebräisch-Popups",
-        "audio": "Audio verfügbar"
+        "audio": "Audio verfügbar",
+        "default": "Empfohlen"
       },
       "commentary": {
         "label": "Kommentar"
@@ -99,7 +104,8 @@
         "synctext": "Text synchron halten (beta)",
         "autoplay": "Automatisch nächstes spielen",
         "drama": "Dramatisiert",
-        "nondrama": "Vorgelesen"
+        "nondrama": "Vorgelesen",
+        "label": "Audio"
       },
       "parallel": {
         "label": "Parallelstellen",
@@ -113,6 +119,9 @@
       "stats": {
         "label": "Statistiken",
         "frequentwords": "Häufige Wörter"
+      },
+      "flashcard": {
+        "label": "Lernkarten"
       }
     },
     "names": {

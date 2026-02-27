@@ -352,7 +352,6 @@ flashcard-window .flashcard-toast.visible {
 
 /* Verse grid inserted inline after the selected chapter */
 .verse-navigator .verse-navigator-verses {
-	clear: both;
 	display: grid;
 	grid-template-rows: 1fr;
 	transition: grid-template-rows 300ms ease-out;
@@ -371,10 +370,11 @@ flashcard-window .flashcard-toast.visible {
 
 .verse-navigator .verse-navigator-verses-inner {
 	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
 }
 
 .verse-navigator .verse-navigator-verse {
-	float: left;
 	width: 36px;
 	height: 36px;
 	margin: 1px 1px 0 0;

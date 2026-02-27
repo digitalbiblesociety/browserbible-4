@@ -3,7 +3,10 @@
     "name": "日本語",
     "menu": {
       "search": {
-        "placeholder": "検索"
+        "placeholder": "検索",
+        "suggestversion": "新しいウィンドウで<strong>{0}</strong>を開く",
+        "suggestreference": "{1}の<strong>{0}</strong>に移動",
+        "suggestsearch": "{1}で\"<strong>{0}</strong>\"を検索"
       },
       "config": {
         "font": "フォント",
@@ -13,9 +16,9 @@
       "reset": "リセット",
       "themes": {
         "default": "通常の",
-        "shiloh": "Shiloh",
-        "jabbok": "Jabbok",
-        "gethsemane": "Gethsemane"
+        "shiloh": "シロ",
+        "jabbok": "ヤボク",
+        "gethsemane": "ゲツセマネ"
       },
       "labels": {
         "about": "約",
@@ -46,7 +49,8 @@
       },
       "eng2p": {
         "button": "英語第二人は複数",
-        "title": "英語二人目は複数"
+        "title": "英語二人目は複数",
+        "description": "現代英語は<em>単数のyou</em>と<em>複数のyou</em>を区別しないため、このプラグインはヘブライ語とギリシャ語の形式を表すために地域的な英語の同等表現を使用します。"
       },
       "lemmapopup": {
         "findalloccurrences": "すべて検索（約__count__）"
@@ -63,7 +67,10 @@
         "less": "レス",
         "recentlyused": "最近使用された",
         "languages": "言語",
-        "countries": "国"
+        "countries": "国",
+        "audio": "オーディオあり",
+        "default": "おすすめ",
+        "lemma": "ギリシャ語/ヘブライ語"
       },
       "commentary": {
         "label": "解説"
@@ -91,7 +98,8 @@
         "synctext": "同期テキスト（ベータ版）",
         "autoplay": "自動再生次",
         "drama": "ドラマ",
-        "nondrama": "非ドラマ"
+        "nondrama": "非ドラマ",
+        "label": "オーディオ"
       },
       "parallel": {
         "label": "Parallelsの",
@@ -101,6 +109,19 @@
       },
       "comparison": {
         "label": "比較"
+      },
+      "deafbible": {
+        "label": "ろう者聖書"
+      },
+      "flashcard": {
+        "label": "フラッシュカード"
+      },
+      "stats": {
+        "frequentwords": "頻出単語",
+        "label": "統計"
+      },
+      "videobible": {
+        "label": "ビデオ聖書"
       }
     },
     "names": {

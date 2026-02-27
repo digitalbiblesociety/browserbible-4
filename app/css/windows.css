@@ -21,10 +21,6 @@ body {
 	color: var(--color-text);
 }
 
-.clear {
-	clear: both;
-}
-
 input:focus {
 	outline: none;
 }
@@ -78,8 +74,11 @@ input:focus {
 	height: 0;
 }
 
+.windows-main {
+	display: flex;
+}
+
 .window {
-	float: left;
 	overflow: hidden;
 	position: relative;
 	margin: 0;
@@ -136,14 +135,10 @@ input:focus {
 .window-tab.active .window-tab-inner {border-color: transparent transparent var(--color-background-alt) transparent;}
 
 .window-tab-label {
-	position: absolute;
 	display: flex;
-	align-items: center;
-	top: 2px;
-	left: 0;
-	height: 20px;
-	width: 65px;
-	padding-top: 4px;
+	height:25px;
+	justify-content: center;
+	place-items: center;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -293,9 +288,10 @@ input:focus {
 	}
 
 
-	.compact-ui .windows-main .window {
-		float: none;
+	.compact-ui .windows-main {
 		display: block;
+	}
+	.compact-ui .windows-main .window {
 		z-index: 1;
 		position: absolute;
 		top: 40px;
