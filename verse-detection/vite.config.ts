@@ -69,7 +69,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// Allow importing from main app if needed
-			'@bb4': resolve(__dirname, '../app/js')
+			'@bb4': resolve(__dirname, '../browserbible/js')
 		}
 	},
 

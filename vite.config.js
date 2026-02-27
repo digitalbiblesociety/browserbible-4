@@ -1,40 +1,12 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { cpSync, existsSync, readdirSync, mkdirSync } from 'fs';
-
-// Plugin to copy content folder and resources after build
-function postBuildPlugin() {
-  return {
-    name: 'post-build',
-    closeBundle() {
-      // Copy content folder
-      const contentSrc = resolve(__dirname, 'app/content');
-      const contentDest = resolve(__dirname, 'dist/content');
-      if (existsSync(contentSrc)) {
-        console.log('Copying content folder...');
-        cpSync(contentSrc, contentDest, { recursive: true });
-        console.log('Content folder copied.');
-      }
-
-      // Copy i18n resource JSON files
-      const resourcesSrc = resolve(__dirname, 'app/js/resources');
-      const resourcesDest = resolve(__dirname, 'dist/js/resources');
-      if (existsSync(resourcesSrc)) {
-        console.log('Copying i18n resources...');
-        mkdirSync(resourcesDest, { recursive: true });
-        const files = readdirSync(resourcesSrc).filter(f => f.endsWith('.json'));
-        for (const file of files) {
-          cpSync(resolve(resourcesSrc, file), resolve(resourcesDest, file));
-        }
-        console.log(`Copied ${files.length} language resource files.`);
-      }
-    }
-  };
-}
+import { browserslistToTargets } from 'lightningcss';
+import browserslist from 'browserslist';
+import { compression } from 'vite-plugin-compression2';
 
 export default defineConfig({
   // Root directory for the app
-  root: 'app',
+  root: 'browserbible',
 
   // Base public path
   base: './',
@@ -42,7 +14,7 @@ export default defineConfig({
   // Build configuration
   build: {
     // Output directory (relative to root)
-    outDir: '../dist',
+    outDir: 'dist',
 
     // Empty the output directory before building
     emptyOutDir: true,
@@ -53,8 +25,11 @@ export default defineConfig({
     // 'hidden' = .map files without sourceMappingURL comment
     sourcemap: true,
 
-    // CSS sourcemaps
-    cssMinify: 'esbuild',
+    // Use Lightning CSS for minification
+    cssMinify: 'lightningcss',
+
+    // CSS sourcemaps (matches JS sourcemap: true above)
+    cssSourcemap: true,
 
     // Copy public assets
     copyPublicDir: true,
@@ -62,7 +37,7 @@ export default defineConfig({
     // Rollup options
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'app/index.html')
+        main: resolve(__dirname, 'browserbible/index.html')
       },
       output: {
         // Output file naming
@@ -87,8 +62,8 @@ export default defineConfig({
     // Minification
     minify: 'esbuild',
 
-    // Target browsers
-    target: 'es2015'
+    // JS target — matches CSS baseline (oklch, color-mix, popover API)
+    target: 'es2022'
   },
 
   // Development server configuration
@@ -103,25 +78,28 @@ export default defineConfig({
     port: 4173
   },
 
-  // CSS configuration
+  // CSS configuration — Lightning CSS for transforms, prefixing, and minification
   css: {
-    // Enable CSS source maps in development
+    transformer: 'lightningcss',
+    lightningcss: {
+      targets: browserslistToTargets(browserslist('chrome >= 111, firefox >= 113, safari >= 16.4'))
+    },
     devSourcemap: true
   },
 
   // Resolve configuration
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'app/js'),
-      '@lib': resolve(__dirname, 'app/js/lib'),
-      '@core': resolve(__dirname, 'app/js/core'),
-      '@common': resolve(__dirname, 'app/js/common'),
-      '@bible': resolve(__dirname, 'app/js/bible'),
-      '@texts': resolve(__dirname, 'app/js/texts'),
-      '@windows': resolve(__dirname, 'app/js/windows'),
-      '@plugins': resolve(__dirname, 'app/js/plugins'),
-      '@menu': resolve(__dirname, 'app/js/menu'),
-      '@ui': resolve(__dirname, 'app/js/ui'),
+      '@': resolve(__dirname, 'browserbible/js'),
+      '@lib': resolve(__dirname, 'browserbible/js/lib'),
+      '@core': resolve(__dirname, 'browserbible/js/core'),
+      '@common': resolve(__dirname, 'browserbible/js/common'),
+      '@bible': resolve(__dirname, 'browserbible/js/bible'),
+      '@texts': resolve(__dirname, 'browserbible/js/texts'),
+      '@windows': resolve(__dirname, 'browserbible/js/windows'),
+      '@plugins': resolve(__dirname, 'browserbible/js/plugins'),
+      '@menu': resolve(__dirname, 'browserbible/js/menu'),
+      '@ui': resolve(__dirname, 'browserbible/js/ui'),
       '@verse-detection': resolve(__dirname, 'verse-detection')
     }
   },
@@ -137,5 +115,7 @@ export default defineConfig({
   },
 
   // Plugins
-  plugins: [postBuildPlugin()]
+  plugins: [
+    compression({ algorithms: ['gzip', 'brotliCompress'] })
+  ]
 });

@@ -42,11 +42,11 @@ export default [
     ignores: [
       'node_modules/**',
       'dist/**',
-      'app/dist/**',
+      'browserbible/dist/**',
       'downloads/**',
       '**/*.min.js',
-      'app/js/core/config-custom.js',
-      'app/js/core/config-custom-example.js'
+      'browserbible/js/core/config-custom.js',
+      'browserbible/js/core/config-custom-example.js'
     ]
   }
 ];

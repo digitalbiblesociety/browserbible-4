@@ -54,8 +54,7 @@ export class SearchWindowComponent extends BaseWindow {
               <div class="search-progress-bar-inner"></div>
               <span class="search-progress-bar-label"></span>
             </div>
-            <div class="search-visual"></div>
-            <span class="search-visual-label"></span>
+            <div class="search-visual"><span class="search-visual-label"></span></div>
             <div class="search-lemma-info"></div>
             <div class="search-usage"></div>
           </div>
@@ -257,29 +256,24 @@ export class SearchWindowComponent extends BaseWindow {
     const bookInfo = BOOK_DATA[dbsBookCode];
     if (!bookInfo) return;
 
-    const win = bookBar.closest('.window');
-    const winPos = win ? offset(win) : { top: 0, left: 0 };
-    const winWidth = win ? win.offsetWidth : window.innerWidth;
-    const bookBarPos = offset(bookBar);
-    const top = bookBarPos.top + bookBar.offsetHeight + 10 - winPos.top;
-    let left = bookBarPos.left - winPos.left;
-
     const bookName = bookInfo.names?.[this.state.textInfo?.lang]?.[0] ??
                      bookInfo.names?.en?.[0] ??
                      dbsBookCode;
 
+    const visualWidth = this.refs.topVisual.offsetWidth;
+    let left = bookBar.offsetLeft;
+
     this.refs.topVisualLabel.textContent = `${bookName}: ${count}`;
-    this.refs.topVisualLabel.style.top = `${top}px`;
     this.refs.topVisualLabel.style.left = `${left}px`;
     this.refs.topVisualLabel.style.display = 'block';
 
-    if (left + this.refs.topVisualLabel.offsetWidth > winWidth) {
-      left = winWidth - this.refs.topVisualLabel.offsetWidth - 20;
+    if (left + this.refs.topVisualLabel.offsetWidth > visualWidth) {
+      left = visualWidth - this.refs.topVisualLabel.offsetWidth - 5;
       this.refs.topVisualLabel.style.left = `${left}px`;
     }
 
-    if (left < 10) {
-      this.refs.topVisualLabel.style.left = '10px';
+    if (left < 5) {
+      this.refs.topVisualLabel.style.left = '5px';
     }
   }
 
@@ -606,6 +600,8 @@ export class SearchWindowComponent extends BaseWindow {
     if (topBlockTitle) topBlockTitle.innerHTML = '';
     this.refs.resultsBlock.innerHTML = '';
     this.refs.topVisual.innerHTML = '';
+    this.refs.topVisual.appendChild(this.refs.topVisualLabel);
+    this.refs.topVisualLabel.style.display = 'none';
     this.refs.topVisual.style.display = 'none';
     this.refs.topLemmaInfo.innerHTML = '';
     this.refs.topLemmaInfo.style.display = 'none';
@@ -709,7 +705,8 @@ export class SearchWindowComponent extends BaseWindow {
     }
 
     this.refs.topVisual.innerHTML = html;
-    this.refs.topVisual.style.display = 'block';
+    this.refs.topVisual.appendChild(this.refs.topVisualLabel);
+    this.refs.topVisual.style.display = '';
   }
 
   removeHighlights() {

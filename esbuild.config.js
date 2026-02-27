@@ -6,7 +6,7 @@ const isDev = process.argv.includes('--dev');
 
 // Ensure dist directory exists
 try {
-  mkdirSync('app/dist', { recursive: true });
+  mkdirSync('browserbible/dist', { recursive: true });
 } catch (e) {}
 
 // Get all CSS files from the js directory (component styles)
@@ -24,13 +24,13 @@ function getComponentCss(dir, files = []) {
   return files;
 }
 
-const componentCssFiles = getComponentCss('app/js');
+const componentCssFiles = getComponentCss('browserbible/js');
 
 // Build configuration
 const config = {
-  entryPoints: ['app/js/main.js'],
+  entryPoints: ['browserbible/js/main.js'],
   bundle: true,
-  outfile: 'app/dist/bundle.js',
+  outfile: 'browserbible/dist/bundle.js',
   format: 'iife',
   target: ['es2020'],
   sourcemap: isDev,
@@ -54,17 +54,17 @@ const cssEntryContent = `
 @import "../css/bible.css";
 @import "../css/windows.css";
 @import "../css/common.css";
-${componentCssFiles.map(f => `@import "../${f.replace('app/', '')}";`).join('\n')}
+${componentCssFiles.map(f => `@import "../${f.replace('browserbible/', '')}";`).join('\n')}
 `;
 
 // Write the CSS entry file
-writeFileSync('app/dist/styles-entry.css', cssEntryContent);
+writeFileSync('browserbible/dist/styles-entry.css', cssEntryContent);
 
 // CSS build configuration
 const cssConfig = {
-  entryPoints: ['app/dist/styles-entry.css'],
+  entryPoints: ['browserbible/dist/styles-entry.css'],
   bundle: true,
-  outfile: 'app/dist/bundle.css',
+  outfile: 'browserbible/dist/bundle.css',
   minify: !isDev,
   sourcemap: isDev,
   loader: {
