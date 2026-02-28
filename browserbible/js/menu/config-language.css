@@ -15,7 +15,7 @@
 	border-color: var(--color-primary);
 }
 
-#config-language:focus {
+#config-language:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 }

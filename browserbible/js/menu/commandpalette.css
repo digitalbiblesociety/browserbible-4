@@ -50,6 +50,10 @@
   padding: var(--spacing-sm) 0;
 }
 
+.command-palette-input:focus-visible {
+  outline: none;
+}
+
 .command-palette-input::placeholder {
   color: var(--color-text-muted);
 }

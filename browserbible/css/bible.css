@@ -158,9 +158,9 @@
 	margin-left: .2em;
 }
 
-div.c + div.p,
-.chapter-num + div.p {
-	text-indent: 0!important;
+.section div.c + div.p,
+.section .chapter-num + div.p {
+	text-indent: 0;
 }
 
 div.c + div.q {
@@ -217,7 +217,6 @@ div.c + div.q .v-1 {
 
 
 
-.section[dir=rtl] .c,
 .section[dir=rtl] .c {
 	float: right;
 	margin-right: 0;
@@ -239,15 +238,16 @@ div.is1 {
 	text-align: center;
 }
 
-.q, .q1 {
-	padding-left: 3em!important;
-	text-indent: -1.5em!important;
+.section .q,
+.section .q1 {
+	padding-left: 3em;
+	text-indent: -1.5em;
 	position: relative;
 }
 
-.q2 {
-	padding-left: 4em!important;
-	text-indent: -1.5em!important;
+.section .q2 {
+	padding-left: 4em;
+	text-indent: -1.5em;
 	position: relative;
 }
 

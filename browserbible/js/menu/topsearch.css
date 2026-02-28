@@ -17,8 +17,9 @@
 	color: var(--color-text);
 }
 
-#main-search-input:focus {
+#main-search-input:focus-visible {
 	outline: none;
+	border-color: var(--color-primary);
 }
 
 #main-search-button {

@@ -64,7 +64,8 @@
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.text-chooser .text-chooser-filter-text:focus {
+.text-chooser .text-chooser-filter-text:focus-visible {
+	outline: none;
 	border-color: var(--color-primary);
 	box-shadow: 0 0 0 3px var(--color-background-hover);
 }

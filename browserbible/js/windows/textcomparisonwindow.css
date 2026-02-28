@@ -87,7 +87,7 @@
 	border-left: none;
 }
 
-.comparison-target-select:focus {
+.comparison-target-select:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 	border-left: none;

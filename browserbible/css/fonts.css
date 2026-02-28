@@ -4,6 +4,7 @@
 	src: local('Gentium Plus'), url(fonts/gentiumplus-r-webfont.woff) format('woff');
 	font-weight: normal;
 	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
@@ -11,6 +12,7 @@
 	src: local('Ezra SIL'), url(fonts/sileot-webfont.woff) format('woff');
 	font-weight: normal;
 	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
@@ -18,6 +20,7 @@
 	src: local('Linux Libertine'), url(fonts/LinLibertine_R.woff) format('woff');
 	font-weight: normal;
 	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
@@ -25,13 +28,14 @@
 	src: local('Linux Libertine Italic'), url(fonts/LinLibertine_RI.woff) format('woff');
 	font-weight: normal;
 	font-style: italic;
+	font-display: swap;
 }
 
 @font-face {
 	font-family: Libertine;
 	src: local('Linux Libertine Bold'), url(fonts/LinLibertine_RB.woff) format('woff');
-	font-weight: normal;
 	font-weight: bold;
+	font-display: swap;
 }
 
 @font-face {
@@ -39,4 +43,5 @@
 	src: local('Linux Libertine Bold Italic'), url(fonts/LinLibertine_RBI.woff) format('woff');
 	font-weight: bold;
 	font-style: italic;
+	font-display: swap;
 }

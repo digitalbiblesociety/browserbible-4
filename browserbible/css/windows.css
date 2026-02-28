@@ -3,10 +3,7 @@
 }
 
 
-body * {
-	-webkit-tap-highlight-color:rgba(0,0,0,0);
-} 
-  
+
 html,
 body {
 	margin: 0;
@@ -19,8 +16,13 @@ body {
 	color: var(--color-text);
 }
 
-input:focus {
+:focus {
 	outline: none;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
 }
 
 
@@ -248,7 +250,7 @@ input:focus {
 
 .window .header-icon,
 .text-chooser-header .header-icon {
-	-x-float: left;
+	float: left;
 }
 
 .header-icon:hover {
@@ -289,7 +291,7 @@ input:focus {
 	}
 	.compact-ui .window .window-header .app-input {
 		width: 90px;
-		-x-min-width: 120px;
+		min-width: 120px;
 		padding: 5px;
 		height: 25px;
 
@@ -303,7 +305,6 @@ input:focus {
 	.compact-ui .window .window-header {
 		height: 40px;
 		padding: 7px;
-		--padding-left: 40px;
 	}
 	.compact-ui .window .close-button {
 		top: 10px;
@@ -402,4 +403,13 @@ input:focus {
 	display: none;
 }
 
-
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

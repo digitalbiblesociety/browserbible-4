@@ -81,7 +81,7 @@
 	transition: border-color var(--transition-fast);
 }
 
-.visualfilters-strongs input[type="text"]:focus {
+.visualfilters-strongs input[type="text"]:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 }
@@ -109,7 +109,7 @@
 	cursor: pointer;
 }
 
-.visualfilters-morph select:focus {
+.visualfilters-morph select:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 }
@@ -125,7 +125,7 @@
 	cursor: pointer;
 }
 
-.visualfilters-morph input[type="text"]:focus {
+.visualfilters-morph input[type="text"]:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 }
@@ -149,7 +149,7 @@
 	cursor: pointer;
 }
 
-.visualfilters-style .style-type:focus {
+.visualfilters-style .style-type:focus-visible {
 	outline: none;
 	border-color: var(--color-primary);
 }

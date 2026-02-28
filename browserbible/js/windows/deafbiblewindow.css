@@ -27,11 +27,6 @@
 
 .deafbible .selected-verse {
 	background: none;
-}
-
-
-.deafbible .selected-verse {
-	background: none;
 	color: var(--color-highlight);
 }
 .deafbible .selected-verse video {

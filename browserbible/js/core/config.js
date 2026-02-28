@@ -19,7 +19,7 @@ const defaultConfig = {
   baseContentApiKey: '',
   textsIndexPath: 'texts.json',
   aboutPagePath: 'about.html',
-  serverSearchPath: 'http://localhost:8089/api/bible-search/',
+  serverSearchPath: '',
   topTexts: [],
 
   newBibleWindowVersion: 'ENGWEB',

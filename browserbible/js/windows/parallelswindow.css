@@ -20,7 +20,7 @@
 	font-weight: normal;
 	padding: 2px;
 	vertical-align: top;
-	-x-border: 1px solid var(--color-border);
+	border: 1px solid var(--color-border);
 }
 
 .parallels-main td {
@@ -33,7 +33,7 @@
 	padding: 20px 0;
 	font-weight: bold;
 	text-align: center;
-	-x-background: #eee;
+	background: var(--color-background-alt);
 }
 
 .parallels-main .parallel-title {
