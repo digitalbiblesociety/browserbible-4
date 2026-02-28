@@ -19,7 +19,7 @@ const defaultConfig = {
   baseContentApiKey: '',
   textsIndexPath: 'texts.json',
   aboutPagePath: 'about.html',
-  serverSearchPath: 'http://arc.dbs.org/api/bible-search/',
+  serverSearchPath: 'https://arc.dbs.org/api/bible-search/',
   topTexts: [],
 
   newBibleWindowVersion: 'ENGWEB',
