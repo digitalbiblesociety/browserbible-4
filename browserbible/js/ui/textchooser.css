@@ -132,6 +132,14 @@
 	align-items: center;
 }
 
+.text-chooser-section-header {
+	background: var(--color-primary);
+	color: var(--color-background);
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
 .text-chooser-row-header td {
 	padding-left: 10px;
 }

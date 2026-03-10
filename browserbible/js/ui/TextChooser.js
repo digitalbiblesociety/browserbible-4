@@ -8,6 +8,8 @@ import { elem, offset } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 import { loadTexts, getText } from '../texts/TextLoader.js';
+import { t as i18nT } from '../lib/i18n.js';
+import { getConfig } from '../core/config.js';
 import audioEarSvg from '../../css/images/audio-ear.svg?raw';
 import morphSvg from '../../css/images/morphology-gray-dark.svg?raw';
 
@@ -101,7 +103,7 @@ export function TextChooser() {
     const result = [];
     for (let i = 0; i < processedData.length; i++) {
       const item = processedData[i];
-      const isMatchingHeader = item.type === 'header' && matchingHeaders.has(item.data);
+      const isMatchingHeader = (item.type === 'header' || item.type === 'section-header') && matchingHeaders.has(item.data);
       const isMatchingText = item.type === 'text' && matchingTextIndices.has(i);
 
       if (isMatchingHeader || isMatchingText) {
@@ -161,7 +163,10 @@ export function TextChooser() {
       style: { position: 'absolute', top: `${top}px`, left: '0', right: '0', height: `${ROW_HEIGHT}px` }
     });
 
-    if (item.type === 'header') {
+    if (item.type === 'section-header') {
+      row.className = 'text-chooser-row-header text-chooser-section-header';
+      row.appendChild(elem('span', { className: 'name' }, item.data));
+    } else if (item.type === 'header') {
       row.className = 'text-chooser-row-header';
       row.dataset.langName = item.data;
       row.appendChild(elem('span', { className: 'name' }, item.data));
@@ -215,13 +220,10 @@ export function TextChooser() {
     if (textType !== 'bible') return;
 
     const textid = (typeof textInfo === 'string') ? textInfo : textInfo.id;
-    const existingVersions = recentlyUsed.recent.filter(t => t === textid);
-
-    if (existingVersions.length === 0) {
-      recentlyUsed.recent.unshift(textid);
-      while (recentlyUsed.recent.length > 5) {
-        recentlyUsed.recent.pop();
-      }
+    recentlyUsed.recent = recentlyUsed.recent.filter(t => t !== textid);
+    recentlyUsed.recent.unshift(textid);
+    while (recentlyUsed.recent.length > 5) {
+      recentlyUsed.recent.pop();
     }
 
     AppSettings.setValue(recentlyUsedKey, recentlyUsed);
@@ -240,6 +242,61 @@ export function TextChooser() {
       const thisTextType = t.type === undefined ? 'bible' : t.type;
       return thisTextType === textType;
     });
+
+    // Prepend Recently Used and Current Language sections (bible only)
+    if (textType === 'bible') {
+      // Recently Used section
+      if (recentlyUsed.recent.length > 0) {
+        const textMap = new Map(arrayOfTexts.map(t => [t.id, t]));
+        const recentTexts = recentlyUsed.recent
+          .map(id => textMap.get(id))
+          .filter(Boolean);
+
+        if (recentTexts.length > 0) {
+          const recentHeader = i18nT('windows.bible.recentlyused') || 'Recently Used';
+          processedData.push({
+            type: 'section-header',
+            data: recentHeader,
+            sectionType: 'recent'
+          });
+          for (const text of recentTexts) {
+            processedData.push({
+              type: 'text',
+              data: text,
+              searchText: [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
+                .join(' ').toLowerCase(),
+              langHeader: recentHeader
+            });
+          }
+        }
+      }
+
+      // Current Language section
+      const currentLang = selectedTextInfo?.langNameEnglish
+        || getConfig().pinnedLanguage
+        || 'English';
+      const currentLangTexts = arrayOfTexts.filter(
+        t => (t.langNameEnglish || t.langName || '') === currentLang
+      );
+      if (currentLangTexts.length > 0) {
+        const langHeader = currentLang;
+        processedData.push({
+          type: 'section-header',
+          data: langHeader,
+          sectionType: 'current-language'
+        });
+        currentLangTexts.sort((a, b) => a.name.localeCompare(b.name));
+        for (const text of currentLangTexts) {
+          processedData.push({
+            type: 'text',
+            data: text,
+            searchText: [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
+              .join(' ').toLowerCase(),
+            langHeader: langHeader
+          });
+        }
+      }
+    }
 
     // Group by language
     const langMap = new Map();
@@ -329,6 +386,11 @@ export function TextChooser() {
           main.classList.remove('loading-indicator');
           processTexts(listData);
         });
+      }
+
+      if (listData) {
+        recentlyUsed = AppSettings.getValue(recentlyUsedKey, { recent: [] });
+        processTexts(listData);
       }
 
       if (filter.value !== '') {
