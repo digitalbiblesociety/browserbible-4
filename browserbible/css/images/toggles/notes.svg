@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-	<rect x="54.5" y="50.5" width="308" height="121" opacity="0.6"/>
-	<rect x="54.5" y="214.7" width="394.7" height="83.1"/>
-	<rect x="54.5" y="345.7" width="394.7" height="83.1"/>
+	<rect x="60.4" y="79.4" width="393.1" height="83.1"/>
+	<rect x="60.4" y="210.4" width="268.3" height="83.1"/>
+	<rect x="60.4" y="341.4" width="395.2" height="83.1"/>
+	<polygon transform="rotate(90 415.717 257.317)" points="469.867,257.267 361.567,320.367 361.567,194.267"/>
 </svg>

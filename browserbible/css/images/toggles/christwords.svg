@@ -1,7 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-	<g transform="matrix(1.4714395,0,0,1,-211.7706,0)">
-		<rect x="180.9" y="83.7" width="268.3" height="83.1"/>
-	</g>
-	<rect x="54.5" y="214.7" width="394.7" height="83.1"/>
-	<rect x="54.5" y="345.7" width="394.7" height="83.1"/>
+	<rect x="66.6" y="83.7" width="374.3" height="83.1"/>
+	<rect x="66.6" y="214.7" width="374.3" height="83.1" fill="red"/>
+	<rect x="66.6" y="345.7" width="374.3" height="83.1"/>
 </svg>
