@@ -213,7 +213,11 @@ export class SearchWindowComponent extends BaseWindow {
   handleTextChooserChange(e) {
     if (e.data.target !== this.refs.textlistui) return;
     this.setTextInfo(e.data.textInfo, false);
-    this.clearResults();
+    if (this.refs.input.value.trim()) {
+      this.doSearch();
+    } else {
+      this.clearResults();
+    }
   }
 
   handleResultClick(tr) {
