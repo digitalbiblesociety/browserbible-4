@@ -30,8 +30,6 @@ export function renderWindowStructure() {
   const header = elem('div', { className: 'window-header flashcard-header' },
     elem('input', { type: 'text', className: 'app-input text-nav flashcard-ref-input', placeholder: 'Verse (e.g. John 3:16)' }),
     elem('div', { className: 'app-list text-list flashcard-version-btn', textContent: 'Version' }),
-    elem('span', { className: 'flashcard-add-btn header-icon', title: 'Add to deck' }),
-    elem('span', { className: 'flashcard-add-current-btn header-icon', title: 'Add current verse' }),
     elem('button', { className: 'flashcard-mode-btn flashcard-mode-deck active', textContent: 'Deck' }),
     elem('button', { className: 'flashcard-mode-btn flashcard-mode-review', textContent: 'Review' }),
     elem('div', { className: 'flashcard-header-spacer' }),

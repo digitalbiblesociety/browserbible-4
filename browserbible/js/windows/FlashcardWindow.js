@@ -4,7 +4,7 @@
 
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { Reference } from '../bible/BibleReference.js';
-import { loadSection } from '../texts/TextLoader.js';
+import { loadSection, getText } from '../texts/TextLoader.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalVerseNavigator } from '../ui/VerseNavigator.js';
 import { sm2 } from './FlashcardWindow/sm2.js';
@@ -61,8 +61,6 @@ export class FlashcardWindowComponent extends BaseWindow {
     // Header controls
     this.refs.refInput = this.$('.flashcard-ref-input');
     this.refs.versionBtn = this.$('.flashcard-version-btn');
-    this.refs.addBtn = this.$('.flashcard-add-btn');
-    this.refs.addCurrentBtn = this.$('.flashcard-add-current-btn');
 
     // Deck
     this.refs.deck = this.$('.flashcard-deck');
@@ -89,7 +87,6 @@ export class FlashcardWindowComponent extends BaseWindow {
     this.addListener(this.refs.modeReview, 'click', () => this.startReview());
 
     // Add card via input
-    this.addListener(this.refs.addBtn, 'click', () => this.addCardFromInput());
     this.addListener(this.refs.refInput, 'keydown', (e) => {
       if (e.key === 'Enter') this.addCardFromInput();
     });
@@ -105,9 +102,6 @@ export class FlashcardWindowComponent extends BaseWindow {
     this._textChooserHandler = (e) => this.handleTextChooserChange(e);
     this.textChooser.on('change', this._textChooserHandler);
     this.addListener(this.refs.versionBtn, 'click', () => this.handleVersionClick());
-
-    // Add current verse
-    this.addListener(this.refs.addCurrentBtn, 'click', () => this.addCurrentVerse());
 
     // Card list interactions
     this.addListener(this.refs.cardList, 'click', (e) => {
@@ -166,6 +160,17 @@ export class FlashcardWindowComponent extends BaseWindow {
   async init() {
     this.loadCards();
     this.renderDeck();
+
+    // Load default text info so VerseNavigator and TextChooser work immediately
+    const defaultTextId = this.config.newBibleWindowVersion;
+    if (defaultTextId && !this.state.selectedTextInfo) {
+      getText(defaultTextId, (data) => {
+        if (data && !this.state.selectedTextInfo) {
+          this.state.selectedTextInfo = data;
+          this.refs.versionBtn.textContent = data.abbr || data.id;
+        }
+      });
+    }
 
     const initMode = this.getParam('mode');
     if (initMode === 'review') {
@@ -248,7 +253,7 @@ export class FlashcardWindowComponent extends BaseWindow {
   }
 
   getSelectedVersion() {
-    return this.state.selectedTextInfo?.id || this.config.defaultBible || null;
+    return this.state.selectedTextInfo?.id || this.config.newBibleWindowVersion || null;
   }
 
   formatReferenceDisplay(locationInfo) {
@@ -353,7 +358,7 @@ export class FlashcardWindowComponent extends BaseWindow {
       id: generateId(),
       reference,
       referenceDisplay,
-      textid: textid || this.config.defaultBible || null,
+      textid: textid || this.config.newBibleWindowVersion || null,
       verseText: null,
       created: Date.now(),
       lastReviewed: null,
@@ -391,28 +396,32 @@ export class FlashcardWindowComponent extends BaseWindow {
     if (!ref.isValid()) return;
 
     const sectionId = ref.bookid + ref.chapter1;
-    const textid = card.textid || this.config.defaultBible;
+    const textid = card.textid || this.config.newBibleWindowVersion;
 
     if (!textid) return;
 
     loadSection(textid, sectionId, (el) => {
       // Extract the specific verse text from the chapter HTML
-      const verseEl = el.querySelector(`[data-verse="${ref.verse1}"]`) ||
+      let verseEl = el.querySelector(`[data-verse="${ref.verse1}"]`) ||
                       el.querySelector(`.v${ref.verse1}`) ||
                       el.querySelector(`[data-id="${card.reference}"]`);
 
-      if (verseEl) {
-        card.verseText = verseEl.textContent.trim();
-      } else {
+      if (!verseEl) {
         // Try to find verse by scanning verse markers
         const verses = el.querySelectorAll('.verse, [data-verse]');
         for (const v of verses) {
           const vNum = v.dataset?.verse || v.className?.match(/\bv(\d+)\b/)?.[1];
           if (vNum && parseInt(vNum, 10) === ref.verse1) {
-            card.verseText = v.textContent.trim();
+            verseEl = v;
             break;
           }
         }
+      }
+
+      if (verseEl) {
+        const clone = verseEl.cloneNode(true);
+        clone.querySelectorAll('.note, .cf, .v-num, .verse-num').forEach(n => n.remove());
+        card.verseText = clone.textContent.trim();
       }
 
       if (!card.verseText) {
