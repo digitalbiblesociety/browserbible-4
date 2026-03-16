@@ -26,9 +26,30 @@
 	padding-top: 10px;
 }
 
+.search-result-book-header {
+	position: sticky;
+	top: 73px;
+	z-index: calc(var(--z-base) - 1);
+	background: var(--color-background-hover);
+	font-weight: bold;
+	font-size: .85em;
+	padding: 6px 8px;
+	border-bottom: 1px solid var(--color-border);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.search-result-book-count {
+	font-weight: normal;
+	font-size: .85em;
+	opacity: 0.6;
+}
+
 .search-result-row {
 	gap: 6px;
-	padding: 3px;
+	padding: 6px 8px;
+	border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
 }
 
 .search-result-ref {
@@ -40,7 +61,8 @@
 }
 
 .search-result-text {
-	font-size:smaller;
+	font-size: smaller;
+	display: block;
 }
 
 .search-result-text .note,
@@ -64,13 +86,12 @@
 }
 
 .search-visual {
-	position: relative;
-	display: flex;
-	height: 42px;
-	border-bottom: solid 1px var(--color-border);
-	padding: 0 5px;
-	margin-bottom: 25px;
-	margin-top: 20px;
+    border-bottom: solid 1px var(--color-border);
+    height: 42px;
+    margin-top: 31px;
+    padding: 0 5px;
+    display: flex;
+    position: relative;
 }
 
 .search-visual-label {

@@ -285,16 +285,10 @@ export class SearchWindowComponent extends BaseWindow {
     if (!bookBar) return;
 
     const dbsBookCode = bookBar.getAttribute('data-id');
-    const rows = this.refs.resultsBlock.querySelectorAll('.search-result-row');
+    const header = this.refs.resultsBlock.querySelector(`.search-result-book-header.divisionid-${dbsBookCode}`);
 
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const fragmentid = row.getAttribute('data-fragmentid');
-
-      if (fragmentid.indexOf(dbsBookCode) === 0) {
-        this.refs.main.scrollTop = offset(row).top - row.offsetHeight - 50;
-        break;
-      }
+    if (header) {
+      this.refs.main.scrollTop = offset(header).top - header.offsetHeight - 50;
     }
   }
 
@@ -520,13 +514,24 @@ export class SearchWindowComponent extends BaseWindow {
     return divisionCount;
   }
 
-  formatResultLabel(fragmentid) {
+  formatResultLabel(fragmentid, short) {
     if (this.state.textInfo.type.toLowerCase() === 'bible') {
       const br = Reference(fragmentid);
       if (br && BOOK_DATA['GN'].names[this.state.textInfo.lang]) {
         br.language = this.state.textInfo.lang;
       }
-      return br ? br.toString() : fragmentid;
+      if (br?.isValid()) {
+        if (short) {
+          let ref = `${br.chapter1}`;
+          if (br.verse1 > 0) ref += `:${br.verse1}`;
+          const crossChapter = br.chapter2 > 0 && br.chapter2 !== br.chapter1;
+          if (crossChapter) ref += br.verse2 > 0 ? `-${br.chapter2}:${br.verse2}` : `-${br.chapter2}`;
+          else if (br.verse2 > 0 && br.verse2 !== br.verse1) ref += `-${br.verse2}`;
+          return ref;
+        }
+        return br.toString();
+      }
+      return fragmentid;
     }
     return fragmentid;
   }
@@ -535,15 +540,25 @@ export class SearchWindowComponent extends BaseWindow {
     let html = '';
     const langCode = this.state.textInfo.lang ?? 'en';
 
+    // Render with group headers (counts already populated)
+    const emittedBooks = new Set();
     for (let i = 0, il = results.length; i < il; i++) {
       const result = results[i];
       const fragmentid = result.fragmentid;
       const dbsBookCode = fragmentid.substr(0, 2);
 
-      divisionCount[dbsBookCode]++;
+      if (!emittedBooks.has(dbsBookCode)) {
+        emittedBooks.add(dbsBookCode);
+        const bookInfo = BOOK_DATA[dbsBookCode];
+        const bookName = bookInfo?.names?.[langCode]?.[0] ??
+                         bookInfo?.names?.en?.[0] ??
+                         dbsBookCode;
+        const count = divisionCount[dbsBookCode];
+        html += `<div class="search-result-book-header divisionid-${dbsBookCode}">${this.escapeHtml(bookName)} <span class="search-result-book-count">${count}</span></div>`;
+      }
 
-      const label = this.formatResultLabel(fragmentid);
-      html += `<div data-fragmentid="${fragmentid}" class="search-result-row divisionid-${fragmentid.substr(0, 2)}"><span class="search-result-ref">${label}</span><span class="search-result-text" lang="${langCode}">${result.html}</span></div>`;
+      const label = this.formatResultLabel(fragmentid, true);
+      html += `<div data-fragmentid="${fragmentid}" class="search-result-row divisionid-${dbsBookCode}"><span class="search-result-ref">${label}</span><span class="search-result-text" lang="${langCode}">${result.html}</span></div>`;
     }
 
     return html;
@@ -552,6 +567,13 @@ export class SearchWindowComponent extends BaseWindow {
   renderSearchResultsContent(results) {
     const bookList = this.determineBookList(this.state.isLemmaSearch);
     const divisionCount = this.initializeDivisionCount(bookList);
+
+    // Pre-count for visual bar
+    for (let i = 0, il = results.length; i < il; i++) {
+      const dbsBookCode = results[i].fragmentid.substr(0, 2);
+      divisionCount[dbsBookCode] = (divisionCount[dbsBookCode] || 0) + 1;
+    }
+
     const html = this.buildResultsHtml(results, divisionCount);
 
     this.refs.resultsBlock.innerHTML = html;
@@ -562,6 +584,10 @@ export class SearchWindowComponent extends BaseWindow {
     this.highlightResultsText();
 
     this.renderResultsVisual(divisionCount, bookList);
+
+    // Set book header sticky offset below search-top
+    const topHeight = this.refs.topBlock.offsetHeight;
+    this.refs.resultsBlock.style.setProperty('--search-top-height', `${topHeight}px`);
 
     if (this.state.isLemmaSearch) {
       this.renderLemmaInfo();
