@@ -152,8 +152,8 @@ export class SearchWindowComponent extends BaseWindow {
 
     // Results click handler - navigate all Bible windows to clicked reference
     this.addListener(this.refs.resultsBlock, 'click', (e) => {
-      const tr = e.target.closest('tr');
-      if (tr) this.handleResultClick(tr);
+      const row = e.target.closest('.search-result-row');
+      if (row) this.handleResultClick(row);
     });
 
     // Visual bar events
@@ -285,14 +285,14 @@ export class SearchWindowComponent extends BaseWindow {
     if (!bookBar) return;
 
     const dbsBookCode = bookBar.getAttribute('data-id');
-    const trs = this.refs.resultsBlock.querySelectorAll('tr');
+    const rows = this.refs.resultsBlock.querySelectorAll('.search-result-row');
 
-    for (let i = 0; i < trs.length; i++) {
-      const tr = trs[i];
-      const fragmentid = tr.getAttribute('data-fragmentid');
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const fragmentid = row.getAttribute('data-fragmentid');
 
       if (fragmentid.indexOf(dbsBookCode) === 0) {
-        this.refs.main.scrollTop = offset(tr).top - tr.offsetHeight - 50;
+        this.refs.main.scrollTop = offset(row).top - row.offsetHeight - 50;
         break;
       }
     }
@@ -532,7 +532,7 @@ export class SearchWindowComponent extends BaseWindow {
   }
 
   buildResultsHtml(results, divisionCount) {
-    let html = '<table>';
+    let html = '';
     const langCode = this.state.textInfo.lang ?? 'en';
 
     for (let i = 0, il = results.length; i < il; i++) {
@@ -543,10 +543,9 @@ export class SearchWindowComponent extends BaseWindow {
       divisionCount[dbsBookCode]++;
 
       const label = this.formatResultLabel(fragmentid);
-      html += `<tr data-fragmentid="${fragmentid}" class="divisionid-${fragmentid.substr(0, 2)}"><th>${label}</th><td lang="${langCode}">${result.html}</td></tr>`;
+      html += `<div data-fragmentid="${fragmentid}" class="search-result-row divisionid-${fragmentid.substr(0, 2)}"><span class="search-result-ref">${label}</span><span class="search-result-text" lang="${langCode}">${result.html}</span></div>`;
     }
 
-    html += '</table>';
     return html;
   }
 
@@ -560,6 +559,8 @@ export class SearchWindowComponent extends BaseWindow {
       el.parentNode.removeChild(el);
     });
 
+    this.highlightResultsText();
+
     this.renderResultsVisual(divisionCount, bookList);
 
     if (this.state.isLemmaSearch) {
@@ -568,6 +569,17 @@ export class SearchWindowComponent extends BaseWindow {
     }
 
     this.createHighlights();
+  }
+
+  highlightResultsText() {
+    if (!this.state.searchTermsRegExp?.length) return;
+
+    this.refs.resultsBlock.querySelectorAll('.search-result-text').forEach((el) => {
+      for (let j = 0, jl = this.state.searchTermsRegExp.length; j < jl; j++) {
+        this.state.searchTermsRegExp[j].lastIndex = 0;
+        el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `<span class="highlight">${match}</span>`);
+      }
+    });
   }
 
   searchCompleteHandler(e) {
@@ -655,8 +667,8 @@ export class SearchWindowComponent extends BaseWindow {
     const usages = {};
     const usageArray = [];
 
-    this.refs.resultsBlock.querySelectorAll('tr').forEach((tr) => {
-      const highlightEl = tr.querySelector('.highlight');
+    this.refs.resultsBlock.querySelectorAll('.search-result-row').forEach((row) => {
+      const highlightEl = row.querySelector('.highlight');
       let highlightedPhrase = highlightEl?.textContent ?? '';
 
       highlightedPhrase = highlightedPhrase.replace(/\b(with|or|and|if|a|the|in|a|by|of|for)\b/gi, '').trim();

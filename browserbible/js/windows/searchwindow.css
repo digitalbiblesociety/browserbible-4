@@ -18,10 +18,6 @@
 	min-width: inherit;
 }
 
-.search-wrapper {
-	padding: 10px;
-}
-
 .search-top {
 	position: sticky;
 	top: -10px;
@@ -30,29 +26,29 @@
 	padding-top: 10px;
 }
 
-.search-wrapper table {
-	border-spacing: 0;
-	border-collapse: collapse;
-}
-
-.search-wrapper table td,
-.search-wrapper table th {
+.search-result-row {
+	gap: 6px;
 	padding: 3px;
 }
 
-.search-wrapper table th {
-	text-align: left;
-	vertical-align: top;
+.search-result-ref {
+	flex-shrink: 0;
 	white-space: nowrap;
 	font-size: .8em;
+	font-weight: bold;
+	display: block;
 }
 
-.search-wrapper table td .note,
-.search-wrapper table td .cf {
+.search-result-text {
+	font-size:smaller;
+}
+
+.search-result-text .note,
+.search-result-text .cf {
 	display: none;
 }
 
-.search-wrapper table tr:hover {
+.search-result-row:hover {
 	cursor: pointer;
 	background-color: var(--color-background-hover);
 }
