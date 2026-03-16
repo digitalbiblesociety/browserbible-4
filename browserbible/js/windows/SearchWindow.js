@@ -8,7 +8,7 @@ import gearSvg from '../../css/images/gear.svg?raw';
 
 import { getApp } from '../core/registry.js';
 import { i18n } from '../lib/i18n.js';
-import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, EXTRA_MATTER } from '../bible/BibleData.js';
+import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, APOCRYPHAL_BIBLE, EXTRA_MATTER } from '../bible/BibleData.js';
 import { Reference } from '../bible/BibleReference.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getText, loadTexts, startSearch } from '../texts/TextLoader.js';
@@ -565,8 +565,21 @@ export class SearchWindowComponent extends BaseWindow {
   }
 
   renderSearchResultsContent(results) {
-    const bookList = this.determineBookList(this.state.isLemmaSearch);
+    // Sort book list and results into canonical order (OT → AP → NT)
+    const bookOrder = {};
+    for (let i = 0; i < APOCRYPHAL_BIBLE.length; i++) {
+      bookOrder[APOCRYPHAL_BIBLE[i]] = i;
+    }
+
+    const bookList = this.determineBookList(this.state.isLemmaSearch)
+      .slice()
+      .sort((a, b) => (bookOrder[a] ?? 999) - (bookOrder[b] ?? 999));
     const divisionCount = this.initializeDivisionCount(bookList);
+    results = [...results].sort((a, b) => {
+      const aBook = a.fragmentid.substr(0, 2);
+      const bBook = b.fragmentid.substr(0, 2);
+      return (bookOrder[aBook] ?? 999) - (bookOrder[bBook] ?? 999);
+    });
 
     // Pre-count for visual bar
     for (let i = 0, il = results.length; i < il; i++) {
