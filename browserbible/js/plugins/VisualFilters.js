@@ -766,6 +766,7 @@ export function VisualFilters(app) {
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload') {
       const contentEl = e.data.content;
+      if (!contentEl || typeof contentEl === 'string') return;
       const lang = contentEl.getAttribute('lang');
 
       // Check if language starts with any of the valid prefixes
