@@ -13,7 +13,8 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
  * @returns {Object} Component API
  */
 export function MainMenuButton(parentNode, _menu) {
-  const mainMenuLogo = elem('div', { id: 'app-logo' });
+  const logoImg = elem('img', { src: './img/inscript_logo.svg', alt: 'Logo' });
+  const mainMenuLogo = elem('div', { id: 'app-logo' }, logoImg);
   const mainMenuButton = elem('div', { id: 'main-menu-button' });
   const heading1 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.addwindow' } }, 'Add Window');
   const windowsList = elem('div', { id: 'main-menu-windows-list', className: 'main-menu-list' });

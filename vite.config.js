@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { readFileSync } from 'fs';
 import { browserslistToTargets } from 'lightningcss';
 import browserslist from 'browserslist';
 import { compression } from 'vite-plugin-compression2';
+
+const siteProfile = process.env.SITE || 'dev';
+const siteConfig = JSON.parse(readFileSync(`./sites/${siteProfile}.json`, 'utf-8'));
 
 export default defineConfig({
   // Root directory for the app
@@ -111,7 +115,9 @@ export default defineConfig({
 
   // Define global constants
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '4.0.0')
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '4.0.0'),
+    __DISABLED_WINDOW_TYPES__: JSON.stringify(siteConfig.disabledWindowTypes),
+    __DISABLED_FEATURES__: JSON.stringify(siteConfig.disabledFeatures)
   },
 
   // Plugins

@@ -80,14 +80,9 @@ const defaultConfig = {
     'Palatino': '"Palatino Linotype", "Book Antiqua", Palatino, serif',
     'Times': '"Times New Roman", Times, serif',
     'Arial': 'Arial, Helvetica, sans-serif',
-    'Comic Sans': '"Comic Sans MS", cursive, sans-serif',
-    'Impact': 'Impact, Charcoal, sans-serif',
     'Lucida': '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
-    'Tahoma': 'Tahoma, Geneva, sans-serif',
     'Trebuchet': '"Trebuchet MS", Helvetica, sans-serif',
     'Verdana': 'Verdana, Geneva, sans-serif',
-    'Courier': '"Courier New", Courier, monospace',
-    'Lucida Console': '"Lucida Console", Monaco, monospace',
     'EzraSIL': 'EzraSIL, "Times New Roman", serif'
   },
   enableSettingToggles: true,
@@ -96,6 +91,12 @@ const defaultConfig = {
   enableFeedback: false,
   feedbackUrl: '',
   windowTypesOrder: [],
+
+  // Window types to hide from the UI (className strings, e.g. 'MapWindow', 'FlashcardWindow')
+  disabledWindowTypes: (typeof __DISABLED_WINDOW_TYPES__ !== 'undefined') ? __DISABLED_WINDOW_TYPES__ : [],
+
+  // Feature flags overridden at build time (e.g. 'enableHighlighterPlugin')
+  _disabledFeatures: (typeof __DISABLED_FEATURES__ !== 'undefined') ? __DISABLED_FEATURES__ : [],
 
   // Plugins
   enableCrossReferencePopupPlugin: true,
@@ -123,6 +124,11 @@ const customConfigs = {
 };
 
 const config = { ...defaultConfig };
+
+// Apply build-time disabled features (set boolean flags to false)
+for (const key of config._disabledFeatures) {
+  if (key in config) config[key] = false;
+}
 
 // Dev mode: use texts_dev path when ?dev=true is in the URL
 if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === 'true') {

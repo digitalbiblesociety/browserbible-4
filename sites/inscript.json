@@ -1,0 +1,4 @@
+{
+  "disabledWindowTypes": ["MapWindow", "FlashcardWindow", "NotesWindow", "DeafBibleWindow"],
+  "disabledFeatures": ["enableHighlighterPlugin"]
+}

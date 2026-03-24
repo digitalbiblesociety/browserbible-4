@@ -22,9 +22,11 @@ export function AddWindowButton(_parentNode, _menu) {
   const buttonMenu = document.querySelector('#main-menu-windows-list');
   const windowTools = [];
   const windowTypes = getAllWindowTypes();
+  const disabled = new Set(config.disabledWindowTypes ?? []);
 
   if (config.windowTypesOrder?.length > 0) {
     for (const windowTypeName of config.windowTypesOrder) {
+      if (disabled.has(windowTypeName)) continue;
       let winType = windowTypes.filter(wt => wt.className === windowTypeName);
 
       if (winType.length > 0) {
@@ -39,6 +41,7 @@ export function AddWindowButton(_parentNode, _menu) {
     }
   } else {
     for (const winType of windowTypes) {
+      if (disabled.has(winType.className)) continue;
       windowTools.push({
         type: winType.className,
         label: winType.param,

@@ -1,5 +1,13 @@
 #app-logo {
 	height: 60px;
+	display: flex;
+	align-items: center;
+	margin-inline-end: auto;
+}
+
+#app-logo img {
+	height: 28px;
+	width: auto;
 }
 
 .main-menu-container {
@@ -15,7 +23,6 @@
 	position: relative;
 	width: 32px;
 	height: 32px;
-	margin-inline-end: auto;
 }
 
 #main-menu-button::before,

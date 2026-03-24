@@ -15,7 +15,6 @@
   --color-toolbar-background: oklch(0.1776 0 0);
   --color-toolbar-text:       oklch(1 0 0);
 
-  /* Division colors — hues 36° apart, L and C vary per theme */
   --color-division-pentateuch:       oklch(0.75 0.11 144);
   --color-division-historical:       oklch(0.75 0.11 216);
   --color-division-wisdom:           oklch(0.75 0.11 324);
@@ -27,13 +26,11 @@
   --color-division-general-epistles: oklch(0.75 0.11 72);
   --color-division-revelation:       oklch(0.75 0.11 288);
 
-  /* Shadows */
   --shadow-sm:    0 1px 2px oklch(0 0 0 / 0.1);
   --shadow-md:    0 2px 4px oklch(0 0 0 / 0.15);
   --shadow-lg:    0 4px 8px oklch(0 0 0 / 0.2);
   --shadow-popup: 0 2px 10px oklch(0 0 0 / 0.25);
 
-  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -52,12 +49,10 @@
   --font-size-lg: 18px;
   --font-size-xl: 24px;
 
-  /* Transitions */
   --transition-fast:   0.15s ease;
   --transition-normal: 0.25s ease;
   --transition-slow:   0.4s ease;
 
-  /* Z-index layers */
   --z-base:        1;      /* sticky headers, base ordering within a panel */
   --z-above:       2;      /* active tabs, content above base */
   --z-panel:       3;      /* info panels, audio controller over content */
@@ -88,7 +83,6 @@ html.jabbok {
   --color-footnote:           oklch(0.7184 0.0817 263.9);
   --color-toolbar-background: oklch(0 0 0);
 
-  /* Division colors — L=0.65 C=0.10 */
   --color-division-pentateuch:       oklch(0.65 0.10 144);
   --color-division-historical:       oklch(0.65 0.10 216);
   --color-division-wisdom:           oklch(0.65 0.10 324);
@@ -119,7 +113,6 @@ html.shiloh {
   --color-footnote:           oklch(0.5 0.07 250);
   --color-toolbar-background: oklch(0.2842 0.008 59.35);
 
-  /* Division colors — L=0.60 C=0.07 */
   --color-division-pentateuch:       oklch(0.60 0.07 144);
   --color-division-historical:       oklch(0.60 0.07 216);
   --color-division-wisdom:           oklch(0.60 0.07 324);
@@ -149,7 +142,6 @@ html.gethsemane {
   --color-footnote:           oklch(0.82 0.1051 235.72);
   --color-toolbar-background: oklch(0.2029 0.016 279.29);
 
-  /* Division colors — L=0.62 C=0.09 */
   --color-division-pentateuch:       oklch(0.62 0.09 144);
   --color-division-historical:       oklch(0.62 0.09 216);
   --color-division-wisdom:           oklch(0.62 0.09 324);

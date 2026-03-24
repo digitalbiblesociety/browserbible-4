@@ -232,9 +232,11 @@ export function CommandPalette(_parentNode, _menu) {
     const config = getConfig();
     const windowTypes = getAllWindowTypes();
     const windowTools = [];
+    const disabled = new Set(config.disabledWindowTypes ?? []);
 
     if (config.windowTypesOrder?.length > 0) {
       for (const windowTypeName of config.windowTypesOrder) {
+        if (disabled.has(windowTypeName)) continue;
         const winType = windowTypes.find(wt => wt.className === windowTypeName);
         if (winType) {
           windowTools.push({ type: winType.className, label: winType.param, data: { ...(winType.init ?? {}) } });
@@ -242,6 +244,7 @@ export function CommandPalette(_parentNode, _menu) {
       }
     } else {
       for (const winType of windowTypes) {
+        if (disabled.has(winType.className)) continue;
         windowTools.push({ type: winType.className, label: winType.param, data: { ...(winType.init ?? {}) } });
       }
     }
