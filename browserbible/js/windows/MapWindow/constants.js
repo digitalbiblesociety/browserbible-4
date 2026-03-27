@@ -34,23 +34,14 @@ export const DEMOTED_LOCATIONS = new Set([
   'Mahanaim?', 'Kiriath-jearim?'
 ]);
 
-// Zoom thresholds for icon visibility (4 tiers)
-export const ZOOM_THRESHOLDS = {
-  1: 0,   // Tier 1 - Major locations (always visible)
-  2: 16,  // Tier 2 - Important locations (visible at 16x zoom)
-  3: 40,  // Tier 3 - Notable locations (visible at 40x zoom)
-  4: 64   // Tier 4 - Minor locations (visible at 64x zoom)
-};
+// Cluster radius in screen pixels — markers within this distance merge into clusters
+export const CLUSTER_RADIUS_PX = 60;
 
-// Icon sizes for each tier (in pixels) - 1.5x base size for better visibility
+// Icon sizes for each tier (in pixels) — must match CSS .map-marker[data-tier] .map-marker-icon
 export const ICON_SIZES = {
-  1: 42,  // Tier 1 (Major locations) - 1.5x28
-  2: 30,  // Tier 2 (Important locations) - 1.5x20
-  3: 24,  // Tier 3 (Notable locations) - 1.5x16
-  4: 18   // Tier 4 (Minor locations) - 1.5x12
+  1: 28,
+  2: 22,
+  3: 18,
+  4: 14
 };
 
-// Collision detection settings
-export const COLLISION_DETECTION_ENABLED = false; // Disabled - use sizing instead to prevent geographic displacement
-export const COLLISION_OFFSET_MAX = 8; // Maximum offset in pixels to prevent overlap
-export const COLLISION_GRID_SIZE = 50; // Spatial grid size for performance optimization

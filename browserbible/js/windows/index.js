@@ -15,7 +15,6 @@ import { TextWindow, BibleWindow, CommentaryWindow } from './TextWindow.js';
 import { SearchWindow } from './SearchWindow.js';
 import { Scroller } from './Scroller.js';
 import { AudioController } from './AudioController.js';
-import { MapWindow } from './MapWindow.js';
 import { AudioWindow } from './AudioWindow.js';
 import { ParallelsWindow } from './ParallelsWindow.js';
 import { TextComparisonWindow } from './TextComparisonWindow.js';
@@ -40,15 +39,6 @@ registerWindowType({
   WindowClass: SearchWindow,
   displayName: 'Search',
   paramKeys: { textid: 't', searchtext: 's' }
-});
-
-registerWindowType({
-  param: 'map',
-  className: 'MapWindow',
-  WindowClass: MapWindow,
-  displayName: 'Map',
-  paramKeys: { latitude: 'la', longitude: 'ln' },
-  init: { latitude: 31.7833, longitude: 35.2167 }
 });
 
 registerWindowType({
@@ -134,7 +124,6 @@ export {
   SearchWindow,
   Scroller,
   AudioController,
-  MapWindow,
   AudioWindow,
   ParallelsWindow,
   TextComparisonWindow,
@@ -151,7 +140,6 @@ export default {
   BibleWindow,
   CommentaryWindow,
   SearchWindow,
-  MapWindow,
   AudioWindow,
   ParallelsWindow,
   TextComparisonWindow,
