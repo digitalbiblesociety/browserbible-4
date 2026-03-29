@@ -303,11 +303,11 @@ export class MapPanel {
     const screenY = containerRect.top + (svgY - this.viewBox.y) / this.viewBox.height * containerRect.height;
     const anchorRect = { left: screenX - 12, right: screenX + 12, top: screenY - 12, bottom: screenY + 12, width: 24, height: 24 };
 
-    // Find co-located locations hidden behind this pin
+    // Find co-located locations sharing this pin's position
     const colocated = [];
     if (this.markersOverlay) {
-      this.markersOverlay.querySelectorAll('.map-marker.clustered').forEach(marker => {
-        if (!marker.locationData || marker._svgX === undefined) return;
+      this.markersOverlay.querySelectorAll('.map-marker').forEach(marker => {
+        if (!marker.locationData || marker.locationData === location || marker._svgX === undefined) return;
         const dx = marker._svgX - svgX;
         const dy = marker._svgY - svgY;
         if (dx * dx + dy * dy < 0.25) colocated.push(marker.locationData);
