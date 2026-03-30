@@ -2,9 +2,6 @@ import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
 import { Reference } from '../bible/BibleReference.js';
 import { i18n } from '../lib/i18n.js';
 import { JesusFilmMediaApi } from '../media/ArclightApi.js';
-import { MapPanel } from './MapWindow/map-panel.js';
-import { fuzzySearchLocations } from './MapWindow/fuzzy-search.js';
-import { buildDetailHTML } from './MapWindow/detail-panel.js';
 
 const DEFAULT_LANGUAGE = 'eng';
 const RESIZE_DEBOUNCE_MS = 100;
@@ -21,18 +18,14 @@ export class MediaWindowComponent extends BaseWindow {
       currentLanguage: DEFAULT_LANGUAGE,
       filters: {
         art: true,
-        video: true,
-        maps: true
+        video: true
       },
       galleryItems: [],
-      currentGalleryIndex: -1,
-      mapSearchSuggestions: [],
-      mapSearchSelectedIndex: -1
+      currentGalleryIndex: -1
     };
 
     this.mediaLibraries = null;
     this.contentToProcess = null;
-    this.mapPanel = null;
 
     this._resizeTimeout = null;
     this._resizeHandler = null;
@@ -54,33 +47,9 @@ export class MediaWindowComponent extends BaseWindow {
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
           </button>
-          <button class="media-filter-btn active" data-filter="maps" title="Maps">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-              <line x1="8" y1="2" x2="8" y2="18"></line>
-              <line x1="16" y1="6" x2="16" y2="22"></line>
-            </svg>
-          </button>
-          <div class="media-map-controls">
-            <div class="media-mode-toggle">
-              <button class="media-mode-btn active" data-mode="passage">Passage</button>
-              <button class="media-mode-btn" data-mode="explore">Explore</button>
-            </div>
-            <div class="media-era-filter hidden">
-              <button class="media-era-btn active" data-era="all">All</button>
-              <button class="media-era-btn" data-era="ot">OT</button>
-              <button class="media-era-btn" data-era="nt">NT</button>
-            </div>
-          </div>
         </div>
       </div>
       <div class="window-main">
-        <div class="media-map-panel">
-          <div class="map-search-overlay">
-            <input type="text" class="app-input map-location-search" placeholder="Search locations…" autocomplete="off" />
-            <div class="map-location-suggestions map-search-suggestions"></div>
-          </div>
-        </div>
         <div class="media-gallery">
           <div class="media-gallery-viewer">
             <div class="media-gallery-content"></div>
@@ -106,12 +75,6 @@ export class MediaWindowComponent extends BaseWindow {
           <div class="media-video"></div>
           <div class="media-content"></div>
         </div>
-        <div class="media-location-detail hidden">
-          <div class="media-detail-toolbar">
-            <button class="media-detail-back">&#8592; Back</button>
-          </div>
-          <div class="media-detail-content"></div>
-        </div>
       </div>
     `;
   }
@@ -121,11 +84,6 @@ export class MediaWindowComponent extends BaseWindow {
 
     this.refs.header = this.$('.window-header');
     this.refs.main = this.$('.window-main');
-    this.refs.mapPanel = this.$('.media-map-panel');
-    this.refs.mapSearchInput = this.$('.map-location-search');
-    this.refs.mapSearchSuggestions = this.$('.map-location-suggestions');
-    this.refs.modeToggle = this.$('.media-mode-toggle');
-    this.refs.eraFilter = this.$('.media-era-filter');
     this.refs.gallery = this.$('.media-gallery');
     this.refs.galleryContent = this.$('.media-gallery-content');
     this.refs.galleryTitle = this.$('.media-gallery-title');
@@ -133,9 +91,6 @@ export class MediaWindowComponent extends BaseWindow {
     this.refs.galleryPrev = this.$('.media-gallery-prev');
     this.refs.galleryNext = this.$('.media-gallery-next');
     this.refs.thumbsContainer = this.$('.media-thumbs-container');
-    this.refs.locationDetail = this.$('.media-location-detail');
-    this.refs.detailContent = this.$('.media-detail-content');
-    this.refs.detailBack = this.$('.media-detail-back');
   }
 
   attachEventListeners() {
@@ -144,15 +99,9 @@ export class MediaWindowComponent extends BaseWindow {
         const filterType = btn.getAttribute('data-filter');
         this.state.filters[filterType] = !this.state.filters[filterType];
         btn.classList.toggle('active', this.state.filters[filterType]);
-
-        if (filterType === 'maps') {
-          this.refs.mapPanel.classList.toggle('hidden', !this.state.filters.maps);
-          if (this.state.filters.maps) this.mapPanel?.updateMarkerScales();
-        } else {
-          // Force re-render of thumbs
-          this.state.currentSectionId = '';
-          this.processContent();
-        }
+        // Force re-render of thumbs
+        this.state.currentSectionId = '';
+        this.processContent();
       });
     });
 
@@ -173,67 +122,6 @@ export class MediaWindowComponent extends BaseWindow {
       }
     });
 
-    this.addListener(this.refs.detailBack, 'click', () => this.hideLocationDetail());
-
-    this.addListener(this.refs.detailContent, 'click', (e) => {
-      const coloc = e.target.closest('.map-detail-colocated-item');
-      if (coloc) {
-        const idx = parseInt(coloc.getAttribute('data-index'), 10);
-        const loc = this.refs.locationDetail._colocatedLocations?.[idx];
-        if (loc) this.mapPanel?.openLocation(loc);
-        return;
-      }
-      const link = e.target.closest('.verse');
-      if (link) {
-        this.trigger('globalmessage', {
-          type: 'globalmessage',
-          target: this,
-          data: {
-            messagetype: 'nav',
-            type: 'bible',
-            locationInfo: {
-              sectionid: link.getAttribute('data-sectionid'),
-              fragmentid: link.getAttribute('data-fragmentid')
-            }
-          }
-        });
-      }
-    });
-
-    this.addListener(this.refs.modeToggle, 'click', (e) => {
-      const btn = e.target.closest('.media-mode-btn');
-      if (btn) this.setMapMode(btn.dataset.mode);
-    });
-
-    this.addListener(this.refs.eraFilter, 'click', (e) => {
-      const btn = e.target.closest('.media-era-btn');
-      if (!btn) return;
-      this.refs.eraFilter.querySelectorAll('.media-era-btn').forEach(b =>
-        b.classList.toggle('active', b === btn)
-      );
-      this.mapPanel?.setExploreEra(btn.dataset.era);
-    });
-
-    this.addListener(this.refs.mapSearchInput, 'input', () => this.handleMapSearchInput());
-    this.addListener(this.refs.mapSearchInput, 'keydown', (e) => this.handleMapSearchKeydown(e));
-    this.addListener(this.refs.mapSearchInput, 'blur', () => {
-      setTimeout(() => this.hideMapSuggestions(), 150);
-    });
-    this.addListener(this.refs.mapSearchSuggestions, 'click', (e) => {
-      const item = e.target.closest('.map-suggestion-item');
-      if (!item) return;
-      const loc = this.state.mapSearchSuggestions[parseInt(item.getAttribute('data-index'), 10)];
-      if (loc) {
-        this.mapPanel?.openLocation(loc);
-        this.refs.mapSearchInput.value = loc.name;
-        this.hideMapSuggestions();
-      }
-    });
-    this.addListener(this.refs.mapSearchSuggestions, 'mouseenter', (e) => {
-      const item = e.target.closest('.map-suggestion-item');
-      if (item) this.selectMapSuggestion(parseInt(item.getAttribute('data-index'), 10));
-    }, true);
-
     this._resizeHandler = () => {
       if (this._resizeTimeout !== null) {
         clearTimeout(this._resizeTimeout);
@@ -250,21 +138,6 @@ export class MediaWindowComponent extends BaseWindow {
   async init() {
     i18n.translatePage(this.refs.header);
 
-    // Initialize interactive map in the top panel
-    this.mapPanel = new MapPanel(this.refs.mapPanel);
-    this.mapPanel._onLocationOpen = (location, colocated, verseTextLookup) => {
-      this.showLocationDetail(location, colocated, verseTextLookup);
-    };
-
-    this.mapPanel._onVerseClick = (sectionid, fragmentid) => {
-      this.trigger('globalmessage', {
-        type: 'globalmessage',
-        target: this,
-        data: { messagetype: 'nav', type: 'bible', locationInfo: { sectionid, fragmentid } }
-      });
-    };
-    await this.mapPanel.init();
-
     const MediaLibrary = window.MediaLibrary;
     if (MediaLibrary) {
       MediaLibrary.getMediaLibraries((data) => {
@@ -279,8 +152,6 @@ export class MediaWindowComponent extends BaseWindow {
   }
 
   cleanup() {
-    this.mapPanel?.destroy();
-
     if (this._resizeHandler) {
       window.removeEventListener('resize', this._resizeHandler);
     }
@@ -308,25 +179,6 @@ export class MediaWindowComponent extends BaseWindow {
     if (content) {
       this.contentToProcess = content;
       this.processContent();
-    }
-
-    // Update map when Bible passage changes
-    if (data.messagetype === 'textload' && data.sectionid) {
-      this.mapPanel?.filterBySection(data.sectionid);
-
-      // Build a verse-text lookup from the parsed content for detail panel snippets
-      if (this.mapPanel && content) {
-        const verseTextMap = new Map();
-        content.querySelectorAll('[data-id]').forEach(el => {
-          const id = el.getAttribute('data-id');
-          if (!id || !id.includes('_')) return;
-          const clone = el.cloneNode(true);
-          clone.querySelectorAll('.vnum, sup').forEach(n => n.remove());
-          const text = clone.textContent.trim();
-          if (text) verseTextMap.set(id, text);
-        });
-        this.mapPanel._verseTextLookup = id => verseTextMap.get(id) ?? null;
-      }
     }
   }
 
@@ -586,9 +438,6 @@ export class MediaWindowComponent extends BaseWindow {
     if (mediaLibrary.type === 'jfm' || mediaLibrary.type === 'video') {
       return 'video';
     }
-    if (mediaLibrary.folder === 'maps' || mediaLibrary.iconClassName === 'map-icon') {
-      return 'maps';
-    }
     return 'art';
   }
 
@@ -715,106 +564,10 @@ export class MediaWindowComponent extends BaseWindow {
     img.style.cssText = `width:${widthPx};height:${heightPx}`;
   }
 
-  // --- Location detail panel (inline, fills thumbs area) ---
-
-  showLocationDetail(location, colocated, verseTextLookup) {
-    this.refs.locationDetail._colocatedLocations = colocated;
-    this.refs.detailContent.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
-    this.refs.thumbsContainer.classList.add('hidden');
-    this.refs.gallery.classList.remove('active');
-    this.refs.locationDetail.classList.remove('hidden');
-  }
-
-  hideLocationDetail() {
-    this.refs.locationDetail.classList.add('hidden');
-    this.refs.thumbsContainer.classList.remove('hidden');
-    this.mapPanel?.resetMarkerOpacity();
-  }
-
-  // --- Map mode + era ---
-
-  setMapMode(mode) {
-    this.refs.modeToggle.querySelectorAll('.media-mode-btn').forEach(btn =>
-      btn.classList.toggle('active', btn.dataset.mode === mode)
-    );
-    this.refs.eraFilter.classList.toggle('hidden', mode !== 'explore');
-    this.mapPanel?.setMode(mode);
-  }
-
-  // --- Map search ---
-
-  handleMapSearchInput() {
-    const value = this.refs.mapSearchInput.value.trim();
-    if (value.length < 2 || !this.mapPanel?.locationData) {
-      this.hideMapSuggestions();
-      return;
-    }
-    this.showMapSuggestions(fuzzySearchLocations(value, this.mapPanel.locationData));
-  }
-
-  handleMapSearchKeydown(e) {
-    const suggestions = this.state.mapSearchSuggestions;
-    if (!suggestions.length) return;
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.selectMapSuggestion(Math.min(this.state.mapSearchSelectedIndex + 1, suggestions.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.selectMapSuggestion(Math.max(this.state.mapSearchSelectedIndex - 1, 0));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const loc = suggestions[this.state.mapSearchSelectedIndex] || suggestions[0];
-      if (loc) {
-        this.mapPanel?.openLocation(loc);
-        this.refs.mapSearchInput.value = loc.name;
-      }
-      this.hideMapSuggestions();
-    } else if (e.key === 'Escape') {
-      this.hideMapSuggestions();
-    }
-  }
-
-  showMapSuggestions(suggestions) {
-    this.state.mapSearchSuggestions = suggestions;
-    this.state.mapSearchSelectedIndex = -1;
-
-    if (!suggestions.length) {
-      this.refs.mapSearchSuggestions.style.display = 'none';
-      return;
-    }
-
-    this.refs.mapSearchSuggestions.innerHTML = suggestions.map((loc, i) =>
-      `<div class="map-suggestion-item" data-index="${i}">
-        <span>${this.escapeHtml(loc.name)}</span>
-        <span class="verse-count">${loc.verses?.length || 0} verses</span>
-      </div>`
-    ).join('');
-    this.refs.mapSearchSuggestions.style.display = 'block';
-  }
-
-  hideMapSuggestions() {
-    this.refs.mapSearchSuggestions.style.display = 'none';
-    this.state.mapSearchSuggestions = [];
-    this.state.mapSearchSelectedIndex = -1;
-  }
-
-  selectMapSuggestion(index) {
-    this.refs.mapSearchSuggestions.querySelectorAll('.map-suggestion-item').forEach((item, i) => {
-      item.classList.toggle('selected', i === index);
-    });
-    this.state.mapSearchSelectedIndex = index;
-  }
-
   size(width, height) {
     const headerHeight = this.refs.header.offsetHeight;
     this.refs.main.style.height = `${height - headerHeight}px`;
     this.refs.main.style.width = `${width}px`;
-
-    // After resize, update marker positions for the new container dimensions
-    if (this.state.filters.maps) {
-      this.mapPanel?.updateMarkerScales();
-    }
 
     this.startResize();
   }

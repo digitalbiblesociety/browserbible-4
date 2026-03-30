@@ -332,6 +332,7 @@ export function registerWindowComponent(tagName, WindowClass, metadata = {}) {
   WindowClass.displayName = metadata.displayName;
   WindowClass.paramKeys = metadata.paramKeys || {};
   WindowClass.defaultInit = metadata.defaultInit || {};
+  WindowClass._tagName = tagName;
 
   if (!customElements.get(tagName)) {
     customElements.define(tagName, WindowClass);

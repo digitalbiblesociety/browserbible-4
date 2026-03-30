@@ -35,108 +35,11 @@
 	display: block;
 }
 
-.media-map-controls {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	margin-left: 6px;
-	padding-left: 6px;
-	border-left: 1px solid var(--color-border);
-}
-
-.media-mode-toggle,
-.media-era-filter {
-	display: flex;
-	border: 1px solid var(--color-border);
-	border-radius: 4px;
-	overflow: hidden;
-}
-
-.media-mode-toggle.hidden,
-.media-era-filter.hidden {
-	display: none;
-}
-
-.media-mode-btn,
-.media-era-btn {
-	padding: 2px 8px;
-	border: none;
-	background: transparent;
-	color: var(--color-text-muted);
-	font-size: 11px;
-	cursor: pointer;
-	transition: background 0.15s ease, color 0.15s ease;
-	white-space: nowrap;
-}
-
-.media-mode-btn:hover,
-.media-era-btn:hover {
-	background: var(--color-background-hover);
-}
-
-.media-mode-btn.active,
-.media-era-btn.active {
-	background: var(--color-primary);
-	color: #fff;
-}
-
 .MediaWindow .window-main {
 	background: var(--color-background);
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-}
-
-/* Interactive biblical map — top 45% of window-main */
-.media-map-panel {
-	flex: 0 0 45%;
-	min-height: 0;
-	position: relative;
-	overflow: hidden;
-	background: var(--color-background-alt);
-	cursor: grab;
-}
-
-.media-map-panel.hidden {
-	display: none;
-}
-
-/* Search box floating over the map */
-.map-search-overlay {
-	position: absolute;
-	top: 8px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 220px;
-	z-index: 10;
-}
-
-.map-search-overlay .app-input {
-	width: 100%;
-	box-sizing: border-box;
-	background: var(--color-background);
-	opacity: 0.9;
-}
-
-.map-search-overlay .app-input:focus {
-	opacity: 1;
-}
-
-.map-location-suggestions {
-	position: absolute;
-	inset: 100% 0 auto;
-}
-
-.media-map-panel.panning {
-	cursor: grabbing;
-}
-
-.media-map-panel svg {
-	touch-action: none;
-	user-select: none;
-	display: block;
-	width: 100%;
-	height: 100%;
 }
 
 /* Thumbs container takes remaining space and scrolls independently */
@@ -145,51 +48,6 @@
 	min-height: 0;
 	overflow-y: auto;
 }
-
-.MediaWindow .media-thumbs-container.hidden {
-	display: none;
-}
-
-/* Inline location detail — replaces thumbs when a map pin is opened */
-.media-location-detail {
-	flex: 1;
-	min-height: 0;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-}
-
-.media-location-detail.hidden {
-	display: none;
-}
-
-.media-detail-toolbar {
-	flex-shrink: 0;
-	padding: 6px 12px;
-	border-bottom: 1px solid var(--color-border);
-	background: var(--color-background);
-}
-
-.media-detail-back {
-	border: none;
-	background: none;
-	color: var(--color-primary);
-	cursor: pointer;
-	font-size: 13px;
-	padding: 2px 4px;
-	border-radius: 3px;
-}
-
-.media-detail-back:hover {
-	background: var(--color-background-hover);
-}
-
-.media-detail-content {
-	flex: 1;
-	overflow-y: auto;
-	padding: 4px 0;
-}
-
 
 .media-gallery {
 	display: none;

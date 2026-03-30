@@ -4,8 +4,9 @@
  * search input, passage/explore mode toggle, and message handling.
  */
 
-import { BaseWindow } from '../BaseWindow.js';
+import { BaseWindow, registerWindowComponent } from '../BaseWindow.js';
 import { fuzzySearchLocations } from './fuzzy-search.js';
+import { buildDetailHTML } from './detail-panel.js';
 import { MapPanel } from './map-panel.js';
 
 export class MapWindowComponent extends BaseWindow {
@@ -23,21 +24,34 @@ export class MapWindowComponent extends BaseWindow {
 
   async render() {
     this.innerHTML = `
-      <div class="window-header scroller-header">
-        <div class="scroller-header-inner">
-          <input type="text" placeholder="" class="app-input map-nav i18n" data-i18n="[placeholder]windows.map.placeholder" />
-          <div class="map-mode-toggle">
-            <button class="map-mode-btn active" data-mode="passage">Passage</button>
-            <button class="map-mode-btn" data-mode="explore">Explore</button>
-          </div>
-          <span class="map-location-count"></span>
+      <div class="window-header map-header">
+        <div class="map-header-inner">
+          <input type="text" placeholder="Search locations…" class="app-input map-nav" />
           <div class="map-search-suggestions"></div>
         </div>
+        <div class="map-mode-toggle">
+          <button class="map-mode-btn active" data-mode="passage">Passage</button>
+          <button class="map-mode-btn" data-mode="explore">Explore</button>
+        </div>
+        <div class="map-era-filter hidden">
+          <button class="map-era-btn active" data-era="all">All</button>
+          <button class="map-era-btn" data-era="ot">OT</button>
+          <button class="map-era-btn" data-era="nt">NT</button>
+        </div>
+        <span class="map-location-count"></span>
       </div>
-      <div class="window-maps svg-map-container">
-        <div class="map-empty-state">
-          <p class="map-empty-message"></p>
-          <button class="map-empty-explore-btn">Explore all locations</button>
+      <div class="window-main map-main">
+        <div class="svg-map-container">
+          <div class="map-empty-state">
+            <p class="map-empty-message"></p>
+            <button class="map-empty-explore-btn">Explore all locations</button>
+          </div>
+        </div>
+        <div class="map-detail hidden">
+          <div class="map-detail-toolbar">
+            <button class="map-detail-back">&#8592; Back</button>
+          </div>
+          <div class="map-detail-content"></div>
         </div>
       </div>
     `;
@@ -46,15 +60,20 @@ export class MapWindowComponent extends BaseWindow {
   cacheRefs() {
     super.cacheRefs();
 
-    this.refs.header = this.$('.scroller-header');
+    this.refs.header = this.$('.map-header');
+    this.refs.main = this.$('.map-main');
     this.refs.mapSearchInput = this.$('.map-nav');
     this.refs.searchSuggestions = this.$('.map-search-suggestions');
     this.refs.mapContainer = this.$('.svg-map-container');
     this.refs.modeToggle = this.$('.map-mode-toggle');
+    this.refs.eraFilter = this.$('.map-era-filter');
     this.refs.locationCount = this.$('.map-location-count');
     this.refs.emptyState = this.$('.map-empty-state');
     this.refs.emptyMessage = this.$('.map-empty-message');
     this.refs.emptyExploreBtn = this.$('.map-empty-explore-btn');
+    this.refs.detail = this.$('.map-detail');
+    this.refs.detailContent = this.$('.map-detail-content');
+    this.refs.detailBack = this.$('.map-detail-back');
   }
 
   attachEventListeners() {
@@ -71,8 +90,41 @@ export class MapWindowComponent extends BaseWindow {
       if (btn) this.setMode(btn.dataset.mode);
     });
 
+    // Era filter
+    this.addListener(this.refs.eraFilter, 'click', (e) => {
+      const btn = e.target.closest('.map-era-btn');
+      if (!btn) return;
+      this.refs.eraFilter.querySelectorAll('.map-era-btn').forEach(b =>
+        b.classList.toggle('active', b === btn)
+      );
+      this.mapPanel?.setExploreEra(btn.dataset.era);
+    });
+
     // Empty state explore button
     this.addListener(this.refs.emptyExploreBtn, 'click', () => this.setMode('explore'));
+
+    // Detail panel
+    this.addListener(this.refs.detailBack, 'click', () => this.hideDetail());
+    this.addListener(this.refs.detailContent, 'click', (e) => {
+      const coloc = e.target.closest('.map-detail-colocated-item');
+      if (coloc) {
+        const idx = parseInt(coloc.getAttribute('data-index'), 10);
+        const loc = this.refs.detail._colocatedLocations?.[idx];
+        if (loc) this.mapPanel?.openLocation(loc);
+        return;
+      }
+      const link = e.target.closest('.verse');
+      if (link) {
+        this.trigger('globalmessage', {
+          type: 'globalmessage',
+          target: this,
+          data: { messagetype: 'nav', type: 'bible', locationInfo: {
+            sectionid: link.getAttribute('data-sectionid'),
+            fragmentid: link.getAttribute('data-fragmentid')
+          }}
+        });
+      }
+    });
 
     // Search suggestion clicks
     this.addListener(this.refs.searchSuggestions, 'click', (e) => {
@@ -105,6 +157,11 @@ export class MapWindowComponent extends BaseWindow {
       locationCount: this.refs.locationCount
     });
 
+    // Show location detail inline instead of popover
+    this.mapPanel._onLocationOpen = (location, colocated, verseTextLookup) => {
+      this.showDetail(location, colocated, verseTextLookup);
+    };
+
     // Wire verse-click callback → broadcast navigation
     this.mapPanel._onVerseClick = (sectionid, fragmentid) => {
       this.trigger('globalmessage', {
@@ -136,12 +193,13 @@ export class MapWindowComponent extends BaseWindow {
     this.refs.modeToggle.querySelectorAll('.map-mode-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === mode);
     });
+    this.refs.eraFilter.classList.toggle('hidden', mode !== 'explore');
     this.mapPanel?.setMode(mode);
     this.updateEmptyState();
   }
 
   updateEmptyState() {
-    if (!this.mapPanel) return;
+    if (!this.mapPanel?.locationData) return;
     const isPassage = this.mapPanel.state.mode === 'passage';
     const visibleCount = this.refs.mapContainer
       .querySelectorAll('.map-marker:not(.filtered-out):not(.clustered)').length;
@@ -154,6 +212,19 @@ export class MapWindowComponent extends BaseWindow {
       this.refs.emptyMessage.textContent =
         `No locations found in ${this.mapPanel.state.currentReference}`;
     }
+  }
+
+  // --- Detail panel ---
+
+  showDetail(location, colocated, verseTextLookup) {
+    this.refs.detail._colocatedLocations = colocated;
+    this.refs.detailContent.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
+    this.refs.detail.classList.remove('hidden');
+  }
+
+  hideDetail() {
+    this.refs.detail.classList.add('hidden');
+    this.mapPanel?.resetMarkerOpacity();
   }
 
   // --- Search ---
@@ -255,9 +326,9 @@ export class MapWindowComponent extends BaseWindow {
   // --- Sizing ---
 
   size(width, height) {
-    // Height is managed by CSS flex (map-window is a flex column, container has flex:1).
-    // Only set width explicitly so the SVG coordinate math uses the right scale.
-    this.refs.mapContainer.style.width = `${width}px`;
+    const headerHeight = this.refs.header?.offsetHeight || 50;
+    this.refs.main.style.width = `${width}px`;
+    this.refs.main.style.height = `${height - headerHeight}px`;
     if (this.mapPanel) this.mapPanel.updateMarkerScales();
   }
 
@@ -271,6 +342,12 @@ export class MapWindowComponent extends BaseWindow {
     };
   }
 }
+
+registerWindowComponent('map-window', MapWindowComponent, {
+  windowType: 'map',
+  displayName: 'Map',
+  paramKeys: {}
+});
 
 export { MapWindowComponent as MapWindow };
 

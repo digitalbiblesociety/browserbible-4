@@ -60,7 +60,10 @@ export class Window {
       const isWebComponent = WindowType.WindowClass.prototype instanceof HTMLElement;
 
       if (isWebComponent) {
-        this.controller = new WindowType.WindowClass();
+        const tagName = WindowType.WindowClass._tagName;
+        this.controller = (tagName && customElements.get(tagName))
+          ? document.createElement(tagName)
+          : new WindowType.WindowClass();
         this.controller.parentInfo = { node: this.node, tab: this.tab };
         this.controller.windowId = id;
         this.controller.initData = data || {};

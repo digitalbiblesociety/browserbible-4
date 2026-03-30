@@ -21,6 +21,7 @@ import { TextComparisonWindow } from './TextComparisonWindow.js';
 import { StatisticsWindow } from './StatisticsWindow.js';
 import { DeafBibleWindow } from './DeafBibleWindow.js';
 import { MediaWindow } from './MediaWindow.js';
+import { MapWindow } from './MapWindow/MapWindow.js';
 import { NotesWindow } from './NotesWindow.js';
 import { FlashcardWindow } from './FlashcardWindow.js';
 
@@ -94,6 +95,14 @@ registerWindowType({
 });
 
 registerWindowType({
+  param: 'map',
+  className: 'MapWindow',
+  WindowClass: MapWindow,
+  displayName: 'Map',
+  paramKeys: { latitude: 'lat', longitude: 'lon' }
+});
+
+registerWindowType({
   param: 'commentary',
   className: 'CommentaryWindow',
   WindowClass: CommentaryWindow,
@@ -130,6 +139,7 @@ export {
   StatisticsWindow,
   DeafBibleWindow,
   MediaWindow,
+  MapWindow,
   NotesWindow,
   FlashcardWindow
 };
@@ -146,6 +156,7 @@ export default {
   StatisticsWindow,
   DeafBibleWindow,
   MediaWindow,
+  MapWindow,
   NotesWindow,
   FlashcardWindow,
   Scroller,
