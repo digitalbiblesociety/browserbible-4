@@ -428,7 +428,6 @@ export function CommandPalette(_parentNode, _menu) {
     const ref = new Reference(query);
     if (!ref || !ref.isValid?.()) return [];
 
-    const textid = getCurrentVersion();
     return [{
       name: `Go to ${ref.toString()}`,
       category: 'navigate',
@@ -447,22 +446,6 @@ export function CommandPalette(_parentNode, _menu) {
         close();
       }
     }];
-  };
-
-  const getCurrentVersion = () => {
-    const app = getApp();
-    const config = getConfig();
-    let textid = config.newBibleWindowVersion;
-    const appSettings = app?.windowManager?.getSettings();
-    if (appSettings) {
-      for (const settings of appSettings) {
-        if (settings.windowType === 'BibleWindow') {
-          textid = settings.data.textid;
-          break;
-        }
-      }
-    }
-    return textid;
   };
 
   const handleInput = () => {

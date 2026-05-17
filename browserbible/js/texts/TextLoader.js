@@ -126,7 +126,11 @@ export function getProviderId(input) {
 }
 
 export function getText(textid, callback, errorCallback) {
-  const textinfo = textData[textid];
+  // textData is keyed by the bare id (data.id after processText strips any
+  // "provider:" prefix). Normalize the lookup key the same way so prefixed
+  // and bare forms hit the same cache slot.
+  const bareId = getTextid(textid);
+  const textinfo = textData[bareId];
 
   if (typeof textinfo !== 'undefined') {
     if (typeof callback !== 'undefined') {
@@ -136,7 +140,7 @@ export function getText(textid, callback, errorCallback) {
   }
 
   const providerName = getProviderName(textid);
-  textid = getTextid(textid);
+  textid = bareId;
 
   const provider = textProviders.get(providerName);
   if (!provider) {

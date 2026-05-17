@@ -46,7 +46,7 @@ class AppSettingsManager {
     try {
       storedValue = JSON.parse(storedValue);
     } catch {
-      // invalid JSON, use default
+      return returnValue;
     }
 
     return { ...returnValue, ...storedValue };

@@ -100,7 +100,10 @@ function normalizeAndClamp(bookid, c1, v1, c2, v2) {
   if (c1 === -1) c1 = 1;
   else if (chapters?.length && c1 > chapters.length) { c1 = chapters.length; if (v1 > 0) v1 = 1; }
   if (chapters?.length && v1 > chapters[c1 - 1]) v1 = chapters[c1 - 1];
-  if (v2 <= v1) { c2 = -1; v2 = -1; }
+  // Drop the trailing range only when the end position is at or before the start.
+  // Compare as (chapter, verse) tuples so cross-chapter ranges like "3:16-4:2" survive.
+  const endAtOrBeforeStart = c2 < c1 || (c2 === c1 && v2 <= v1);
+  if (endAtOrBeforeStart) { c2 = -1; v2 = -1; }
 
   return { chapter1: c1, verse1: v1, chapter2: c2, verse2: v2 };
 }

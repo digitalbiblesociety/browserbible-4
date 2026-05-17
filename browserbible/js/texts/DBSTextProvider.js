@@ -162,7 +162,7 @@ export function getTextInfo(textid, callback) {
   }
 }
 
-const loadSectionText = (textid, sectionid, callback) => {
+const loadSectionText = (textid, sectionid, callback, errorCallback) => {
   const config = getConfig();
 
   const textinfo = getTextInfoSync(textid);
@@ -214,12 +214,12 @@ const loadSectionText = (textid, sectionid, callback) => {
       callback(html.join(''));
     })
     .catch(_error => {
-      callback(null);
+      errorCallback?.(textid, sectionid);
     });
 };
 
-export function loadSection(textid, sectionid, callback) {
-  loadSectionText(textid, sectionid, callback);
+export function loadSection(textid, sectionid, callback, errorCallback) {
+  loadSectionText(textid, sectionid, callback, errorCallback);
 }
 
 const highlightWords = (text, searchTermsRegExp) => {

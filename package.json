@@ -15,10 +15,15 @@
     "build:dev": "SITE=dev vite build",
     "build:inscript": "SITE=inscript vite build",
     "preview": "vite preview",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "lint": "eslint app/js",
-    "lint:fix": "eslint app/js --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "fetch-starter-pack": "node tests/scripts/fetch-starter-pack.mjs",
+    "repair-starter-pack": "node tests/scripts/repair-starter-pack.mjs",
+    "lint": "eslint browserbible/js",
+    "lint:fix": "eslint browserbible/js --fix",
     "vd:dev": "vite --config verse-detection/vite.config.js serve verse-detection",
     "vd:build": "vite --config verse-detection/vite.config.ts build && vite --config verse-detection/vite.config.auto.ts build",
     "vd:preview": "vite --config verse-detection/vite.config.js preview verse-detection"
@@ -29,11 +34,14 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.49.0",
+    "@vitest/coverage-v8": "^4.1.5",
     "browserslist": "^4.28.1",
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
+    "jsdom": "^29.1.1",
     "lightningcss": "^1.31.1",
     "vite": "^7.2.4",
-    "vite-plugin-compression2": "^2.4.0"
+    "vite-plugin-compression2": "^2.4.0",
+    "vitest": "^4.1.5"
   }
 }

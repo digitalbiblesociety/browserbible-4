@@ -316,8 +316,7 @@ style.textContent = `
   parallels-window,
   statistics-window,
   media-window,
-  notes-window,
-  flashcard-window {
+  notes-window {
     display: block;
     width: 100%;
     height: 100%;

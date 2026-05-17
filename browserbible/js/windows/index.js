@@ -23,7 +23,6 @@ import { DeafBibleWindow } from './DeafBibleWindow.js';
 import { MediaWindow } from './MediaWindow.js';
 import { MapWindow } from './MapWindow/MapWindow.js';
 import { NotesWindow } from './NotesWindow.js';
-import { FlashcardWindow } from './FlashcardWindow.js';
 
 const config = getConfig();
 registerWindowType({
@@ -118,14 +117,6 @@ registerWindowType({
   paramKeys: { noteId: 'n', filter: 'f' }
 });
 
-registerWindowType({
-  param: 'flashcard',
-  className: 'FlashcardWindow',
-  WindowClass: FlashcardWindow,
-  displayName: 'Flashcards',
-  paramKeys: { mode: 'm' }
-});
-
 export {
   TextWindow,
   BibleWindow,
@@ -140,8 +131,7 @@ export {
   DeafBibleWindow,
   MediaWindow,
   MapWindow,
-  NotesWindow,
-  FlashcardWindow
+  NotesWindow
 };
 
 export default {
@@ -158,7 +148,6 @@ export default {
   MediaWindow,
   MapWindow,
   NotesWindow,
-  FlashcardWindow,
   Scroller,
   AudioController
 };

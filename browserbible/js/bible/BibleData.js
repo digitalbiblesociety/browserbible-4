@@ -59,18 +59,30 @@ export const BOOK_DATA = {
   "M1":{"name":"1 Maccabees","sortOrder":52,"shortCode":"M1","usfm":"1MA","osis":"1Macc","chapters":[],"names":{"eng":["1 Maccabees"]}},
   "M2":{"name":"2 Maccabees","sortOrder":53,"shortCode":"M2","usfm":"2MA","osis":"2Macc","chapters":[],"names":{"eng":["2 Maccabees"]}},
   "E1":{"name":"1 Esdras","sortOrder":54,"shortCode":"E1","usfm":"1ES","osis":"1Esd","chapters":[],"names":{"eng":["1 Esdras"]}},
-  "PX":{"name":"Psalm 151","sortOrder":56,"shortCode":"PX","usfm":"PS2","osis":"AddPs","chapters":[null],"names":{"eng":["Psalm 151"]}},
-  "PN":{"name":"Prayer of Manasseh","sortOrder":56,"shortCode":"PN","usfm":"MAN","osis":"PrMan","chapters":[null],"names":{"eng":["Prayer of Manasseh"]}},
+  "PX":{"name":"Psalm 151","sortOrder":56,"shortCode":"PX","usfm":"PS2","osis":"Ps151","chapters":[null],"names":{"eng":["Psalm 151"]}},
+  "PN":{"name":"Prayer of Manasseh","sortOrder":55,"shortCode":"PN","usfm":"MAN","osis":"PrMan","chapters":[null],"names":{"eng":["Prayer of Manasseh"]}},
   "M3":{"name":"3 Maccabees","sortOrder":57,"shortCode":"M3","usfm":"3MA","osis":"3Macc","chapters":[],"names":{"eng":["3 Maccabees"]}},
   "E2":{"name":"2 Esdras","sortOrder":58,"shortCode":"E2","usfm":"2ES","osis":"2Esd","chapters":[],"names":{"eng":["2 Esdras","5 Ezra"]}},
   "M4":{"name":"4 Maccabees","sortOrder":59,"shortCode":"M4","usfm":"4MA","osis":"4Macc","chapters":[],"names":{"eng":["4 Maccabees"]}},
   "OS":{"name":"Odes of Solomon","sortOrder":60,"shortCode":"OS","usfm":"ODS","osis":"OdesSol","chapters":[],"names":{"eng":["Odes of Solomon"]}},
   "SP":{"name":"Psalms of Solomon","sortOrder":61,"shortCode":"SP","usfm":"PSS","osis":"PssSol","chapters":[],"names":{"eng":["Psalms of Solomon"]}},
-  "LL":{"name":"Epistle to the Laodiceans","sortOrder":62,"shortCode":"LL","usfm":"EPL","osis":"EpLao","chapters":[],"names":{"eng":["Epistle to the Laodiceans"]}},
-  "N1":{"name":"Ethiopic Apocalypse of Enoch","sortOrder":63,"shortCode":"N1","usfm":"1EN","osis":"1En","chapters":[],"names":{"eng":["Ethiopic Apocalypse of Enoch"]}},
+  "LL":{"name":"Epistle to the Laodiceans","sortOrder":62,"shortCode":"LL","usfm":"LAO","osis":"EpLao","chapters":[],"names":{"eng":["Epistle to the Laodiceans"]}},
+  "N1":{"name":"Enoch","sortOrder":63,"shortCode":"N1","usfm":"ENO","osis":"1En","chapters":[],"names":{"eng":["Enoch","1 Enoch"]}},
   "JE":{"name":"Jubilees","sortOrder":64,"shortCode":"JE","usfm":"JUB","osis":"Jub","chapters":[],"names":{"eng":["Jubilees"]}},
   "AD":{"name":"Additions to Daniel","sortOrder":65,"shortCode":"AD","usfm":"DNT","osis":"AddDan","chapters":[null,null,null,null,null,null,null,null,null,null,null,null,null,null],"names":{"eng":["Additions to Daniel"]}},
   "DG":{"name":"Daniel (Greek)","sortOrder":66,"shortCode":"DG","usfm":"DAG","osis":"DanGr","chapters":[null,null,null,null,null,null,null,null,null,null,null,null],"names":{"eng":["Daniel (Greek)"]}},
+  "OA":{"name":"Odes","sortOrder":110,"shortCode":"OA","usfm":"ODA","osis":"Odes","chapters":[],"names":{"eng":["Odes","Odae"]}},
+  "EA":{"name":"Ezra Apocalypse","sortOrder":111,"shortCode":"EA","usfm":"EZA","osis":"EzraApoc","chapters":[],"names":{"eng":["Ezra Apocalypse"]}},
+  "E5":{"name":"5 Ezra","sortOrder":112,"shortCode":"E5","usfm":"5EZ","osis":"5Ezra","chapters":[],"names":{"eng":["5 Ezra"]}},
+  "E6":{"name":"6 Ezra","sortOrder":113,"shortCode":"E6","usfm":"6EZ","osis":"6Ezra","chapters":[],"names":{"eng":["6 Ezra"]}},
+  "P3":{"name":"Psalms 152-155","sortOrder":114,"shortCode":"P3","usfm":"PS3","osis":"5ApocSyrPss","chapters":[],"names":{"eng":["Psalms 152-155"]}},
+  "B2":{"name":"2 Baruch (Apocalypse)","sortOrder":115,"shortCode":"B2","usfm":"2BA","osis":"2Bar","chapters":[],"names":{"eng":["2 Baruch","2 Baruch (Apocalypse)"]}},
+  "LB":{"name":"Letter of Baruch","sortOrder":116,"shortCode":"LB","usfm":"LBA","osis":"EpBar","chapters":[],"names":{"eng":["Letter of Baruch"]}},
+  "Q1":{"name":"1 Meqabyan","sortOrder":117,"shortCode":"Q1","usfm":"1MQ","osis":"1Meq","chapters":[],"names":{"eng":["1 Meqabyan","1 Mekabis"]}},
+  "Q2":{"name":"2 Meqabyan","sortOrder":118,"shortCode":"Q2","usfm":"2MQ","osis":"2Meq","chapters":[],"names":{"eng":["2 Meqabyan","2 Mekabis"]}},
+  "Q3":{"name":"3 Meqabyan","sortOrder":119,"shortCode":"Q3","usfm":"3MQ","osis":"3Meq","chapters":[],"names":{"eng":["3 Meqabyan"]}},
+  "RP":{"name":"Reproof","sortOrder":120,"shortCode":"RP","usfm":"REP","osis":"Reproof","chapters":[],"names":{"eng":["Reproof"]}},
+  "B4":{"name":"4 Baruch","sortOrder":121,"shortCode":"B4","usfm":"4BA","osis":"4Bar","chapters":[],"names":{"eng":["4 Baruch","Paralipomenon of Jeremiah"]}},
   "MT":{"name":"Matthew","sortOrder":70,"shortCode":"MT","usfm":"MAT","osis":"Matt","section":"gospel","chapters":[25,23,17,25,48,34,29,34,38,42,30,50,58,36,39,28,27,35,30,34,46,46,39,51,46,75,66,20],"names":{"eng":["Matthew","Mt","Matt","Mat"]}},
   "MK":{"name":"Mark","sortOrder":71,"shortCode":"MK","usfm":"MRK","osis":"Mark","section":"gospel","chapters":[45,28,35,41,43,56,37,38,50,52,33,44,37,72,47,20],"names":{"eng":["Mark","Mk","Mar","Mrk"]}},
   "LK":{"name":"Luke","sortOrder":72,"shortCode":"LK","usfm":"LUK","osis":"Luke","section":"gospel","chapters":[80,52,38,44,39,49,50,56,62,42,54,59,35,35,32,31,37,43,48,47,38,71,56,53],"names":{"eng":["Luke","Lk","Luk","Lu"]}},
@@ -123,9 +135,13 @@ export const NT_BOOKS_OSIS = ["Matt","Mark","Luke","John","Acts","Rom","1Cor","2
 export const NT_BOOKS_USFM = ["MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","PHP","COL","1TH","2TH","1TI","2TI","TIT","PHM","HEB","JAS","1PE","2PE","1JN","2JN","3JN","JUD","REV"];
 export const NT_BOOKS = ["MT","MK","LK","JN","AC","RM","C1","C2","GL","EP","PP","CL","H1","H2","T1","T2","TT","PM","HB","JM","P1","P2","J1","J2","J3","JD","RV"];
 
-export const AP_BOOKS_OSIS = ["Tob","Jdt","EsthGr","AddEsth","Wis","Sir","Bar","EpJer","PrAzar","Sus","Bel","1Macc","2Macc","3Macc","4Macc","1Esd","2Esd","Ps151"];
-export const AP_BOOKS_USFM = ["TOB","JDT","ESG","ADE","WIS","SIR","BAR","LJE","PA","SUS","BEL","1MA","2MA","1ES"];
-export const AP_BOOKS = ["TB","JT","ED","AE","WS","SR","BR","LJ","S3Y","SN","BL","M1","M2","E1"];
+// Apocrypha / deuterocanonical books — full USFM 3.0 non-canonical set, 35 books, all three arrays aligned.
+// Order follows the USFM 3.0 numbering: 68-87, then A4-A6, B2-C3.
+// Note: ADE/AddEsth ("Additions to Esther") is intentionally excluded — USFM 3.0 deprecated it
+// in favor of ESG (Esther Greek). The BOOK_DATA.AE entry is retained for backward compatibility.
+export const AP_BOOKS_OSIS = ["Tob","Jdt","EsthGr","Wis","Sir","Bar","EpJer","PrAzar","Sus","Bel","1Macc","2Macc","3Macc","4Macc","1Esd","2Esd","PrMan","Ps151","Odes","PssSol","EzraApoc","5Ezra","6Ezra","DanGr","5ApocSyrPss","2Bar","EpBar","Jub","1En","1Meq","2Meq","3Meq","Reproof","4Bar","EpLao"];
+export const AP_BOOKS_USFM = ["TOB","JDT","ESG","WIS","SIR","BAR","LJE","S3Y","SUS","BEL","1MA","2MA","3MA","4MA","1ES","2ES","MAN","PS2","ODA","PSS","EZA","5EZ","6EZ","DAG","PS3","2BA","LBA","JUB","ENO","1MQ","2MQ","3MQ","REP","4BA","LAO"];
+export const AP_BOOKS      = ["TB", "JT", "EG",   "WS", "SR", "BR", "LJ", "PA", "SN", "BL","M1", "M2", "M3", "M4", "E1", "E2", "PN", "PX", "OA","SP",  "EA",     "E5",   "E6",   "DG",  "P3",        "B2", "LB",  "JE", "N1","Q1", "Q2", "Q3", "RP",    "B4", "LL"];
 
 export const DEFAULT_BIBLE = [...OT_BOOKS, ...NT_BOOKS];
 export const DEFAULT_BIBLE_OSIS = [...OT_BOOKS_OSIS, ...NT_BOOKS_OSIS];

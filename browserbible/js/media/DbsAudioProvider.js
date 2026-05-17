@@ -20,15 +20,6 @@ function dbsNumToCode(num) {
   return null;
 }
 
-/** Map BrowserBible 2-char code to DBS book number string (zero-padded) */
-function codeToDbsNum(code) {
-  let idx = OT_BOOKS.indexOf(code);
-  if (idx >= 0) return String(idx + 1).padStart(2, '0');
-  idx = NT_BOOKS.indexOf(code);
-  if (idx >= 0) return String(idx + 40).padStart(2, '0');
-  return null;
-}
-
 export class DbsAudioProvider extends BaseAudioProvider {
   constructor() {
     super();

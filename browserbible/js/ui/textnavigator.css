@@ -209,3 +209,56 @@
 	font-weight: bold;
 }
 
+/* Verse Navigator — third level (verse grid) */
+
+/* Fade non-selected chapter numbers when a chapter is picked */
+.verse-navigator .has-verse-selection .text-navigator-section {
+	opacity: 0.5;
+	transition: opacity var(--transition-fast, 0.15s);
+}
+
+.verse-navigator .has-verse-selection .text-navigator-section.selected {
+	opacity: 1;
+}
+
+/* Verse grid inserted inline after the selected chapter */
+.verse-navigator .verse-navigator-verses {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows 300ms ease-out;
+	padding: 4px 0;
+	border-top: 1px solid var(--color-border);
+	border-bottom: 1px solid var(--color-border);
+	margin: 4px 0;
+}
+
+.verse-navigator .verse-navigator-verses.collapsed {
+	grid-template-rows: 0fr;
+	padding: 0;
+	border-color: transparent;
+	margin: 0;
+}
+
+.verse-navigator .verse-navigator-verses-inner {
+	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.verse-navigator .verse-navigator-verse {
+	width: 36px;
+	height: 36px;
+	margin: 1px 1px 0 0;
+	color: var(--color-text);
+	text-align: center;
+	padding: 10px 0 0;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.verse-navigator .verse-navigator-verse:hover {
+	font-weight: bold;
+	background: var(--color-background-hover);
+	border-radius: 3px;
+}
+

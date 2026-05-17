@@ -7,7 +7,34 @@ import { elem, offset } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import { Reference } from '../bible/BibleReference.js';
+import { APOCRYPHAL_BIBLE } from '../bible/BibleData.js';
 import { loadSection } from '../texts/TextLoader.js';
+
+const findNearestSection = (desiredSectionid, sections) => {
+  if (!sections || sections.length === 0) return null;
+  if (sections.indexOf(desiredSectionid) !== -1) return desiredSectionid;
+
+  const bookid = desiredSectionid.substring(0, 2);
+  const chapterNum = parseInt(desiredSectionid.substring(2), 10) || 1;
+
+  const sameBook = sections.filter(s => s.startsWith(bookid));
+  if (sameBook.length > 0) {
+    return sameBook.reduce((best, s) => {
+      const sCh = parseInt(s.substring(2), 10);
+      const bestCh = parseInt(best.substring(2), 10);
+      return Math.abs(sCh - chapterNum) < Math.abs(bestCh - chapterNum) ? s : best;
+    });
+  }
+
+  const desiredIdx = APOCRYPHAL_BIBLE.indexOf(bookid);
+  if (desiredIdx === -1) return sections[0];
+
+  return sections.reduce((best, s) => {
+    const sIdx = APOCRYPHAL_BIBLE.indexOf(s.substring(0, 2));
+    const bestIdx = APOCRYPHAL_BIBLE.indexOf(best.substring(0, 2));
+    return Math.abs(sIdx - desiredIdx) < Math.abs(bestIdx - desiredIdx) ? s : best;
+  });
+};
 
 const SCROLL_THRESHOLDS = {
   LOAD_MORE_MULTIPLIER: 2,
@@ -342,6 +369,40 @@ export function Scroller(node) {
     }
   };
 
+  const formatSectionLabel = (sectionid) => {
+    const ref = Reference(sectionid);
+    if (!ref) return sectionid;
+    if (currentTextInfo?.lang) ref.language = currentTextInfo.lang;
+    return ref.toString() || sectionid;
+  };
+
+  const showChapterUnavailable = (sectionid) => {
+    if (!wrapper) return;
+
+    const requestedLabel = formatSectionLabel(sectionid);
+    const nearest = findNearestSection(sectionid, currentTextInfo?.sections);
+
+    wrapper.innerHTML = '';
+    nodeEl.scrollTop = 0;
+
+    const container = elem('div', { className: 'chapter-unavailable' });
+    const message = elem('p', { className: 'chapter-unavailable-message' });
+    message.textContent = `${requestedLabel} is not available in this text.`;
+    container.appendChild(message);
+
+    if (nearest && nearest !== sectionid) {
+      const link = elem('a', { className: 'chapter-unavailable-link', href: '#' });
+      link.textContent = `Go to ${formatSectionLabel(nearest)}`;
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        load('text', nearest);
+      });
+      container.appendChild(link);
+    }
+
+    wrapper.appendChild(container);
+  };
+
   const load = (loadType, sectionid, fragmentid) => {
     if (sectionid === 'null' || sectionid === null || sectionid === '') return;
     if (!wrapper) return;
@@ -355,6 +416,13 @@ export function Scroller(node) {
 
     const nodeScrolltopBefore = nodeEl.scrollTop;
     const wrapperHeightBefore = wrapper.offsetHeight;
+
+    const handleLoadError = () => {
+      if (!wrapper) return;
+      if (loadType === 'text') {
+        showChapterUnavailable(sectionid);
+      }
+    };
 
     loadSection(currentTextInfo, sectionid, (content) => {
       if (!wrapper || isAlreadyLoaded(sectionid, fragmentid)) return;
@@ -388,7 +456,7 @@ export function Scroller(node) {
       }
 
       loadMore();
-    });
+    }, handleLoadError);
   };
 
   const scrollTo = (fragmentid, scrollOffset) => {

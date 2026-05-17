@@ -18,6 +18,7 @@ import {
 import { TextNavigation } from '../common/TextNavigation.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 import { i18n } from '../lib/i18n.js';
+import { loadTexts } from '../texts/TextLoader.js';
 
 /**
  * Main application class
@@ -267,6 +268,15 @@ export async function initApp() {
   app.init();
 
   i18n.translatePage();
+
+  // Pre-warm the text manifest so the TextChooser popover opens instantly.
+  // Idle-scheduled so it doesn't compete with first paint or active windows.
+  const prewarmTexts = () => loadTexts(() => {});
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(prewarmTexts, { timeout: 3000 });
+  } else {
+    setTimeout(prewarmTexts, 1500);
+  }
 
   setTimeout(() => {
     const lang = i18n.lng();

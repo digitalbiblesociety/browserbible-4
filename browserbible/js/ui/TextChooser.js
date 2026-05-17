@@ -17,6 +17,20 @@ const hasTouch = 'ontouchend' in document;
 const ROW_HEIGHT = 32; // Fixed row height for virtual scrolling
 const BUFFER_ROWS = 5; // Extra rows to render above/below viewport
 
+// Pre-parse SVG icons once; cloneNode per row instead of innerHTML parsing.
+const lemmaTemplate = (() => {
+  const span = document.createElement('span');
+  span.className = 'text-chooser-lemma';
+  span.innerHTML = morphSvg;
+  return span;
+})();
+const audioTemplate = (() => {
+  const span = document.createElement('span');
+  span.className = 'text-chooser-audio';
+  span.innerHTML = audioEarSvg;
+  return span;
+})();
+
 /**
  * Create a text chooser with virtual scrolling
  * @returns {Object} TextChooser API object
@@ -127,6 +141,14 @@ export function TextChooser() {
     });
   }
 
+  function renderNow() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    renderVisible();
+  }
+
   function updateScrollHeight() {
     const totalHeight = filteredIndices.length * ROW_HEIGHT;
     scrollContent.style.height = `${totalHeight}px`;
@@ -181,14 +203,10 @@ export function TextChooser() {
       row.appendChild(elem('span', { className: 'text-chooser-name' }, text.name));
 
       if (text.hasLemma) {
-        const lemmaSpan = elem('span', { className: 'text-chooser-lemma' });
-        lemmaSpan.innerHTML = morphSvg;
-        row.appendChild(lemmaSpan);
+        row.appendChild(lemmaTemplate.cloneNode(true));
       }
       if (text.hasAudio || text.audioDirectory || text.fcbh_audio_ot || text.fcbh_audio_nt) {
-        const audioSpan = elem('span', { className: 'text-chooser-audio' });
-        audioSpan.innerHTML = audioEarSvg;
-        row.appendChild(audioSpan);
+        row.appendChild(audioTemplate.cloneNode(true));
       }
     }
 
@@ -229,12 +247,24 @@ export function TextChooser() {
     AppSettings.setValue(recentlyUsedKey, recentlyUsed);
   }
 
-  function processTexts(data) {
-    if (!data) return;
+  // Cache of the heavy language-grouped portion. Keyed on (textType, listData
+  // identity). Only invalidated when those change — recentlyUsed / current-lang
+  // updates only rebuild the small pinned-top sections.
+  let groupedCache = null;
+  let groupedCacheKey = null;
+  // Cache of the full processedData. Skips even the cheap concat if nothing relevant changed.
+  let processedDataKey = null;
 
-    processedData = [];
+  function buildSearchText(text) {
+    return [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
+      .join(' ').toLowerCase();
+  }
 
-    let arrayOfTexts = data.filter(t => {
+  function buildGroupedData() {
+    const key = textType + '|' + (listData ? listData.length : 0);
+    if (groupedCacheKey === key && groupedCache) return groupedCache;
+
+    const arrayOfTexts = listData.filter(t => {
       if (textType === 'audio') {
         return t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt;
       }
@@ -243,62 +273,6 @@ export function TextChooser() {
       return thisTextType === textType;
     });
 
-    // Prepend Recently Used and Current Language sections (bible only)
-    if (textType === 'bible') {
-      // Recently Used section
-      if (recentlyUsed.recent.length > 0) {
-        const textMap = new Map(arrayOfTexts.map(t => [t.id, t]));
-        const recentTexts = recentlyUsed.recent
-          .map(id => textMap.get(id))
-          .filter(Boolean);
-
-        if (recentTexts.length > 0) {
-          const recentHeader = i18nT('windows.bible.recentlyused') || 'Recently Used';
-          processedData.push({
-            type: 'section-header',
-            data: recentHeader,
-            sectionType: 'recent'
-          });
-          for (const text of recentTexts) {
-            processedData.push({
-              type: 'text',
-              data: text,
-              searchText: [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
-                .join(' ').toLowerCase(),
-              langHeader: recentHeader
-            });
-          }
-        }
-      }
-
-      // Current Language section
-      const currentLang = selectedTextInfo?.langNameEnglish
-        || getConfig().pinnedLanguage
-        || 'English';
-      const currentLangTexts = arrayOfTexts.filter(
-        t => (t.langNameEnglish || t.langName || '') === currentLang
-      );
-      if (currentLangTexts.length > 0) {
-        const langHeader = currentLang;
-        processedData.push({
-          type: 'section-header',
-          data: langHeader,
-          sectionType: 'current-language'
-        });
-        currentLangTexts.sort((a, b) => a.name.localeCompare(b.name));
-        for (const text of currentLangTexts) {
-          processedData.push({
-            type: 'text',
-            data: text,
-            searchText: [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
-              .join(' ').toLowerCase(),
-            langHeader: langHeader
-          });
-        }
-      }
-    }
-
-    // Group by language
     const langMap = new Map();
     for (const text of arrayOfTexts) {
       const langKey = text.langNameEnglish || text.langName || '';
@@ -308,8 +282,8 @@ export function TextChooser() {
       langMap.get(langKey).push(text);
     }
 
-    // Sort languages and build flat structure
     const languages = Array.from(langMap.keys()).sort();
+    const result = [];
 
     for (const langName of languages) {
       const textsInLang = langMap.get(langName);
@@ -317,21 +291,87 @@ export function TextChooser() {
 
       const displayName = textsInLang[0].langNameEnglish || textsInLang[0].langName;
 
-      processedData.push({
-        type: 'header',
-        data: displayName
-      });
+      result.push({ type: 'header', data: displayName });
 
       for (const text of textsInLang) {
-        processedData.push({
+        result.push({
           type: 'text',
           data: text,
-          searchText: [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
-            .join(' ').toLowerCase(),
+          searchText: buildSearchText(text),
           langHeader: displayName
         });
       }
     }
+
+    groupedCacheKey = key;
+    groupedCache = result;
+    // Side data for cheap pinned-top lookups
+    groupedCache.filteredArray = arrayOfTexts;
+    return result;
+  }
+
+  function buildPinnedTop() {
+    if (textType !== 'bible') return [];
+
+    const grouped = groupedCache;
+    const arrayOfTexts = grouped ? grouped.filteredArray : [];
+    const result = [];
+
+    if (recentlyUsed.recent.length > 0) {
+      const textMap = new Map(arrayOfTexts.map(t => [t.id, t]));
+      const recentTexts = recentlyUsed.recent
+        .map(id => textMap.get(id))
+        .filter(Boolean);
+
+      if (recentTexts.length > 0) {
+        const recentHeader = i18nT('windows.bible.recentlyused') || 'Recently Used';
+        result.push({ type: 'section-header', data: recentHeader, sectionType: 'recent' });
+        for (const text of recentTexts) {
+          result.push({
+            type: 'text',
+            data: text,
+            searchText: buildSearchText(text),
+            langHeader: recentHeader
+          });
+        }
+      }
+    }
+
+    const currentLang = selectedTextInfo?.langNameEnglish
+      || getConfig().pinnedLanguage
+      || 'English';
+    const currentLangTexts = arrayOfTexts.filter(
+      t => (t.langNameEnglish || t.langName || '') === currentLang
+    );
+    if (currentLangTexts.length > 0) {
+      result.push({ type: 'section-header', data: currentLang, sectionType: 'current-language' });
+      currentLangTexts.sort((a, b) => a.name.localeCompare(b.name));
+      for (const text of currentLangTexts) {
+        result.push({
+          type: 'text',
+          data: text,
+          searchText: buildSearchText(text),
+          langHeader: currentLang
+        });
+      }
+    }
+
+    return result;
+  }
+
+  function processTexts(data) {
+    if (!data) return;
+
+    const currentLang = selectedTextInfo?.langNameEnglish
+      || getConfig().pinnedLanguage
+      || 'English';
+    const key = textType + '|' + listData.length + '|' + recentlyUsed.recent.join(',') + '|' + currentLang;
+    if (processedDataKey === key && processedData.length > 0) return;
+    processedDataKey = key;
+
+    const grouped = buildGroupedData();
+    const pinned = buildPinnedTop();
+    processedData = pinned.length ? pinned.concat(grouped) : grouped.slice();
 
     filteredIndices = processedData.map((_, i) => i);
     updateScrollHeight();
@@ -354,19 +394,27 @@ export function TextChooser() {
     scheduleRender();
   }
 
+  // Cached so we can position the popover *before* showPopover() runs;
+  // offsetWidth is 0 while the popover is closed (display: none).
+  // Default matches the width set in textchooser.css.
+  let cachedChooserWidth = 320;
+
   function position() {
     if (target == null) return;
 
+    if (textChooser.offsetWidth) {
+      cachedChooserWidth = textChooser.offsetWidth;
+    }
+
     const targetOffset = offset(target);
     const targetOuterHeight = target.offsetHeight;
-    const selectorWidth = textChooser.offsetWidth;
     const winWidth = window.innerWidth;
 
     let top = targetOffset.top + targetOuterHeight + 10;
     let left = targetOffset.left;
 
-    if (winWidth < left + selectorWidth) {
-      left = winWidth - selectorWidth;
+    if (winWidth < left + cachedChooserWidth) {
+      left = winWidth - cachedChooserWidth;
       if (left < 0) left = 0;
     }
 
@@ -399,14 +447,18 @@ export function TextChooser() {
         applyFilter();
       }
 
+      // Reset scroll on reopen so the new column's content isn't shown
+      // mid-scroll from the previous open.
+      main.scrollTop = 0;
+      scrollTop = 0;
+
+      // Render synchronously before the browser paints the popover; otherwise
+      // the popover briefly shows stale rows from the previous open.
+      if (listData) renderNow();
+
       if (!hasTouch) {
         filter.focus();
       }
-
-      requestAnimationFrame(() => {
-        viewportHeight = main.clientHeight;
-        scheduleRender();
-      });
     } else {
       ext.trigger('offclick', { type: 'offclick' });
     }
@@ -417,10 +469,20 @@ export function TextChooser() {
     getTarget: () => target,
     getTextInfo: () => selectedTextInfo,
     setTextInfo,
-    // Expose native popover methods directly
-    show: () => textChooser.showPopover(),
+    // Position before showing so the popover paints at the right spot on the
+    // first frame; otherwise the toggle event (which fires post-paint) leaves
+    // a flicker at the prior open's position.
+    show: () => {
+      position();
+      textChooser.showPopover();
+    },
     hide: () => textChooser.hidePopover(),
-    toggle: () => textChooser.togglePopover(),
+    toggle: () => {
+      if (!textChooser.matches(':popover-open')) {
+        position();
+      }
+      textChooser.togglePopover();
+    },
     isVisible: () => textChooser.matches(':popover-open'),
     node: () => textChooser,
     size: () => {} // No-op, CSS handles sizing

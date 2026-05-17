@@ -9,7 +9,6 @@ import statsSvg from '../../css/images/stats.svg?raw';
 import audioEarSvg from '../../css/images/audio-ear.svg?raw';
 import signLanguageSvg from '../../css/images/sign-language.svg?raw';
 import highlighterSvg from '../../css/images/highlighter.svg?raw';
-import flashcardSvg from '../../css/images/flashcard.svg?raw';
 import gearSvg from '../../css/images/gear-black.svg?raw';
 import mapSvg from '../../css/images/map.svg?raw';
 import aboutSvg from '../../css/images/about.svg?raw';
@@ -25,7 +24,6 @@ const windowIcons = {
   StatisticsWindow: statsSvg,
   AudioWindow: audioEarSvg,
   DeafBibleWindow: signLanguageSvg,
-  FlashcardWindow: flashcardSvg,
   MapWindow: mapSvg,
   highlighter: highlighterSvg,
   settings: gearSvg,

@@ -92,7 +92,7 @@ const defaultConfig = {
   feedbackUrl: '',
   windowTypesOrder: [],
 
-  // Window types to hide from the UI (className strings, e.g. 'MapWindow', 'FlashcardWindow')
+  // Window types to hide from the UI (className strings, e.g. 'MapWindow', 'NotesWindow')
   disabledWindowTypes: (typeof __DISABLED_WINDOW_TYPES__ !== 'undefined') ? __DISABLED_WINDOW_TYPES__ : [],
 
   // Feature flags overridden at build time (e.g. 'enableHighlighterPlugin')
@@ -120,6 +120,21 @@ const defaultConfig = {
 const customConfigs = {
   dbs: {
     customCssUrl: 'dbs.css'
+  },
+  // Serves Bible content from the local public/ tree (starter pack) instead
+  // of the remote inscript.bible.cloud. Used by e2e tests in "local" mode.
+  // Default windows are overridden because the pack ships ENGWEB but not
+  // ENGASV (the upstream default's second window).
+  local: {
+    baseContentUrl: '',
+    windows: [
+      { type: 'bible', data: { textid: 'ENGWEB', fragmentid: 'JN1_1' } },
+      { type: 'bible', data: { textid: 'SPABES', fragmentid: 'JN1_1' } }
+    ],
+    newBibleWindowVersion: 'ENGWEB',
+    newComparisonWindowSourceVersion: 'ENGWEB',
+    newComparisonWindowTargetVersion: 'SPABES',
+    audioWindowDefaultBibleVersion: 'ENGWEB'
   }
 };
 
