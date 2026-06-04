@@ -3,13 +3,23 @@
  * Downloads and extracts the BrowserBible starter pack of Bible texts into
  * browserbible/public/content/texts/ if not already populated.
  *
- * URL: https://bibles.dbs.org/_assets/starter-pack.zip (~95MB, 17 Bibles)
+ * Source: a public GitHub Release asset (~95MB, 17 Bibles). GitHub's asset CDN
+ * serves datacenter IPs (incl. GitHub Actions runners) without bot-blocking,
+ * unlike the Cloudflare-fronted bibles.dbs.org which 403s from CI.
  *
- * Idempotent: skips if any text directory already exists. Set FORCE=1 to
- * re-download.
+ * Override the source with STARTER_PACK_URL (e.g. to use the dbs.org CDN
+ * locally). Idempotent: skips if any text directory already exists; FORCE=1
+ * re-downloads.
  *
  *   node tests/scripts/fetch-starter-pack.mjs
  *   FORCE=1 node tests/scripts/fetch-starter-pack.mjs
+ *   STARTER_PACK_URL=https://… node tests/scripts/fetch-starter-pack.mjs
+ *
+ * Publishing/updating the asset (one-time, requires repo write access):
+ *   gh release create starter-pack-v1 starter-pack.zip \
+ *     -R digitalbiblesociety/browserbible-4 -t "Starter pack" \
+ *     -n "Bible texts for e2e tests"
+ *   # to replace later: gh release upload starter-pack-v1 starter-pack.zip --clobber
  */
 
 import { existsSync, mkdirSync, readdirSync, createWriteStream, rmSync } from 'node:fs';
@@ -22,7 +32,9 @@ import { pipeline } from 'node:stream/promises';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const TEXTS_DIR = resolve(REPO_ROOT, 'browserbible/public/content/texts');
-const STARTER_PACK_URL = 'https://bibles.dbs.org/_assets/starter-pack.zip';
+const STARTER_PACK_URL =
+  process.env.STARTER_PACK_URL ||
+  'https://github.com/digitalbiblesociety/browserbible-4/releases/download/starter-pack-v1/starter-pack.zip';
 const ZIP_PATH = resolve(TEXTS_DIR, 'starter-pack.zip');
 
 function hasExistingTexts() {
@@ -36,9 +48,15 @@ function hasExistingTexts() {
 
 async function downloadZip() {
   console.log(`→ Downloading ${STARTER_PACK_URL}`);
-  const response = await fetch(STARTER_PACK_URL);
+  const response = await fetch(STARTER_PACK_URL, {
+    headers: { 'User-Agent': 'browserbible-ci', Accept: 'application/octet-stream' },
+  });
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    const detail = await response.text().catch(() => '');
+    throw new Error(
+      `HTTP ${response.status} ${response.statusText} fetching ${STARTER_PACK_URL}` +
+        (detail ? `\n${detail.slice(0, 300)}` : '')
+    );
   }
   mkdirSync(TEXTS_DIR, { recursive: true });
   await pipeline(Readable.fromWeb(response.body), createWriteStream(ZIP_PATH));

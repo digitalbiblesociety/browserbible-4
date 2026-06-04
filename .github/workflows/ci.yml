@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -66,7 +66,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11
 
       - uses: actions/setup-node@v4
         with:
@@ -91,14 +91,17 @@ jobs:
         run: pnpm exec playwright install-deps
 
       # Cache the extracted starter pack across runs. Only the *-local projects
-      # need it, but it's small enough on disk to always cache. The repaired
-      # pack on the CDN means a fresh fetch already produces a working layout.
+      # need it, but it's small enough on disk to always cache. Fetched from a
+      # public GitHub Release asset (see tests/scripts/fetch-starter-pack.mjs) —
+      # GitHub's CDN serves Actions runners, unlike the Cloudflare-fronted
+      # dbs.org which 403s from CI. Key bumped to v2 to drop any stale cache
+      # poisoned by earlier failed (403) runs.
       - name: Cache starter pack
         if: contains(matrix.project, '-local')
         uses: actions/cache@v4
         with:
           path: browserbible/public/content/texts
-          key: starter-pack-v1
+          key: starter-pack-v2
 
       - name: Skip starter pack for remote profile
         if: contains(matrix.project, '-remote')
