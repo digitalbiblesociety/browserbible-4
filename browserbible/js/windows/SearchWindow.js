@@ -12,9 +12,11 @@ const enterArrowSvg = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor
 import { getApp } from '../core/registry.js';
 import { i18n } from '../lib/i18n.js';
 import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, APOCRYPHAL_BIBLE, EXTRA_MATTER } from '../bible/BibleData.js';
+import { getShowApocrypha, isApocryphalBook } from '../bible/Apocrypha.js';
 import { Reference } from '../bible/BibleReference.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getText, loadTexts, startSearch, displayAbbr } from '../texts/TextLoader.js';
+import { SearchTools } from '../texts/Search.js';
 
 const getTextAsync = (textId) => AsyncHelpers.promisify(getText, textId);
 const loadTextsAsync = () => AsyncHelpers.promisify(loadTexts);
@@ -323,6 +325,8 @@ export class SearchWindowComponent extends BaseWindow {
   drawDivisions() {
     if (!this.state.selectedTextInfo?.divisions) return;
 
+    const showApocrypha = getShowApocrypha();
+
     let otListHtml = '';
     let apListHtml = '';
     let ntListHtml = '';
@@ -334,6 +338,7 @@ export class SearchWindowComponent extends BaseWindow {
       const html = `<label class="division-name"><input type="checkbox" value="${dbsBookCode}"${checkedStatus} />${this.escapeHtml(bookName)}</label>`;
 
       if (EXTRA_MATTER.indexOf(dbsBookCode) > -1) continue;
+      if (!showApocrypha && isApocryphalBook(dbsBookCode)) continue;
 
       if (NT_BOOKS.indexOf(dbsBookCode) > -1) {
         ntListHtml += html;
@@ -618,7 +623,30 @@ export class SearchWindowComponent extends BaseWindow {
     this.createHighlights();
   }
 
+  /**
+   * Highlight original-language words for a lemma search by adding the
+   * `highlight` class to the <l> word elements whose s attribute contains a
+   * searched Strong's number. This mirrors how a normal word search visibly
+   * highlights the matched word.
+   */
+  highlightLemmaWords(root) {
+    const regexps = SearchTools.createLemmaHighlightRegExps(this.refs.input.value);
+    if (!regexps.length) return;
+
+    root.querySelectorAll('l[s]').forEach((el) => {
+      const strongs = el.getAttribute('s') || '';
+      if (regexps.some((re) => re.test(strongs))) {
+        el.classList.add('highlight');
+      }
+    });
+  }
+
   highlightResultsText() {
+    if (this.state.isLemmaSearch) {
+      this.refs.resultsBlock.querySelectorAll('.search-result-text').forEach((el) => this.highlightLemmaWords(el));
+      return;
+    }
+
     if (!this.state.searchTermsRegExp?.length) return;
 
     this.refs.resultsBlock.querySelectorAll('.search-result-text').forEach((el) => {
@@ -791,14 +819,14 @@ export class SearchWindowComponent extends BaseWindow {
       const escapedFragmentid = CSS.escape(result.fragmentid);
 
       document.querySelectorAll(`.${escapedFragmentid}`).forEach((el) => {
+        if (this.state.isLemmaSearch) {
+          this.highlightLemmaWords(el);
+          return;
+        }
+
         for (let j = 0, jl = this.state.searchTermsRegExp.length; j < jl; j++) {
           this.state.searchTermsRegExp[j].lastIndex = 0;
-
-          if (this.state.isLemmaSearch) {
-            el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `${match} class="highlight" `);
-          } else {
-            el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `<span class="highlight">${match}</span>`);
-          }
+          el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `<span class="highlight">${match}</span>`);
         }
       });
     }

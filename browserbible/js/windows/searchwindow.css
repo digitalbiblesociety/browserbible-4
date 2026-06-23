@@ -59,6 +59,7 @@
 .search-header .search-text {
 	width: 150px;
 	min-width: inherit;
+	padding-left: 8px;
 	padding-right: 30px;
 }
 

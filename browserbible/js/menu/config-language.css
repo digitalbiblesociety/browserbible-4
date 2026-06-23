@@ -1,5 +1,6 @@
 #config-language {
 	width: 100%;
+	height: auto;
 	padding: 0.5rem;
 	border: 1px solid var(--color-border);
 	background: var(--color-background-alt);

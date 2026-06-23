@@ -5,6 +5,7 @@
 import { getConfig } from '../core/config.js';
 import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
+import { getShowApocrypha, isApocryphalSection } from '../bible/Apocrypha.js';
 import { loadSection, getText } from './TextLoader.js';
 
 export const SearchTools = {
@@ -20,7 +21,7 @@ export const SearchTools = {
 
       for (const part of strongNumbers) {
         searchTermsRegExp.push(
-          new RegExp(`s=("')(\\w\\d{1,4}[a-z]?\\s)?(G|H)?${part.substr(1)}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?("')`, 'gi')
+          new RegExp(`s=["'](\\w\\d{1,4}[a-z]?\\s)?(G|H)?${part.substr(1)}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?["']`, 'gi')
         );
       }
     } else if (searchText.substring(0, 1) === '"' && searchText.substring(searchText.length - 1) === '"') {
@@ -54,6 +55,23 @@ export const SearchTools = {
     }
 
     return searchTermsRegExp;
+  },
+
+  /**
+   * Build boundary-matching regexes used to highlight original-language words
+   * for a lemma search. Each regex matches a Strong's number as a whole token
+   * inside a space-separated s attribute value (e.g. "G25" matches s="G3588 G25"
+   * but not s="G250"). Returns one regex per Strong's number in searchText.
+   */
+  createLemmaHighlightRegExps(searchText) {
+    return String(searchText)
+      .trim()
+      .split(/\s+/)
+      .filter((part) => /^[GH]?\d{1,6}[a-z]?$/i.test(part))
+      .map((part) => {
+        const num = part.replace(/^[GH]/i, '').replace(/[a-z]$/i, '');
+        return new RegExp(`(^|\\s)(G|H)?${num}[a-z]?($|\\s)`, 'i');
+      });
   },
 
   splitWords(input) {
@@ -272,12 +290,14 @@ export class SearchIndexLoader {
   groupBySection(fragmentids) {
     const results = [];
     const divisions = this.searchDivisions;
+    const showApocrypha = getShowApocrypha();
 
     for (const fid of fragmentids) {
       if (!fid) continue;
       const sectionid = fid.split('_')[0];
       const bookCode = sectionid.substring(0, 2);
 
+      if (!showApocrypha && isApocryphalSection(sectionid)) continue;
       if (divisions.length > 0 && !divisions.includes(bookCode)) continue;
 
       const existing = results.find(r => r.sectionid === sectionid);
@@ -398,8 +418,10 @@ export class TextSearch {
             }
           }
 
+          const showApocrypha = getShowApocrypha();
           for (const result of data.results) {
             const fragmentid = Object.keys(result)[0];
+            if (!showApocrypha && isApocryphalSection(fragmentid.split('_')[0])) continue;
             const html = result[fragmentid];
             this.searchFinalResults.push({ fragmentid, html });
           }
@@ -555,11 +577,13 @@ export class TextSearch {
       this.searchTermsRegExp[j].lastIndex = 0;
 
       if (this.isLemmaSearch) {
-        processedHtml = processedHtml.replace(this.searchTermsRegExp[j], (match) => {
+        // Lemma matches are highlighted in the DOM (by adding the `highlight`
+        // class to the matched <l> element), so only detect the match here and
+        // leave the markup untouched.
+        if (this.searchTermsRegExp[j].test(processedHtml)) {
           regMatches[j] = true;
           foundMatch = true;
-          return `${match} class="highlight" `;
-        });
+        }
       } else {
         processedHtml = processedHtml.replace(this.searchTermsRegExp[j], (match) => {
           regMatches[j] = true;

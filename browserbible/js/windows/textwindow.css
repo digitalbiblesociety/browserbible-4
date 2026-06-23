@@ -177,3 +177,57 @@
 	margin: 0 auto;
 	padding: 50px 0;
 }
+
+/* Version cycler: prev/next arrows flanking the version dropdown. The arrows
+   stay hidden unless the current language has more than one version. */
+.window .version-cycler {
+	display: inline-flex;
+	vertical-align: top;
+	margin: 0 5px 0 0;
+}
+
+.window .version-cycler .text-list {
+	margin: 0;
+}
+
+.window .version-arrow {
+	display: none;
+	width: 22px;
+	height: 30px;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	border: solid 1px var(--color-border);
+	background: var(--color-background);
+	color: var(--color-text-muted);
+	font-family: var(--font-family-sans);
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.window .version-cycler.has-versions .version-arrow {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Collapse the doubled borders where the arrows meet the dropdown */
+.window .version-cycler.has-versions .version-prev {
+	margin-inline-end: -1px;
+}
+.window .version-cycler.has-versions .version-next {
+	margin-inline-start: -1px;
+}
+
+.window .version-arrow:hover {
+	color: var(--color-text);
+	background: var(--color-background-hover);
+	position: relative;
+	z-index: var(--z-base);
+}
+
+.compact-ui .window .version-arrow {
+	height: 25px;
+}

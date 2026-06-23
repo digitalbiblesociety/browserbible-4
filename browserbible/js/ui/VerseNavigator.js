@@ -10,6 +10,7 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { BOOK_DATA, OT_BOOKS, NT_BOOKS, addNames, numbers as bibleNumbers, getVerseCount } from '../bible/BibleData.js';
 import { Reference } from '../bible/BibleReference.js';
+import { getShowApocrypha, isApocryphalBook } from '../bible/Apocrypha.js';
 
 /**
  * Create a verse navigator (Book > Chapter > Verse)
@@ -116,9 +117,12 @@ export function VerseNavigator() {
 		const divsEl = changer.querySelector('.text-navigator-divisions');
 		if (divsEl) divsEl.classList.toggle('text-navigator-divisions-full', fullBookMode);
 
+		const showApocrypha = getShowApocrypha();
+
 		for (let i = 0; i < textInfo.divisions.length; i++) {
 			const divisionid = textInfo.divisions[i];
 			if (!BOOK_DATA[divisionid]) continue;
+			if (!showApocrypha && isApocryphalBook(divisionid)) continue;
 
 			const divisionName = textInfo.divisionNames?.[i] ?? null;
 			const divisionAbbr = textInfo.divisionAbbreviations?.[i] ?? null;

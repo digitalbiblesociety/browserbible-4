@@ -19,6 +19,7 @@ import { FontSizeSettings } from './FontSizeSettings.js';
 import { ConfigToggles } from './ConfigToggles.js';
 import { ConfigUrl } from './ConfigUrl.js';
 import { LanguageSetting } from './LanguageSetting.js';
+import { ApocryphaSetting } from './ApocryphaSetting.js';
 import { MainMenu } from './MainMenu.js';
 import { CommandPalette } from './CommandPalette.js';
 
@@ -36,6 +37,7 @@ registerMenuComponent('FontSizeSettings', FontSizeSettings);
 registerMenuComponent('FontFamilySettings', FontFamilySettings);
 registerMenuComponent('ThemeSetting', ThemeSetting);
 registerMenuComponent('LanguageSetting', LanguageSetting);
+registerMenuComponent('ApocryphaSetting', ApocryphaSetting);
 registerMenuComponent('ConfigToggles', ConfigToggles);
 registerMenuComponent('ConfigUrl', ConfigUrl);
 registerMenuComponent('CommandPalette', CommandPalette);
@@ -58,6 +60,7 @@ export {
   ConfigToggles,
   ConfigUrl,
   LanguageSetting,
+  ApocryphaSetting,
   CommandPalette
 };
 
@@ -76,6 +79,7 @@ export default {
   FontFamilySettings,
   ThemeSetting,
   LanguageSetting,
+  ApocryphaSetting,
   ConfigToggles,
   ConfigUrl,
   CommandPalette,

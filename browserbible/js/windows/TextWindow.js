@@ -10,6 +10,8 @@ import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
 import { getText, loadTexts, displayAbbr } from '../texts/TextLoader.js';
 import { TextNavigation } from '../common/TextNavigation.js';
+import { t as i18nT } from '../lib/i18n.js';
+import { versionHasSection, probeOrder } from './versionCycle.js';
 import infoSvg from '../../css/images/info.svg?raw';
 import audioEarSvg from '../../css/images/audio-ear.svg?raw';
 
@@ -51,7 +53,11 @@ export class TextWindowComponent extends BaseWindow {
         <div class="window-header scroller-header">
           <div class="scroller-header-inner">
             <input type="text" class="app-input text-nav" />
-            <div class="app-list text-list"></div>
+            <span class="version-cycler">
+              <button type="button" class="version-arrow version-prev" tabindex="-1" title="${i18nT('windows.bible.prevversion')}" aria-label="${i18nT('windows.bible.prevversion')}">&lsaquo;</button>
+              <div class="app-list text-list"></div>
+              <button type="button" class="version-arrow version-next" tabindex="-1" title="${i18nT('windows.bible.nextversion')}" aria-label="${i18nT('windows.bible.nextversion')}">&rsaquo;</button>
+            </span>
             <span class="header-icon info-button"></span>
             <span class="header-icon audio-button"></span>
           </div>
@@ -91,6 +97,9 @@ export class TextWindowComponent extends BaseWindow {
     this.refs.navui = this.$('.text-nav');
     this.refs.textlistui = this.$('.text-list');
     this.refs.audioui = this.$('.audio-button');
+    this.refs.versionCycler = this.$('.version-cycler');
+    this.refs.versionPrev = this.$('.version-prev');
+    this.refs.versionNext = this.$('.version-next');
   }
 
   attachEventListeners() {
@@ -102,6 +111,10 @@ export class TextWindowComponent extends BaseWindow {
 
     // Text chooser button
     this.addListener(this.refs.textlistui, 'click', () => this.handleTextListClick());
+
+    // Version cycler arrows - step through versions in the current language
+    this.addListener(this.refs.versionPrev, 'click', () => this.cycleVersion(-1));
+    this.addListener(this.refs.versionNext, 'click', () => this.cycleVersion(1));
 
     // Navigator button
     this.addListener(this.refs.navui, 'click', (e) => this.handleNavClick(e));
@@ -273,15 +286,22 @@ export class TextWindowComponent extends BaseWindow {
   handleTextNavigatorChange(e) {
     const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
     if (target !== this.refs.navui) return;
-    TextNavigation.locationChange(e.data.sectionid);
-    this.scroller.load('text', e.data.sectionid);
+    const { sectionid, fragmentid } = e.data;
+    TextNavigation.locationChange(fragmentid || sectionid);
+    this.scroller.load('text', sectionid, fragmentid);
   }
 
   handleTextChooserChange(e) {
     const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
     if (target !== this.refs.textlistui) return;
 
-    const newTextInfo = e.data.textInfo;
+    this.changeText(e.data.textInfo);
+  }
+
+  // Switch the window to a different version, reloading the current location in
+  // the new text. Shared by the chooser dropdown and the version cycler arrows.
+  changeText(newTextInfo) {
+    if (!newTextInfo) return;
 
     this.setTextInfoUI(newTextInfo);
     this.updateTabLabel(displayAbbr(newTextInfo));
@@ -292,13 +312,103 @@ export class TextWindowComponent extends BaseWindow {
     if (this.state.currentTextInfo == null || newTextInfo.id !== this.state.currentTextInfo.id) {
       this.state.currentTextInfo = newTextInfo;
 
-      const oldLocationInfo = this.scroller.getLocationInfo();
+      // Preserve the reader's place. The scroller's live location can be
+      // momentarily null mid-load, so fall back to the last known location;
+      // otherwise we'd reset to sections[0] (Genesis 1). Passing the fragmentid
+      // lands on the same verse and makes the scroller recompute its location
+      // after loading (it skips that when no fragmentid is given).
+      const oldLocationInfo = this.scroller.getLocationInfo() ?? this.state.currentLocationInfo;
       const nearestSectionId = oldLocationInfo?.sectionid ?? newTextInfo.sections[0];
+      const fragmentid = oldLocationInfo?.fragmentid;
 
       this.refs.wrapper.innerHTML = '';
       this.scroller.setTextInfo(newTextInfo);
-      this.scroller.load('text', nearestSectionId);
+      this.scroller.load('text', nearestSectionId, fragmentid);
+
+      this.updateVersionCycler();
     }
+  }
+
+  // Step to the previous/next version in the current language (direction -1/+1),
+  // wrapping around. Versions that don't contain the current reference are
+  // skipped, so cycling lands on the next version that can actually show it.
+  // Keeps the chooser's selection in sync so the dropdown and its pinned
+  // "current language" section reflect the cycled version.
+  cycleVersion(direction) {
+    const siblings = this._versionSiblings;
+    const current = this.state.currentTextInfo;
+    if (!siblings || siblings.length < 2 || current == null) return;
+
+    const sectionid = this.scroller.getLocationInfo()?.sectionid
+      ?? this.state.currentLocationInfo?.sectionid;
+
+    let startIndex = siblings.findIndex((t) => t.id === current.id);
+    if (startIndex === -1) startIndex = 0;
+
+    // Probe candidates outward from the current version until one contains the
+    // reference. Each getText is cached after first load.
+    const order = probeOrder(siblings.length, startIndex, direction);
+    const tryNext = (i) => {
+      if (i >= order.length) return; // no other version has this reference
+      const candidate = siblings[order[i]];
+      if (!candidate || candidate.id === current.id) {
+        tryNext(i + 1);
+        return;
+      }
+
+      getText(candidate.id, (info) => {
+        if (info && versionHasSection(info, sectionid)) {
+          this.textChooser.setTextInfo(info);
+          this.changeText(info);
+        } else {
+          tryNext(i + 1);
+        }
+      });
+    };
+
+    tryNext(0);
+  }
+
+  // Recompute the same-language version list and show/hide the cycler arrows.
+  // Arrows appear only when the current language has more than one version of
+  // this window's text type.
+  updateVersionCycler() {
+    const current = this.state.currentTextInfo;
+    if (!current || !this.refs.versionCycler) {
+      this.setVersionSiblings([]);
+      return;
+    }
+
+    loadTexts((data) => {
+      // The version may have changed again while the manifest was loading.
+      if (this.state.currentTextInfo !== current) return;
+      this.setVersionSiblings(this.getLanguageSiblings(data, current));
+    });
+  }
+
+  // Versions sharing the current text's language and type, ordered the same way
+  // the TextChooser lists them (by name) so cycling matches the dropdown order.
+  getLanguageSiblings(data, textInfo) {
+    const type = this.state.textType;
+    const langOf = (t) => t.langNameEnglish || t.langName || '';
+
+    // Resolve the language from the manifest entry so grouping matches the
+    // TextChooser; a text's own info.json may omit the language fields.
+    const entry = data.find((t) => t.id === textInfo.id);
+    const langKey = entry ? langOf(entry) : langOf(textInfo);
+
+    return data
+      .filter((t) => {
+        if (t.hasText === false) return false;
+        const thisType = t.type === undefined ? 'bible' : t.type;
+        return thisType === type && langOf(t) === langKey;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  setVersionSiblings(siblings) {
+    this._versionSiblings = siblings;
+    this.refs.versionCycler?.classList.toggle('has-versions', siblings.length > 1);
   }
 
   handleMessage(e) {
@@ -361,6 +471,8 @@ export class TextWindowComponent extends BaseWindow {
     this.textNavigator.setTextInfo(this.state.currentTextInfo);
     this.audioController.setTextInfo(this.state.currentTextInfo);
     this.scroller.setTextInfo(this.state.currentTextInfo);
+
+    this.updateVersionCycler();
 
     let sectionid = this.getParam('sectionid');
     const fragmentid = this.getParam('fragmentid');

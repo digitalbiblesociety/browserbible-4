@@ -262,3 +262,121 @@
 	border-radius: 3px;
 }
 
+/* ── Unified filter (header) ───────────────────────────────── */
+.text-navigator .text-navigator-filter {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 8px;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	background: var(--color-background);
+	color: var(--color-text);
+	font-family: var(--font-family-sans);
+	font-size: 13px;
+}
+
+.text-navigator .text-navigator-filter:focus {
+	outline: none;
+	border-color: var(--color-primary, #2a85e8);
+}
+
+/* ── Body: books column + (English) passages column ───────── */
+.text-navigator .text-navigator-body {
+	display: flex;
+	align-items: stretch;
+}
+
+.text-navigator .text-navigator-body > * {
+	min-height: 0;
+	min-width: 0;
+}
+
+/* One column by default (non-English): books fill the width */
+.text-navigator .text-navigator-divisions {
+	flex: 1 1 auto;
+}
+
+/* Two columns for English texts: books left, passages right */
+.text-navigator.text-navigator-2col {
+	width: 560px;
+}
+
+.text-navigator.text-navigator-2col .text-navigator-divisions {
+	flex: 0 0 200px;
+}
+
+/* ── Passages (pericopes) column ──────────────────────────── */
+.text-navigator .text-navigator-pericopes {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border-inline-start: 1px solid var(--color-border);
+}
+
+.text-navigator .text-navigator-peri-header {
+	flex: 0 0 auto;
+	padding: 8px 10px;
+	font-weight: bold;
+	color: var(--color-text);
+	border-bottom: 1px solid var(--color-border);
+	background: var(--color-background-active);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.text-navigator .text-navigator-peri-header:empty {
+	display: none;
+}
+
+.text-navigator .text-navigator-peri-list {
+	flex: 1;
+	overflow: auto;
+	padding: 4px 0;
+}
+
+.text-navigator .peri-book-header {
+	padding: 8px 10px 4px;
+	color: var(--color-text-muted);
+	font-weight: bold;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	position: sticky;
+	top: 0;
+	background: var(--color-background);
+}
+
+.text-navigator .peri-item {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 6px 10px;
+	cursor: pointer;
+	color: var(--color-text);
+}
+
+.text-navigator .peri-item:hover {
+	background: var(--color-background-hover);
+}
+
+.text-navigator .peri-item.current {
+	background: var(--color-background-active);
+	box-shadow: inset 3px 0 0 var(--color-primary, #2a85e8);
+}
+
+.text-navigator .peri-title {
+	flex: 1;
+	min-width: 0;
+}
+
+.text-navigator .peri-ref {
+	flex: 0 0 auto;
+	color: var(--color-text-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+

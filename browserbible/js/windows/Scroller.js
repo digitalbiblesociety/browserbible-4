@@ -8,6 +8,7 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { getConfig } from '../core/config.js';
 import { Reference } from '../bible/BibleReference.js';
 import { APOCRYPHAL_BIBLE } from '../bible/BibleData.js';
+import { getShowApocrypha, skipApocryphalSection } from '../bible/Apocrypha.js';
 import { loadSection } from '../texts/TextLoader.js';
 
 const findNearestSection = (desiredSectionid, sections) => {
@@ -290,6 +291,15 @@ export function Scroller(node) {
     if (lastSection) lastSection.parentNode.removeChild(lastSection);
   };
 
+  // When apocrypha is hidden, walk past apocryphal sections in the scroll
+  // direction (+1 next / -1 prev) so they're skipped during continuous reading.
+  // Returns the first non-apocryphal section id, or null if the run hits the
+  // end of the text.
+  const nextVisibleSection = (sectionid, direction) => {
+    if (!sectionid || sectionid === 'null' || getShowApocrypha()) return sectionid;
+    return skipApocryphalSection(sectionid, direction, currentTextInfo?.sections);
+  };
+
   const loadMore = () => {
     if (!wrapper || speedDelta !== 0) return;
 
@@ -304,15 +314,15 @@ export function Scroller(node) {
 
     if (shouldLoadNext(belowBottom, nodeHeight, sections)) {
       const lastSection = sections[sections.length - 1];
-      const fragmentid = lastSection?.getAttribute('data-nextid');
-      if (fragmentid && fragmentid !== 'null') {
-        load('next', fragmentid);
+      const nextid = nextVisibleSection(lastSection?.getAttribute('data-nextid'), 1);
+      if (nextid && nextid !== 'null') {
+        load('next', nextid);
       }
     } else if (shouldLoadPrev(aboveTop, nodeHeight, sections)) {
       const firstSection = sections[0];
-      const fragmentid = firstSection?.getAttribute('data-previd');
-      if (fragmentid && fragmentid !== 'null') {
-        load('prev', fragmentid);
+      const previd = nextVisibleSection(firstSection?.getAttribute('data-previd'), -1);
+      if (previd && previd !== 'null') {
+        load('prev', previd);
       }
     } else if (shouldTrimTop(aboveTop, nodeHeight, sectionsCount)) {
       trimTopSection();

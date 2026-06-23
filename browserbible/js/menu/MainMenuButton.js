@@ -14,7 +14,8 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
  */
 export function MainMenuButton(parentNode, _menu) {
   const logoImg = elem('img', { src: './img/inscript_logo.svg', alt: 'Logo' });
-  const mainMenuLogo = elem('div', { id: 'app-logo' }, logoImg);
+  const verPill = elem('span', { className: 'app-version-pill' }, '5.0');
+  const mainMenuLogo = elem('div', { id: 'app-logo' }, logoImg, verPill);
   const mainMenuButton = elem('div', { id: 'main-menu-button' });
   const heading1 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.addwindow' } }, 'Add Window');
   const windowsList = elem('div', { id: 'main-menu-windows-list', className: 'main-menu-list' });
@@ -54,6 +55,7 @@ export function MainMenuButton(parentNode, _menu) {
   };
 
   mainMenuButton.addEventListener('click', mainMenuClick, false);
+  mainMenuLogo.addEventListener('click', mainMenuClick, false);
 
   mainMenuDropDown.addEventListener('click', (e) => {
     const target = e.target.closest('.main-menu-item');

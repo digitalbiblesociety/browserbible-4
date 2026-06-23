@@ -28,7 +28,8 @@
       "config": {
         "font": "Style",
         "settings": "Settings",
-        "tools": "Tools"
+        "tools": "Options",
+        "apocrypha": "Show Apocryphal Books"
       },
       "reset": "restore",
       "commandpalette": {
@@ -82,7 +83,9 @@
         "languages": "Language",
         "countries": "Country",
         "lemma": "Greek/Hebrew Popups",
-        "audio": "Audio available"
+        "audio": "Audio available",
+        "prevversion": "Previous version",
+        "nextversion": "Next version"
       },
       "commentary": {
         "label": "Commentary"
