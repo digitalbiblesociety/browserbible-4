@@ -9,19 +9,20 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 /**
  * Create the main menu button
  * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
  * @returns {Object} Component API
  */
-export function MainMenuButton(parentNode, _menu) {
-  const logoImg = elem('img', { src: './img/inscript_logo.svg', alt: 'Logo' });
-  const verPill = elem('span', { className: 'app-version-pill' }, '5.0');
-  const mainMenuLogo = elem('div', { id: 'app-logo' }, logoImg, verPill);
+export function MainMenuButton(parentNode) {
+  const mainMenuLogo = elem('div', { id: 'app-logo' },
+    elem('img', { src: './img/inscript_logo.svg', alt: 'Logo' }),
+    elem('span', { className: 'app-version-pill' }, '5.0')
+  );
   const mainMenuButton = elem('div', { id: 'main-menu-button' });
-  const heading1 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.addwindow' } }, 'Add Window');
-  const windowsList = elem('div', { id: 'main-menu-windows-list', className: 'main-menu-list' });
-  const heading2 = elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.options' } });
-  const features = elem('div', { id: 'main-menu-features', className: 'main-menu-list' });
-  const mainMenuDropDown = elem('div', { id: 'main-menu-dropdown', popover: '' }, heading1, windowsList, heading2, features);
+  const mainMenuDropDown = elem('div', { id: 'main-menu-dropdown', popover: '' },
+    elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.addwindow' } }, 'Add Window'),
+    elem('div', { id: 'main-menu-windows-list', className: 'main-menu-list' }),
+    elem('div', { className: 'main-menu-heading i18n', dataset: { i18n: '[html]menu.labels.options' } }),
+    elem('div', { id: 'main-menu-features', className: 'main-menu-list' })
+  );
 
   if (parentNode) {
     parentNode.appendChild(mainMenuButton);
@@ -31,42 +32,31 @@ export function MainMenuButton(parentNode, _menu) {
 
   // Handle popover toggle events (fires on light dismiss - click outside or Escape)
   mainMenuDropDown.addEventListener('toggle', (e) => {
-    if (e.newState === 'closed') {
-      mainMenuButton.classList.remove('active');
-    } else {
-      mainMenuButton.classList.add('active');
-    }
+    mainMenuButton.classList.toggle('active', e.newState !== 'closed');
   });
-
-  const show = () => {
-    mainMenuDropDown.showPopover();
-  };
 
   const hide = () => {
     mainMenuDropDown.hidePopover();
   };
 
-  const mainMenuClick = (_e) => {
+  const mainMenuClick = () => {
     if (mainMenuDropDown.matches(':popover-open')) {
       hide();
     } else {
-      show();
+      mainMenuDropDown.showPopover();
     }
   };
 
-  mainMenuButton.addEventListener('click', mainMenuClick, false);
-  mainMenuLogo.addEventListener('click', mainMenuClick, false);
+  mainMenuButton.addEventListener('click', mainMenuClick);
+  mainMenuLogo.addEventListener('click', mainMenuClick);
 
   mainMenuDropDown.addEventListener('click', (e) => {
-    const target = e.target.closest('.main-menu-item');
-    if (target) hide();
+    if (e.target.closest('.main-menu-item')) hide();
   });
 
-  let ext = {};
+  const ext = {};
   mixinEventEmitter(ext);
   ext._events = {};
 
   return ext;
 }
-
-export default MainMenuButton;

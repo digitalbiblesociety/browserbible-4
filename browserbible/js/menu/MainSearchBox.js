@@ -1,7 +1,4 @@
-/**
- * MainSearchBox
- * Top search input for Bible references and text search
- */
+// Top search input for Bible references and text search
 
 import { elem } from '../lib/helpers.esm.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -35,10 +32,9 @@ function getCurrentVersion() {
 /**
  * Create the main search box
  * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
  * @returns {HTMLElement} Search box element
  */
-export function MainSearchBox(parentNode, _menu) {
+export function MainSearchBox(parentNode) {
   const searchInput = elem('input', { type: 'search', className: 'i18n', id: 'main-search-input', autocomplete: 'off', dataset: { i18n: '[placeholder]menu.search.placeholder' } });
   const searchButton = elem('input', { type: 'button', id: 'main-search-button', value: '' });
   const searchBox = elem('div', { id: 'main-search-box' }, searchInput, searchButton);
@@ -128,10 +124,12 @@ export function MainSearchBox(parentNode, _menu) {
     // Reset selection to first item
     selectedIndex = 0;
 
-    // Render options
-    suggestions.innerHTML = currentOptions
-      .map((opt, i) => `<div class="suggestion-item${i === selectedIndex ? ' selected' : ''}" data-index="${i}">${opt.label}</div>`)
-      .join('');
+    // Render options. opt.label is pre-built HTML (contains <strong>), so set innerHTML per row.
+    suggestions.replaceChildren(...currentOptions.map((opt, i) => elem('div', {
+      className: `suggestion-item${i === selectedIndex ? ' selected' : ''}`,
+      dataset: { index: i },
+      innerHTML: opt.label
+    })));
 
     suggestions.style.display = 'block';
   };
@@ -219,5 +217,3 @@ export function MainSearchBox(parentNode, _menu) {
 
   return searchBox;
 }
-
-export default MainSearchBox;

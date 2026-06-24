@@ -1,8 +1,3 @@
-/**
- * ConfigUrl
- * URL copier for sharing current view
- */
-
 import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import { getWindowType, getApp } from '../core/registry.js';
@@ -90,8 +85,7 @@ export function ConfigUrl() {
   }
 
   const body = document.querySelector('#main-menu-features');
-  const linkButton = elem('span', { className: 'url-copy-button' });
-  linkButton.innerHTML = linkSvg;
+  const linkButton = elem('span', { className: 'url-copy-button', innerHTML: linkSvg });
   const urlInput = elem('input', { type: 'text', id: 'config-global-url-input', readOnly: true });
   const urlBox = elem('div', { id: 'config-global-url' }, linkButton, urlInput);
 

@@ -1,5 +1,4 @@
 /**
- * FontFamilySettings
  * Font family selector
  */
 
@@ -10,13 +9,7 @@ import { PlaceKeeper } from '../common/PlaceKeeper.js';
 
 const toSlug = (str) => str.replace(/\s+/g, '-').toLowerCase();
 
-/**
- * Create font family setting controls
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function FontFamilySettings(_parentNode, _menu) {
+export function FontFamilySettings() {
   const config = getConfig();
 
   const body = document.querySelector('#config-type .config-body');
@@ -29,7 +22,6 @@ export function FontFamilySettings(_parentNode, _menu) {
   let fontFamilyStyle = '';
 
   for (const fontStackName of fontFamilyStackNames) {
-    const fontStackValue = fontFamilyStacks[fontStackName];
     const fontSlug = toSlug(fontStackName);
 
     fontSettingHtml +=
@@ -42,23 +34,20 @@ export function FontFamilySettings(_parentNode, _menu) {
       `#config-font-family-${fontSlug}, ` +
       `.config-font-family-${fontSlug} .reading-text,` +
       `.config-font-family-${fontSlug} #font-size-table {` +
-      `  font-family: ${fontStackValue};` +
+      `  font-family: ${fontFamilyStacks[fontStackName]};` +
       '}';
   }
 
-  const styleEl = elem('style', fontFamilyStyle);
-  document.head.appendChild(styleEl);
+  document.head.appendChild(elem('style', fontFamilyStyle));
 
-  // Define setFontFamily before usage
   const setFontFamily = (newFontStackName) => {
     PlaceKeeper.preservePlace(() => {
-      // remove all others
       for (const fontStackName of fontFamilyStackNames) {
-        const className = `config-font-family-${toSlug(fontStackName)}`;
-        document.body.classList.remove(className);
+        document.body.classList.toggle(
+          `config-font-family-${toSlug(fontStackName)}`,
+          fontStackName === newFontStackName
+        );
       }
-
-      document.body.classList.add(`config-font-family-${toSlug(newFontStackName)}`);
 
       AppSettings.setValue(fontFamilyKey, { fontName: newFontStackName });
     });
@@ -69,24 +58,22 @@ export function FontFamilySettings(_parentNode, _menu) {
     return;
   }
 
-  const fontFamiliesContainer = elem('div', { className: 'config-font-families' });
-  fontFamiliesContainer.innerHTML = fontSettingHtml;
+  const fontFamiliesContainer = elem('div', {
+    className: 'config-font-families',
+    innerHTML: fontSettingHtml
+  });
   body?.appendChild(fontFamiliesContainer);
 
   // handle clicks using event delegation
-  if (fontFamiliesContainer) {
-    fontFamiliesContainer.addEventListener('change', (e) => {
-      const target = e.target.closest('input[name=config-font-family]');
-      if (target) {
-        const newFontFamilyValue = target.value;
-        setFontFamily(newFontFamilyValue);
-      }
-    });
-  }
+  fontFamiliesContainer.addEventListener('change', (e) => {
+    const target = e.target.closest('input[name=config-font-family]');
+    if (target) {
+      setFontFamily(target.value);
+    }
+  });
 
   // set default
-  const defaultRadio = fontFamiliesContainer.querySelector(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`);
-  defaultRadio?.click();
+  fontFamiliesContainer
+    .querySelector(`#config-font-family-${toSlug(fontFamilySetting.fontName)}-value`)
+    ?.click();
 }
-
-export default FontFamilySettings;

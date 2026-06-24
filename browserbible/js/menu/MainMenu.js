@@ -36,5 +36,3 @@ export class MainMenu {
     return this.components;
   }
 }
-
-export default MainMenu;

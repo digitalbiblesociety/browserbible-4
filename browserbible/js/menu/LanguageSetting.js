@@ -1,8 +1,3 @@
-/**
- * LanguageSetting
- * UI language selector
- */
-
 import { getConfig } from '../core/config.js';
 import { i18n } from '../lib/i18n.js';
 import { elem } from '../lib/helpers.esm.js';
@@ -26,13 +21,7 @@ function getLangTranslation(lang, key) {
   return typeof current === 'string' ? current : null;
 }
 
-/**
- * Create language setting controls
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function LanguageSetting(_parentNode, _menu) {
+export function LanguageSetting() {
   const config = getConfig();
 
   if (!config.enableLanguageSelector) {
@@ -49,8 +38,7 @@ export function LanguageSetting(_parentNode, _menu) {
   const langKeys = [...AVAILABLE_LANGUAGES].sort((a, b) => a.localeCompare(b));
 
   for (const langKey of langKeys) {
-    const option = elem('option', { value: langKey, textContent: langKey });
-    list.appendChild(option);
+    list.appendChild(elem('option', { value: langKey, textContent: langKey }));
   }
 
   // Preload all languages then update option labels with native names
@@ -81,15 +69,10 @@ export function LanguageSetting(_parentNode, _menu) {
     }
   };
 
-  // handle clicks
   list.addEventListener('change', async () => {
-    const newLang = list.value;
-
-    await i18n.setLng(newLang);
+    await i18n.setLng(list.value);
     localizeLanguages();
-  }, false);
+  });
 
   list.localizeLanguages = localizeLanguages;
 }
-
-export default LanguageSetting;

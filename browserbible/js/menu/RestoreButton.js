@@ -8,11 +8,9 @@ import { getConfig } from '../core/config.js';
 
 /**
  * Create restore button
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
  * @returns {HTMLElement|void} Button element
  */
-export function RestoreButton(_parentNode, _menu) {
+export function RestoreButton() {
   const config = getConfig();
 
   if (!config.enableRestore) {
@@ -32,8 +30,7 @@ export function RestoreButton(_parentNode, _menu) {
         querystring.push(`win${i + 1}=${win.type}`);
 
         // data
-        const keys = Object.keys(win.data ?? {});
-        for (const key of keys) {
+        for (const key of Object.keys(win.data ?? {})) {
           querystring.push(`${key}${i + 1}=${win.data[key]}`);
         }
       }
@@ -42,11 +39,9 @@ export function RestoreButton(_parentNode, _menu) {
     } else {
       window.location.reload();
     }
-  }, false);
+  });
 
   buttonMenu?.appendChild(restoreButton);
 
   return restoreButton;
 }
-
-export default RestoreButton;

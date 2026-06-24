@@ -1,5 +1,4 @@
 /**
- * FontSizeSettings
  * Font size slider control
  */
 
@@ -8,13 +7,7 @@ import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 
-/**
- * Create font size setting controls
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function FontSizeSettings(_parentNode, _menu) {
+export function FontSizeSettings() {
   const config = getConfig();
 
   const fontSizeMin = config.fontSizeMin ?? 14;
@@ -27,8 +20,7 @@ export function FontSizeSettings(_parentNode, _menu) {
   for (let size = fontSizeMin; size <= fontSizeMax; size += fontSizeStep) {
     styleCode += `.config-font-size-${size} .reading-text { font-size: ${size}px; }`;
   }
-  const styleEl = elem('style', styleCode);
-  document.head.appendChild(styleEl);
+  document.head.appendChild(elem('style', styleCode));
 
   if (!config.enableFontSizeSelector) {
     setFontSize(fontSizeDefault);
@@ -40,16 +32,6 @@ export function FontSizeSettings(_parentNode, _menu) {
   const defaultFontSizeSetting = { fontSize: fontSizeDefault };
   const fontSizeSetting = AppSettings.getValue(fontSizeKey, defaultFontSizeSetting);
 
-  const container = elem('div', {
-    id: 'font-size-container',
-    className: 'font-size-control'
-  });
-  const span1 = elem('span', { className: 'font-size-icon font-size-small' }, 'A');
-  const sliderWrapper = elem('div', { style: { flex: '1' } });
-  const span2 = elem('span', { className: 'font-size-icon font-size-large' }, 'A');
-  container.append(span1, sliderWrapper, span2);
-  body?.appendChild(container);
-
   const rangeInput = elem('input', {
     type: 'range',
     className: 'settings-slider',
@@ -59,18 +41,21 @@ export function FontSizeSettings(_parentNode, _menu) {
     value: fontSizeSetting.fontSize,
     style: { width: '100%' }
   });
-  sliderWrapper.appendChild(rangeInput);
 
-  // Define setFontSize before handleFontSizeChange
+  body?.appendChild(elem('div', { id: 'font-size-container', className: 'font-size-control' },
+    elem('span', { className: 'font-size-icon font-size-small' }, 'A'),
+    elem('div', { style: { flex: '1' } }, rangeInput),
+    elem('span', { className: 'font-size-icon font-size-large' }, 'A')
+  ));
+
   const setFontSize = (newFontSize) => {
     PlaceKeeper.preservePlace(() => {
-      // remove all others
+      // newFontSize may be a string (from input.value); compare via the built class name
+      const selectedClass = `config-font-size-${newFontSize}`;
       for (let size = fontSizeMin; size <= fontSizeMax; size += fontSizeStep) {
         const className = `config-font-size-${size}`;
-        document.body.classList.remove(className);
+        document.body.classList.toggle(className, className === selectedClass);
       }
-
-      document.body.classList.add(`config-font-size-${newFontSize}`);
 
       AppSettings.setValue(fontSizeKey, { fontSize: newFontSize });
     });
@@ -81,10 +66,8 @@ export function FontSizeSettings(_parentNode, _menu) {
     setFontSize(this.value);
   }
 
-  rangeInput.addEventListener('change', handleFontSizeChange, false);
-  rangeInput.addEventListener('input', handleFontSizeChange, false);
+  rangeInput.addEventListener('change', handleFontSizeChange);
+  rangeInput.addEventListener('input', handleFontSizeChange);
 
   setFontSize(fontSizeSetting.fontSize);
 }
-
-export default FontSizeSettings;

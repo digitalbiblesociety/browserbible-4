@@ -18,5 +18,3 @@ export class FullScreenButton {
     );
   }
 }
-
-export default FullScreenButton;

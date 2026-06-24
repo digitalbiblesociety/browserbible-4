@@ -1,8 +1,3 @@
-/**
- * ConfigToggles
- * Toggle switches for various display options
- */
-
 import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
 import AppSettings from '../common/AppSettings.js';
@@ -26,13 +21,7 @@ const toggleIcons = {
   media: mediaSvg,
 };
 
-/**
- * Create toggle settings controls
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function ConfigToggles(_parentNode, _menu) {
+export function ConfigToggles() {
   const config = getConfig();
 
   const body = document.querySelector('#config-type .config-body');
@@ -42,28 +31,17 @@ export function ConfigToggles(_parentNode, _menu) {
   const toggleDefaults = config.settingToggleDefaults ?? [];
 
   const setToggle = (toggleId, checked) => {
+    const isOn = checked === true || checked === 'true';
+
     PlaceKeeper.preservePlace(() => {
       const toggle = document.querySelector(`#config-toggle-${toggleId}`);
-      const onClass = `toggle-${toggleId}-on`;
-      const offClass = `toggle-${toggleId}-off`;
-
-      if (checked === true || checked === 'true') {
-        if (toggle) {
-          toggle.classList.add('toggle-on');
-          const input = toggle.querySelector('input');
-          if (input) input.checked = true;
-        }
-        document.body.classList.add(onClass);
-        document.body.classList.remove(offClass);
-      } else {
-        if (toggle) {
-          toggle.classList.remove('toggle-on');
-          const input = toggle.querySelector('input');
-          if (input) input.checked = false;
-        }
-        document.body.classList.remove(onClass);
-        document.body.classList.add(offClass);
+      if (toggle) {
+        toggle.classList.toggle('toggle-on', isOn);
+        const input = toggle.querySelector('input');
+        if (input) input.checked = isOn;
       }
+      document.body.classList.toggle(`toggle-${toggleId}-on`, isOn);
+      document.body.classList.toggle(`toggle-${toggleId}-off`, !isOn);
     });
 
     AppSettings.setValue(toggleId, { checked });
@@ -78,8 +56,7 @@ export function ConfigToggles(_parentNode, _menu) {
 
   const createToggle = (toggleName, defaultValue) => {
     const toggleId = toggleName.replace(/\s/gi, '').toLowerCase();
-    const toggleDefaultSetting = { checked: defaultValue };
-    const toggleSetting = AppSettings.getValue(toggleId, toggleDefaultSetting);
+    const toggleSetting = AppSettings.getValue(toggleId, { checked: defaultValue });
     const input = elem('input', { id: `config-toggle-${toggleId}-input`, type: 'checkbox', value: toggleId });
     const label = elem('label', { htmlFor: `config-toggle-${toggleId}-input`, title: toggleName });
 
@@ -90,17 +67,11 @@ export function ConfigToggles(_parentNode, _menu) {
       label.textContent = toggleName;
     }
 
-    const toggle = elem('div', { id: `config-toggle-${toggleId}`, className: 'config-toggle' }, input, label);
+    togglesContainer.appendChild(
+      elem('div', { id: `config-toggle-${toggleId}`, className: 'config-toggle' }, input, label)
+    );
 
-    togglesContainer.appendChild(toggle);
-    if (input) {
-      // Use regular function here because we need `this` binding for the event handler
-      input.addEventListener('click', function() {
-        const checked = this.checked;
-        const value = this.value;
-        setToggle(value, checked);
-      }, false);
-    }
+    input.addEventListener('click', () => setToggle(input.value, input.checked));
 
     setToggle(toggleId, toggleSetting.checked);
   };
@@ -109,5 +80,3 @@ export function ConfigToggles(_parentNode, _menu) {
     createToggle(toggleName, toggleDefaults[i]);
   }
 }
-
-export default ConfigToggles;

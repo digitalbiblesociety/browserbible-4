@@ -1,6 +1,7 @@
 /**
  * Menu Module Index
- * Registers all menu components with the registry
+ * Imported once (`import './menu/index.js'`) purely for the side effect of
+ * registering every menu component with the registry. Nothing imports its members.
  */
 
 import { registerMenuComponent } from '../core/registry.js';
@@ -20,7 +21,6 @@ import { ConfigToggles } from './ConfigToggles.js';
 import { ConfigUrl } from './ConfigUrl.js';
 import { LanguageSetting } from './LanguageSetting.js';
 import { ApocryphaSetting } from './ApocryphaSetting.js';
-import { MainMenu } from './MainMenu.js';
 import { CommandPalette } from './CommandPalette.js';
 
 // Register menu components
@@ -41,46 +41,3 @@ registerMenuComponent('ApocryphaSetting', ApocryphaSetting);
 registerMenuComponent('ConfigToggles', ConfigToggles);
 registerMenuComponent('ConfigUrl', ConfigUrl);
 registerMenuComponent('CommandPalette', CommandPalette);
-
-// Re-export everything
-export {
-  MainMenu,
-  MainMenuButton,
-  MainSearchBox,
-  AddWindowButton,
-  FullScreenButton,
-  ConfigButton,
-  NavigationButtons,
-  RestoreButton,
-  AboutScreen,
-  Feedback,
-  ThemeSetting,
-  FontFamilySettings,
-  FontSizeSettings,
-  ConfigToggles,
-  ConfigUrl,
-  LanguageSetting,
-  ApocryphaSetting,
-  CommandPalette
-};
-
-export default {
-  MainMenu,
-  MainMenuButton,
-  MainSearchBox,
-  FullScreenButton,
-  AddWindowButton,
-  ConfigButton,
-  AboutScreen,
-  Feedback,
-  RestoreButton,
-  NavigationButtons,
-  FontSizeSettings,
-  FontFamilySettings,
-  ThemeSetting,
-  LanguageSetting,
-  ApocryphaSetting,
-  ConfigToggles,
-  ConfigUrl,
-  CommandPalette,
-};
