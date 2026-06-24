@@ -14,7 +14,8 @@
 .svg-map-container {
 	position: relative;
 	overflow: hidden;
-	background: var(--color-background-alt);
+	/* Sea tone so the aspect-ratio letterbox around the map reads as ocean. */
+	background: #aacfe2;
 	cursor: grab;
 }
 
@@ -163,7 +164,8 @@ map-window .map-main {
 }
 
 map-window .svg-map-container {
-	flex: 0 0 50%;
+	/* Map takes 60%; the bottom 40% is reserved for location/reference details. */
+	flex: 0 0 60%;
 	min-height: 0;
 }
 
@@ -297,8 +299,9 @@ map-window .svg-map-container {
 /* === Inline Detail Panel (below map) === */
 
 .map-detail {
-	flex-shrink: 0;
-	max-height: 45%;
+	/* Fills the reserved bottom 40%; content scrolls internally. */
+	flex: 1 1 0;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
@@ -405,7 +408,22 @@ map-window .svg-map-container {
 	padding: 4px 0;
 }
 
-/* Verse rows reuse .search-result-row / .search-result-ref / .search-result-text from searchwindow.css */
+/*
+ * Verse rows reuse .search-result-row / .search-result-ref / .search-result-text
+ * from searchwindow.css. Those rely on `float: left` for the ref, which only
+ * works when the row also has in-flow verse text beside it. Map locations
+ * frequently have no loaded verse text, leaving the float-only row to collapse
+ * and the refs to stack into a diagonal staircase. Lay them out as real flex
+ * rows here so they read as a clean list with or without verse text.
+ */
+.map-detail-verses .search-result-row {
+	display: flex;
+	align-items: baseline;
+}
+
+.map-detail-verses .search-result-ref {
+	float: none;
+}
 
 
 /* === Empty State === */

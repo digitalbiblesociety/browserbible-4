@@ -8,36 +8,30 @@
 import { elem } from '../lib/helpers.esm.js';
 import { getShowApocrypha, setShowApocrypha } from '../bible/Apocrypha.js';
 
-/**
- * Create the apocrypha toggle in the Options (config-tools) section.
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function ApocryphaSetting(_parentNode, _menu) {
+/** Create the apocrypha toggle in the Options (config-tools) section. */
+export function ApocryphaSetting() {
   const body = document.querySelector('#config-tools .config-body');
   if (!body) return;
 
-  const input = elem('input', { id: 'config-apocrypha-input', type: 'checkbox' });
-  input.checked = getShowApocrypha();
-
-  const labelText = elem('span', {
-    className: 'config-apocrypha-label i18n',
-    textContent: 'Show Apocryphal Books',
-    dataset: { i18n: '[html]menu.config.apocrypha' }
+  const input = elem('input', {
+    id: 'config-apocrypha-input',
+    type: 'checkbox',
+    checked: getShowApocrypha()
   });
 
-  const track = elem('span', { className: 'config-switch-track' });
-  const switchEl = elem('span', { className: 'config-switch' }, input, track);
+  body.appendChild(
+    elem('label', { className: 'config-apocrypha-row', htmlFor: 'config-apocrypha-input' },
+      elem('span', {
+        className: 'config-apocrypha-label i18n',
+        textContent: 'Show Apocryphal Books',
+        dataset: { i18n: '[html]menu.config.apocrypha' }
+      }),
+      elem('span', { className: 'config-switch' },
+        input,
+        elem('span', { className: 'config-switch-track' })
+      )
+    )
+  );
 
-  const row = elem('label', { className: 'config-apocrypha-row', htmlFor: 'config-apocrypha-input' },
-    labelText, switchEl);
-
-  body.appendChild(row);
-
-  input.addEventListener('change', () => {
-    setShowApocrypha(input.checked);
-  }, false);
+  input.addEventListener('change', () => setShowApocrypha(input.checked));
 }
-
-export default ApocryphaSetting;

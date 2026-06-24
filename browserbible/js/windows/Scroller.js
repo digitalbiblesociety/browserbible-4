@@ -331,14 +331,21 @@ export function Scroller(node) {
     }
   };
 
-  const isAlreadyLoaded = (sectionid, fragmentid) => {
-    if (wrapper.querySelector(`.${sectionid}`)) {
-      if (fragmentid?.trim() && wrapper.querySelector(`.${fragmentid}`)) {
-        scrollTo(fragmentid);
-      }
-      return true;
+  const isAlreadyLoaded = (loadType, sectionid, fragmentid) => {
+    if (!wrapper.querySelector(`.${sectionid}`)) return false;
+
+    // The section is already in the DOM. For an explicit navigation ('text'),
+    // still scroll to it: to the fragment when one is given and present,
+    // otherwise to the top of the section. ('next'/'prev' loads must not jump.)
+    if (loadType === 'text') {
+      const targetid = fragmentid?.trim() && wrapper.querySelector(`.${fragmentid}`)
+        ? fragmentid
+        : sectionid;
+      scrollTo(targetid);
+      locationInfo = null;
+      updateLocationInfo();
     }
-    return false;
+    return true;
   };
 
   const insertContent = (loadType, content, nodeScrolltopBefore, wrapperHeightBefore) => {
@@ -417,7 +424,7 @@ export function Scroller(node) {
     if (sectionid === 'null' || sectionid === null || sectionid === '') return;
     if (!wrapper) return;
 
-    if (isAlreadyLoaded(sectionid, fragmentid)) return;
+    if (isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
 
     if (loadType === 'text') {
       wrapper.innerHTML = `<div class="loading-indicator" style="height:${nodeEl.offsetHeight}px;"></div>`;
@@ -435,7 +442,7 @@ export function Scroller(node) {
     };
 
     loadSection(currentTextInfo, sectionid, (content) => {
-      if (!wrapper || isAlreadyLoaded(sectionid, fragmentid)) return;
+      if (!wrapper || isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
 
       ignoreScrollEvent = true;
       insertContent(loadType, content, nodeScrolltopBefore, wrapperHeightBefore);
@@ -539,12 +546,16 @@ export function Scroller(node) {
   };
 
   const broadcastCurrentContent = () => {
-    // Re-broadcast current content for newly created windows (e.g., MapWindow)
+    // Re-broadcast current content for newly created windows (e.g., MapWindow, MediaWindow)
     if (!wrapper || !currentTextInfo || !locationInfo?.sectionid) {
       return;
     }
 
-    const content = wrapper.innerHTML;
+    // Send only the current section, matching the single-section contract of the
+    // textload message fired from load(). The wrapper can hold several loaded
+    // sections; shipping all of them led consumers to mis-key the content.
+    const sectionEl = wrapper.querySelector(`.section[data-id="${locationInfo.sectionid}"]`);
+    const content = sectionEl ? sectionEl.outerHTML : wrapper.innerHTML;
     if (!content || content.trim() === '') {
       return;
     }

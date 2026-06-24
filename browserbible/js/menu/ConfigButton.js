@@ -9,52 +9,18 @@ import { i18n } from '../lib/i18n.js';
 import { MovableWindow } from '../ui/MovableWindow.js';
 import { getWindowIcon } from '../core/windowIcons.js';
 
-/**
- * Create config button and dialog
- * @param {HTMLElement} parentNode - Parent container
- * @param {Object} menu - Menu instance
- * @returns {void}
- */
-export function ConfigButton(_parentNode, _menu) {
-  const configButton = elem('div', { className: 'main-menu-item' });
-  const configIconSpan = elem('span', { className: 'main-menu-icon' });
-  configIconSpan.innerHTML = getWindowIcon('settings') || '';
-  configButton.appendChild(configIconSpan);
-  const configTextSpan = elem('span', { className: 'i18n' });
-  configTextSpan.dataset.i18n = '[html]menu.labels.settings';
-  configButton.appendChild(configTextSpan);
-  const mainMenuFeatures = document.querySelector('#main-menu-features');
+/** Create the settings button and its config dialog. */
+export function ConfigButton() {
+  const configButton = elem('div', { className: 'main-menu-item' },
+    elem('span', { className: 'main-menu-icon', innerHTML: getWindowIcon('settings') || '' }),
+    elem('span', { className: 'i18n', dataset: { i18n: '[html]menu.labels.settings' } })
+  );
+  document.querySelector('#main-menu-features')?.appendChild(configButton);
 
   const configWindow = new MovableWindow(null, null, i18n.t('menu.labels.settings'), 'config-window');
   configWindow.title.classList.add('i18n');
   configWindow.title.dataset.i18n = '[html]menu.labels.settings';
-  mainMenuFeatures?.appendChild(configButton);
-
-  const showConfig = () => {
-    configWindow.show();
-    // Properly close the main menu popover
-    const mainMenuDropdown = document.querySelector('#main-menu-dropdown');
-    if (mainMenuDropdown?.matches(':popover-open')) {
-      mainMenuDropdown.hidePopover();
-    }
-  };
-
-  const buttonClick = (e) => {
-    e.preventDefault();
-
-    if (configWindow.isVisible()) {
-      configWindow.hide();
-    } else {
-      showConfig();
-    }
-
-    return false;
-  };
-
-  configButton.addEventListener('click', buttonClick, false);
-
-  const configBody = configWindow.body;
-  configBody.innerHTML = `
+  configWindow.body.innerHTML = `
     <div id="main-config-box">
       <fieldset class="settings-fieldset" id="config-type">
         <legend class="settings-legend i18n" data-i18n="[html]menu.config.font"></legend>
@@ -66,6 +32,18 @@ export function ConfigButton(_parentNode, _menu) {
       </fieldset>
     </div>
   `;
-}
 
-export default ConfigButton;
+  configButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (configWindow.isVisible()) {
+      configWindow.hide();
+      return;
+    }
+    configWindow.show();
+    // Properly close the main menu popover
+    const mainMenuDropdown = document.querySelector('#main-menu-dropdown');
+    if (mainMenuDropdown?.matches(':popover-open')) {
+      mainMenuDropdown.hidePopover();
+    }
+  });
+}

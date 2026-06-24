@@ -5,6 +5,42 @@
 
 import { SVG_WIDTH, SVG_HEIGHT } from './constants.js';
 import { geoToSvg, svgToGeo } from './geo-utils.js';
+import { getViewTransform, screenToSvg } from './view-transform.js';
+
+const MIN_VIEW_WIDTH = 12;
+
+/** Current container aspect (w/h), falling back to the map aspect before layout. */
+function containerAspect(component) {
+  const r = component.refs.mapContainer.getBoundingClientRect();
+  return (r.width > 0 && r.height > 0) ? r.width / r.height : SVG_WIDTH / SVG_HEIGHT;
+}
+
+/**
+ * Size the viewBox to the *container's* aspect ratio so the map always fills the
+ * panel with no letterbox, then clamp to the full map extent. Width drives; height
+ * follows the container. The zoom-out limit is therefore "the full map height fills
+ * the viewport" (or full width, whichever the map runs out of first) — never smaller.
+ */
+export function setViewBoxSize(component, width) {
+  const ca = containerAspect(component);
+  let w = Math.max(MIN_VIEW_WIDTH, width);
+  let h = w / ca;
+  if (w > SVG_WIDTH) { w = SVG_WIDTH; h = w / ca; }
+  if (h > SVG_HEIGHT) { h = SVG_HEIGHT; w = h * ca; }
+  component.viewBox.width = w;
+  component.viewBox.height = h;
+}
+
+/**
+ * Re-fit the viewBox to the current container aspect (after a resize) and re-render.
+ */
+export function refit(component) {
+  if (!component.svgElement) return;
+  setViewBoxSize(component, component.viewBox.width);
+  constrainViewBox(component.viewBox);
+  updateViewBox(component.svgElement, component.viewBox);
+  component.updateMarkerScales();
+}
 
 /**
  * Constrain the viewBox to stay within map bounds.
@@ -12,10 +48,10 @@ import { geoToSvg, svgToGeo } from './geo-utils.js';
  * so the map can never be panned to show negative space when fully zoomed out.
  */
 export function constrainViewBox(viewBox) {
-  const zoomFraction = Math.min(viewBox.width / SVG_WIDTH, 1);
-  const padding = Math.round(100 * (1 - zoomFraction));
-  viewBox.x = Math.max(-padding, Math.min(SVG_WIDTH - viewBox.width + padding, viewBox.x));
-  viewBox.y = Math.max(-padding, Math.min(SVG_HEIGHT - viewBox.height + padding, viewBox.y));
+  // Strict clamp to the map extent — panning/zooming can never reveal empty space
+  // (bars) beyond the map content.
+  viewBox.x = Math.max(0, Math.min(SVG_WIDTH - viewBox.width, viewBox.x));
+  viewBox.y = Math.max(0, Math.min(SVG_HEIGHT - viewBox.height, viewBox.y));
 }
 
 /**
@@ -32,13 +68,9 @@ export function updateViewBox(svgElement, viewBox) {
  */
 export function centerOn(component, lon, lat, zoomLevel = 1) {
   const { x, y } = geoToSvg(lon, lat);
-  const baseWidth = SVG_WIDTH / zoomLevel;
-  const baseHeight = SVG_HEIGHT / zoomLevel;
-
-  component.viewBox.width = baseWidth;
-  component.viewBox.height = baseHeight;
-  component.viewBox.x = x - baseWidth / 2;
-  component.viewBox.y = y - baseHeight / 2;
+  setViewBoxSize(component, SVG_WIDTH / zoomLevel);
+  component.viewBox.x = x - component.viewBox.width / 2;
+  component.viewBox.y = y - component.viewBox.height / 2;
 
   constrainViewBox(component.viewBox);
   updateViewBox(component.svgElement, component.viewBox);
@@ -91,20 +123,18 @@ export function centerOnBounds(component, locations) {
   let vw = svgWidth + padX * 2;
   let vh = svgHeight + padY * 2;
 
-  // Enforce the SVG natural aspect ratio (3:2) so the map never looks skewed.
+  // Match the container's aspect so the map fills the panel without letterbox.
   // Expand the shorter dimension to fit — locations always remain fully visible.
-  const naturalAspect = SVG_WIDTH / SVG_HEIGHT;
-  if (vw / vh > naturalAspect) {
-    vh = vw / naturalAspect;
+  const ca = containerAspect(component);
+  if (vw / vh > ca) {
+    vh = vw / ca;
   } else {
-    vw = vh * naturalAspect;
+    vw = vh * ca;
   }
 
-  // Clamp to full map extent while preserving aspect ratio
-  if (vw > SVG_WIDTH) {
-    vw = SVG_WIDTH;
-    vh = SVG_HEIGHT;
-  }
+  // Clamp to the full map extent (can't show more than the whole map either way).
+  if (vw > SVG_WIDTH) { vw = SVG_WIDTH; vh = vw / ca; }
+  if (vh > SVG_HEIGHT) { vh = SVG_HEIGHT; vw = vh * ca; }
 
   // Center the viewBox on the bounding box centre
   const bboxCx = topLeft.x + svgWidth / 2;
@@ -138,17 +168,16 @@ export function setupPanZoom(component) {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const svgX = component.viewBox.x + (mouseX / rect.width) * component.viewBox.width;
-    const svgY = component.viewBox.y + (mouseY / rect.height) * component.viewBox.height;
+    // SVG point under the cursor before zooming
+    const before = screenToSvg(mouseX, mouseY, component.viewBox, getViewTransform(component.viewBox, rect));
 
     const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
-    const newWidth = Math.min(SVG_WIDTH, Math.max(12, component.viewBox.width * zoomFactor));
-    const newHeight = Math.min(SVG_HEIGHT, Math.max(8, component.viewBox.height * zoomFactor));
+    setViewBoxSize(component, component.viewBox.width * zoomFactor);
 
-    component.viewBox.x = svgX - (mouseX / rect.width) * newWidth;
-    component.viewBox.y = svgY - (mouseY / rect.height) * newHeight;
-    component.viewBox.width = newWidth;
-    component.viewBox.height = newHeight;
+    // Keep that same SVG point under the cursor after zooming
+    const t2 = getViewTransform(component.viewBox, rect);
+    component.viewBox.x = before.x - (mouseX - t2.offsetX) / t2.scale;
+    component.viewBox.y = before.y - (mouseY - t2.offsetY) / t2.scale;
 
     constrainViewBox(component.viewBox);
     updateViewBox(component.svgElement, component.viewBox);
@@ -166,8 +195,9 @@ export function setupPanZoom(component) {
   component.addListener(document, 'mousemove', (e) => {
     if (!component.state.isPanning) return;
     const rect = mapContainer.getBoundingClientRect();
-    const dx = (e.clientX - component.panStart.x) * (component.viewBox.width / rect.width);
-    const dy = (e.clientY - component.panStart.y) * (component.viewBox.height / rect.height);
+    const t = getViewTransform(component.viewBox, rect);
+    const dx = (e.clientX - component.panStart.x) / t.scale;
+    const dy = (e.clientY - component.panStart.y) / t.scale;
 
     const prevX = component.viewBox.x;
     const prevY = component.viewBox.y;
@@ -180,8 +210,8 @@ export function setupPanZoom(component) {
 
     // Translate the marker overlay by the actual screen pixels the SVG moved.
     // Using the constrained delta means we stop at map edges just like the SVG does.
-    const screenDx = (prevX - component.viewBox.x) * (rect.width / component.viewBox.width);
-    const screenDy = (prevY - component.viewBox.y) * (rect.height / component.viewBox.height);
+    const screenDx = (prevX - component.viewBox.x) * t.scale;
+    const screenDy = (prevY - component.viewBox.y) * t.scale;
     component.panMarkersBy(screenDx, screenDy);
   });
 
@@ -215,8 +245,9 @@ export function setupPanZoom(component) {
     const rect = mapContainer.getBoundingClientRect();
 
     if (e.touches.length === 1 && component.state.isPanning) {
-      const dx = (e.touches[0].clientX - component.panStart.x) * (component.viewBox.width / rect.width);
-      const dy = (e.touches[0].clientY - component.panStart.y) * (component.viewBox.height / rect.height);
+      const t = getViewTransform(component.viewBox, rect);
+      const dx = (e.touches[0].clientX - component.panStart.x) / t.scale;
+      const dy = (e.touches[0].clientY - component.panStart.y) / t.scale;
 
       const prevX = component.viewBox.x;
       const prevY = component.viewBox.y;
@@ -227,8 +258,8 @@ export function setupPanZoom(component) {
       constrainViewBox(component.viewBox);
       updateViewBox(component.svgElement, component.viewBox);
 
-      const screenDx = (prevX - component.viewBox.x) * (rect.width / component.viewBox.width);
-      const screenDy = (prevY - component.viewBox.y) * (rect.height / component.viewBox.height);
+      const screenDx = (prevX - component.viewBox.x) * t.scale;
+      const screenDy = (prevY - component.viewBox.y) * t.scale;
       component.panMarkersBy(screenDx, screenDy);
     } else if (e.touches.length === 2) {
       const newDist = Math.hypot(
@@ -237,19 +268,16 @@ export function setupPanZoom(component) {
       );
       const scale = lastTouchDist / newDist;
 
-      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
 
-      const svgX = component.viewBox.x + ((centerX - rect.left) / rect.width) * component.viewBox.width;
-      const svgY = component.viewBox.y + ((centerY - rect.top) / rect.height) * component.viewBox.height;
+      // Pinch midpoint in SVG space before zooming
+      const before = screenToSvg(centerX, centerY, component.viewBox, getViewTransform(component.viewBox, rect));
+      setViewBoxSize(component, component.viewBox.width * scale);
 
-      const newWidth = Math.min(SVG_WIDTH, Math.max(50, component.viewBox.width * scale));
-      const newHeight = Math.min(SVG_HEIGHT, Math.max(33, component.viewBox.height * scale));
-
-      component.viewBox.x = svgX - ((centerX - rect.left) / rect.width) * newWidth;
-      component.viewBox.y = svgY - ((centerY - rect.top) / rect.height) * newHeight;
-      component.viewBox.width = newWidth;
-      component.viewBox.height = newHeight;
+      const t2 = getViewTransform(component.viewBox, rect);
+      component.viewBox.x = before.x - (centerX - t2.offsetX) / t2.scale;
+      component.viewBox.y = before.y - (centerY - t2.offsetY) / t2.scale;
 
       lastTouchDist = newDist;
 

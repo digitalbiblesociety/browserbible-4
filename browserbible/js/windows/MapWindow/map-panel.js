@@ -11,13 +11,27 @@
 
 import { SVG_WIDTH, SVG_HEIGHT, CLUSTER_RADIUS_PX } from './constants.js';
 import { svgToGeo, geoToSvg } from './geo-utils.js';
+import { getViewTransform } from './view-transform.js';
 import { NT_BOOKS } from '../../bible/BibleData.js';
 import * as MarkerRenderer from './marker-renderer.js';
 import { loadLocationData, getLocationsForReference } from './map-data.js';
-import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox } from './pan-zoom.js';
+import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox, setViewBoxSize, refit } from './pan-zoom.js';
 import { createDetailPanel, openDetailPanel, destroyDetailPanel } from './detail-panel.js';
 import { highlightLocations, removeHighlights } from './highlight.js';
 import { computeClusters, renderClusters, applyClusterVisibility } from './clustering.js';
+
+// Cached AVIF decode-support probe (1×1 AVIF data URI). Resolves once, reused thereafter.
+let _avifSupport = null;
+function supportsAvif() {
+  if (_avifSupport) return _avifSupport;
+  _avifSupport = new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAEAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgABogQEDQgMgkQAAAAB8dSLfI=';
+  });
+  return _avifSupport;
+}
 
 export class MapPanel {
   constructor(container) {
@@ -160,6 +174,11 @@ export class MapPanel {
     this.markersOverlay.style.transform = `translate3d(${this._panOffset.x}px,${this._panOffset.y}px,0)`;
   }
 
+  /** Re-fit the viewBox to the container's new aspect after a resize, then re-render. */
+  onResize() {
+    refit(this);
+  }
+
   /** Called by pan-zoom.js after zoom or pan end — resets overlay and recalculates all positions. */
   updateMarkerScales() {
     if (!this.markersOverlay) return;
@@ -208,7 +227,9 @@ export class MapPanel {
       this.svgElement = svgDoc.documentElement;
       this.svgElement.setAttribute('width', '100%');
       this.svgElement.setAttribute('height', '100%');
-      this.svgElement.setAttribute('preserveAspectRatio', 'none');
+      // Cover: fill the container (crop overflow) so there are never letterbox bars.
+      // Markers/pointer math use the matching transform in view-transform.js.
+      this.svgElement.setAttribute('preserveAspectRatio', 'xMidYMid slice');
       this.svgElement.style.display = 'block';
 
       this.markersOverlay = document.createElement('div');
@@ -220,10 +241,29 @@ export class MapPanel {
       centerOn(this, this.state.currentCenter.lon, this.state.currentCenter.lat, 4);
       setupPanZoom(this);
       await this._loadPins();
+      this._lazyLoadRelief();
     } catch (err) {
       console.error('MapPanel: failed to load SVG map:', err);
       this.container.innerHTML = '<div style="padding:20px;color:var(--text-color)">Failed to load map</div>';
     }
+  }
+
+  /**
+   * Lazy-load the (large) shaded-relief raster: the basemap ships the <image> with
+   * no href, so the vector coastline + pins paint immediately; we set the href once
+   * the browser is idle. If the format can't be decoded, the flat land fill remains.
+   */
+  _lazyLoadRelief() {
+    const img = this.svgElement?.querySelector('#relief-layer');
+    if (!img) return;
+    const avif = img.getAttribute('data-src');
+    const webp = img.getAttribute('data-src-fallback');
+    const apply = async () => {
+      const src = (avif && await supportsAvif()) ? avif : (webp || avif);
+      if (src) img.setAttribute('href', src);
+    };
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(apply, { timeout: 1500 });
+    else setTimeout(apply, 200);
   }
 
   async _loadPins() {
@@ -299,8 +339,9 @@ export class MapPanel {
     // it may still be display:none (clustered) after zoom, returning {0,0}.
     const containerRect = this.container.getBoundingClientRect();
     const { x: svgX, y: svgY } = geoToSvg(location.coordinates[0], location.coordinates[1]);
-    const screenX = containerRect.left + (svgX - this.viewBox.x) / this.viewBox.width * containerRect.width;
-    const screenY = containerRect.top + (svgY - this.viewBox.y) / this.viewBox.height * containerRect.height;
+    const t = getViewTransform(this.viewBox, containerRect);
+    const screenX = containerRect.left + t.offsetX + (svgX - this.viewBox.x) * t.scale;
+    const screenY = containerRect.top + t.offsetY + (svgY - this.viewBox.y) * t.scale;
     const anchorRect = { left: screenX - 12, right: screenX + 12, top: screenY - 12, bottom: screenY + 12, width: 24, height: 24 };
 
     // Find co-located locations sharing this pin's position
@@ -397,8 +438,7 @@ export class MapPanel {
       );
       const cx = this.viewBox.x + this.viewBox.width / 2;
       const cy = this.viewBox.y + this.viewBox.height / 2;
-      this.viewBox.width = separationWidth;
-      this.viewBox.height = separationWidth * SVG_HEIGHT / SVG_WIDTH;
+      setViewBoxSize(this, separationWidth);
       this.viewBox.x = cx - this.viewBox.width / 2;
       this.viewBox.y = cy - this.viewBox.height / 2;
       constrainViewBox(this.viewBox);

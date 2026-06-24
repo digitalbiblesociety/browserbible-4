@@ -201,8 +201,10 @@ export class MapWindowComponent extends BaseWindow {
   updateEmptyState() {
     if (!this.mapPanel?.locationData) return;
     const isPassage = this.mapPanel.state.mode === 'passage';
+    // Count locations in the current passage/era set. Clustered markers still count —
+    // they're shown inside a cluster badge, not hidden (only `.filtered-out` is hidden).
     const visibleCount = this.refs.mapContainer
-      .querySelectorAll('.map-marker:not(.filtered-out):not(.clustered)').length;
+      .querySelectorAll('.map-marker:not(.filtered-out)').length;
 
     this.refs.locationCount.textContent = visibleCount > 0 ? `${visibleCount} locations` : '';
 
@@ -329,7 +331,7 @@ export class MapWindowComponent extends BaseWindow {
     const headerHeight = this.refs.header?.offsetHeight || 50;
     this.refs.main.style.width = `${width}px`;
     this.refs.main.style.height = `${height - headerHeight}px`;
-    if (this.mapPanel) this.mapPanel.updateMarkerScales();
+    if (this.mapPanel) this.mapPanel.onResize();
   }
 
   getData() {

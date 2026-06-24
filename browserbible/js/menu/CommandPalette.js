@@ -10,15 +10,12 @@ import AppSettings from '../common/AppSettings.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 import { TextNavigation } from '../common/TextNavigation.js';
 import { getWindowIcon } from '../core/windowIcons.js';
+import { elem } from '../lib/helpers.esm.js';
 
 const toSlug = (str) => str.replace(/\s+/g, '-').toLowerCase();
 
-/**
- * Create command palette
- * @param {HTMLElement} _parentNode - Parent container (unused, palette appends to body)
- * @param {Object} _menu - Menu instance
- */
-export function CommandPalette(_parentNode, _menu) {
+/** Create the global command palette (Ctrl/Cmd+K), appended to document.body. */
+export function CommandPalette() {
   const commands = [];
   let selectedIndex = 0;
   let filteredItems = [];
@@ -26,32 +23,23 @@ export function CommandPalette(_parentNode, _menu) {
 
   // ── DOM ──────────────────────────────────────────────────────────────────
 
-  const backdrop = document.createElement('div');
-  backdrop.className = 'command-palette-backdrop';
+  const input = elem('input', {
+    className: 'command-palette-input',
+    type: 'text',
+    placeholder: 'Type a command or Bible reference...',
+    autocomplete: 'off'
+  });
+  const results = elem('div', { className: 'command-palette-results' });
 
-  const modal = document.createElement('div');
-  modal.className = 'command-palette';
-
-  const header = document.createElement('div');
-  header.className = 'command-palette-header';
-
-  const input = document.createElement('input');
-  input.className = 'command-palette-input';
-  input.type = 'text';
-  input.placeholder = 'Type a command or Bible reference...';
-  input.autocomplete = 'off';
-
-  const kbd = document.createElement('kbd');
-  kbd.className = 'command-palette-shortcut';
-  kbd.textContent = 'Esc';
-
-  header.append(input, kbd);
-
-  const results = document.createElement('div');
-  results.className = 'command-palette-results';
-
-  modal.append(header, results);
-  backdrop.appendChild(modal);
+  const backdrop = elem('div', { className: 'command-palette-backdrop' },
+    elem('div', { className: 'command-palette' },
+      elem('div', { className: 'command-palette-header' },
+        input,
+        elem('kbd', { className: 'command-palette-shortcut', textContent: 'Esc' })
+      ),
+      results
+    )
+  );
   document.body.appendChild(backdrop);
 
   // ── Open / Close ─────────────────────────────────────────────────────────
@@ -78,59 +66,31 @@ export function CommandPalette(_parentNode, _menu) {
   // ── Rendering ────────────────────────────────────────────────────────────
 
   const renderHelp = () => {
-    results.innerHTML = '';
-    const help = document.createElement('div');
-    help.className = 'command-palette-help';
-    help.innerHTML =
-      'Type a Bible reference to navigate (e.g. <kbd>John 3</kbd>)<br>' +
-      'Type <kbd>&gt;</kbd> to search commands (e.g. <kbd>&gt; theme</kbd>)';
-    results.appendChild(help);
+    results.replaceChildren(elem('div', {
+      className: 'command-palette-help',
+      innerHTML:
+        'Type a Bible reference to navigate (e.g. <kbd>John 3</kbd>)<br>' +
+        'Type <kbd>&gt;</kbd> to search commands (e.g. <kbd>&gt; theme</kbd>)'
+    }));
   };
 
   const renderItems = (items) => {
-    results.innerHTML = '';
     if (items.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'command-palette-help';
-      empty.textContent = 'No results found';
-      results.appendChild(empty);
+      results.replaceChildren(elem('div', { className: 'command-palette-help', textContent: 'No results found' }));
       return;
     }
 
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const row = document.createElement('div');
-      row.className = 'command-palette-item' + (i === selectedIndex ? ' selected' : '');
-      row.dataset.index = i;
-
-      if (item.icon) {
-        const iconEl = document.createElement('span');
-        iconEl.className = 'command-palette-item-icon';
-        iconEl.innerHTML = item.icon;
-        row.appendChild(iconEl);
-      }
-
-      const label = document.createElement('span');
-      label.className = 'command-palette-item-label';
-      label.textContent = item.name;
-      row.appendChild(label);
-
-      if (item.state) {
-        const state = document.createElement('span');
-        state.className = 'command-palette-item-state';
-        state.textContent = item.state();
-        row.appendChild(state);
-      }
-
-      if (item.category) {
-        const cat = document.createElement('span');
-        cat.className = 'command-palette-item-category';
-        cat.textContent = item.category;
-        row.appendChild(cat);
-      }
-
-      results.appendChild(row);
-    }
+    results.replaceChildren(...items.map((item, i) =>
+      elem('div', {
+        className: 'command-palette-item' + (i === selectedIndex ? ' selected' : ''),
+        dataset: { index: i }
+      },
+        item.icon ? elem('span', { className: 'command-palette-item-icon', innerHTML: item.icon }) : null,
+        elem('span', { className: 'command-palette-item-label', textContent: item.name }),
+        item.state ? elem('span', { className: 'command-palette-item-state', textContent: item.state() }) : null,
+        item.category ? elem('span', { className: 'command-palette-item-category', textContent: item.category }) : null
+      )
+    ));
   };
 
   const updateSelection = (newIndex) => {
@@ -179,6 +139,8 @@ export function CommandPalette(_parentNode, _menu) {
     const toggleNames = config.settingToggleNames ?? [];
     const toggleDefaults = config.settingToggleDefaults ?? [];
 
+    const isOn = (setting) => setting.checked === true || setting.checked === 'true';
+
     for (const [i, toggleName] of toggleNames.entries()) {
       const toggleId = toggleName.replace(/\s/gi, '').toLowerCase();
       const defaultSetting = { checked: toggleDefaults[i] };
@@ -189,36 +151,20 @@ export function CommandPalette(_parentNode, _menu) {
         category: 'toggle',
         stayOpen: true,
         state() {
-          const setting = AppSettings.getValue(toggleId, defaultSetting);
-          return setting.checked === true || setting.checked === 'true' ? 'ON' : 'OFF';
+          return isOn(AppSettings.getValue(toggleId, defaultSetting)) ? 'ON' : 'OFF';
         },
         execute() {
-          const setting = AppSettings.getValue(toggleId, defaultSetting);
-          const currentlyOn = setting.checked === true || setting.checked === 'true';
-          const newChecked = !currentlyOn;
+          const newChecked = !isOn(AppSettings.getValue(toggleId, defaultSetting));
 
           PlaceKeeper.preservePlace(() => {
             const toggle = document.querySelector(`#config-toggle-${toggleId}`);
-            const onClass = `toggle-${toggleId}-on`;
-            const offClass = `toggle-${toggleId}-off`;
-
-            if (newChecked) {
-              if (toggle) {
-                toggle.classList.add('toggle-on');
-                const inp = toggle.querySelector('input');
-                if (inp) inp.checked = true;
-              }
-              document.body.classList.add(onClass);
-              document.body.classList.remove(offClass);
-            } else {
-              if (toggle) {
-                toggle.classList.remove('toggle-on');
-                const inp = toggle.querySelector('input');
-                if (inp) inp.checked = false;
-              }
-              document.body.classList.remove(onClass);
-              document.body.classList.add(offClass);
+            if (toggle) {
+              toggle.classList.toggle('toggle-on', newChecked);
+              const inp = toggle.querySelector('input');
+              if (inp) inp.checked = newChecked;
             }
+            document.body.classList.toggle(`toggle-${toggleId}-on`, newChecked);
+            document.body.classList.toggle(`toggle-${toggleId}-off`, !newChecked);
           });
           AppSettings.setValue(toggleId, { checked: newChecked });
           // Re-render to update state indicator
@@ -231,43 +177,35 @@ export function CommandPalette(_parentNode, _menu) {
   const registerWindowCommands = () => {
     const config = getConfig();
     const windowTypes = getAllWindowTypes();
-    const windowTools = [];
     const disabled = new Set(config.disabledWindowTypes ?? []);
 
-    if (config.windowTypesOrder?.length > 0) {
-      for (const windowTypeName of config.windowTypesOrder) {
-        if (disabled.has(windowTypeName)) continue;
-        const winType = windowTypes.find(wt => wt.className === windowTypeName);
-        if (winType) {
-          windowTools.push({ type: winType.className, label: winType.param, data: { ...(winType.init ?? {}) } });
-        }
-      }
-    } else {
-      for (const winType of windowTypes) {
-        if (disabled.has(winType.className)) continue;
-        windowTools.push({ type: winType.className, label: winType.param, data: { ...(winType.init ?? {}) } });
-      }
-    }
+    const order = config.windowTypesOrder;
+    const orderedTypes = order?.length
+      ? order.map(name => windowTypes.find(wt => wt.className === name)).filter(Boolean)
+      : windowTypes;
 
-    for (const tool of windowTools) {
-      const iconSvg = getWindowIcon(tool.type);
+    for (const wt of orderedTypes) {
+      if (disabled.has(wt.className)) continue;
+      const { className: type, param: label } = wt;
+
       registerCommand({
-        name: `Add Window: ${tool.label.charAt(0).toUpperCase() + tool.label.slice(1)}`,
-        keywords: ['window', 'add', 'open', tool.label, tool.type.toLowerCase()],
+        name: `Add Window: ${label.charAt(0).toUpperCase() + label.slice(1)}`,
+        keywords: ['window', 'add', 'open', label, type.toLowerCase()],
         category: 'window',
-        icon: iconSvg || null,
+        icon: getWindowIcon(type) || null,
         execute() {
           const app = getApp();
-          const data = { ...tool.data };
+          const data = { ...(wt.init ?? {}) };
 
-          if (tool.type === 'BibleWindow' || tool.type === 'CommentaryWindow' || tool.type === 'AudioWindow') {
-            const firstBCWindow = app?.windowManager?.getWindows().find(w => w.className === 'BibleWindow' || w.className === 'CommentaryWindow') ?? null;
+          if (type === 'BibleWindow' || type === 'CommentaryWindow' || type === 'AudioWindow') {
+            const firstBCWindow = app?.windowManager?.getWindows()
+              .find(w => w.className === 'BibleWindow' || w.className === 'CommentaryWindow') ?? null;
             const currentData = firstBCWindow?.getData() ?? null;
 
             if (currentData !== null) {
               data.fragmentid = currentData.fragmentid;
               data.sectionid = currentData.sectionid;
-              if (tool.type === 'AudioWindow') {
+              if (type === 'AudioWindow') {
                 data._activeBibleTextid = currentData.textid;
               }
             } else {
@@ -278,7 +216,7 @@ export function CommandPalette(_parentNode, _menu) {
           }
 
           PlaceKeeper.preservePlace(() => {
-            app?.windowManager?.add(tool.type, data);
+            app?.windowManager?.add(type, data);
           });
           close();
         }
@@ -417,16 +355,14 @@ export function CommandPalette(_parentNode, _menu) {
 
   const filterCommands = (query) => {
     const q = query.toLowerCase();
-    return commands.filter(cmd => {
-      if (cmd.name.toLowerCase().includes(q)) return true;
-      if (cmd.keywords?.some(kw => kw.includes(q))) return true;
-      return false;
-    });
+    return commands.filter(cmd =>
+      cmd.name.toLowerCase().includes(q) || cmd.keywords?.some(kw => kw.includes(q))
+    );
   };
 
   const getNavigationItems = (query) => {
     const ref = new Reference(query);
-    if (!ref || !ref.isValid?.()) return [];
+    if (!ref.isValid?.()) return [];
 
     return [{
       name: `Go to ${ref.toString()}`,
@@ -472,13 +408,7 @@ export function CommandPalette(_parentNode, _menu) {
   };
 
   const executeSelected = () => {
-    if (filteredItems.length === 0) return;
-    const item = filteredItems[selectedIndex];
-    if (item) {
-      item.execute();
-      // If stayOpen, re-render after execution (state may have changed)
-      // The execute function handles close() when needed
-    }
+    filteredItems[selectedIndex]?.execute();
   };
 
   // ── Events ───────────────────────────────────────────────────────────────
@@ -545,5 +475,3 @@ export function CommandPalette(_parentNode, _menu) {
   registerFontSizeCommands();
   registerActionCommands();
 }
-
-export default CommandPalette;

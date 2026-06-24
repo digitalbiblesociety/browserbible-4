@@ -8,18 +8,19 @@
 
 import { MAP_BOUNDS, ICON_SIZES } from './constants.js';
 import { geoToSvg, getImportanceTier } from './geo-utils.js';
+import { getViewTransform } from './view-transform.js';
 import { createLocationIcon } from './icon-library.js';
 
 /**
  * Reposition a single marker based on the current viewBox and container rect.
  * Leaflet pattern: pure pixel translate3d, no calc(). Anchor offsets are
  * precomputed at marker creation time and stored as _anchorX / _anchorY.
+ * Uses the uniform meet-transform so markers track the letterboxed SVG.
  */
 export const repositionMarker = (marker, viewBox, containerRect) => {
-  const scaleX = containerRect.width / viewBox.width;
-  const scaleY = containerRect.height / viewBox.height;
-  const x = (marker._svgX - viewBox.x) * scaleX - marker._anchorX;
-  const y = (marker._svgY - viewBox.y) * scaleY - marker._anchorY;
+  const t = getViewTransform(viewBox, containerRect);
+  const x = t.offsetX + (marker._svgX - viewBox.x) * t.scale - marker._anchorX;
+  const y = t.offsetY + (marker._svgY - viewBox.y) * t.scale - marker._anchorY;
   marker.style.transform = `translate3d(${x}px,${y}px,0)`;
 };
 
@@ -30,12 +31,11 @@ export const repositionMarker = (marker, viewBox, containerRect) => {
  */
 export const repositionAllMarkers = (overlay, viewBox, containerRect) => {
   if (!overlay || !containerRect || !containerRect.width) return;
-  const scaleX = containerRect.width / viewBox.width;
-  const scaleY = containerRect.height / viewBox.height;
+  const t = getViewTransform(viewBox, containerRect);
   overlay.querySelectorAll('.map-marker, .map-cluster').forEach(el => {
     if (el._svgX === undefined) return;
-    const x = (el._svgX - viewBox.x) * scaleX - el._anchorX;
-    const y = (el._svgY - viewBox.y) * scaleY - el._anchorY;
+    const x = t.offsetX + (el._svgX - viewBox.x) * t.scale - el._anchorX;
+    const y = t.offsetY + (el._svgY - viewBox.y) * t.scale - el._anchorY;
     el.style.transform = `translate3d(${x}px,${y}px,0)`;
   });
 };

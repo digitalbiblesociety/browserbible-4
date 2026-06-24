@@ -8,6 +8,22 @@ const RESIZE_DEBOUNCE_MS = 100;
 const TARGET_ROW_HEIGHT = 80;
 const TARGET_GUTTER_WIDTH = 4;
 
+/**
+ * From a container that may hold several loaded `.section` elements, pick the one
+ * matching sectionid. broadcastCurrentContent can ship the whole scroller wrapper
+ * (multiple chapters); picking the first section instead of the matching one made
+ * the title and the rendered verses disagree by a chapter. Falls back to the first
+ * section, then the container itself.
+ * @param {Element} containerEl
+ * @param {string} sectionid
+ * @returns {Element}
+ */
+export function pickSection(containerEl, sectionid) {
+  return containerEl.querySelector(`.section[data-id="${sectionid}"]`)
+    || containerEl.querySelector('.section')
+    || containerEl;
+}
+
 export class MediaWindowComponent extends BaseWindow {
   constructor() {
     super();
@@ -171,7 +187,7 @@ export class MediaWindowComponent extends BaseWindow {
     } else if (data.messagetype === 'textload' && data.sectionid && data.content) {
       const temp = document.createElement('div');
       temp.innerHTML = data.content;
-      content = temp.querySelector('.section') || temp;
+      content = pickSection(temp, data.sectionid);
       content.setAttribute('data-id', data.sectionid);
       if (data.abbr) content.setAttribute('lang', data.abbr);
     }

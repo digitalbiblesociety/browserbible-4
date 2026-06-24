@@ -4,17 +4,32 @@
  */
 
 export const MAP_BOUNDS = {
-  minLat: 8,
-  maxLat: 47,
-  minLon: -8,
-  maxLon: 78
+  minLat: 26,
+  maxLat: 44,
+  minLon: 10,
+  maxLon: 50
 };
 
+// --- Corrected equirectangular projection ---
+// Longitude degrees are compressed by cos(standard parallel) so that east–west
+// and north–south scales match (square pixels → geographically faithful shapes).
+// The standard parallel is the mid-latitude of the bounds.
+export const STANDARD_PARALLEL = (MAP_BOUNDS.minLat + MAP_BOUNDS.maxLat) / 2; // 27.5°
+export const PROJ_COS_PHI0 = Math.cos(STANDARD_PARALLEL * Math.PI / 180);
+
 export const SVG_WIDTH = 1200;
-export const SVG_HEIGHT = 800;
 export const PADDING = 40;
 export const CONTENT_WIDTH = SVG_WIDTH - 2 * PADDING;
-export const CONTENT_HEIGHT = SVG_HEIGHT - 2 * PADDING;
+
+// Uniform scale in SVG px per degree of latitude. Width fixes the scale; height
+// then follows from the latitude range so pixels stay square.
+const LON_RANGE = MAP_BOUNDS.maxLon - MAP_BOUNDS.minLon;
+const LAT_RANGE = MAP_BOUNDS.maxLat - MAP_BOUNDS.minLat;
+export const PROJ_SCALE = CONTENT_WIDTH / (LON_RANGE * PROJ_COS_PHI0);
+
+// Derived so the viewBox matches the projected aspect (no built-in distortion).
+export const CONTENT_HEIGHT = LAT_RANGE * PROJ_SCALE;     // ≈ 572.6
+export const SVG_HEIGHT = CONTENT_HEIGHT + 2 * PADDING;   // ≈ 652.6
 
 export const IMPORTANT_LOCATIONS = new Set([
   'Rome', 'Athens', 'Corinth', 'Ephesus', 'Antioch', 'Alexandria',
