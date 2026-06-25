@@ -2,7 +2,7 @@
  * Pericopes
  * Section/passage titles ("pericopes") keyed to Bible references.
  *
- * Source data lives in pericopesData.js as `[reference, title]` tuples, where
+ * Source data lives in pericopesData.js as `reference: title` pairs, where
  * the reference is the internal 2-char book shortCode followed by
  * `chapter.verse` (e.g. `S116.14` = 1 Samuel 16:14, `GN1.1` = Genesis 1:1).
  */
@@ -11,13 +11,13 @@ import { PERICOPE_DATA } from './pericopesData.js';
 import { BOOK_DATA } from './BibleData.js';
 
 /**
- * Parse the raw `[ref, title]` tuples into navigable pericope records.
+ * Parse the raw `reference: title` pairs into navigable pericope records.
  * @returns {Array<{bookid:string, sectionid:string, fragmentid:string, chapter:number, verse:number, title:string}>}
  */
 function parsePericopes(rows) {
   const out = [];
 
-  for (const [ref, title] of rows) {
+  for (const [ref, title] of Object.entries(rows)) {
     if (!ref || !title) continue;
 
     // Book id is always the first two characters (numbered books use a
