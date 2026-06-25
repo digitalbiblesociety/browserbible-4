@@ -7,6 +7,7 @@ import { getConfig } from '../core/config.js';
 import { processTexts } from './TextLoader.js';
 import { SearchTools } from './Search.js';
 import { BOOK_DATA, DEFAULT_BIBLE, DEFAULT_BIBLE_USFM, APOCRYPHAL_BIBLE, APOCRYPHAL_BIBLE_USFM } from '../bible/BibleData.js';
+import { toBcp47Lang } from '../lib/bcp47.js';
 
 const providerName = 'dbs';
 const fullName = 'Digital Bible Society';
@@ -166,6 +167,7 @@ const loadSectionText = (textid, sectionid, callback, errorCallback) => {
 
   const textinfo = getTextInfoSync(textid);
   const lang = textinfo.lang;
+  const htmlLang = toBcp47Lang(lang);
   const dir = textinfo.dir ?? 'ltr';
   const bookid = sectionid.substring(0, 2);
   const usfm = BOOK_DATA[bookid].usfm;
@@ -187,7 +189,7 @@ const loadSectionText = (textid, sectionid, callback, errorCallback) => {
         ` data-id="${sectionid}"` +
         ` data-nextid="${nextid}"` +
         ` data-previd="${previd}"` +
-        ` lang="${lang}"` +
+        ` lang="${htmlLang}"` +
         ` data-lang3="${lang}"` +
         ` dir="${dir}"` +
         `>`);

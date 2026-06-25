@@ -85,7 +85,8 @@
         "lemma": "Greek/Hebrew Popups",
         "audio": "Audio available",
         "prevversion": "Previous version",
-        "nextversion": "Next version"
+        "nextversion": "Next version",
+        "gotopassage": "Go to passage"
       },
       "commentary": {
         "label": "Commentary"

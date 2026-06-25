@@ -35,6 +35,10 @@ const defaultConfig = {
   customCssUrl: '',
   dbsAudioEnabled: true,
   dbsAudioUrl: 'https://audio.dbs.org',
+  // Local per-text audio manifests (content/audio/{id}/info.json) only exist for
+  // locally-served content; probing them against the remote CDN just 404s, so
+  // this stays off by default and is enabled in the 'local' preset below.
+  localAudioEnabled: false,
 
   // Window defaults
   enableAudioWindow: true,
@@ -96,6 +100,7 @@ const defaultConfig = {
 const customConfigs = {
   local: {
     baseContentUrl: '',
+    localAudioEnabled: true,
     windows: [
       { type: 'bible', data: { textid: 'ENGWEB', fragmentid: 'JN1_1' } },
       { type: 'bible', data: { textid: 'SPABES', fragmentid: 'JN1_1' } }

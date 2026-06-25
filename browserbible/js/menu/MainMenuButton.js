@@ -13,7 +13,7 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
  */
 export function MainMenuButton(parentNode) {
   const mainMenuLogo = elem('div', { id: 'app-logo' },
-    elem('img', { src: './img/inscript_logo.svg', alt: 'Logo' }),
+    elem('img', { src: './img/inscript_logo.svg', alt: 'Logo', width: 114, height: 22 }),
     elem('span', { className: 'app-version-pill' }, '5.0')
   );
   const mainMenuButton = elem('div', { id: 'main-menu-button' });

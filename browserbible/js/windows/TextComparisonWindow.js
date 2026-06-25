@@ -111,7 +111,7 @@ export class TextComparisonWindow extends BaseWindow {
   async render() {
     this.innerHTML = `
       <div class="window-header">
-        <input type="text" class="app-input comparison-nav-input" value="" placeholder="John 3:16" />
+        <input type="text" class="app-input comparison-nav-input" value="" placeholder="John 3:16" aria-label="Go to passage" />
         <div class="comparison-select-group">
           <span class="text-list-title comparison-source-title"></span>
           <span class="comparison-target-select-wrapper"><select class="comparison-target-select"></select></span>

@@ -385,7 +385,7 @@ class StatisticsWindowComponent extends BaseWindow {
       const dir = lemmaLang === 'gr' ? 'ltr' : 'rtl';
       const testament = lemmaLang === 'gr' ? 'NT' : 'OT';
 
-      html += `<tr class="rare"><td><l s="${lemma.word_info.strongs}" lang="${lemmaLang}" dir="${dir}">${this.escapeHtml(lemma.lemma)}</td><td>${this.escapeHtml(lemma.word_info.words.join(', '))}</td><td>${lemma.word_info.count} of ${lemma.frequency} in ${testament}</td></tr>`;
+      html += `<tr class="rare"><td><l s="${lemma.word_info.strongs}" lang="${lemmaLang === 'gr' ? 'grc' : 'he'}" dir="${dir}">${this.escapeHtml(lemma.lemma)}</td><td>${this.escapeHtml(lemma.word_info.words.join(', '))}</td><td>${lemma.word_info.count} of ${lemma.frequency} in ${testament}</td></tr>`;
     }
 
     lemmaNode.innerHTML = `<table>${html}</table>`;

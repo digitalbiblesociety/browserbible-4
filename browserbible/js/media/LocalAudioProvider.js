@@ -11,6 +11,8 @@ export class LocalAudioProvider extends BaseAudioProvider {
 
   async getAudioInfo(textInfo) {
     const config = getConfig();
+    if (!config.localAudioEnabled) return null;
+
     let checkDirectory = textInfo.id;
 
     if (textInfo.audioDirectory !== undefined) {

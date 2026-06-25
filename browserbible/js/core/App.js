@@ -30,7 +30,7 @@ export class App {
 
     this.container = elem('div', { className: 'windows-container' });
     this.header = elem('div', { className: 'windows-header' });
-    this.main = elem('div', { className: 'windows-main' });
+    this.main = elem('main', { className: 'windows-main' });
     this.footer = elem('div', { className: 'windows-footer' });
 
     document.body.appendChild(this.container);

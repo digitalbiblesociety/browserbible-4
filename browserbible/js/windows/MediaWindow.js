@@ -189,7 +189,6 @@ class MediaWindowComponent extends BaseWindow {
       temp.innerHTML = data.content;
       content = pickSection(temp, data.sectionid);
       content.setAttribute('data-id', data.sectionid);
-      if (data.abbr) content.setAttribute('lang', data.abbr);
     }
 
     if (content) {

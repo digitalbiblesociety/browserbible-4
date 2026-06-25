@@ -52,7 +52,7 @@ export class TextWindowComponent extends BaseWindow {
       <div class="scroller-container">
         <div class="window-header scroller-header">
           <div class="scroller-header-inner">
-            <input type="text" class="app-input text-nav" />
+            <input type="text" class="app-input text-nav" aria-label="${i18nT('windows.bible.gotopassage')}" />
             <span class="version-cycler">
               <button type="button" class="version-arrow version-prev" tabindex="-1" title="${i18nT('windows.bible.prevversion')}" aria-label="${i18nT('windows.bible.prevversion')}">&lsaquo;</button>
               <div class="app-list text-list"></div>

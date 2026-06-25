@@ -70,7 +70,7 @@ export function renderWindowStructure() {
       )
     ),
     elem('div', { className: 'notes-search-container' },
-      elem('input', { type: 'text', className: 'notes-search app-input', placeholder: 'Search notes...' }),
+      elem('input', { type: 'text', className: 'notes-search app-input', placeholder: 'Search notes...', ariaLabel: 'Search notes' }),
       elem('div', { className: 'notes-search-suggestions' })
     )
   );
@@ -89,7 +89,7 @@ export function renderWindowStructure() {
 
   const editorContainer = elem('div', { className: 'notes-editor-container' },
     elem('div', { className: 'notes-editor-header' },
-      elem('input', { type: 'text', className: 'notes-title-input app-input', placeholder: 'Note title...' }),
+      elem('input', { type: 'text', className: 'notes-title-input app-input', placeholder: 'Note title...', ariaLabel: 'Note title' }),
       elem('span', { className: 'notes-reference-badge' }),
       elem('button', { className: 'notes-unlink-btn', title: 'Remove verse link', innerHTML: '&times;' }),
       elem('button', { className: 'notes-delete-btn', title: 'Delete note', textContent: 'Delete' })

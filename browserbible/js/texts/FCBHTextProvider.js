@@ -11,6 +11,7 @@ import { getConfig } from '../core/config.js';
 import { processTexts } from './TextLoader.js';
 import { SearchTools } from './Search.js';
 import { BOOK_DATA, DEFAULT_BIBLE, DEFAULT_BIBLE_OSIS, OT_BOOKS } from '../bible/BibleData.js';
+import { toBcp47Lang } from '../lib/bcp47.js';
 
 const providerName = 'fcbh';
 const fullName = 'Faith Comes by Hearing - Digital Bible Platform';
@@ -182,7 +183,7 @@ function loadSection(textid, sectionid, callback) {
       .then(chapterData => {
         const html = [];
 
-        html.push(`<div class="section chapter ${textid} ${bookid} ${sectionid} ${lang} " data-textid="${textid}" data-id="${sectionid}" data-nextid="${nextid}" data-previd="${previd}" lang="${lang}" dir="${dir}">`);
+        html.push(`<div class="section chapter ${textid} ${bookid} ${sectionid} ${lang} " data-textid="${textid}" data-id="${sectionid}" data-nextid="${nextid}" data-previd="${previd}" lang="${toBcp47Lang(lang)}" data-lang3="${lang}" dir="${dir}">`);
 
         if (chapter === '1') {
           html.push(`<div class="mt">${textinfo.divisionNames[textinfo.divisions.indexOf(bookid)]}</div>`);

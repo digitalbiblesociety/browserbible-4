@@ -5,6 +5,7 @@
 import { getConfig } from '../core/config.js';
 import { fetchTextInfo } from './fetchTextInfo.js';
 import { TextSearch } from './Search.js';
+import { toBcp47Lang } from '../lib/bcp47.js';
 
 const providerName = 'local';
 const fullName = 'Local Files';
@@ -28,6 +29,7 @@ function processContent(content, textInfo, textid) {
 
   content.setAttribute('data-textid', textid);
   content.setAttribute('data-lang3', textInfo.lang);
+  if (textInfo.lang) content.setAttribute('lang', toBcp47Lang(textInfo.lang));
 
   // section headings go before chapter markers, not after
   const c = content.querySelector('.c');

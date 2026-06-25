@@ -6,6 +6,7 @@ import { getApp } from '../core/registry.js';
 import { getConfig } from '../core/config.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 import { TextNavigation } from '../common/TextNavigation.js';
+import { t as i18nT } from '../lib/i18n.js';
 
 /**
  * Get the current Bible version from the first Bible window
@@ -36,7 +37,7 @@ function getCurrentVersion() {
  */
 export function MainSearchBox(parentNode) {
   const searchInput = elem('input', { type: 'search', className: 'i18n', id: 'main-search-input', autocomplete: 'off', dataset: { i18n: '[placeholder]menu.search.placeholder' } });
-  const searchButton = elem('input', { type: 'button', id: 'main-search-button', value: '' });
+  const searchButton = elem('input', { type: 'button', id: 'main-search-button', value: '', ariaLabel: i18nT('menu.search.placeholder') });
   const searchBox = elem('div', { id: 'main-search-box' }, searchInput, searchButton);
 
   const suggestions = elem('div', { id: 'main-search-suggestions', style: { display: 'none' } });

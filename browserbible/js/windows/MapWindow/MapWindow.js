@@ -26,7 +26,7 @@ class MapWindowComponent extends BaseWindow {
     this.innerHTML = `
       <div class="window-header map-header">
         <div class="map-header-inner">
-          <input type="text" placeholder="Search locations…" class="app-input map-nav" />
+          <input type="text" placeholder="Search locations…" class="app-input map-nav" aria-label="Search locations" />
           <div class="map-search-suggestions"></div>
         </div>
         <div class="map-mode-toggle">

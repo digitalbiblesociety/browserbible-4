@@ -6,6 +6,7 @@
  */
 
 import { elem, offset } from '../lib/helpers.esm.js';
+import { toBcp47Lang } from '../lib/bcp47.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { BOOK_DATA, OT_BOOKS, NT_BOOKS, AP_BOOKS, addNames, numbers as bibleNumbers } from '../bible/BibleData.js';
@@ -267,7 +268,7 @@ export function TextNavigator() {
     if (!divsEl) return;
     divsEl.style.display = '';
     if (textInfo.dir) divsEl.setAttribute('dir', textInfo.dir);
-    if (textInfo.lang) divsEl.setAttribute('lang', textInfo.lang);
+    if (textInfo.lang) divsEl.setAttribute('lang', toBcp47Lang(textInfo.lang));
   }
 
   function selectCurrentReference(fragmentid) {

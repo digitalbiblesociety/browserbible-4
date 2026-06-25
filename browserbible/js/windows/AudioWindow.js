@@ -9,6 +9,7 @@ import { AudioController } from './AudioController.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
 import { getText, getTextInfoData, displayAbbr } from '../texts/TextLoader.js';
+import { t as i18nT } from '../lib/i18n.js';
 
 const hasTouch = 'ontouchend' in document;
 
@@ -40,7 +41,7 @@ class AudioWindowComponent extends BaseWindow {
       <div class="audio-window-container">
         <div class="window-header audio-window-header">
           <div class="audio-window-header-inner">
-            <input type="text" class="app-input text-nav" />
+            <input type="text" class="app-input text-nav" aria-label="${i18nT('windows.bible.gotopassage')}" />
             <div class="app-list text-list"></div>
           </div>
         </div>
