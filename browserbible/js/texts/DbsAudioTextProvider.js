@@ -36,7 +36,7 @@ async function loadIndex() {
   }
 }
 
-export function getTextManifest(callback) {
+function getTextManifest(callback) {
   const config = getConfig();
   if (!config.dbsAudioEnabled) {
     callback(null);
@@ -83,7 +83,7 @@ export function getTextManifest(callback) {
   });
 }
 
-export function getTextInfo(textid, callback) {
+function getTextInfo(textid, callback) {
   const config = getConfig();
   const baseUrl = config.dbsAudioUrl || 'https://audio.dbs.org';
 
@@ -151,7 +151,7 @@ export function getTextInfo(textid, callback) {
   });
 }
 
-export function loadSection(textid, sectionid, callback) {
+function loadSection(textid, sectionid, callback) {
   callback(null);
 }
 
@@ -161,5 +161,3 @@ export const DbsAudioTextProvider = {
   getTextInfo,
   loadSection
 };
-
-export default DbsAudioTextProvider;

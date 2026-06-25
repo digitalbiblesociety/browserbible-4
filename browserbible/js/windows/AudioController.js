@@ -1,7 +1,4 @@
-/**
- * AudioController
- * Controls audio playback synchronized with text scrolling
- */
+// Controls audio playback synchronized with text scrolling
 
 import { elem, offset } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
@@ -73,9 +70,6 @@ export function AudioController(id, container, toggleButton, scroller) {
   let hasAudio = false;
   let lastTimestampVerse = 0;
 
-  scrollCheckbox.checked = true;
-  autoplayCheckbox.checked = true;
-
   i18n.translatePage(options);
 
   const toggleButtonEl = toggleButton?.nodeType ? toggleButton : toggleButton?.[0];
@@ -102,7 +96,6 @@ export function AudioController(id, container, toggleButton, scroller) {
       e.preventDefault();
       options.style.display = 'none';
       document.removeEventListener('click', docClick);
-      return false;
     }
   };
 
@@ -116,12 +109,12 @@ export function AudioController(id, container, toggleButton, scroller) {
         document.addEventListener('click', docClick);
       });
     }
-  }, false);
+  });
 
   optionsCloseButton.addEventListener('click', () => {
     options.style.display = 'none';
     document.removeEventListener('click', docClick);
-  }, false);
+  });
 
   const updateDramatic = () => {
     const storedFragmentid = fragmentid;
@@ -140,8 +133,8 @@ export function AudioController(id, container, toggleButton, scroller) {
     loadAudio(storedFragmentid);
   };
 
-  optionsDramaticAudio.addEventListener('change', updateDramatic, false);
-  optionsDramaticDrama.addEventListener('change', updateDramatic, false);
+  optionsDramaticAudio.addEventListener('change', updateDramatic);
+  optionsDramaticDrama.addEventListener('change', updateDramatic);
 
   if (toggleButtonEl != null) {
     toggleButtonEl.addEventListener('click', () => {
@@ -150,7 +143,7 @@ export function AudioController(id, container, toggleButton, scroller) {
       } else {
         block.style.display = '';
       }
-    }, false);
+    });
   }
 
   playButton.addEventListener('click', () => {
@@ -169,7 +162,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     } else {
       audio.pause();
     }
-  }, false);
+  });
 
   const skipToFragment = (getFragment) => {
     getFragment(textInfo, audioInfo, fragmentid, (newFragmentid) => {
@@ -188,8 +181,8 @@ export function AudioController(id, container, toggleButton, scroller) {
     });
   };
 
-  prevButton.addEventListener('click', () => skipToFragment(audioDataManager.getPrevFragment.bind(audioDataManager)), false);
-  nextButton.addEventListener('click', () => skipToFragment(audioDataManager.getNextFragment.bind(audioDataManager)), false);
+  prevButton.addEventListener('click', () => skipToFragment(audioDataManager.getPrevFragment.bind(audioDataManager)));
+  nextButton.addEventListener('click', () => skipToFragment(audioDataManager.getNextFragment.bind(audioDataManager)));
 
   if (scroller != null) {
     const updateLocation = (e) => {
@@ -265,29 +258,27 @@ export function AudioController(id, container, toggleButton, scroller) {
   };
 
   const handlePlayPlaying = () => {
-    const thisAudio = audio;
-
     playButton.innerHTML = pauseSvg;
     playButton.classList.add('playing');
 
     // Pause all other audio/video elements when this one starts playing
     document.querySelectorAll('audio,video').forEach((audioOrVideoNode) => {
-      if (audioOrVideoNode != thisAudio && !audioOrVideoNode.paused && !audioOrVideoNode.ended) {
+      if (audioOrVideoNode != audio && !audioOrVideoNode.paused && !audioOrVideoNode.ended) {
         audioOrVideoNode.pause();
       }
     });
   };
 
-  audio.addEventListener('play', handlePlayPlaying, false);
-  audio.addEventListener('playing', handlePlayPlaying, false);
+  audio.addEventListener('play', handlePlayPlaying);
+  audio.addEventListener('playing', handlePlayPlaying);
 
   const handlePauseEnded = () => {
     playButton.innerHTML = playSvg;
     playButton.classList.remove('playing');
   };
 
-  audio.addEventListener('pause', handlePauseEnded, false);
-  audio.addEventListener('ended', handlePauseEnded, false);
+  audio.addEventListener('pause', handlePauseEnded);
+  audio.addEventListener('ended', handlePauseEnded);
 
   audio.addEventListener('loadstart', () => {
     playButton.innerHTML = playSvg;
@@ -296,18 +287,18 @@ export function AudioController(id, container, toggleButton, scroller) {
     audioSliderHandle.style.left = '0%';
     currenttime.innerHTML = secondsToTimeCode(0);
     duration.innerHTML = secondsToTimeCode(0);
-  }, false);
+  });
 
   audio.addEventListener('loadedmetadata', () => {
     duration.innerHTML = secondsToTimeCode(audio.duration);
-  }, false);
+  });
 
   audio.addEventListener('ended', () => {
     if (autoplayCheckbox.checked) {
       audio.addEventListener('loadeddata', playWhenLoaded);
       nextButton.click();
     }
-  }, false);
+  });
 
   audio.addEventListener('timeupdate', () => {
     currenttime.innerHTML = secondsToTimeCode(audio.currentTime);
@@ -382,7 +373,7 @@ export function AudioController(id, container, toggleButton, scroller) {
 
     scroller.setFocus(true);
     pane.scrollTop = nodeTopAdjusted + scrollOffset;
-  }, false);
+  });
 
   const documentMouseUp = (e) => {
     isDraggingSliderHandle = false;
@@ -406,7 +397,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     isDraggingSliderHandle = true;
     document.addEventListener('mousemove', documentMouseMove);
     document.addEventListener('mouseup', documentMouseUp);
-  }, false);
+  });
 
   audioSlider.addEventListener('click', (e) => {
     const width = audioSlider.offsetWidth;
@@ -415,7 +406,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     const newTime = percent * audio.duration;
 
     audio.currentTime = newTime;
-  }, false);
+  });
 
   const configureFcbhDramaOptions = (info) => {
     optionsDramaticBox.style.display = '';
@@ -508,7 +499,7 @@ export function AudioController(id, container, toggleButton, scroller) {
     return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   };
 
-  const size = (width, height) => {
+  const size = (width) => {
     block.style.width = `${width}px`;
   };
 
@@ -535,5 +526,3 @@ export function AudioController(id, container, toggleButton, scroller) {
 
   return ext;
 }
-
-export default AudioController;

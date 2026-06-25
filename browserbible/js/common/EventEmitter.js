@@ -91,5 +91,3 @@ export function EventEmitter() {
 export function mixinEventEmitter(obj) {
   return Object.assign(obj, EventEmitterMixin, { _events: {} });
 }
-
-export default EventEmitterMixin;

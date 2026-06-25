@@ -166,7 +166,7 @@ export function on(el, events, selectorOrHandler, handler) {
     if (!store[key]) store[key] = [];
     store[key].push({ original: fn, wrapper: wrapper, selector: selector });
 
-    el.addEventListener(parsed.type, wrapper, false);
+    el.addEventListener(parsed.type, wrapper);
   });
 }
 

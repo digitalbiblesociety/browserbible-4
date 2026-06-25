@@ -56,6 +56,7 @@ async function loadLanguage(lang) {
  * @param {Object} [options.resStore] - Resource store with translations keyed by language (optional, for preloaded resources)
  * @param {string} [options.fallbackLng] - Fallback language code
  * @param {string} [options.lng] - Initial language code (auto-detected if not provided)
+ * @param {string} [options.defaultLng] - Language to use when no cookie is set, before falling back to navigator.language
  * @param {string} [options.basePath] - Base path for loading JSON files
  * @returns {Promise<void>}
  */
@@ -78,6 +79,8 @@ export async function init(options = {}) {
     const cookieLang = getCookie('i18next');
     if (cookieLang) {
       currentLanguage = cookieLang;
+    } else if (options.defaultLng) {
+      currentLanguage = options.defaultLng;
     } else if (typeof navigator !== 'undefined' && navigator.language) {
       currentLanguage = navigator.language.split('-')[0];
     }
@@ -260,7 +263,7 @@ export function translateElement(el) {
  * Translate all elements with data-i18n attribute within a container
  * @param {Element|Document} [container=document] - Container to search within
  */
-export function translatePage(container) {
+function translatePage(container) {
   if (typeof document === 'undefined') return;
   container = container || document;
   const elements = container.querySelectorAll('[data-i18n]');
@@ -309,5 +312,3 @@ export const i18n = {
   preload,
   getResource
 };
-
-export default i18n;

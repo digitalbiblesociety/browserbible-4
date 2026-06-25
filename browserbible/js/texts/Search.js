@@ -140,7 +140,7 @@ export const SearchTools = {
   }
 };
 
-export class SearchIndexLoader {
+class SearchIndexLoader {
   constructor() {
     this._events = {};
 
@@ -537,10 +537,9 @@ export class TextSearch {
       loadSection(this.textInfo, sectionid, (content) => {
         const temp = document.createElement('div');
         temp.innerHTML = content;
-        const contentEl = temp;
 
         for (const fragmentid of fragmentids) {
-          const fragmentNodes = contentEl.querySelectorAll(`.${fragmentid}`);
+          const fragmentNodes = temp.querySelectorAll(`.${fragmentid}`);
 
           let html = '';
 
@@ -609,5 +608,3 @@ export class TextSearch {
 }
 
 Object.assign(TextSearch.prototype, EventEmitterMixin);
-
-export default { TextSearch, SearchIndexLoader, SearchTools };

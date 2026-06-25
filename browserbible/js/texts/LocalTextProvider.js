@@ -45,7 +45,7 @@ function processContent(content, textInfo, textid) {
   }
 }
 
-export function getTextManifest(callback) {
+function getTextManifest(callback) {
   const config = getConfig();
   const textsUrl = `${config.baseContentUrl}${config.textsPath}/${config.textsIndexPath}`;
 
@@ -76,12 +76,12 @@ export function getTextManifest(callback) {
     });
 }
 
-export function getTextInfo(textid, callback, errorCallback) {
+function getTextInfo(textid, callback, errorCallback) {
   const config = getConfig();
   fetchTextInfo(textData, config.textsPath, textid, callback, errorCallback);
 }
 
-export function loadSection(textid, sectionid, callback, errorCallback) {
+function loadSection(textid, sectionid, callback, errorCallback) {
   getTextInfo(textid, textInfo => {
     const config = getConfig();
     const url = `${config.baseContentUrl}${config.textsPath}/${textid}/${sectionid}.html`;
@@ -106,13 +106,13 @@ export function loadSection(textid, sectionid, callback, errorCallback) {
         if (content) wrapperDiv.appendChild(content);
         callback(wrapperDiv.innerHTML);
       })
-      .catch(error => {
+      .catch(() => {
         errorCallback?.(textid, sectionid);
       });
   });
 }
 
-export function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
+function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
   const textSearch = new TextSearch();
 
   textSearch.on('load', onSearchLoad);
@@ -130,5 +130,3 @@ export const LocalTextProvider = {
   loadSection,
   startSearch
 };
-
-export default LocalTextProvider;

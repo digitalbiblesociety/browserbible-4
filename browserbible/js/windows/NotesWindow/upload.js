@@ -1,5 +1,4 @@
 /**
- * NotesWindow Upload/Import Functions
  * Parse imported files (Markdown, Plain Text, RTF) back into note objects
  */
 

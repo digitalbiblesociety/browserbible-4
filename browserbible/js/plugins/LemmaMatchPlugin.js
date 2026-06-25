@@ -44,24 +44,15 @@ function handleLemmaOut(e) {
   }
 }
 
-/**
- * Create a lemma match plugin
- * @param {Object} app - Application instance
- * @returns {Object} Plugin API
- */
-export const LemmaMatchPlugin = (app) => {
-  const config = getConfig();
-  if (!config.enableLemmaMatchPlugin) return {};
+export const LemmaMatchPlugin = () => {
+  if (!getConfig().enableLemmaMatchPlugin) return {};
+  if (hasTouch) return {};
 
-  if (!hasTouch) {
-    const windowsMain = document.querySelector('.windows-main');
-    if (windowsMain) {
-      windowsMain.addEventListener('mouseover', handleLemmaHover);
-      windowsMain.addEventListener('mouseout', handleLemmaOut);
-    }
-  }
+  const windowsMain = document.querySelector('.windows-main');
+  if (!windowsMain) return {};
+
+  windowsMain.addEventListener('mouseover', handleLemmaHover);
+  windowsMain.addEventListener('mouseout', handleLemmaOut);
 
   return {};
 };
-
-export default LemmaMatchPlugin;

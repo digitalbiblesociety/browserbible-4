@@ -9,7 +9,7 @@ const providerName = 'commentary';
 const fullName = 'Local Commentaries';
 const textData = {};
 
-export function getTextManifest(callback) {
+function getTextManifest(callback) {
 	const config = getConfig();
 	const url = `${config.baseContentUrl}content/commentaries/commentaries.json`;
 
@@ -27,11 +27,11 @@ export function getTextManifest(callback) {
 		});
 }
 
-export function getTextInfo(textid, callback, errorCallback) {
+function getTextInfo(textid, callback, errorCallback) {
 	fetchTextInfo(textData, 'content/commentaries', textid, callback, errorCallback);
 }
 
-export function loadSection(textid, sectionid, callback, errorCallback) {
+function loadSection(textid, sectionid, callback, errorCallback) {
 	getTextInfo(textid, textInfo => {
 		const config = getConfig();
 		const url = `${config.baseContentUrl}content/commentaries/${textid}/${sectionid}.html`;
@@ -55,7 +55,7 @@ export function loadSection(textid, sectionid, callback, errorCallback) {
 				if (content) wrapperDiv.appendChild(content);
 				callback(wrapperDiv.innerHTML);
 			})
-			.catch(error => {
+			.catch(() => {
 				errorCallback?.(textid, sectionid);
 			});
 	}, errorCallback);
@@ -68,5 +68,3 @@ export const CommentaryProvider = {
 	getTextInfo,
 	loadSection
 };
-
-export default CommentaryProvider;

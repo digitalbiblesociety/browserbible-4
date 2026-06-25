@@ -88,5 +88,3 @@ function shuffleArray(array) {
   }
   return array;
 }
-
-export default renderWordCloud;

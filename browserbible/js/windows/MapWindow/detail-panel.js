@@ -158,7 +158,7 @@ export function openDetailPanel(panel, location, anchorRect, verseTextLookup = n
  * Close the detail panel
  * @param {HTMLElement} panel - The popover element
  */
-export function closeDetailPanel(panel) {
+function closeDetailPanel(panel) {
   if (panel?.matches(':popover-open')) {
     panel.hidePopover();
   }

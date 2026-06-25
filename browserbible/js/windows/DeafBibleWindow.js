@@ -41,5 +41,3 @@ registerWindowComponent('deaf-bible-window', DeafBibleWindow, {
   displayName: 'Deaf Bible',
   paramKeys: { textid: 't', fragmentid: 'v' }
 });
-
-export default DeafBibleWindow;

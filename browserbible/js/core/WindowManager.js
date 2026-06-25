@@ -15,7 +15,7 @@ const unlinkedSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
  * Individual window instance within the manager
  * @class
  */
-export class Window {
+class Window {
   /**
    * @param {string} id - Unique window identifier
    * @param {HTMLElement} parentNode - Container element
@@ -439,5 +439,3 @@ export class WindowManager {
     splitter.addEventListener('touchstart', onMouseDown, { passive: false });
   }
 }
-
-export default WindowManager;

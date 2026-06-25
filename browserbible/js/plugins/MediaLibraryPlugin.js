@@ -22,10 +22,9 @@ function getMediaUrl(mediaLibrary, filename, ext, suffix) {
 
 /**
  * Create a media library plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export const MediaLibraryPlugin = (app) => {
+export const MediaLibraryPlugin = () => {
   const config = getConfig();
 
   if (!config.enableMediaLibraryPlugin) {
@@ -235,5 +234,3 @@ export const MediaLibraryPlugin = (app) => {
 
   return ext;
 };
-
-export default MediaLibraryPlugin;

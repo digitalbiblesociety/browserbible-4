@@ -606,5 +606,3 @@ export function getGlobalTextNavigator() {
   }
   return globalTextNavigator;
 }
-
-export default TextNavigator;

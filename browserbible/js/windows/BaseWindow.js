@@ -337,5 +337,3 @@ export function registerWindowComponent(tagName, WindowClass, metadata = {}) {
     customElements.define(tagName, WindowClass);
   }
 }
-
-export default BaseWindow;

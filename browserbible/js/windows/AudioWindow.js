@@ -18,7 +18,7 @@ const getTextAsync = (textId) => AsyncHelpers.promisify(getText, textId);
  * AudioWindow Web Component
  * Standalone audio player with navigation controls
  */
-export class AudioWindowComponent extends BaseWindow {
+class AudioWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -349,5 +349,3 @@ registerWindowComponent('audio-window', AudioWindowComponent, {
 });
 
 export { AudioWindowComponent as AudioWindow };
-
-export default AudioWindowComponent;

@@ -139,26 +139,3 @@ export const updateConfig = (newConfig) => {
  * @returns {Object|null} Custom config or null
  */
 export const getCustomConfig = (name) => customConfigs[name] ?? null;
-
-/**
- * Register a custom configuration preset
- * @param {string} name - Preset name
- * @param {Object} configObj - Configuration object
- */
-export const registerCustomConfig = (name, configObj) => {
-  customConfigs[name] = configObj;
-};
-
-/**
- * Get protocol prefix for URLs (handles file:// protocol)
- * @returns {string} Protocol prefix or empty string
- */
-export const getProtocol = () => {
-  if (typeof window !== 'undefined' && window?.location?.protocol === 'file:') {
-    return 'https:';
-  }
-  return '';
-};
-
-export default config;
-export { defaultConfig, customConfigs };

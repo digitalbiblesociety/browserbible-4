@@ -60,7 +60,7 @@ function lerp(start, end, min, max, value) {
  * StatisticsWindow Web Component
  * Shows word frequency statistics and word cloud for Bible chapters
  */
-export class StatisticsWindowComponent extends BaseWindow {
+class StatisticsWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -286,23 +286,21 @@ export class StatisticsWindowComponent extends BaseWindow {
       const max = Math.max(...counts);
       const min = Math.min(...counts);
 
-      const displayWords = this.state.wordStats;
       let html = '';
       const wordcloudData = [];
 
-      for (let i = 0; i < displayWords.length; i++) {
-        const wordInfo = displayWords[i];
+      for (let i = 0; i < this.state.wordStats.length; i++) {
+        const wordInfo = this.state.wordStats[i];
 
         const size = lerp(FONT_SIZE_MIN, FONT_SIZE_MAX, min, max, wordInfo.count);
         let displayWord = wordInfo.words ? wordInfo.words.join(', ') : wordInfo.word;
-        const wordleWord = wordInfo.word;
 
         if (wordInfo.strongs) {
           displayWord = `<l s="${wordInfo.strongs}">${displayWord}</l>`;
         }
 
         html += `<span class="word" style="font-size:${size}px" data-wordindex="${i}"><span dir="${this.state.textInfo.dir}">${displayWord}</span> <span dir="ltr">(${wordInfo.count})</span></span>`;
-        wordcloudData.push([wordleWord, wordInfo.count]);
+        wordcloudData.push([wordInfo.word, wordInfo.count]);
       }
 
       wordFrequenciesNode.setAttribute('dir', this.state.textInfo.dir);
@@ -310,12 +308,12 @@ export class StatisticsWindowComponent extends BaseWindow {
       wordFrequenciesNode.classList.remove('loading-indicator');
 
       wordFrequenciesNode.querySelectorAll('.word').forEach((wordEl) => {
-        wordEl.addEventListener('mouseout', () => this.removeHighlights(), false);
+        wordEl.addEventListener('mouseout', () => this.removeHighlights());
         wordEl.addEventListener('mouseover', () => {
           const index = parseInt(wordEl.getAttribute('data-wordindex'), 10);
           const wordInfo = this.state.wordStats[index];
           this.createHighlights(wordInfo);
-        }, false);
+        });
       });
 
       this.renderWordCloud(wordCloudNode, wordcloudData, min, max);
@@ -459,5 +457,3 @@ registerWindowComponent('statistics-window', StatisticsWindowComponent, {
 });
 
 export { StatisticsWindowComponent as StatisticsWindow };
-
-export default StatisticsWindowComponent;

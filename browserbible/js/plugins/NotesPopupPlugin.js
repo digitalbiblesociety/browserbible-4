@@ -15,10 +15,9 @@ import {
 
 /**
  * Create a notes popup plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export const NotesPopupPlugin = (app) => {
+export const NotesPopupPlugin = () => {
   const config = getConfig();
 
   if (!config.enableNotesPopupPlugin) {
@@ -72,10 +71,8 @@ export const NotesPopupPlugin = (app) => {
       if (key) {
         e.preventDefault();
 
-        const containerEl = notesPopup.container;
-
         // hide if second click
-        if (containerEl.style.display !== 'none' && notesPopup.currentWord === key) {
+        if (notesPopup.container.style.display !== 'none' && notesPopup.currentWord === key) {
           notesPopup.hide();
           notesPopup.currentWord = null;
           return;
@@ -109,5 +106,3 @@ export const NotesPopupPlugin = (app) => {
 
   return ext;
 };
-
-export default NotesPopupPlugin;

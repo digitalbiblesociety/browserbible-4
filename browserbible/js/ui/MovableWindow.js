@@ -1,8 +1,3 @@
-/**
- * MovableWindow
- * A popup window component
- */
-
 import { elem } from '../lib/helpers.esm.js';
 
 /**
@@ -23,7 +18,7 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
 
   document.body.appendChild(container);
 
-  close.addEventListener('click', hide, false);
+  close.addEventListener('click', hide);
 
   function size(w, h) {
     if (w) container.style.width = w + 'px';
@@ -73,5 +68,3 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
 
   return ext;
 }
-
-export default MovableWindow;

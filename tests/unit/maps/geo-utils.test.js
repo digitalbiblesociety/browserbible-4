@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getImportanceTier, geoToSvg, svgToGeo } from '@windows/MapWindow/geo-utils.js';
-import { MAP_BOUNDS } from '@windows/MapWindow/constants.js';
+import { MAP_BOUNDS, PADDING, CONTENT_WIDTH, CONTENT_HEIGHT, PROJ_COS_PHI0 } from '@windows/MapWindow/constants.js';
 
 describe('getImportanceTier', () => {
   it('returns 1 for an important named location regardless of verse count', () => {
@@ -45,15 +45,22 @@ describe('geoToSvg / svgToGeo', () => {
     expect(geo.lat).toBeCloseTo(lat, 6);
   });
 
-  it('top-left of bounds maps near padding', () => {
+  it('top-left of bounds maps to the padding origin', () => {
     const { x, y } = geoToSvg(MAP_BOUNDS.minLon, MAP_BOUNDS.maxLat);
-    expect(x).toBeCloseTo(40, 6); // PADDING
-    expect(y).toBeCloseTo(40, 6);
+    expect(x).toBeCloseTo(PADDING, 6);
+    expect(y).toBeCloseTo(PADDING, 6);
   });
 
-  it('bottom-right of bounds maps near content extent', () => {
+  it('bottom-right of bounds maps to the content extent', () => {
     const { x, y } = geoToSvg(MAP_BOUNDS.maxLon, MAP_BOUNDS.minLat);
-    expect(x).toBeCloseTo(40 + 1120, 6); // PADDING + CONTENT_WIDTH
-    expect(y).toBeCloseTo(40 + 720, 6); // PADDING + CONTENT_HEIGHT
+    expect(x).toBeCloseTo(PADDING + CONTENT_WIDTH, 6);
+    expect(y).toBeCloseTo(PADDING + CONTENT_HEIGHT, 6);
+  });
+
+  it('uses square pixels: a 1° lon span is cos(φ0)× a 1° lat span', () => {
+    // Corrected equirectangular: longitude is compressed by cos(standard parallel).
+    const lonSpan = geoToSvg(36, 31.5).x - geoToSvg(35, 31.5).x;
+    const latSpan = geoToSvg(35, 32).y - geoToSvg(35, 31).y; // 1° of latitude (y grows southward)
+    expect(lonSpan / Math.abs(latSpan)).toBeCloseTo(PROJ_COS_PHI0, 6);
   });
 });

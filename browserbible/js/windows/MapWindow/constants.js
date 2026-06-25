@@ -14,7 +14,7 @@ export const MAP_BOUNDS = {
 // Longitude degrees are compressed by cos(standard parallel) so that east–west
 // and north–south scales match (square pixels → geographically faithful shapes).
 // The standard parallel is the mid-latitude of the bounds.
-export const STANDARD_PARALLEL = (MAP_BOUNDS.minLat + MAP_BOUNDS.maxLat) / 2; // 27.5°
+const STANDARD_PARALLEL = (MAP_BOUNDS.minLat + MAP_BOUNDS.maxLat) / 2; // 27.5°
 export const PROJ_COS_PHI0 = Math.cos(STANDARD_PARALLEL * Math.PI / 180);
 
 export const SVG_WIDTH = 1200;

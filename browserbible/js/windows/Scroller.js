@@ -182,7 +182,7 @@ export function Scroller(node) {
     startSpeedTest();
   };
 
-  nodeEl.addEventListener('scroll', handleScroll, false);
+  nodeEl.addEventListener('scroll', handleScroll);
 
   const startSpeedTest = () => {
     if (speedInterval == null) {
@@ -530,7 +530,7 @@ export function Scroller(node) {
   const getLocationInfo = () => locationInfo;
 
   const close = () => {
-    nodeEl.removeEventListener('scroll', handleScroll, false);
+    nodeEl.removeEventListener('scroll', handleScroll);
     stopSpeedTest();
 
     if (globalTimeout != null) {
@@ -593,5 +593,3 @@ export function Scroller(node) {
 
   return ext;
 }
-
-export default Scroller;

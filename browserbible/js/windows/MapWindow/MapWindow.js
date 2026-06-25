@@ -9,7 +9,7 @@ import { fuzzySearchLocations } from './fuzzy-search.js';
 import { buildDetailHTML } from './detail-panel.js';
 import { MapPanel } from './map-panel.js';
 
-export class MapWindowComponent extends BaseWindow {
+class MapWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -352,5 +352,3 @@ registerWindowComponent('map-window', MapWindowComponent, {
 });
 
 export { MapWindowComponent as MapWindow };
-
-export default MapWindowComponent;

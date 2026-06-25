@@ -46,7 +46,7 @@ function parsePericopes(rows) {
 }
 
 /** All pericopes in source order (canonical book/chapter/verse order). */
-export const PERICOPES = parsePericopes(PERICOPE_DATA);
+const PERICOPES = parsePericopes(PERICOPE_DATA);
 
 /**
  * Group pericopes by book id, preserving canonical book order.
@@ -62,5 +62,3 @@ export function getPericopesByBook() {
     .map(([bookid, pericopes]) => ({ bookid, pericopes }))
     .sort((a, b) => (BOOK_DATA[a.bookid]?.sortOrder ?? 999) - (BOOK_DATA[b.bookid]?.sortOrder ?? 999));
 }
-
-export default PERICOPES;

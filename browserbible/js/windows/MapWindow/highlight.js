@@ -12,32 +12,31 @@ export function highlightLocations(markersGroup, locationDataByVerse) {
   document.querySelectorAll('.BibleWindow .verse, .BibleWindow .v').forEach((verse) => {
     const verseid = verse.getAttribute('data-id');
     const verseLocations = locationDataByVerse?.[verseid];
+    if (verseLocations === undefined) return;
 
-    if (verseLocations !== undefined) {
-      let html = verse.innerHTML;
+    let html = verse.innerHTML;
 
-      for (const location of verseLocations) {
-        const regexp = new RegExp(`\\b${location.name}\\b`, 'gi');
-        html = html.replace(regexp, `<span class="linked-location">${location.name}</span>`);
+    for (const location of verseLocations) {
+      const regexp = new RegExp(`\\b${location.name}\\b`, 'gi');
+      html = html.replace(regexp, `<span class="linked-location">${location.name}</span>`);
 
-        // Highlight corresponding map markers
-        if (markersGroup) {
-          markersGroup.querySelectorAll('.map-marker').forEach((marker) => {
-            if (marker.locationData?.name === location.name) {
-              const icon = marker.querySelector('.map-marker-icon');
-              if (icon) {
-                icon.style.color = '#135C13';
-                marker.classList.add('highlighted');
-                marker.classList.remove('filtered-out');
-                marker.style.display = '';
-              }
+      // Highlight corresponding map markers
+      if (markersGroup) {
+        markersGroup.querySelectorAll('.map-marker').forEach((marker) => {
+          if (marker.locationData?.name === location.name) {
+            const icon = marker.querySelector('.map-marker-icon');
+            if (icon) {
+              icon.style.color = '#135C13';
+              marker.classList.add('highlighted');
+              marker.classList.remove('filtered-out');
+              marker.style.display = '';
             }
-          });
-        }
+          }
+        });
       }
-
-      verse.innerHTML = html;
     }
+
+    verse.innerHTML = html;
   });
 }
 

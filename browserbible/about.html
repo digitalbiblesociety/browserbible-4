@@ -3,339 +3,160 @@
 <head>
 <meta charset="utf-8" />
 <title>About inScript&trade; 5.0</title>
-<!-- inScript 5.0 About page. Self-contained by design: no JavaScript, no Tailwind, all SVG inline; FAQ uses native <details>. Rationale, decisions & partner-link findings: ~/Sites/HQ/SITES/inScript/about-page-gotchas.md -->
-
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
 <style>
-  :root{
-    --ink:#262626;
-    --muted:#6a6a6a;
-    --line:#dcdcdc;
-    --bg:#ffffff;
-    --panel:#f7f9fb;
-    --blue:#3c7cbf;
-    --blue-soft:#e8f1fa;
-    --blue-line:#bcd8f0;
-    --link:#1857c4;
-    --radius:8px;
+  body {
+    max-width: 42rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: #222;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    color:var(--ink);
-    background:var(--bg);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:780px;margin:0 auto;padding:28px 22px 56px}
-  a{color:var(--link);text-decoration:none}
-  a:hover{text-decoration:underline}
-  h2{font-size:1.32em;font-weight:600;margin:0 0 .5em;letter-spacing:-.01em}
-  h3{font-size:1.02em;font-weight:600;margin:0 0 .3em}
-  p{margin:0 0 1em}
-
-  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-  header .mark{display:block}
-  header .ver{
-    font-size:.72em;font-weight:700;letter-spacing:.04em;color:#fff;
-    background:var(--blue);border-radius:20px;padding:3px 11px;white-space:nowrap;
-  }
-  .tagline{color:var(--muted);font-size:.98em;margin:2px 0 18px}
-
-  nav{
-    display:flex;flex-wrap:wrap;gap:6px 4px;
-    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    padding:9px 0;margin:0 0 26px;font-size:.9em;
-  }
-  nav a{
-    color:var(--muted);padding:4px 12px;border-radius:20px;font-weight:500;
-    transition:background .12s ease,color .12s ease;
-  }
-  nav a:hover{background:var(--blue-soft);color:var(--blue);text-decoration:none}
-
-  section{margin:0 0 34px}
-  .lede{font-size:1.05em}
-
-  .sprite{position:absolute;width:0;height:0;overflow:hidden}
-  .contribs{
-    list-style:none;margin:16px 0 0;padding:0;
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));column-gap:26px;
-  }
-  .contribs li{
-    display:flex;align-items:center;gap:9px;
-    padding:5px 0;font-size:.95em;
-  }
-  .contribs .ic{flex:0 0 auto;width:15px;height:15px;color:var(--blue);opacity:.85}
-  .contribs a{color:var(--ink);text-decoration:none}
-  .contribs a:hover{color:var(--link);text-decoration:underline}
-  .note{color:var(--muted);font-size:.9em;margin-top:16px}
-
-  .steps{list-style:none;counter-reset:step;margin:14px 0 0;padding:0}
-  .steps li{
-    position:relative;padding:0 0 16px 44px;
-  }
-  .steps li:last-child{padding-bottom:0}
-  .steps li::before{
-    counter-increment:step;content:counter(step);
-    position:absolute;left:0;top:0;
-    width:28px;height:28px;border-radius:50%;
-    background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue-line);
-    font-size:.85em;font-weight:700;display:flex;align-items:center;justify-content:center;
-  }
-  .steps strong{font-weight:600}
-
-  details{
-    border:1px solid var(--line);border-radius:var(--radius);
-    margin:0 0 8px;background:var(--bg);overflow:hidden;
-  }
-  details[open]{border-color:var(--blue-line)}
-  summary{
-    list-style:none;cursor:pointer;
-    padding:13px 44px 13px 16px;position:relative;
-    font-weight:600;font-size:.97em;
-    transition:background .12s ease;
-  }
-  summary::-webkit-details-marker{display:none}
-  summary:hover{background:var(--blue-soft)}
-  details[open] summary{background:var(--blue-soft);color:var(--blue)}
-  summary::after{
-    content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);
-    font-size:1.25em;font-weight:400;color:var(--muted);line-height:1;
-  }
-  details[open] summary::after{content:"\2013";color:var(--blue)}
-  .answer{padding:4px 16px 16px;color:#3a3a3a}
-  .answer p:last-child{margin-bottom:0}
-  .answer ul{margin:8px 0;padding-left:22px}
-  .answer li{margin:3px 0}
-  .answer kbd{display:inline-block;font:600 .85em/1 ui-monospace,Menlo,Consolas,monospace;background:#f3f4f6;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:2px 6px;color:#333}
-  .faq-group{margin:22px 0 10px;color:var(--muted);font-size:.82em;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-  .faq-group:first-of-type{margin-top:14px}
-
-  .callout{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;margin:14px 0 0}
-  .callout h3{margin-bottom:.3em}
-  .callout p{margin:0}
-  .share-title{margin-top:26px}
-  .share{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0;padding:0;list-style:none}
-  .share a{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:9px 15px;border-radius:8px;color:#fff;
-    font-size:.9em;font-weight:600;text-decoration:none;
-    transition:filter .12s ease,transform .12s ease,box-shadow .12s ease;
-  }
-  .share a:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.16);text-decoration:none}
-  .share a svg{width:18px;height:18px;fill:currentColor;flex:0 0 auto}
-  .share .facebook{background:#1877f2}
-  .share .x{background:#111}
-  .share .whatsapp{background:#25d366}
-  .share .telegram{background:#229ed9}
-  .share .linkedin{background:#0a66c2}
-  .share .email{background:#5b6b7b}
-
-  footer{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;
-    display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-  footer .copy{flex:1 1 260px;font-size:.9em;color:var(--muted)}
-  footer .copy p{margin:0 0 .7em}
-  footer svg{flex:0 0 auto}
-
-  @media (max-width:560px){
-    .wrap{padding:22px 16px 44px}
-    h2{font-size:1.2em}
-  }
+  h1 { margin-bottom: 0; }
+  summary { cursor: pointer; }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <span class="mark">
-      <svg width="190" height="37" viewBox="0 0 210 41" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="inScript">
-        <path d="M.638 29.087c0 4.98-.143 9.822-.332 11.18.426-.046 1.706-.136 2.654-.136.71 0 1.61.046 1.99.09-.284-1.13-.38-6.29-.38-11.133v-6.79c0-5.43.19-9.73.286-11.133-.332.046-1.375.136-2.702.136-.616 0-1.516 0-1.943-.045.285.996.428 5.567.428 11.043v6.79zm18.34 11.134c-.38-3.03-.473-14.3-.52-22.493 3.98 4.028 15.923 16.973 19.525 20.186 2.654 2.444 3.223 2.897 3.507 2.897.237 0 .332-.227.332-2.263 0-1.63-.048-5.386-.048-7.876.048-7.33.285-17.197.522-19.506-.285.046-1.422.136-2.322.136-.57 0-1.375-.045-1.707-.09.332 4.21.474 16.384.522 22.177-3.793-2.942-17.63-17.832-21.707-21.68-.853-.77-1.185-1.086-1.374-1.086-.286 0-.38.182-.38 2.264 0 6.834-.143 24.124-.427 27.382.237-.045 1.753-.135 2.18-.135.616 0 1.28 0 1.896.09zm30.33-1.324c1.723 1.183 5.493 2.11 8.94 2.11 2.746 0 5.762-.67 8.132-2.213 3.77-2.52 4.685-6.53 4.685-8.743 0-3.857-1.238-6.995-7.647-11.058l-2.477-1.594c-5.008-3.19-5.708-5.092-5.708-7.92 0-3.447 2.8-5.915 6.84-5.915 4.416 0 6.785 1.8 7.808 2.983 0-1.75.27-4.423.43-4.938-.376-.05-1.4-.205-2.745-.41-1.293-.258-3.07-.515-5.17-.515-7.38 0-11.633 4.474-11.633 9.823 0 3.6 1.454 6.943 7.11 10.544l2.638 1.697c4.63 2.983 5.816 5.04 5.816 8.23 0 3.856-2.37 6.942-7.486 6.942-4.2 0-7.647-2.11-9.1-4.064.052 1.44-.27 4.32-.432 5.04zm46.535 1.926c3.878 0 7.807-.74 9.565-1.432.103-.987.465-2.864.827-3.85-2.327 1.58-5.946 2.27-9.927 2.27-11.477 0-15.924-7.604-15.924-14.32 0-3.553.983-7.01 3.93-9.676 1.758-1.53 4.653-3.21 10.03-3.21 5.687 0 9.616 1.73 11.426 3.457.05-1.48.362-3.406.672-4.245-1.86-.494-5.584-1.876-11.788-1.876-6.773 0-11.22 1.973-14.114 4.59-4.137 3.654-4.964 8.295-4.964 11.406 0 3.703 1.24 8.74 5.584 12.393 3.774 3.11 8.582 4.492 14.683 4.492zm17.372-12.74c0 5.433-.207 10.666-.414 12.197.518-.1 2.017-.15 2.896-.15.827 0 1.706 0 2.12.1-.207-1.877-.414-6.37-.414-11.604v-1.333c0-.148.052-.148.207-.148h5.945c.31 0 .413.1.62.296 2.017 2.52 6.204 8.395 8.738 10.716 1.81 1.777 2.895 2.27 5.17 2.27 1.086 0 2.533-.098 3.102-.345-.776-.344-2.275-1.43-4.188-3.406-3.102-3.16-6.36-7.307-9.254-10.862 3.62-2.32 5.532-5.283 5.532-8.887 0-3.11-1.706-5.58-4.033-6.913-1.965-1.135-4.912-1.53-8.17-1.53-1.653 0-5.272.197-6.15.197-.777 0-1.397 0-2.276-.1.465 1.432.57 6.123.57 12.097v7.406zm4.187-16.687c0-.198 0-.247.156-.297.62-.148 1.912-.197 3.308-.197 5.015 0 8.117 2.667 8.117 7.11 0 2.914-1.55 5.037-3.36 6.222-.517.346-1.24.494-2.585.494-2.378 0-4.602-.148-5.48-.346-.104 0-.156-.05-.156-.296v-12.69zm27.195 16.688c0 5.432-.155 10.715-.362 12.196.466-.05 1.862-.15 2.896-.15.776 0 1.758.05 2.172.1-.31-1.235-.414-6.864-.414-12.147v-7.406c0-5.925.207-10.615.31-12.146-.36.05-1.5.15-2.946.15-.672 0-1.655 0-2.12-.05.31 1.086.465 6.073.465 12.047v7.406zm13.88 0c0 5.432-.207 10.517-.362 12.196.414-.1 1.758-.15 2.69-.15.723 0 1.705 0 2.325.1-.258-1.827-.413-6.864-.413-12V11.84c0-.742.05-.79.207-.84.36-.148 1.81-.198 2.74-.198 2.378 0 4.188.395 5.48 1.235 1.965 1.135 3.154 3.16 3.154 5.826 0 4.79-3.826 6.665-8.117 6.863.26.543.62 1.728.725 2.123 6.566 0 11.632-3.605 11.632-9.63 0-2.764-1.396-4.937-2.533-5.924-1.913-1.63-4.446-2.765-9.875-2.765-2.69 0-4.913.15-6.205.15-.672 0-1.396 0-1.913-.05.258 1.48.465 6.073.465 12.047v7.406zm21.456-15.997c1.293-.395 2.947-.593 6.153-.69 2.998-.1 4.136-.1 6.255-.1v16.787c0 5.432-.154 10.715-.36 12.196.568-.1 1.81-.15 2.998-.15.724 0 1.55 0 2.017.1-.156-1.58-.362-7.06-.362-12.344v-16.59c3.31 0 5.273.1 7.186.197 2.946.15 4.24.346 4.962.84.052-1.185.26-2.963.517-4-.828.198-4.188.346-6.877.346h-14.89c-3.93 0-5.74-.15-6.824-.396-.105.988-.518 3.06-.777 3.802z" fill="#1a1a1a" fill-rule="evenodd"/>
-      </svg>
-    </span>
-    <span class="ver">5.0</span>
-  </header>
-  <p class="tagline">A free, open-source Bible-study tool for online and offline use.</p>
+<header>
+  <h1>inScript&trade; 5.0</h1>
+  <p>A free, open-source Bible-study tool for online and offline use.</p>
+</header>
 
-  <nav>
-    <a href="#about">About</a>
-    <a href="#contributors">Contributors</a>
-    <a href="#start">Getting Started</a>
-    <a href="#faqs">FAQs</a>
-    <a href="#community">Community</a>
-    <a href="#copyrights">Copyrights</a>
-  </nav>
+<main>
 
   <section id="about">
     <h2>About inScript</h2>
-    <p class="lede">inScript is a browser-based Bible-study tool created by the <a href="https://www.dbs.org/" target="_blank" rel="noopener">Digital Bible Society</a>. It is free, multilingual, and requires no installation. It runs online or fully offline from a thumb drive, DVD, or SD card. It was built especially to serve readers in restricted-access regions.</p>
+    <p>inScript is a browser-based Bible-study tool created by the <a href="https://www.dbs.org/" target="_blank" rel="noopener">Digital Bible Society</a>. It is free, multilingual, and requires no installation. It runs online or fully offline from a thumb drive, DVD, or SD card. It was built especially to serve readers in restricted-access regions.</p>
     <p>Its clean reading view sits on top of powerful study tools: full-text search, side-by-side translation comparison, searchable concordances, smart-scrolling audio Bibles, maps, footnotes, commentaries, and original-language word studies. We invite you to share inScript freely and to help it grow. <a href="https://dbs.org/about#contact" target="_blank" rel="noopener">Contact us</a> to get involved.</p>
   </section>
 
   <section id="contributors">
-    <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 6.5C10.5 5 8 4.5 4 4.5V18c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2V4.5c-4 0-6.5.5-8 2z"/><path d="M12 6.5V20"/>
-      </symbol>
-    </svg>
     <h2>Major Content Contributors</h2>
     <p>inScript&rsquo;s Scriptures and media are made possible by the generous work of partner ministries, including:</p>
-    <ul class="contribs">
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.americanbible.org" target="_blank" rel="noopener">American Bible Society</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://audioscripture.org" target="_blank" rel="noopener">Audio Scripture Ministries</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.bibleleague.org" target="_blank" rel="noopener">Bible League International</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://biblemediagroup.com" target="_blank" rel="noopener">Bible Media Group</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.biblica.com" target="_blank" rel="noopener">Biblica</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.crossway.org" target="_blank" rel="noopener">Crossway</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://davaraudiobibles.org" target="_blank" rel="noopener">Davar Partners</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://deaf.bible" target="_blank" rel="noopener">Deaf Bible Society</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://library.bible" target="_blank" rel="noopener">Digital Bible Library</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://ebible.org" target="_blank" rel="noopener">eBible.org</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.faithcomesbyhearing.com" target="_blank" rel="noopener">Faith Comes By Hearing</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://ibt.org.ru" target="_blank" rel="noopener">Institute for Bible Translation</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.jesusfilm.org" target="_blank" rel="noopener">Jesus Film Project</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.mars-hill.org" target="_blank" rel="noopener">Mars Hill Productions</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://pioneerbible.org" target="_blank" rel="noopener">Pioneer Bible Translators</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://scriptureearth.org" target="_blank" rel="noopener">Scripture Earth</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.sim.org" target="_blank" rel="noopener">SIM</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.lockman.org" target="_blank" rel="noopener">The Lockman Foundation</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.twftw.org" target="_blank" rel="noopener">The Word for the World</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.unitedbiblesocieties.org" target="_blank" rel="noopener">United Bible Societies</a></li>
-      <li><svg class="ic" aria-hidden="true"><use href="#ic-book"/></svg><a href="https://www.wycliffe.org" target="_blank" rel="noopener">Wycliffe Bible Translators</a></li>
+    <ul>
+      <li><a href="https://www.americanbible.org" target="_blank" rel="noopener">American Bible Society</a></li>
+      <li><a href="https://audioscripture.org" target="_blank" rel="noopener">Audio Scripture Ministries</a></li>
+      <li><a href="https://www.bibleleague.org" target="_blank" rel="noopener">Bible League International</a></li>
+      <li><a href="https://biblemediagroup.com" target="_blank" rel="noopener">Bible Media Group</a></li>
+      <li><a href="https://www.biblica.com" target="_blank" rel="noopener">Biblica</a></li>
+      <li><a href="https://www.crossway.org" target="_blank" rel="noopener">Crossway</a></li>
+      <li><a href="https://davaraudiobibles.org" target="_blank" rel="noopener">Davar Partners</a></li>
+      <li><a href="https://deaf.bible" target="_blank" rel="noopener">Deaf Bible Society</a></li>
+      <li><a href="https://library.bible" target="_blank" rel="noopener">Digital Bible Library</a></li>
+      <li><a href="https://ebible.org" target="_blank" rel="noopener">eBible.org</a></li>
+      <li><a href="https://www.faithcomesbyhearing.com" target="_blank" rel="noopener">Faith Comes By Hearing</a></li>
+      <li><a href="https://ibt.org.ru" target="_blank" rel="noopener">Institute for Bible Translation</a></li>
+      <li><a href="https://www.jesusfilm.org" target="_blank" rel="noopener">Jesus Film Project</a></li>
+      <li><a href="https://www.mars-hill.org" target="_blank" rel="noopener">Mars Hill Productions</a></li>
+      <li><a href="https://pioneerbible.org" target="_blank" rel="noopener">Pioneer Bible Translators</a></li>
+      <li><a href="https://scriptureearth.org" target="_blank" rel="noopener">Scripture Earth</a></li>
+      <li><a href="https://www.sim.org" target="_blank" rel="noopener">SIM</a></li>
+      <li><a href="https://www.lockman.org" target="_blank" rel="noopener">The Lockman Foundation</a></li>
+      <li><a href="https://www.twftw.org" target="_blank" rel="noopener">The Word for the World</a></li>
+      <li><a href="https://www.unitedbiblesocieties.org" target="_blank" rel="noopener">United Bible Societies</a></li>
+      <li><a href="https://www.wycliffe.org" target="_blank" rel="noopener">Wycliffe Bible Translators</a></li>
     </ul>
-    <p class="note">&hellip;along with many other translators, publishers, and Bible agencies whose labor brings God&rsquo;s Word to every language.</p>
+    <p>&hellip;along with many other translators, publishers, and Bible agencies whose labor brings God&rsquo;s Word to every language.</p>
   </section>
 
   <section id="start">
     <h2>Getting Started</h2>
     <p>inScript is designed to be simple to read and powerful to study. Here is how to get the most out of it:</p>
-    <ol class="steps">
-      <li><strong>Open a Bible.</strong> Use the menu or search box to choose any translation. It opens in a reading panel you can scroll freely.</li>
-      <li><strong>Compare translations.</strong> Open a second (or third) panel to read versions side by side, verse for verse.</li>
-      <li><strong>Search the Scriptures.</strong> Type a word, phrase, or reference into the search box to find passages across your open Bibles.</li>
-      <li><strong>Listen along.</strong> Many Bibles include smart-scrolling audio. Press play and the text follows the narration.</li>
-      <li><strong>Dig deeper.</strong> Tap footnotes, cross-references, maps, commentaries, and original-language word studies wherever they appear.</li>
-      <li><strong>Check copyright.</strong> Tap the &ldquo;i&rdquo; icon in any Bible&rsquo;s header to see its license and usage terms.</li>
-      <li><strong>Adjust the view.</strong> Open the gear (settings) menu to change text size, layout, and interface language.</li>
-      <li><strong>Use it anywhere.</strong> inScript needs no install and runs offline from DBS Treasures libraries, so it keeps working where connections do not.</li>
+    <ol>
+      <li><b>Open a Bible.</b> Use the menu or search box to choose any translation. It opens in a reading panel you can scroll freely.</li>
+      <li><b>Compare translations.</b> Open a second (or third) panel to read versions side by side, verse for verse.</li>
+      <li><b>Search the Scriptures.</b> Type a word, phrase, or reference into the search box to find passages across your open Bibles.</li>
+      <li><b>Listen along.</b> Many Bibles include smart-scrolling audio. Press play and the text follows the narration.</li>
+      <li><b>Dig deeper.</b> Tap footnotes, cross-references, maps, commentaries, and original-language word studies wherever they appear.</li>
+      <li><b>Check copyright.</b> Tap the &ldquo;i&rdquo; icon in any Bible&rsquo;s header to see its license and usage terms.</li>
+      <li><b>Adjust the view.</b> Open the gear (settings) menu to change text size, layout, and interface language.</li>
+      <li><b>Use it anywhere.</b> inScript needs no install and runs offline from DBS Treasures libraries, so it keeps working where connections do not.</li>
     </ol>
   </section>
 
   <section id="faqs">
     <h2>Frequently Asked Questions</h2>
 
-    <div class="faq-group">Bibles</div>
+    <h3>Bibles</h3>
 
     <details>
       <summary>I can&rsquo;t find the Bible I want. What now?</summary>
-      <div class="answer">
-        <p>New translations are added all the time, so check back soon. If there is a specific Bible you would like to see, <a href="https://dbs.org/about#contact" target="_blank" rel="noopener">let us know</a>, and include its copyright details if you can. As a non-profit ministry, we also welcome partners who can help sponsor titles that carry royalty or licensing costs.</p>
-      </div>
+      <p>New translations are added all the time, so check back soon. If there is a specific Bible you would like to see, <a href="https://dbs.org/about#contact" target="_blank" rel="noopener">let us know</a>, and include its copyright details if you can. As a non-profit ministry, we also welcome partners who can help sponsor titles that carry royalty or licensing costs.</p>
     </details>
 
     <details>
       <summary>I found an error in a Bible. How do I report it?</summary>
-      <div class="answer">
-        <p>Please tell us through our feedback page and be as specific as possible: the translation, the reference, and what looks wrong. We will look into it as quickly as we can.</p>
-      </div>
+      <p>Please tell us through our feedback page and be as specific as possible: the translation, the reference, and what looks wrong. We will look into it as quickly as we can.</p>
     </details>
 
     <details>
       <summary>Why are some Bibles incomplete?</summary>
-      <div class="answer">
-        <p>Translating a full Bible takes years, sometimes decades. So that readers don&rsquo;t have to wait, we publish completed books as soon as the translators release them, then replace those portions as the work is finished. If your organization has a translation in progress, we would love to <a href="https://dbs.org/about#contact" target="_blank" rel="noopener">partner with you</a>.</p>
-      </div>
+      <p>Translating a full Bible takes years, sometimes decades. So that readers don&rsquo;t have to wait, we publish completed books as soon as the translators release them, then replace those portions as the work is finished. If your organization has a translation in progress, we would love to <a href="https://dbs.org/about#contact" target="_blank" rel="noopener">partner with you</a>.</p>
     </details>
 
     <details>
       <summary>Can I copy or freely distribute these Bibles?</summary>
-      <div class="answer">
-        <p>It depends on the translation. Some are public domain or Creative Commons licensed; many others carry copyright and distribution limits set by their publishers. Tap the &ldquo;i&rdquo; icon in a Bible&rsquo;s header to see its specific terms, and contact the publisher directly for anything beyond that.</p>
-      </div>
+      <p>It depends on the translation. Some are public domain or Creative Commons licensed; many others carry copyright and distribution limits set by their publishers. Tap the &ldquo;i&rdquo; icon in a Bible&rsquo;s header to see its specific terms, and contact the publisher directly for anything beyond that.</p>
     </details>
 
-    <div class="faq-group">Using inScript</div>
+    <h3>Using inScript</h3>
 
     <details>
       <summary>inScript won&rsquo;t load, or runs slowly. What can I do?</summary>
-      <div class="answer">
-        <p>First, try a <strong>hard reset</strong> of the page. This reloads inScript fresh and bypasses the old copy your browser has cached, which clears up most loading problems:</p>
-        <ul>
-          <li><strong>Windows or Linux PC:</strong> press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> (or <kbd>Ctrl</kbd> + <kbd>F5</kbd>).</li>
-          <li><strong>Mac:</strong> press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>.</li>
-        </ul>
-        <p>If that does not help, clear your browser&rsquo;s cache or reset the browser to its defaults. On a weak connection, please be patient or switch networks. Note that a few not-yet-indexed Bibles can make searches slower. inScript performs best in Chrome or Firefox.</p>
-      </div>
+      <p>First, try a <b>hard reset</b> of the page. This reloads inScript fresh and bypasses the old copy your browser has cached, which clears up most loading problems:</p>
+      <ul>
+        <li><b>Windows or Linux PC:</b> press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> (or <kbd>Ctrl</kbd> + <kbd>F5</kbd>).</li>
+        <li><b>Mac:</b> press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>.</li>
+      </ul>
+      <p>If that does not help, clear your browser&rsquo;s cache or reset the browser to its defaults. On a weak connection, please be patient or switch networks. Note that a few not-yet-indexed Bibles can make searches slower. inScript performs best in Chrome or Firefox.</p>
     </details>
 
     <details>
       <summary>Can I print Bible text?</summary>
-      <div class="answer">
-        <p>Yes. To print what&rsquo;s on screen, use your browser&rsquo;s print option. For more than one screen&rsquo;s worth, select and copy the text into another program (such as a word processor) and print from there.</p>
-      </div>
+      <p>Yes. To print what&rsquo;s on screen, use your browser&rsquo;s print option. For more than one screen&rsquo;s worth, select and copy the text into another program (such as a word processor) and print from there.</p>
     </details>
 
     <details>
       <summary>Is there a mobile app?</summary>
-      <div class="answer">
-        <p>inScript runs in the web browser on virtually any device today. Dedicated apps are in development, so check back for release news.</p>
-      </div>
+      <p>inScript runs in the web browser on virtually any device today. Dedicated apps are in development, so check back for release news.</p>
     </details>
 
     <details>
       <summary>How can I support inScript?</summary>
-      <div class="answer">
-        <p>Pray that inScript would carry the Scriptures into every language. Share it with others, link to it from your site, and tell friends about the work of the Digital Bible Society. You can also <a href="https://www.dbs.org/" target="_blank" rel="noopener">make a donation</a> toward its continued development.</p>
-      </div>
+      <p>Pray that inScript would carry the Scriptures into every language. Share it with others, link to it from your site, and tell friends about the work of the Digital Bible Society. You can also <a href="https://www.dbs.org/" target="_blank" rel="noopener">make a donation</a> toward its continued development.</p>
     </details>
   </section>
 
   <section id="community">
-    <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <symbol id="ic-fb" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></symbol>
-      <symbol id="ic-x" viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.39-7.933Zm-1.29 19.7h2.038L6.486 3.24H4.298l13.312 17.613Z"/></symbol>
-      <symbol id="ic-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c0-5.445 4.436-9.88 9.888-9.88 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.445-4.437 9.88-9.881 9.88M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.892c0 2.096.549 4.142 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 0 0 5.71 1.447h.006c6.585 0 11.946-5.335 11.949-11.893a11.821 11.821 0 0 0-3.487-8.413z"/></symbol>
-      <symbol id="ic-tg" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></symbol>
-      <symbol id="ic-li" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
-      <symbol id="ic-mail" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></symbol>
-    </svg>
-
     <h2>Community</h2>
-    <p>inScript is a free and fully <strong>open-source</strong> project, built in the open and shaped by the people who use it. We warmly welcome your <strong>feedback, suggestions, and bug reports</strong>: tell us what works well, what is missing, and what you would love to see next.</p>
+    <p>inScript is a free and fully <b>open-source</b> project, built in the open and shaped by the people who use it. We warmly welcome your <b>feedback, suggestions, and bug reports</b>: tell us what works well, what is missing, and what you would love to see next.</p>
 
-    <div class="callout">
-      <h3>Run inScript on your own site</h3>
-      <p>Churches, ministries, and developers are free to <strong>download and install inScript from <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">GitHub</a></strong> and host it on their own website, server, or offline media. Put it to work in your own context, and partner with us actively to make it better for everyone.</p>
-    </div>
+    <h3>Run inScript on your own site</h3>
+    <p>Churches, ministries, and developers are free to <b>download and install inScript from <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">GitHub</a></b> and host it on their own website, server, or offline media. Put it to work in your own context, and partner with us actively to make it better for everyone.</p>
 
-    <div class="callout">
-      <h3>Join the conversation</h3>
-      <p>Because inScript belongs to the community, its forum lives on GitHub. <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">Join us there</a> to ask questions, request features, and report issues. Then fork the code and open a pull request to contribute directly.</p>
-    </div>
+    <h3>Join the conversation</h3>
+    <p>Because inScript belongs to the community, its forum lives on GitHub. <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">Join us there</a> to ask questions, request features, and report issues. Then fork the code and open a pull request to contribute directly.</p>
 
-    <h3 class="share-title">Share inScript</h3>
+    <h3>Share inScript</h3>
     <p>Help others discover free access to God&rsquo;s Word. Share inScript with your circles:</p>
-    <ul class="share">
-      <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-fb"/></svg>Facebook</a></li>
-      <li><a class="x" href="https://twitter.com/intent/tweet?text=Explore%20the%20Bible%20online%20and%20offline%20with%20inScript%2C%20a%20free%20open-source%20Bible-study%20tool.&url=https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-x"/></svg>X</a></li>
-      <li><a class="whatsapp" href="https://wa.me/?text=Explore%20the%20Bible%20online%20and%20offline%20with%20inScript%2C%20a%20free%20open-source%20Bible-study%20tool.%20https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-wa"/></svg>WhatsApp</a></li>
-      <li><a class="telegram" href="https://t.me/share/url?url=https%3A%2F%2Fwww.inscript.org%2F&text=Explore%20the%20Bible%20online%20and%20offline%20with%20inScript%2C%20a%20free%20open-source%20Bible-study%20tool." target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-tg"/></svg>Telegram</a></li>
-      <li><a class="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-li"/></svg>LinkedIn</a></li>
-      <li><a class="email" href="mailto:?subject=Check%20out%20inScript%3A%20free%20Bible%20study%2C%20online%20and%20offline&body=I%20wanted%20to%20share%20inScript%20with%20you%2C%20a%20free%20open-source%20Bible-study%20tool%20you%20can%20use%20online%20or%20offline%3A%20https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-mail"/></svg>Email</a></li>
+    <ul>
+      <li><a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener">Facebook</a></li>
+      <li><a href="https://wa.me/?text=Explore%20the%20Bible%20online%20and%20offline%20with%20inScript%2C%20a%20free%20open-source%20Bible-study%20tool.%20https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener">WhatsApp</a></li>
+      <li><a href="https://t.me/share/url?url=https%3A%2F%2Fwww.inscript.org%2F&text=Explore%20the%20Bible%20online%20and%20offline%20with%20inScript%2C%20a%20free%20open-source%20Bible-study%20tool." target="_blank" rel="noopener">Telegram</a></li>
+      <li><a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.inscript.org%2F" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="mailto:?subject=Check%20out%20inScript%3A%20free%20Bible%20study%2C%20online%20and%20offline&body=I%20wanted%20to%20share%20inScript%20with%20you%2C%20a%20free%20open-source%20Bible-study%20tool%20you%20can%20use%20online%20or%20offline%3A%20https%3A%2F%2Fwww.inscript.org%2F">Email</a></li>
     </ul>
   </section>
 
-  <footer id="copyrights">
-    <div class="copy">
-      <h3>Copyrights</h3>
-      <p>All content in inScript remains the property of its copyright holder and is subject to their chosen copyright restrictions. Public-domain and Creative Commons titles are noted on each Bible&rsquo;s &ldquo;About&rdquo; page.</p>
-      <p>inScript is an open-source community project. To feature it on your site, please <a href="https://www.dbs.org/" target="_blank" rel="noopener">contact the Digital Bible Society</a>. Source code is available on <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">GitHub</a>.</p>
-    </div>
-    <a href="https://www.dbs.org" target="_blank" rel="noopener" aria-label="Digital Bible Society">
-      <svg width="140" height="84" viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M32.043 170.61v-16.52h3.44c2.49 0 4.235.15 5.38.598 1.596.6 2.89 1.548 3.74 2.945.896 1.398 1.394 3.045 1.394 4.942 0 1.647-.35 3.095-1.096 4.392-.697 1.248-1.644 2.197-2.74 2.746-1.147.6-2.74.898-4.785.898h-5.332zm1.595-1.546h1.893c2.294 0 3.84-.1 4.786-.4 1.246-.4 2.242-1.148 2.94-2.196.698-1.048 1.096-2.346 1.096-3.843 0-1.597-.398-2.945-1.146-4.093-.747-1.148-1.844-1.897-3.24-2.296-1.046-.3-2.74-.45-5.132-.45h-1.147l-.05 13.278zM48.888 154.14h1.644v16.52h-1.644M70.267 156.885l-1.245 1.198c-.898-.9-1.944-1.598-3.04-2.047-1.097-.45-2.193-.7-3.24-.7-1.345 0-2.542.35-3.688 1-1.146.65-2.043 1.497-2.69 2.595-.65 1.1-.998 2.247-.998 3.445 0 1.248.35 2.396.997 3.544.698 1.097 1.595 1.996 2.74 2.645 1.147.648 2.493.998 3.838.998 1.746 0 3.14-.45 4.287-1.448 1.147-.998 1.894-2.196 2.044-3.743H63.99v-1.597h7.127c0 2.545-.748 4.592-2.293 6.09-1.495 1.496-3.488 2.245-6.03 2.245-3.04 0-5.432-1.048-7.226-3.094-1.396-1.598-2.044-3.445-2.044-5.59 0-1.548.4-3.046 1.196-4.393.798-1.348 1.844-2.396 3.24-3.145 1.395-.75 2.94-1.148 4.635-1.148 1.395 0 2.69.25 3.987.75 1.295.498 2.49 1.297 3.687 2.395zM74.055 154.14H75.7v16.52h-1.645M77.892 155.737v-1.598h9.02v1.597h-3.687v14.874H81.58v-14.873M94.14 154.14l7.674 16.52h-1.794l-2.592-5.44h-7.126l-2.592 5.44h-1.794l7.824-16.52h.4zm-.15 3.493l-2.79 5.99h5.63l-2.84-5.99zM104.505 154.14h1.645v14.974h6.38v1.597h-7.975v-16.57" fill="#595959"/><path d="M124.79 154.14c1.344 0 2.29.15 3.04.45.746.298 1.245.797 1.643 1.446.4.65.648 1.398.648 2.146 0 .75-.148 1.398-.497 1.997-.35.648-.847 1.097-1.545 1.447.847.3 1.495.648 1.943 1.048.45.4.8.848 1.098 1.447.3.6.4 1.148.4 1.847 0 1.347-.45 2.495-1.447 3.343-.995.85-2.24 1.398-3.886 1.398h-4.535l-.15-16.12v-.45h3.29zm-1.696 1.597v5.29h.897c1.147 0 1.995-.1 2.543-.35.548-.248.997-.598 1.246-1.047.298-.45.447-.998.447-1.547 0-.75-.3-1.348-.797-1.797-.498-.45-1.395-.65-2.542-.65h-1.844v.1h.05zm0 13.277h2.043c1.197 0 2.044-.1 2.642-.35.597-.25 1.045-.648 1.394-1.098.35-.5.5-1.048.5-1.597 0-.75-.25-1.4-.75-1.898-.447-.6-1.145-.898-1.943-1.148-.597-.1-1.543-.25-2.94-.25h-.946v6.34zM133.86 154.14h1.644v16.52h-1.645M142.182 154.14c1.345 0 2.292.15 3.04.45.747.298 1.246.797 1.644 1.446.4.65.648 1.398.648 2.146 0 .75-.15 1.398-.498 1.997-.35.648-.847 1.097-1.545 1.447.848.3 1.496.648 1.944 1.048.45.4.798.848 1.097 1.447.3.6.4 1.148.4 1.847 0 1.347-.45 2.495-1.446 3.343-.996.85-2.242 1.398-3.887 1.398h-4.535l-.15-16.57h3.29zm-1.695 1.597v5.29h.897c1.146 0 1.994-.1 2.542-.35.548-.248.997-.598 1.246-1.047.3-.45.448-.998.448-1.547 0-.75-.3-1.348-.797-1.797-.498-.45-1.395-.65-2.542-.65h-1.843l.05.1zm0 6.938v6.34h2.043c1.197 0 2.044-.1 2.642-.35.598-.25 1.046-.65 1.395-1.1.35-.498.5-1.047.5-1.596 0-.75-.25-1.4-.75-1.898-.447-.6-1.145-.898-1.943-1.148-.598-.1-1.545-.25-2.94-.25h-.947zM151.55 154.14h1.645v14.974h6.33v1.597h-7.974M161.668 154.14h9.42v1.597h-7.826v5.19h7.775v1.598h-7.775v6.49h7.775v1.596h-9.37v-16.47z" fill="#2852AA"/><path d="M180.107 167.566l1.54-.848c1.1 1.847 2.365 2.695 3.795 2.695.66 0 1.21-.1 1.705-.4.495-.3.935-.648 1.21-1.047.275-.4.44-.9.44-1.398 0-.6-.165-1.098-.66-1.597-.55-.748-1.595-1.596-3.08-2.645-1.54-1.048-2.475-1.797-2.86-2.246-.66-.8-.935-1.598-.935-2.546 0-.7.165-1.398.55-1.947.385-.6.88-1.048 1.595-1.398.715-.35 1.485-.5 2.2-.5.88 0 1.65.15 2.42.6.77.398 1.54 1.097 2.365 2.145l-1.485 1.05c-.715-.8-1.265-1.4-1.76-1.6-.495-.248-.99-.398-1.595-.398-.77 0-1.32.25-1.76.65-.44.398-.715.897-.715 1.496 0 .35.055.7.275 1.05.165.348.44.697.88 1.097.275.25.99.748 2.365 1.647 1.595 1.048 2.64 1.996 3.245 2.795.55.8.88 1.647.88 2.496 0 1.198-.495 2.246-1.54 3.094-.99.85-2.2 1.348-3.685 1.348-1.1 0-2.09-.3-2.97-.8-.935-.597-1.65-1.496-2.42-2.794zM199.558 153.74c2.25 0 4.06.85 5.56 2.546 1.5 1.697 2.25 3.693 2.25 6.14 0 2.395-.75 4.49-2.25 6.14-1.5 1.646-3.31 2.544-5.428 2.544-2.206 0-4.015-.848-5.47-2.545-1.457-1.698-2.252-3.694-2.252-6.09 0-1.597.353-3.045 1.015-4.442.662-1.398 1.633-2.396 2.78-3.145 1.236-.75 2.47-1.148 3.795-1.148zm.132 1.597c-1.06 0-2.074.35-3.044 1-.97.648-1.72 1.496-2.295 2.594-.573 1.1-.793 2.297-.793 3.645 0 1.947.618 3.644 1.81 4.94 1.234 1.4 2.646 1.998 4.367 1.998 1.103 0 2.206-.3 3.133-.9.97-.647 1.72-1.496 2.25-2.544.574-1.1.795-2.297.795-3.645 0-1.348-.265-2.496-.795-3.544-.573-1.047-1.323-1.895-2.294-2.544-1.015-.7-2.03-1-3.133-1zM225.06 157.184l-1.263.998c-.655-.898-1.497-1.647-2.433-2.146-.935-.45-2.01-.75-3.134-.75-1.263 0-2.386.3-3.462 1s-1.87 1.497-2.432 2.545c-.56 1.05-.842 2.247-.842 3.645 0 1.997.655 3.694 1.918 5.04 1.31 1.4 2.9 1.998 4.912 1.998 2.15 0 3.976-.9 5.426-2.695l1.263.998c-.748 1.048-1.73 1.847-2.9 2.396-1.17.55-2.433.848-3.883.848-2.713 0-4.865-.998-6.41-2.895-1.308-1.597-2.01-3.544-2.01-5.89 0-2.395.795-4.442 2.386-6.09 1.543-1.646 3.648-2.495 6.08-2.495 1.45 0 2.76.3 3.93.9 1.17.598 2.105 1.496 2.854 2.594zM228.698 154.14h1.644v16.52h-1.644M233.632 154.14h9.47v1.597h-7.876v5.19H243v1.598h-7.774v6.49H243v1.596h-9.368v-16.47M244.745 155.737v-1.598h9.02v1.597h-3.687v14.874h-1.645v-14.873M254.862 154.14h1.894l4.236 6.788 4.136-6.79h1.894l-5.233 8.637v7.886h-1.595v-7.885" fill="#595959"/><g><path d="M237.546 48.372C224.02 29.055 201.458 13.932 169.962 3c29.6 43.775 24.258 85.303-15.922 124.585 38.683-12.878 66.485-39.282 83.506-79.213" fill="#D1EAF1"/><path d="M270.49 69.585c-12.93-25.705-30.598-45.67-53.11-59.797 0 56.653-21.113 95.935-63.29 117.797 50.213-3.244 88.996-22.56 116.4-58" fill="#A5CBE2" opacity=".75"/><path d="M286.86 81.215c-5.19-18.02-14.774-36.687-29-56.003-10.93 60.495-45.47 94.587-103.77 102.373 66.984-2.595 111.208-18.07 132.77-46.37" fill="#3F87C1" opacity=".85"/><path d="M292.65 117.902c0-7.437-.998-14.126-2.894-20.315-28.252 19.367-73.524 29.3-135.666 29.948 38.633.65 84.803-2.545 138.56-9.633" fill="#2468B9"/><g><path d="M3 119.8c0-6.44.998-14.127 2.895-23.16 24.458 19.964 65.936 30.246 124.585 30.895C98.236 128.833 55.81 126.238 3 119.8" fill="#7AA4D6"/><path d="M8.79 81.215c0-2.595 2.596-12.23 7.687-29 21.962 45.072 59.897 70.18 114.003 75.32-58-1.297-98.53-16.72-121.69-46.32" fill="#9BC0DD"/></g><g transform="translate(3 129.282)"><path fill="#6C6C6C" d="M0 .2h133.27v6.29H0zM156.33.2H289.6v6.29H156.33z"/><path fill="#6C6C6C" d="M25.057 5.04H266.49v9.135H25.058z"/><ellipse fill="#6C6C6C" cx="271.332" cy="5.99" rx="18.368" ry="5.79"/><ellipse fill="#6C6C6C" cx="18.368" cy="5.99" rx="18.368" ry="5.79"/><path d="M133.22.2c6.39 0 11.58 3.044 11.58 6.788 0 3.743-5.19 6.788-11.58 6.788s-11.58-3.045-11.58-6.788c0-3.744 5.19-6.788 11.58-6.788z" fill="#6C6C6C"/><path d="M156.33.2c6.39 0 11.58 3.044 11.58 6.788 0 3.743-5.19 6.788-11.58 6.788-6.388 0-11.58-3.045-11.58-6.788.1-3.744 5.24-6.788 11.58-6.788z" fill="#6C6C6C"/><ellipse fill="#A1A1A1" cx="260.201" cy="6.988" rx="2.895" ry="2.895"/><path fill="#A1A1A1" d="M213.88 5.49h37.686v3.844H213.88z"/><path d="M265.043 12.728l9.683-9.683M16.92 3.045l9.684 9.683" stroke="#6C6C6C" stroke-width="2" fill="#000"/></g></g></g></svg>
-    </a>
-  </footer>
+</main>
 
-</div>
+<footer id="copyrights">
+  <h3>Copyrights</h3>
+  <small>All content in inScript remains the property of its copyright holder and is subject to their chosen copyright restrictions. Public-domain and Creative Commons titles are noted on each Bible&rsquo;s &ldquo;About&rdquo; page.</small>
+  <small>inScript is an open-source community project. To feature it on your site, please <a href="https://www.dbs.org/" target="_blank" rel="noopener">contact the Digital Bible Society</a>. Source code is available on <a href="https://github.com/digitalbiblesociety/browserbible-4" target="_blank" rel="noopener">GitHub</a>.</small>
+</footer>
+
 </body>
 </html>

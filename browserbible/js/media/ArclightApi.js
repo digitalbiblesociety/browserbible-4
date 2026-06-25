@@ -47,7 +47,7 @@ async function apiRequest(endpoint, params = {}) {
  * @param {string} langCode - ISO-639-3 or BCP-47 language code
  * @returns {Promise<number|null>} Arclight language ID
  */
-export async function getLanguageId(langCode) {
+async function getLanguageId(langCode) {
   if (!langCode) return ENGLISH_LANGUAGE_ID;
 
   const code = langCode.toLowerCase();
@@ -90,7 +90,7 @@ export async function getLanguageId(langCode) {
  * Get all Jesus Film chapter IDs
  * @returns {Promise<string[]>} Array of chapter media component IDs
  */
-export async function getJesusFilmChapters() {
+async function getJesusFilmChapters() {
   if (cache.chapters[JESUS_FILM_ID]) {
     return cache.chapters[JESUS_FILM_ID];
   }
@@ -116,7 +116,7 @@ export async function getJesusFilmChapters() {
  * @param {number} languageId - Arclight language ID
  * @returns {Promise<Object|null>} Video content data
  */
-export async function getVideoContent(mediaComponentId, languageId) {
+async function getVideoContent(mediaComponentId, languageId) {
   const cacheKey = `${mediaComponentId}_${languageId}`;
 
   if (cache.mediaComponents[cacheKey]) {
@@ -151,12 +151,8 @@ export async function getVideoContent(mediaComponentId, languageId) {
  * @param {number|string} chapterNumber - Chapter number (1-based)
  * @returns {Promise<Object|null>} Video content data
  */
-export async function getJesusFilmChapter(iso3, chapterNumber) {
-  let languageId = await getLanguageId(iso3);
-
-  if (!languageId) {
-    languageId = ENGLISH_LANGUAGE_ID;
-  }
+async function getJesusFilmChapter(iso3, chapterNumber) {
+  const languageId = (await getLanguageId(iso3)) || ENGLISH_LANGUAGE_ID;
 
   return getJesusFilmChapterByLangId(languageId, chapterNumber);
 }
@@ -180,7 +176,7 @@ async function getJesusFilmChapterByLangId(languageId, chapterNumber) {
  * @param {number|string} chapterNumber - Chapter number
  * @returns {Promise<Object|null>} Streaming data with url, type, title, etc.
  */
-export async function getJesusFilmStreamingUrl(iso3, chapterNumber) {
+async function getJesusFilmStreamingUrl(iso3, chapterNumber) {
   const videoData = await getJesusFilmChapter(iso3, chapterNumber);
 
   if (!videoData) return null;
@@ -229,27 +225,6 @@ export async function getJesusFilmStreamingUrl(iso3, chapterNumber) {
 }
 
 /**
- * Get all available languages for Jesus Film
- * @returns {Promise<Array>} Array of language objects
- */
-export async function getAvailableLanguages() {
-  try {
-    const data = await apiRequest(`/media-components/${JESUS_FILM_ID}/languages`);
-    return data._embedded?.mediaComponentLanguage || [];
-  } catch (err) {
-    console.warn('Error fetching available languages:', err.message);
-    return [];
-  }
-}
-
-/** Clear all cached data */
-export function clearCache() {
-  cache.languageMap = {};
-  cache.mediaComponents = {};
-  cache.chapters = {};
-}
-
-/**
  * Legacy API interface for backwards compatibility
  */
 export const JesusFilmMediaApi = {
@@ -281,14 +256,3 @@ export const JesusFilmMediaApi = {
 if (typeof window !== 'undefined') {
   window.JesusFilmMediaApi = JesusFilmMediaApi;
 }
-
-export default {
-  getLanguageId,
-  getJesusFilmChapters,
-  getVideoContent,
-  getJesusFilmChapter,
-  getJesusFilmStreamingUrl,
-  getAvailableLanguages,
-  clearCache,
-  JesusFilmMediaApi
-};

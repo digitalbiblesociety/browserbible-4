@@ -99,5 +99,3 @@ export function AudioDataManager() {
     getPrevFragment
   };
 }
-
-export default AudioDataManager;

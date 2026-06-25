@@ -14,7 +14,7 @@ function escapeRtf(text) {
     .replace(/\}/g, '\\}');
 }
 
-export function htmlToMarkdown(html) {
+function htmlToMarkdown(html) {
   if (!html) return '';
 
   let md = html;
@@ -41,7 +41,7 @@ export function htmlToMarkdown(html) {
   return md.trim();
 }
 
-export function htmlToRtf(html) {
+function htmlToRtf(html) {
   if (!html) return '';
 
   let rtf = html;
@@ -65,7 +65,7 @@ export function htmlToRtf(html) {
   return rtf;
 }
 
-export function notesToPlainText(notes) {
+function notesToPlainText(notes) {
   const lines = [];
   const divider = '='.repeat(50);
 
@@ -85,7 +85,7 @@ export function notesToPlainText(notes) {
   return lines.join('\n');
 }
 
-export function notesToMarkdown(notes) {
+function notesToMarkdown(notes) {
   const lines = [];
 
   for (const note of notes) {
@@ -105,7 +105,7 @@ export function notesToMarkdown(notes) {
   return lines.join('\n');
 }
 
-export function notesToRtf(notes) {
+function notesToRtf(notes) {
   const lines = ['{\\rtf1\\ansi\\deff0'];
   lines.push('{\\fonttbl{\\f0 Times New Roman;}}');
 

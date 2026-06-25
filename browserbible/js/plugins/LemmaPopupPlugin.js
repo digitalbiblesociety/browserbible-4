@@ -71,10 +71,9 @@ function parseMorphs(morphAttr) {
 
 /**
  * Create a lemma popup plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export function LemmaPopupPlugin(app) {
+export function LemmaPopupPlugin() {
   const config = getConfig();
 
   if (!config.enableLemmaPopupPlugin) {
@@ -230,5 +229,3 @@ export function LemmaPopupPlugin(app) {
 
   return {};
 }
-
-export default LemmaPopupPlugin;

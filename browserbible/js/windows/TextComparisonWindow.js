@@ -149,7 +149,7 @@ export class TextComparisonWindow extends BaseWindow {
     this.refs.sourceTitle.addEventListener('click', () => this.showSourceChooser());
 
     // Click on fragment input
-    this.refs.inputFragment.addEventListener('click', (e) => this.handleFragmentClick(e));
+    this.refs.inputFragment.addEventListener('click', () => this.handleFragmentClick());
 
     // TextNavigator change
     this.textNavigator.on('change', (e) => this.handleNavigatorChange(e));
@@ -241,7 +241,7 @@ export class TextComparisonWindow extends BaseWindow {
     }
   }
 
-  async handleFragmentClick(e) {
+  async handleFragmentClick() {
     if (hasTouch) {
       this.refs.inputFragment.blur();
     }
@@ -464,5 +464,3 @@ registerWindowComponent('text-comparison-window', TextComparisonWindow, {
   displayName: 'Comparison',
   paramKeys: { textids: 't', fragmentid: 'f' }
 });
-
-export default TextComparisonWindow;

@@ -20,14 +20,6 @@ export function registerTextProvider(name, provider) {
   textProviders.set(name, provider);
 }
 
-export function getTextProvider(name) {
-  return textProviders.get(name);
-}
-
-export function getTextProviders() {
-  return textProviders;
-}
-
 export function loadSection(textInfo, sectionid, successCallback, errorCallback) {
   if (sectionid == 'null' || sectionid == null) {
     return;
@@ -120,7 +112,7 @@ export function getProviderName(input) {
   let providerName = parts.length > 1 ? parts[0] : '';
 
   if (providerName === '') {
-    const textInfo = textInfoData.filter((info) => info.id === textid)[0];
+    const textInfo = textInfoData.find((info) => info.id === textid);
 
     if (textInfo?.providerName) {
       providerName = textInfo.providerName;
@@ -137,7 +129,7 @@ export function getProviderId(input) {
     return input;
   } else {
     const textid = input;
-    const textInfo = textInfoData.filter((info) => info.id === textid)[0];
+    const textInfo = textInfoData.find((info) => info.id === textid);
 
     return textInfo?.providerid ?? input;
   }
@@ -198,7 +190,7 @@ export function loadTexts(callback) {
   }
 }
 
-export function loadTextsManifest(callback) {
+function loadTextsManifest(callback) {
   if (callback) {
     textInfoLoadingCallbacks.push(callback);
   }
@@ -275,22 +267,3 @@ export function getTextInfoData() {
   return textInfoData;
 }
 
-export function getTextData() {
-  return textData;
-}
-
-export const TextLoader = {
-  getText,
-  loadTexts,
-  textData,
-  getTextInfoData,
-  loadSection,
-  startSearch,
-  processTexts,
-  processText,
-  registerTextProvider,
-  getTextProvider,
-  getTextProviders
-};
-
-export default TextLoader;

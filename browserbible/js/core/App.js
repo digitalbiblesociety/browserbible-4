@@ -7,18 +7,15 @@ import { WindowManager } from './WindowManager.js';
 import { MainMenu } from '../menu/MainMenu.js';
 import AppSettings from '../common/AppSettings.js';
 import { elem } from '../lib/helpers.esm.js';
-import { getConfig, updateConfig, getCustomConfig } from './config.js';
+import { getConfig } from './config.js';
 import {
   setApp,
   getWindowType,
   getAllWindowTypes,
-  getAllPlugins,
-  addPluginInstance
+  getAllPlugins
 } from './registry.js';
 import { TextNavigation } from '../common/TextNavigation.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
-import { i18n } from '../lib/i18n.js';
-import { loadTexts } from '../texts/TextLoader.js';
 
 /**
  * Main application class
@@ -87,8 +84,7 @@ export class App {
     firstWindow?.classList.add('active');
     firstTab?.classList.add('active');
 
-    const bibleWindows = settings.windows.filter(s => s.windowType === 'BibleWindow');
-    const firstBibleWindow = bibleWindows[0] ?? null;
+    const firstBibleWindow = settings.windows.find(s => s.windowType === 'BibleWindow') ?? null;
     const firstFragmentid = firstBibleWindow?.data?.fragmentid ?? null;
 
     if (firstFragmentid && TextNavigation) {
@@ -119,7 +115,6 @@ export class App {
       try {
         const plugin = PluginFactory(this);
         this.plugins.push(plugin);
-        addPluginInstance(plugin);
 
         if (plugin.on) {
           plugin.on('globalmessage', this.handleGlobalMessage.bind(this));
@@ -220,84 +215,3 @@ export class App {
     }
   }
 }
-
-/**
- * Initialize and start the application
- * Handles custom configs, i18n setup, and CSS loading
- * @returns {Promise<App>} The initialized app instance
- */
-export async function initApp() {
-  const config = getConfig();
-
-  const params = Object.fromEntries(new URLSearchParams(window.location.search));
-  const custom = params.custom;
-
-  if (custom) {
-    const customizations = getCustomConfig(custom);
-    if (customizations) {
-      updateConfig(customizations);
-    }
-  }
-
-  const finalConfig = getConfig();
-  if (finalConfig.customCssUrl) {
-    const link = document.createElement('link');
-    link.href = finalConfig.customCssUrl;
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-  }
-
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isiOSApp = (userAgent.includes('ipad') || userAgent.includes('iphone')) &&
-    window.location.protocol === 'file:';
-
-  if (window.navigator.standalone === true || isiOSApp) {
-    document.body.classList.add('app-mobile-fullscreen');
-  }
-
-  const app = new App();
-
-  let lngSetting = '';
-  const i18nCookieValue = AppSettings.getCookieValue('i18next');
-
-  if ((i18nCookieValue === '' || i18nCookieValue === null) && config.defaultLanguage !== '') {
-    lngSetting = config.defaultLanguage;
-  }
-
-  await i18n.init({
-    fallbackLng: 'en',
-    lng: lngSetting
-  });
-
-  app.init();
-
-  i18n.translatePage();
-
-  // Pre-warm the text manifest so the TextChooser popover opens instantly.
-  // Idle-scheduled so it doesn't compete with first paint or active windows.
-  const prewarmTexts = () => loadTexts(() => {});
-  if (typeof requestIdleCallback === 'function') {
-    requestIdleCallback(prewarmTexts, { timeout: 3000 });
-  } else {
-    setTimeout(prewarmTexts, 1500);
-  }
-
-  setTimeout(() => {
-    const lang = i18n.lng();
-    const langSelector = document.getElementById('config-language');
-
-    if (langSelector) {
-      langSelector.value = lang;
-
-      if (lang !== langSelector.value) {
-        langSelector.value = lang.split('-')[0];
-      }
-
-      langSelector.localizeLanguages?.();
-    }
-  }, 50);
-
-  return app;
-}
-
-export default App;

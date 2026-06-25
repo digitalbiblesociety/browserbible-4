@@ -1925,5 +1925,3 @@ export const PERICOPE_DATA = [
   ["RV22.1", "The River of Life"],
   ["RV22.6", "Come Lord Jesus"],
 ];
-
-export default PERICOPE_DATA;

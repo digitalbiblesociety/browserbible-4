@@ -24,11 +24,7 @@ const iso2iana = {
 };
 const convertLang = (iso) => iso2iana[iso] ?? iso;
 
-/**
- * ParallelsWindow Web Component
- * Shows parallel passages (e.g., Gospel parallels)
- */
-export class ParallelsWindowComponent extends BaseWindow {
+class ParallelsWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -107,7 +103,7 @@ export class ParallelsWindowComponent extends BaseWindow {
     this.refs.textlistui.innerHTML = 'Version';
 
     const initData = this.initData || {};
-    if (!initData || Object.keys(initData).length === 0) {
+    if (Object.keys(initData).length === 0) {
       return;
     }
 
@@ -511,5 +507,3 @@ registerWindowComponent('parallels-window', ParallelsWindowComponent, {
 });
 
 export { ParallelsWindowComponent as ParallelsWindow };
-
-export default ParallelsWindowComponent;

@@ -16,9 +16,8 @@ export class LocalAudioProvider extends BaseAudioProvider {
     if (textInfo.audioDirectory !== undefined) {
       if (textInfo.audioDirectory === '') {
         return null;
-      } else {
-        checkDirectory = textInfo.audioDirectory;
       }
+      checkDirectory = textInfo.audioDirectory;
     }
 
     try {

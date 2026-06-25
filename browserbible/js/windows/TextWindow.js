@@ -585,8 +585,3 @@ registerWindowComponent('commentary-window', CommentaryWindow, {
   displayName: 'Commentary',
   paramKeys: { textid: 't', fragmentid: 'v' }
 });
-
-// Export TextWindow as an alias for TextWindowComponent for backwards compatibility
-export const TextWindow = TextWindowComponent;
-
-export default TextWindowComponent;

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": [
+    "-lintignore"
+  ],
+  "ignoreWorkspaces": [
+    "verse-detection"
+  ],
+  "ignoreDependencies": [
+    "@browserbible/verse-detection"
+  ],
+  "ignoreBinaries": [
+    "magick"
+  ],
+  "paths": {
+    "@/*": ["browserbible/js/*"],
+    "@lib/*": ["browserbible/js/lib/*"],
+    "@core/*": ["browserbible/js/core/*"],
+    "@common/*": ["browserbible/js/common/*"],
+    "@bible/*": ["browserbible/js/bible/*"],
+    "@texts/*": ["browserbible/js/texts/*"],
+    "@windows/*": ["browserbible/js/windows/*"],
+    "@plugins/*": ["browserbible/js/plugins/*"],
+    "@menu/*": ["browserbible/js/menu/*"],
+    "@ui/*": ["browserbible/js/ui/*"],
+    "@verse-detection": ["verse-detection/index.ts"],
+    "@verse-detection/*": ["verse-detection/*"]
+  },
+  "workspaces": {
+    ".": {
+      "entry": [
+        "tests/**/*.test.js",
+        "tests/scripts/**/*.mjs",
+        "e2e/**/*.{js,ts}",
+        "tools/**/*.mjs"
+      ],
+      "project": ["browserbible/js/**/*.js"]
+    }
+  }
+}

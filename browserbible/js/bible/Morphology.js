@@ -178,5 +178,3 @@ export const morphology = {
   Greek: robinson,
   Hebrew: OSHB
 };
-
-export default morphology;

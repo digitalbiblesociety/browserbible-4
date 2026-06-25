@@ -1,7 +1,3 @@
-/**
- * SearchWindow - Web Component for Bible text search
- */
-
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
 import { offset } from '../lib/helpers.esm.js';
 import gearSvg from '../../css/images/gear.svg?raw';
@@ -25,7 +21,7 @@ const loadTextsAsync = () => AsyncHelpers.promisify(loadTexts);
  * SearchWindow Web Component
  * Provides full-text search across Bible texts
  */
-export class SearchWindowComponent extends BaseWindow {
+class SearchWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -922,5 +918,3 @@ registerWindowComponent('search-window', SearchWindowComponent, {
 });
 
 export { SearchWindowComponent as SearchWindow };
-
-export default SearchWindowComponent;

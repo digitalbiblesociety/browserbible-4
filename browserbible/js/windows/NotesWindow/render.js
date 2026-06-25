@@ -6,7 +6,7 @@ import { elem } from '../../lib/helpers.esm.js';
  * @param {number} timestamp - Unix timestamp in milliseconds
  * @returns {string} Formatted date string
  */
-export function formatDate(timestamp) {
+function formatDate(timestamp) {
   const date = new Date(timestamp);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -27,18 +27,6 @@ export function stripHtml(html) {
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
   return tmp.textContent || tmp.innerText || '';
-}
-
-/**
- * Escape a string for safe insertion into HTML.
- * @param {string} text - Raw text to escape
- * @returns {string} HTML-escaped string
- */
-export function escapeHtml(text) {
-  if (text == null) return '';
-  const div = document.createElement('div');
-  div.textContent = String(text);
-  return div.innerHTML;
 }
 
 const ICONS = {
@@ -151,12 +139,12 @@ export function renderWindowStructure() {
  * @param {boolean} isSelected - Whether this note is currently active
  * @returns {HTMLElement}
  */
-export function renderNoteListItem(note, isSelected) {
+function renderNoteListItem(note, isSelected) {
   const title = note.title || 'Untitled';
   const preview = stripHtml(note.content || '').substring(0, 50);
   const date = formatDate(note.modified);
 
-  const item = elem('div', {
+  return elem('div', {
     className: `notes-list-item ${isSelected ? 'selected' : ''}`,
     dataset: { noteId: note.id }
   },
@@ -169,8 +157,6 @@ export function renderNoteListItem(note, isSelected) {
     ),
     elem('div', { className: 'notes-list-item-preview', textContent: preview })
   );
-
-  return item;
 }
 
 /**
@@ -199,7 +185,7 @@ export function renderNotesList(notes, currentNoteId) {
  * @param {boolean} isSelected - Whether this suggestion is keyboard/hover highlighted
  * @returns {HTMLElement}
  */
-export function renderSuggestionItem(note, index, isSelected) {
+function renderSuggestionItem(note, index, isSelected) {
   const title = note.title || 'Untitled';
   const preview = stripHtml(note.content || '').substring(0, 60);
 

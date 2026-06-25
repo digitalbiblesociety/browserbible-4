@@ -1,15 +1,11 @@
 /**
  * Media Module Index
- * Exports audio/video management functionality
+ * Imported once (`import './media/index.js'`) for side effects: registering audio
+ * providers and exposing window.MediaLibrary. Nothing imports its members.
  */
 
 import { getConfig } from '../core/config.js';
-import { AudioDataManager } from './AudioDataManager.js';
 import './audioProviders.js';
-import ArclightApi, { JesusFilmMediaApi } from './ArclightApi.js';
-
-export const JesusFilmApi = ArclightApi;
-export { ArclightApi, JesusFilmMediaApi };
 
 const fetchLibraryInfo = (library, baseUrl) => {
   let infoUrl;
@@ -43,7 +39,7 @@ const fetchLibraryInfo = (library, baseUrl) => {
     });
 };
 
-export const MediaLibrary = (() => {
+const MediaLibrary = (() => {
   let mediaLibraries = null;
   let isLoading = false;
   const pendingCallbacks = [];
@@ -113,7 +109,3 @@ export const MediaLibrary = (() => {
 if (typeof window !== 'undefined') {
   window.MediaLibrary = MediaLibrary;
 }
-
-export { AudioDataManager };
-
-export default { AudioDataManager, JesusFilmApi, ArclightApi, JesusFilmMediaApi, MediaLibrary };

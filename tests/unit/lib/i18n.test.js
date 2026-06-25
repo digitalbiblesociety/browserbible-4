@@ -79,6 +79,29 @@ describe('i18n.init + t', () => {
   });
 });
 
+describe('i18n.init language detection', () => {
+  it('uses defaultLng when no lng and no cookie is set', async () => {
+    const { init, lng } = await import('@lib/i18n.js');
+    await init({
+      fallbackLng: 'en',
+      defaultLng: 'es',
+      resStore: { en: { translation: {} }, es: { translation: {} } }
+    });
+    expect(lng()).toBe('es');
+  });
+
+  it('prefers the i18next cookie over defaultLng', async () => {
+    document.cookie = 'i18next=es; path=/';
+    const { init, lng } = await import('@lib/i18n.js');
+    await init({
+      fallbackLng: 'en',
+      defaultLng: 'fr',
+      resStore: { en: { translation: {} }, es: { translation: {} } }
+    });
+    expect(lng()).toBe('es');
+  });
+});
+
 describe('i18n.lng / setLng', () => {
   it('lng returns the current language', async () => {
     const { init, lng } = await import('@lib/i18n.js');

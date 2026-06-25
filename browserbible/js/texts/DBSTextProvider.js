@@ -28,11 +28,10 @@ const finish = () => {
 
 const getProviderid = (textid) => {
   const parts = textid.split(':');
-  const fullid = `${providerName}:${parts.length > 1 ? parts[1] : parts[0]}`;
-  return fullid;
+  return `${providerName}:${parts.length > 1 ? parts[1] : parts[0]}`;
 };
 
-export function getTextManifest(callback) {
+function getTextManifest(callback) {
   const config = getConfig();
 
   if (!config.enableOnlineSources || !config.dbsEnabled || config.dbsKey === '') {
@@ -105,12 +104,12 @@ export function getTextManifest(callback) {
 const getTextInfoSync = (textid) => {
   const providerid = getProviderid(textid);
 
-  const info = text_data.filter(text => text.providerid === providerid)[0];
+  const info = text_data.find(text => text.providerid === providerid);
 
   return info;
 };
 
-export function getTextInfo(textid, callback) {
+function getTextInfo(textid, callback) {
   const config = getConfig();
 
   if (!text_data_is_loaded) {
@@ -122,7 +121,7 @@ export function getTextInfo(textid, callback) {
 
   const providerid = getProviderid(textid);
 
-  const info = text_data.filter(text => text.providerid === providerid)[0];
+  const info = text_data.find(text => text.providerid === providerid);
 
   if (typeof info?.divisions === 'undefined' || info.divisions.length === 0) {
     fetch(`${config.dbsBase}bibles/${info.id}?v=4&key=${config.dbsKey}`)
@@ -218,7 +217,7 @@ const loadSectionText = (textid, sectionid, callback, errorCallback) => {
     });
 };
 
-export function loadSection(textid, sectionid, callback, errorCallback) {
+function loadSection(textid, sectionid, callback, errorCallback) {
   loadSectionText(textid, sectionid, callback, errorCallback);
 }
 
@@ -262,7 +261,7 @@ const doSearch = (textid, divisions, text, e, callback) => {
     });
 };
 
-export function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
+function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
   const e = {
     type: 'complete',
     target: this,
@@ -287,5 +286,3 @@ export const DBSTextProvider = {
   loadSection,
   startSearch
 };
-
-export default DBSTextProvider;

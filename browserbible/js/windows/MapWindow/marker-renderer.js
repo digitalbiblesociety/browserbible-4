@@ -6,23 +6,11 @@
  * so markers stay visually constant in size regardless of zoom level.
  */
 
+import { elem } from '../../lib/helpers.esm.js';
 import { MAP_BOUNDS, ICON_SIZES } from './constants.js';
 import { geoToSvg, getImportanceTier } from './geo-utils.js';
 import { getViewTransform } from './view-transform.js';
 import { createLocationIcon } from './icon-library.js';
-
-/**
- * Reposition a single marker based on the current viewBox and container rect.
- * Leaflet pattern: pure pixel translate3d, no calc(). Anchor offsets are
- * precomputed at marker creation time and stored as _anchorX / _anchorY.
- * Uses the uniform meet-transform so markers track the letterboxed SVG.
- */
-export const repositionMarker = (marker, viewBox, containerRect) => {
-  const t = getViewTransform(viewBox, containerRect);
-  const x = t.offsetX + (marker._svgX - viewBox.x) * t.scale - marker._anchorX;
-  const y = t.offsetY + (marker._svgY - viewBox.y) * t.scale - marker._anchorY;
-  marker.style.transform = `translate3d(${x}px,${y}px,0)`;
-};
 
 /**
  * Reposition all markers AND cluster indicators in the overlay.
@@ -43,7 +31,7 @@ export const repositionAllMarkers = (overlay, viewBox, containerRect) => {
 /**
  * Check if location coordinates are within the map bounds
  */
-export const isLocationInBounds = (lon, lat) => {
+const isLocationInBounds = (lon, lat) => {
   return lon >= MAP_BOUNDS.minLon && lon <= MAP_BOUNDS.maxLon &&
          lat >= MAP_BOUNDS.minLat && lat <= MAP_BOUNDS.maxLat;
 };
@@ -53,7 +41,7 @@ export const isLocationInBounds = (lon, lat) => {
  * Anchor offsets (_anchorX/_anchorY) are precomputed from ICON_SIZES so that
  * repositionAllMarkers can use pure translate3d math with no calc() calls.
  */
-export const createMarker = (location, x, y, tier, onLocationClick) => {
+const createMarker = (location, x, y, tier, onLocationClick) => {
   const marker = document.createElement('div');
   marker.className = 'map-marker';
   marker.setAttribute('data-tier', tier);
@@ -66,13 +54,8 @@ export const createMarker = (location, x, y, tier, onLocationClick) => {
   marker._anchorX = iconSize / 2;
   marker._anchorY = iconSize / 2;
 
-  const iconEl = createLocationIcon(location.type || 'other', tier);
-  marker.appendChild(iconEl);
-
-  const label = document.createElement('div');
-  label.className = 'map-marker-label';
-  label.textContent = location.name;
-  marker.appendChild(label);
+  marker.appendChild(createLocationIcon(location.type || 'other', tier));
+  marker.appendChild(elem('div', { className: 'map-marker-label', textContent: location.name }));
 
   marker.addEventListener('click', (e) => {
     e.stopPropagation();

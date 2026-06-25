@@ -32,7 +32,7 @@ function generateId() {
  * NotesWindow Web Component
  * Provides note-taking with verse linking support
  */
-export class NotesWindowComponent extends BaseWindow {
+class NotesWindowComponent extends BaseWindow {
   constructor() {
     super();
 
@@ -661,5 +661,3 @@ registerWindowComponent('notes-window', NotesWindowComponent, {
 });
 
 export { NotesWindowComponent as NotesWindow };
-
-export default NotesWindowComponent;

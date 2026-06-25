@@ -24,7 +24,7 @@ export function pickSection(containerEl, sectionid) {
     || containerEl;
 }
 
-export class MediaWindowComponent extends BaseWindow {
+class MediaWindowComponent extends BaseWindow {
   constructor() {
     super();
 

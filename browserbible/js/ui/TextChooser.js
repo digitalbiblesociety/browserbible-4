@@ -64,8 +64,8 @@ export function TextChooser() {
 
   document.body.appendChild(textChooser);
 
-  filter.addEventListener('input', handleFilterInput, false);
-  filter.addEventListener('keydown', handleFilterKeydown, false);
+  filter.addEventListener('input', handleFilterInput);
+  filter.addEventListener('keydown', handleFilterKeydown);
   main.addEventListener('scroll', handleScroll, { passive: true });
 
   function handleFilterKeydown(e) {
@@ -171,13 +171,11 @@ export function TextChooser() {
       const item = processedData[dataIndex];
       const top = i * ROW_HEIGHT;
 
-      const row = createRowElement(item, top);
-      fragment.appendChild(row);
+      fragment.appendChild(createRowElement(item, top));
     }
 
     // Clear and append in one operation
-    scrollContent.textContent = '';
-    scrollContent.appendChild(fragment);
+    scrollContent.replaceChildren(fragment);
   }
 
   function createRowElement(item, top) {
@@ -512,5 +510,3 @@ export function getGlobalTextChooser() {
   }
   return globalTextChooser;
 }
-
-export default TextChooser;

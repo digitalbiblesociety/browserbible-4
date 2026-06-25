@@ -102,20 +102,3 @@ export function skipApocryphalSection(sectionid, direction, sections) {
 export function onApocryphaChange(cb) {
   emitter.on('change', cb);
 }
-
-/** Unsubscribe from setting changes. @param {Function} cb */
-export function offApocryphaChange(cb) {
-  emitter.off('change', cb);
-}
-
-export default {
-  getShowApocrypha,
-  isApocryphaHidden,
-  setShowApocrypha,
-  isApocryphalBook,
-  isApocryphalSection,
-  filterVisibleBooks,
-  skipApocryphalSection,
-  onApocryphaChange,
-  offApocryphaChange,
-};

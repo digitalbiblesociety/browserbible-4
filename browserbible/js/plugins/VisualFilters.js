@@ -22,16 +22,12 @@ const toCamelCase = (str) => {
  * Apply style to a DOM element
  */
 const applyStyle = (node, css) => {
-  if (css === undefined || css == null || css === '') return;
+  if (css == null || css === '') return;
 
-  const el = node;
-  const props = css.split(';');
-
-  for (const prop of props) {
+  for (const prop of css.split(';')) {
     const parts = prop.split(':');
     if (parts.length === 2) {
-      const propertyName = toCamelCase(parts[0].trim());
-      el.style[propertyName] = parts[1].trim();
+      node.style[toCamelCase(parts[0].trim())] = parts[1].trim();
     }
   }
 };
@@ -43,9 +39,7 @@ const matchesTransform = (word, transform) => {
   if (!transform.active) return false;
 
   // Strong's number check
-  if (transform.strongs !== '') {
-    if (word.getAttribute('s') !== transform.strongs) return false;
-  }
+  if (transform.strongs !== '' && word.getAttribute('s') !== transform.strongs) return false;
 
   // Morphology check
   if (transform.morph !== '' && transform.morphRegExp?.test) {
@@ -283,8 +277,8 @@ const MorphologySelector = () => {
   let currentMorphologyKey = 'robinson';
   let currentMorphology = morphologies[currentMorphologyKey];
 
-  const morphTh = elem('div', { className: 'morph-th', style: { gridRow: '1' } }, 'Part of Speech');
-  const morphSelectorHeaderRow = elem('div', { className: 'morph-header-row', style: { display: 'contents' } }, morphTh);
+  const morphSelectorHeaderRow = elem('div', { className: 'morph-header-row', style: { display: 'contents' } },
+    elem('div', { className: 'morph-th', style: { gridRow: '1' } }, 'Part of Speech'));
   const morphSelectorMainRow = elem('div', { className: 'morph-main-row', style: { display: 'contents' } });
   const morphGrid = elem('div', { className: 'morph-grid', style: { display: 'grid', gridAutoColumns: 'auto', gridTemplateRows: 'auto auto' } }, morphSelectorHeaderRow, morphSelectorMainRow);
   const morphSelector = elem('div', { className: 'morph-selector' }, morphGrid);
@@ -311,14 +305,7 @@ const MorphologySelector = () => {
 
     if (!selectedSpan) return;
 
-    let partOfSpeech = null;
-    for (const morph of currentMorphology) {
-      if (morph.letter === selectedValue) {
-        partOfSpeech = morph;
-        break;
-      }
-    }
-
+    const partOfSpeech = currentMorphology.find(morph => morph.letter === selectedValue);
     if (!partOfSpeech) return;
 
     const row = selectedSpan.closest('.morph-main-row');
@@ -403,10 +390,7 @@ const MorphologySelector = () => {
     if (selectedSpan.classList.contains('selected')) {
       selectedSpan.classList.remove('selected');
     } else {
-      selectedSpan.classList.add('selected');
-      [...selectedSpan.parentElement.children].filter(s => s !== selectedSpan).forEach(sibling => {
-        sibling.classList.remove('selected');
-      });
+      selectOnly(selectedSpan);
     }
 
     const parentTd = selectedSpan.closest('.morph-td');
@@ -457,10 +441,9 @@ const MorphologySelector = () => {
 
 /**
  * Create Visual Filters plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export function VisualFilters(app) {
+export function VisualFilters() {
   const config = getConfig();
 
   if (!config.enableVisualFilters) {
@@ -530,9 +513,7 @@ export function VisualFilters(app) {
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
   const openVisualizationsButton = elem('span', { className: 'config-button i18n', id: 'config-visualfilters-button', dataset: { i18n: '[html]plugins.visualfilters.button' } });
-  const vfIconSpan = elem('span', { className: 'config-button-icon' });
-  vfIconSpan.innerHTML = morphologySvg;
-  openVisualizationsButton.prepend(vfIconSpan);
+  openVisualizationsButton.prepend(elem('span', { className: 'config-button-icon', innerHTML: morphologySvg }));
 
   if (configToolsBody) {
     configToolsBody.appendChild(openVisualizationsButton);
@@ -731,7 +712,7 @@ export function VisualFilters(app) {
     const morphSelectorVisible = morphSelector.style.display !== 'none';
     if (morphSelectorVisible && morphSelector.currentInput != null && morphSelector.currentInput === input) {
       morphSelector.style.display = 'none';
-      return false;
+      return;
     }
 
     const inputOffset = offset(input);
@@ -740,11 +721,9 @@ export function VisualFilters(app) {
     morphSelector.style.display = '';
 
     morphSelector.currentInput = input;
-    const selectSibling = [...input.parentElement.children].filter(s => s !== input && s.matches('select'))[0];
+    const selectSibling = [...input.parentElement.children].find(s => s !== input && s.matches('select'));
     morphSelector.setMorphology(selectSibling?.value ?? '');
     morphSelector.updateMorphSelector(input.value);
-
-    return false;
   });
 
   morphSelector.addEventListener('update', () => {
@@ -787,6 +766,3 @@ export function VisualFilters(app) {
 
   return ext;
 }
-
-export { VisualTransformer };
-export default VisualFilters;

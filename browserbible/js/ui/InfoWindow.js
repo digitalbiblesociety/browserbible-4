@@ -20,7 +20,7 @@ export function InfoWindow(id = null) {
 
   document.body.appendChild(container);
 
-  close.addEventListener('click', hide, false);
+  close.addEventListener('click', hide);
 
   // Handle popover toggle events (fires on light dismiss - click outside or Escape)
   container.addEventListener('toggle', (e) => {
@@ -97,5 +97,3 @@ export function InfoWindow(id = null) {
 
   return ext;
 }
-
-export default InfoWindow;

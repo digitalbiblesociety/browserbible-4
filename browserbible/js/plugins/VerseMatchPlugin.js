@@ -6,47 +6,25 @@
 import { getConfig } from '../core/config.js';
 const hasTouch = 'ontouchend' in document;
 
-/**
- * Create a verse match plugin
- * @param {Object} app - Application instance
- * @returns {Object} Plugin API
- */
-export const VerseMatchPlugin = (app) => {
-  const config = getConfig();
+function toggleMatches(e, on) {
+  const verse = e.target.closest('.BibleWindow .verse, .BibleWindow .v');
+  if (!verse) return;
 
-  if (!config.enableVerseMatchPlugin) {
-    return {};
-  }
+  const verseid = verse.getAttribute('data-id');
+  document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
+    el.classList.toggle('selected-verse', on);
+  });
+}
 
-  if (!hasTouch) {
-    const windowsMain = document.querySelector('.windows-main');
+export const VerseMatchPlugin = () => {
+  if (!getConfig().enableVerseMatchPlugin) return {};
+  if (hasTouch) return {};
 
-    if (windowsMain) {
-      windowsMain.addEventListener('mouseover', (e) => {
-        const verse = e.target.closest('.BibleWindow .verse, .BibleWindow .v');
-        if (verse) {
-          const verseid = verse.getAttribute('data-id');
+  const windowsMain = document.querySelector('.windows-main');
+  if (!windowsMain) return {};
 
-          document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
-            el.classList.add('selected-verse');
-          });
-        }
-      });
-
-      windowsMain.addEventListener('mouseout', (e) => {
-        const verse = e.target.closest('.BibleWindow .verse, .BibleWindow .v');
-        if (verse) {
-          const verseid = verse.getAttribute('data-id');
-
-          document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
-            el.classList.remove('selected-verse');
-          });
-        }
-      });
-    }
-  }
+  windowsMain.addEventListener('mouseover', (e) => toggleMatches(e, true));
+  windowsMain.addEventListener('mouseout', (e) => toggleMatches(e, false));
 
   return {};
 };
-
-export default VerseMatchPlugin;

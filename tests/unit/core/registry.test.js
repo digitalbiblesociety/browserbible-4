@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import * as registry from '@core/registry.js';
 
 // Note: registry maintains module-level state. Tests use unique names so they
@@ -6,26 +6,11 @@ import * as registry from '@core/registry.js';
 // the app, not in unit tests).
 
 describe('plugins', () => {
-  it('registerPlugin + getPlugin round-trips', () => {
-    const Plugin = () => {};
-    registry.registerPlugin('test:plugin:a', Plugin);
-    expect(registry.getPlugin('test:plugin:a')).toBe(Plugin);
-  });
-
-  it('getAllPlugins includes registered entries', () => {
+  it('registerPlugin + getAllPlugins round-trips', () => {
     const Plugin = () => {};
     registry.registerPlugin('test:plugin:b', Plugin);
     const all = registry.getAllPlugins();
     expect(all.find(([name]) => name === 'test:plugin:b')[1]).toBe(Plugin);
-  });
-
-  it('addPluginInstance / getPluginInstances round-trips', () => {
-    const before = registry.getPluginInstances().length;
-    const inst = { name: 'inst:test:1' };
-    registry.addPluginInstance(inst);
-    const after = registry.getPluginInstances();
-    expect(after).toHaveLength(before + 1);
-    expect(after).toContain(inst);
   });
 });
 
@@ -88,10 +73,11 @@ describe('text providers', () => {
 });
 
 describe('menu components', () => {
-  it('registerMenuComponent + getMenuComponent round-trips', () => {
+  it('registerMenuComponent + getAllMenuComponents round-trips', () => {
     const C = () => {};
     registry.registerMenuComponent('test:menu:a', C);
-    expect(registry.getMenuComponent('test:menu:a')).toBe(C);
+    const all = registry.getAllMenuComponents();
+    expect(all.find(([name]) => name === 'test:menu:a')[1]).toBe(C);
   });
 });
 
@@ -102,42 +88,6 @@ describe('audio sources', () => {
     registry.registerAudioSource(source);
     expect(registry.getAudioSources()).toContain(source);
     expect(registry.getAudioSources()).toHaveLength(before + 1);
-  });
-});
-
-describe('init methods', () => {
-  it('registerInitMethod + runInitMethods invokes registered fns', () => {
-    const fn = vi.fn();
-    registry.registerInitMethod(fn);
-    registry.runInitMethods();
-    expect(fn).toHaveBeenCalled();
-  });
-
-  it('getInitMethods returns the underlying array', () => {
-    const fn = () => {};
-    registry.registerInitMethod(fn);
-    expect(registry.getInitMethods()).toContain(fn);
-  });
-});
-
-describe('globals', () => {
-  it('setGlobal + getGlobal round-trips', () => {
-    registry.setGlobal('test:g:a', 42);
-    expect(registry.getGlobal('test:g:a')).toBe(42);
-  });
-
-  it('getGlobals returns a live object including registered keys', () => {
-    registry.setGlobal('test:g:b', 'value');
-    expect(registry.getGlobals()['test:g:b']).toBe('value');
-  });
-});
-
-describe('resources', () => {
-  it('registerResource + getResource round-trips by language', () => {
-    const data = { translation: { hi: 'hello' } };
-    registry.registerResource('test-lang', data);
-    expect(registry.getResource('test-lang')).toBe(data);
-    expect(registry.getAllResources()['test-lang']).toBe(data);
   });
 });
 

@@ -130,10 +130,9 @@ const eng2p = {
 
 /**
  * Create an Eng2p plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export const Eng2pPlugin = (app) => {
+export const Eng2pPlugin = () => {
   const config = getConfig();
 
   if (!config.enableEng2pPlugin) {
@@ -247,8 +246,7 @@ export const Eng2pPlugin = (app) => {
     </table>
   `;
 
-  const engWindowBody = engWindow.body;
-  engWindowBody.appendChild(configBlock);
+  engWindow.body.appendChild(configBlock);
 
   const configToolsBody = document.querySelector('#config-tools .config-body');
   const button = elem('span', { className: 'config-button i18n', id: 'config-eng2p-button', dataset: { i18n: '[html]plugins.eng2p.title' } });
@@ -311,10 +309,6 @@ export const Eng2pPlugin = (app) => {
     }
   };
 
-  const removePluralTransforms = (node) => {
-    eng2p.removePluralTransforms(node);
-  };
-
   const runPluralTransforms = (node) => {
     const nodeEl = node;
     nodeEl.querySelectorAll('.verse, .v').forEach((verse) => {
@@ -362,7 +356,7 @@ export const Eng2pPlugin = (app) => {
         const isEnglish = lang === 'en' || lang === 'eng' ||
                           lang.startsWith('en-') || lang.startsWith('eng-');
         if (isEnglish) {
-          removePluralTransforms(chapter);
+          eng2p.removePluralTransforms(chapter);
           runPluralTransforms(chapter);
         }
       });
@@ -407,8 +401,3 @@ export const Eng2pPlugin = (app) => {
 
   return ext;
 };
-
-// Export eng2p data for external use
-export { eng2p };
-
-export default Eng2pPlugin;

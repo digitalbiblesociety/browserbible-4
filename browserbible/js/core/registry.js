@@ -4,14 +4,10 @@
  */
 
 const plugins = new Map();
-const pluginInstances = [];
 const windowTypes = new Map();
 const menuComponents = new Map();
 const textProviders = new Map();
 const audioSources = [];
-const initMethods = [];
-const globals = {};
-const resources = {};
 
 /** @type {string} Application version */
 export const VERSION = '4.0.0';
@@ -27,19 +23,8 @@ export const registerPlugin = (name, PluginClass) => {
   plugins.set(name, PluginClass);
 };
 
-/** @param {string} name */
-export const getPlugin = (name) => plugins.get(name);
-
 /** @returns {Array<[string, Function]>} All registered plugins */
 export const getAllPlugins = () => Array.from(plugins.entries());
-
-/** @returns {Array} All instantiated plugin instances */
-export const getPluginInstances = () => pluginInstances;
-
-/** @param {Object} instance - Plugin instance to track */
-export const addPluginInstance = (instance) => {
-  pluginInstances.push(instance);
-};
 
 // ─── Window Types ───────────────────────────────────────────────────────────
 
@@ -90,7 +75,6 @@ export const registerMenuComponent = (name, ComponentClass) => {
   menuComponents.set(name, ComponentClass);
 };
 
-export const getMenuComponent = (name) => menuComponents.get(name);
 export const getAllMenuComponents = () => Array.from(menuComponents.entries());
 
 // ─── Text Providers ─────────────────────────────────────────────────────────
@@ -105,7 +89,6 @@ export const registerTextProvider = (name, provider) => {
 };
 
 export const getTextProvider = (name) => textProviders.get(name);
-export const getAllTextProviders = () => Array.from(textProviders.entries());
 
 // ─── Audio Sources ──────────────────────────────────────────────────────────
 
@@ -115,49 +98,6 @@ export const registerAudioSource = (source) => {
 };
 
 export const getAudioSources = () => audioSources;
-
-// ─── Init Methods ───────────────────────────────────────────────────────────
-
-/** @param {Function} fn - Function to run during initialization */
-export const registerInitMethod = (fn) => {
-  initMethods.push(fn);
-};
-
-export const runInitMethods = () => {
-  for (const fn of initMethods) {
-    fn();
-  }
-};
-
-export const getInitMethods = () => initMethods;
-
-// ─── Globals ────────────────────────────────────────────────────────────────
-
-/**
- * Set a global value (replaces window.sofia.globals pattern)
- * @param {string} key
- * @param {*} value
- */
-export const setGlobal = (key, value) => {
-  globals[key] = value;
-};
-
-export const getGlobal = (key) => globals[key];
-export const getGlobals = () => globals;
-
-// ─── Resources ──────────────────────────────────────────────────────────────
-
-/**
- * Register language resources for i18n
- * @param {string} lang - Language code
- * @param {Object} translations - Translation object
- */
-export const registerResource = (lang, translations) => {
-  resources[lang] = translations;
-};
-
-export const getResource = (lang) => resources[lang];
-export const getAllResources = () => resources;
 
 // ─── App Instance ───────────────────────────────────────────────────────────
 
@@ -174,31 +114,17 @@ export const getApp = () => appInstance;
 const registry = {
   VERSION,
   registerPlugin,
-  getPlugin,
   getAllPlugins,
-  getPluginInstances,
-  addPluginInstance,
   registerWindowType,
   getWindowType,
   getWindowTypeByClassName,
   getAllWindowTypes,
   registerMenuComponent,
-  getMenuComponent,
   getAllMenuComponents,
   registerTextProvider,
   getTextProvider,
-  getAllTextProviders,
   registerAudioSource,
   getAudioSources,
-  registerInitMethod,
-  runInitMethods,
-  getInitMethods,
-  setGlobal,
-  getGlobal,
-  getGlobals,
-  registerResource,
-  getResource,
-  getAllResources,
   setApp,
   getApp
 };

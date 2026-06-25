@@ -70,23 +70,6 @@ class AppSettingsManager {
     const fullKey = this._getKey(key);
     delete this.storage[fullKey];
   }
-
-  /**
-   * Get a cookie value
-   * @param {string} name - Cookie name
-   * @returns {string|null} Cookie value or null
-   */
-  getCookieValue(name) {
-    const nameEQ = `${name}=`;
-    const ca = document.cookie.split(';');
-    for (const cookie of ca) {
-      const c = cookie.trimStart();
-      if (c.startsWith(nameEQ)) {
-        return c.substring(nameEQ.length);
-      }
-    }
-    return null;
-  }
 }
 
 const AppSettings = new AppSettingsManager();

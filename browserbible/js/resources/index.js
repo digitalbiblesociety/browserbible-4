@@ -22,8 +22,3 @@ export const AVAILABLE_LANGUAGES = [
   'de',      // German
   'ja'       // Japanese
 ];
-
-/**
- * Default/fallback language
- */
-export const DEFAULT_LANGUAGE = 'en';

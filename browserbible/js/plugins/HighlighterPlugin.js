@@ -94,10 +94,8 @@ function getTextNodes(el) {
       let parent = node.parentElement;
       while (parent && parent !== el) {
         if (parent.matches(SKIP_SELECTORS)) return NodeFilter.FILTER_REJECT;
-        // Skip existing highlight marks for offset calculation during restore
-        if (parent.classList.contains('user-highlight')) {
-          // Don't skip content inside highlights - we need to count those chars
-        }
+        // Content inside existing highlight marks is intentionally counted,
+        // so offsets stay stable across restores.
         parent = parent.parentElement;
       }
       return NodeFilter.FILTER_ACCEPT;
@@ -160,6 +158,17 @@ function findNodeAtOffset(verseEl, targetOffset) {
 }
 
 /**
+ * Build the <mark> element used to wrap highlighted text
+ */
+function createMark(hlId, color) {
+  return elem('mark', {
+    className: 'user-highlight',
+    dataset: { hlId },
+    style: { backgroundColor: color }
+  });
+}
+
+/**
  * Wrap a range within a verse element with a highlight mark
  */
 function applyHighlightMark(verseEl, startOffset, endOffset, color, hlId) {
@@ -171,12 +180,7 @@ function applyHighlightMark(verseEl, startOffset, endOffset, color, hlId) {
     const range = document.createRange();
     range.setStart(start.node, start.offset);
     range.setEnd(end.node, end.offset);
-
-    const mark = document.createElement('mark');
-    mark.className = 'user-highlight';
-    mark.dataset.hlId = hlId;
-    mark.style.backgroundColor = color;
-    range.surroundContents(mark);
+    range.surroundContents(createMark(hlId, color));
   } catch {
     // surroundContents can fail if range crosses element boundaries
     applyHighlightFallback(verseEl, startOffset, endOffset, color, hlId);
@@ -205,13 +209,8 @@ function applyHighlightFallback(verseEl, startOffset, endOffset, color, hlId) {
       range.setStart(tn, localStart);
       range.setEnd(tn, localEnd);
 
-      const mark = document.createElement('mark');
-      mark.className = 'user-highlight';
-      mark.dataset.hlId = hlId;
-      mark.style.backgroundColor = color;
-
       try {
-        range.surroundContents(mark);
+        range.surroundContents(createMark(hlId, color));
       } catch {
         // skip this node if it still fails
       }
@@ -248,16 +247,18 @@ function recolorHighlightMarks(hlId, newColor) {
 // ─── Color Palette ──────────────────────────────────────────────────────────────
 
 function createPalette(onColorPick, onErase) {
-  const palette = elem('div', { className: 'highlighter-palette' });
-  palette.style.display = 'none';
+  const palette = elem('div', {
+    className: 'highlighter-palette',
+    style: { display: 'none' }
+  });
 
   for (const c of COLORS) {
     const swatch = elem('div', {
       className: 'color-swatch',
-      title: c.name
+      title: c.name,
+      dataset: { color: c.value },
+      style: { backgroundColor: c.value }
     });
-    swatch.dataset.color = c.value;
-    swatch.style.backgroundColor = c.value;
     swatch.addEventListener('click', (e) => {
       e.stopPropagation();
       onColorPick(c.value);
@@ -265,8 +266,11 @@ function createPalette(onColorPick, onErase) {
     palette.appendChild(swatch);
   }
 
-  const eraser = elem('div', { className: 'eraser', title: 'Remove highlight' });
-  eraser.textContent = '\u2715';
+  const eraser = elem('div', {
+    className: 'eraser',
+    title: 'Remove highlight',
+    textContent: '\u2715'
+  });
   eraser.addEventListener('click', (e) => {
     e.stopPropagation();
     onErase();
@@ -307,10 +311,9 @@ function hidePalette(palette) {
 
 /**
  * Create the highlighter plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export const HighlighterPlugin = (app) => {
+export const HighlighterPlugin = () => {
   const config = getConfig();
   if (!config.enableHighlighterPlugin) return {};
 
@@ -327,13 +330,10 @@ export const HighlighterPlugin = (app) => {
 
   // ─── Menu Toggle Button ──────────────────────────────────────────────────
 
-  const toggleButton = elem('div', {
-    className: 'main-menu-item highlighter-toggle',
-  });
-  const highlighterIconSpan = elem('span', { className: 'main-menu-icon' });
-  highlighterIconSpan.innerHTML = getWindowIcon('highlighter') || '';
-  toggleButton.appendChild(highlighterIconSpan);
-  toggleButton.appendChild(document.createTextNode('Highlight'));
+  const toggleButton = elem('div', { className: 'main-menu-item highlighter-toggle' },
+    elem('span', { className: 'main-menu-icon', innerHTML: getWindowIcon('highlighter') || '' }),
+    'Highlight'
+  );
 
   document.querySelector('#main-menu-features')?.appendChild(toggleButton);
 
@@ -513,9 +513,8 @@ export const HighlighterPlugin = (app) => {
 
   // ─── Global Message Handling ──────────────────────────────────────────────
 
-  let ext = {};
+  const ext = {};
   mixinEventEmitter(ext);
-  ext._events = {};
 
   ext.on('message', (e) => {
     const { data } = e;
@@ -542,5 +541,3 @@ export const HighlighterPlugin = (app) => {
 
   return ext;
 };
-
-export default HighlighterPlugin;

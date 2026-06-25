@@ -1,11 +1,11 @@
 /**
  * Plugins Module Index
- * Registers all plugins with the registry
+ * Imported once (`import './plugins/index.js'`) purely for the side effect of
+ * registering every plugin with the registry. Nothing imports its members.
  */
 
 import { registerPlugin } from '../core/registry.js';
 
-// Import converted plugins
 import { VerseMatchPlugin } from './VerseMatchPlugin.js';
 import { LemmaMatchPlugin } from './LemmaMatchPlugin.js';
 import { LemmaInfoPlugin } from './LemmaInfoPlugin.js';
@@ -28,30 +28,3 @@ registerPlugin('NotesPopupPlugin', NotesPopupPlugin);
 registerPlugin('MediaLibraryPlugin', MediaLibraryPlugin);
 registerPlugin('Eng2pPlugin', Eng2pPlugin);
 registerPlugin('HighlighterPlugin', HighlighterPlugin);
-
-// Re-export all plugins
-export {
-  VerseMatchPlugin,
-  LemmaMatchPlugin,
-  LemmaInfoPlugin,
-  LemmaPopupPlugin,
-  VisualFilters,
-  CrossReferencePopupPlugin,
-  NotesPopupPlugin,
-  MediaLibraryPlugin,
-  Eng2pPlugin,
-  HighlighterPlugin
-};
-
-export default {
-  VerseMatchPlugin,
-  LemmaMatchPlugin,
-  LemmaInfoPlugin,
-  LemmaPopupPlugin,
-  VisualFilters,
-  CrossReferencePopupPlugin,
-  NotesPopupPlugin,
-  MediaLibraryPlugin,
-  Eng2pPlugin,
-  HighlighterPlugin
-};

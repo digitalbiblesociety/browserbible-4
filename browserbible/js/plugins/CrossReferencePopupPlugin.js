@@ -5,6 +5,7 @@
 
 import { getConfig } from '../core/config.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
+import { elem } from '../lib/helpers.esm.js';
 const hasTouch = 'ontouchend' in document;
 import { Reference } from '../bible/BibleReference.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
@@ -28,10 +29,9 @@ const removeNotesFromVerse = (verse) => {
 
 /**
  * Create a cross reference popup plugin
- * @param {Object} app - Application instance
  * @returns {Object} Plugin API
  */
-export const CrossReferencePopupPlugin = (app) => {
+export const CrossReferencePopupPlugin = () => {
   const config = getConfig();
 
   if (!config.enableCrossReferencePopupPlugin) {
@@ -112,14 +112,9 @@ export const CrossReferencePopupPlugin = (app) => {
       if (TextLoader) {
         TextLoader.getText(textid, (textInfo) => {
           TextLoader.loadSection(textInfo, sectionid, (contentNode) => {
-            let contentEl;
-            if (typeof contentNode === 'string') {
-              const temp = document.createElement('div');
-              temp.innerHTML = contentNode;
-              contentEl = temp;
-            } else {
-              contentEl = contentNode;
-            }
+            const contentEl = typeof contentNode === 'string'
+              ? elem('div', { innerHTML: contentNode })
+              : contentNode;
 
             const verseEls = contentEl.querySelectorAll(`.${fragmentid}`);
             let html = '';
@@ -178,5 +173,3 @@ export const getBibleRefClickHandler = () => handleBibleRefClick;
 export const getBibleRefMouseoverHandler = () => handleBibleRefMouseover;
 
 export const getBibleRefMouseoutHandler = () => handleBibleRefMouseout;
-
-export default CrossReferencePopupPlugin;

@@ -40,11 +40,10 @@ const createAboutHtml = (title, versionCode) => `<h1>${title} (${versionCode})</
 
 const getProviderid = (textid) => {
   const parts = textid.split(':');
-  const fullid = `${providerName}:${parts.length > 1 ? parts[1] : parts[0]}`;
-  return fullid;
+  return `${providerName}:${parts.length > 1 ? parts[1] : parts[0]}`;
 };
 
-export function getTextManifest(callback) {
+function getTextManifest(callback) {
   const config = getConfig();
 
   if (!config.enableOnlineSources || typeof config.fcbhKey === 'undefined' || config.fcbhKey === '') {
@@ -63,7 +62,6 @@ export function getTextManifest(callback) {
 
     textDataIsLoading = true;
 
-    const config = getConfig();
     fetch(`${config.textsPath}/texts_fcbh.json`)
       .then(response => response.json())
       .then(data => {
@@ -123,7 +121,7 @@ const getTextInfoSync = (textid) => {
   return info;
 };
 
-export function getTextInfo(textid, callback) {
+function getTextInfo(textid, callback) {
   if (!textDataIsLoaded) {
     getTextManifest(() => {
       getTextInfo(textid, callback);
@@ -163,7 +161,7 @@ export function getTextInfo(textid, callback) {
   }
 }
 
-export function loadSection(textid, sectionid, callback) {
+function loadSection(textid, sectionid, callback) {
   const config = getConfig();
   const apiUrl = config.fcbhApiUrl ?? 'https://dbt.io';
 
@@ -254,7 +252,7 @@ const highlightWords = (text, searchTermsRegExp) => {
   return processedHtml;
 };
 
-export function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
+function startSearch(textid, divisions, text, onSearchLoad, onSearchIndexComplete, onSearchComplete) {
   const config = getConfig();
   const apiUrl = config.fcbhApiUrl ?? 'https://dbt.io';
 
@@ -286,5 +284,3 @@ export const FCBHTextProvider = {
   loadSection,
   startSearch
 };
-
-export default FCBHTextProvider;

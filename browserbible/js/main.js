@@ -4,54 +4,18 @@
  */
 
 // ============================================
-// Core Library Imports
+// Core imports (used in body / window.BrowserBible)
 // ============================================
 import helpers from './lib/helpers.esm.js';
 import { i18n } from './lib/i18n.js';
-
-// ============================================
-// Core Module Imports
-// ============================================
-import config, { getConfig, updateConfig, getCustomConfig } from './core/config.js';
-import registry, {
-  registerPlugin,
-  registerWindowType,
-  registerMenuComponent,
-  registerTextProvider,
-  registerResource,
-  runInitMethods,
-  getApp,
-  VERSION
-} from './core/registry.js';
-
-// ============================================
-// Common Module Imports
-// ============================================
-import { EventEmitter, mixinEventEmitter, EventEmitterMixin } from './common/EventEmitter.js';
-import AppSettings from './common/AppSettings.js';
-import { PlaceKeeper } from './common/PlaceKeeper.js';
-import { TextNavigation } from './common/TextNavigation.js';
-
-// ============================================
-// App Module Imports
-// ============================================
+import { getConfig, updateConfig, getCustomConfig } from './core/config.js';
+import registry, { getApp, VERSION } from './core/registry.js';
 import { App } from './core/App.js';
-import { WindowManager } from './core/WindowManager.js';
-import { MainMenu } from './menu/MainMenu.js';
 
 // ============================================
-// Resource Imports (i18n)
+// Side-effect imports (self-register with the registry, load i18n resources)
 // ============================================
 import './resources/index.js';
-
-// ============================================
-// Bible Data Imports
-// ============================================
-import './bible/index.js';
-
-// ============================================
-// Text Loading Imports
-// ============================================
 import './texts/index.js';
 
 // ============================================
@@ -161,23 +125,14 @@ async function init() {
     document.body.classList.add('app-mobile-fullscreen');
   }
 
-  // Run init methods
-  runInitMethods();
-
   // Create and initialize app
   const app = new App();
 
-  // Initialize i18n (lazy loads language resources)
-  let lngSetting = '';
-  const i18nCookieValue = AppSettings.getCookieValue('i18next');
-
-  if ((i18nCookieValue === '' || i18nCookieValue === null) && cfg.defaultLanguage !== '') {
-    lngSetting = cfg.defaultLanguage;
-  }
-
+  // Initialize i18n (lazy loads language resources).
+  // i18n.init reads the 'i18next' cookie itself; defaultLng is the fallback when no cookie is set.
   await i18n.init({
     fallbackLng: 'en',
-    lng: lngSetting
+    defaultLng: cfg.defaultLanguage
   });
 
   app.init();
@@ -210,38 +165,6 @@ if (document.readyState === 'loading') {
 } else {
   startup();
 }
-
-// ============================================
-// Export for global access (development/debugging)
-// ============================================
-export {
-  // Version
-  VERSION,
-  // Core
-  config,
-  registry,
-  App,
-  WindowManager,
-  MainMenu,
-  // Helpers
-  helpers,
-  // Common
-  EventEmitter,
-  EventEmitterMixin,
-  mixinEventEmitter,
-  AppSettings,
-  PlaceKeeper,
-  TextNavigation,
-  // i18n
-  i18n,
-  // Registry functions
-  registerPlugin,
-  registerWindowType,
-  registerMenuComponent,
-  registerTextProvider,
-  registerResource,
-  getApp
-};
 
 // For debugging in console
 if (typeof window !== 'undefined') {

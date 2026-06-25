@@ -44,14 +44,4 @@ describe('AppSettings', () => {
     window.localStorage.setItem(fullKey, '{not json');
     expect(AppSettings.getValue('w5', { ok: false })).toEqual({ ok: false });
   });
-
-  it('getCookieValue returns null when cookie is absent', () => {
-    document.cookie = '';
-    expect(AppSettings.getCookieValue('missing')).toBeNull();
-  });
-
-  it('getCookieValue parses a present cookie', () => {
-    document.cookie = 'flavor=chocolate; path=/';
-    expect(AppSettings.getCookieValue('flavor')).toBe('chocolate');
-  });
 });

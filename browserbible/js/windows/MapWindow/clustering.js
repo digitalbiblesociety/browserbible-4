@@ -4,6 +4,7 @@
  * Cluster indicators are HTML div elements in the markers overlay.
  */
 
+import { elem } from '../../lib/helpers.esm.js';
 import { SVG_WIDTH, CLUSTER_RADIUS_PX } from './constants.js';
 
 /**
@@ -131,10 +132,7 @@ export function renderClusters(overlay, clusters) {
     div._anchorX = size / 2;
     div._anchorY = size / 2;
 
-    const text = document.createElement('span');
-    text.className = 'map-cluster-text';
-    text.textContent = cluster.count;
-    div.appendChild(text);
+    div.appendChild(elem('span', { className: 'map-cluster-text', textContent: cluster.count }));
 
     overlay.appendChild(div);
   }

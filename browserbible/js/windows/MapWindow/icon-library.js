@@ -7,7 +7,7 @@
  * Get SVG path data for a location type
  * All icons designed on 24x24 viewBox with consistent 2px stroke weight
  */
-export const LOCATION_ICONS = {
+const LOCATION_ICONS = {
   // City - Cityscape with multiple buildings
   city: `<path d="M4 20h3v-6h2v6h2v-8h2v8h2v-6h2v6h3V9l-8-5-8 5v11z" fill="currentColor"/>
          <path d="M12 4l8 5v11h-3v-6h-2v6h-2v-8h-2v8H9v-6H7v6H4V9l8-5z" stroke="currentColor" stroke-width="1.5" fill="none"/>`,

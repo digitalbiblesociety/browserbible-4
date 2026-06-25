@@ -1,12 +1,35 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { resolve, sep } from 'path';
+import { readFileSync, cpSync } from 'fs';
 import { browserslistToTargets } from 'lightningcss';
 import browserslist from 'browserslist';
 import { compression } from 'vite-plugin-compression2';
 
 const siteProfile = process.env.SITE || 'dev';
 const siteConfig = JSON.parse(readFileSync(`./sites/${siteProfile}.json`, 'utf-8'));
+
+// Production builds exclude the (gitignored) starter-pack texts from public/ —
+// deployed sites load texts from baseContentUrl, and copying them balloons
+// dist to several hundred MB. Dev-profile builds keep them for local content.
+function copyPublicExcludingTexts() {
+  const publicDir = resolve(__dirname, 'browserbible/public');
+  const textsDir = resolve(publicDir, 'content/texts');
+  return {
+    name: 'copy-public-excluding-texts',
+    apply: 'build',
+    // writeBundle (not closeBundle) so the compression plugin still sees
+    // the copied files and emits .gz/.br variants
+    writeBundle() {
+      cpSync(publicDir, resolve(__dirname, 'browserbible/dist'), {
+        recursive: true,
+        filter: (src) => {
+          const full = resolve(src);
+          return full !== textsDir && !full.startsWith(textsDir + sep);
+        }
+      });
+    }
+  };
+}
 
 export default defineConfig({
   // Root directory for the app
@@ -23,20 +46,16 @@ export default defineConfig({
     // Empty the output directory before building
     emptyOutDir: true,
 
-    // Generate sourcemaps for debugging
-    // 'true' = separate .map files
-    // 'inline' = inline sourcemaps (larger but single file)
-    // 'hidden' = .map files without sourceMappingURL comment
-    sourcemap: true,
+    // Sourcemaps only in dev-profile builds — production builds (SITE=inscript)
+    // must not ship .map files exposing the source
+    sourcemap: siteProfile === 'dev',
 
     // Use Lightning CSS for minification
     cssMinify: 'lightningcss',
 
-    // CSS sourcemaps (matches JS sourcemap: true above)
-    cssSourcemap: true,
-
-    // Copy public assets
-    copyPublicDir: true,
+    // Public assets are copied by Vite in dev-profile builds; production
+    // builds use copyPublicExcludingTexts() below
+    copyPublicDir: siteProfile === 'dev',
 
     // Rollup options
     rollupOptions: {
@@ -122,6 +141,7 @@ export default defineConfig({
 
   // Plugins
   plugins: [
+    siteProfile !== 'dev' && copyPublicExcludingTexts(),
     compression({ algorithms: ['gzip', 'brotliCompress'] })
-  ]
+  ].filter(Boolean)
 });

@@ -1,20 +1,15 @@
 /**
  * Windows Module Index
- * Registers all window types with the registry
+ * Imported once (`import './windows/index.js'`) purely for the side effect of
+ * registering every window type with the registry. Nothing imports its members.
  */
 
 import { registerWindowType } from '../core/registry.js';
 
 import { getConfig } from '../core/config.js';
 
-// Import BaseWindow for web components
-import { BaseWindow } from './BaseWindow.js';
-
-// Import converted modules
-import { TextWindow, BibleWindow, CommentaryWindow } from './TextWindow.js';
+import { BibleWindow, CommentaryWindow } from './TextWindow.js';
 import { SearchWindow } from './SearchWindow.js';
-import { Scroller } from './Scroller.js';
-import { AudioController } from './AudioController.js';
 import { AudioWindow } from './AudioWindow.js';
 import { ParallelsWindow } from './ParallelsWindow.js';
 import { TextComparisonWindow } from './TextComparisonWindow.js';
@@ -116,38 +111,3 @@ registerWindowType({
   displayName: 'Notes',
   paramKeys: { noteId: 'n', filter: 'f' }
 });
-
-export {
-  TextWindow,
-  BibleWindow,
-  CommentaryWindow,
-  SearchWindow,
-  Scroller,
-  AudioController,
-  AudioWindow,
-  ParallelsWindow,
-  TextComparisonWindow,
-  StatisticsWindow,
-  DeafBibleWindow,
-  MediaWindow,
-  MapWindow,
-  NotesWindow
-};
-
-export default {
-  BaseWindow,
-  TextWindow,
-  BibleWindow,
-  CommentaryWindow,
-  SearchWindow,
-  AudioWindow,
-  ParallelsWindow,
-  TextComparisonWindow,
-  StatisticsWindow,
-  DeafBibleWindow,
-  MediaWindow,
-  MapWindow,
-  NotesWindow,
-  Scroller,
-  AudioController
-};
