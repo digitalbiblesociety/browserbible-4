@@ -1,5 +1,5 @@
 {
   "disabledWindowTypes": [],
   "disabledFeatures": [],
-  "apiBibleProxyBase": "http://localhost:8787/v1"
+  "apiBibleProxyBase": "https://api.inscript.org/abs/v1"
 }

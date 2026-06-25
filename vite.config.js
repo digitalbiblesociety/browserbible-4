@@ -31,7 +31,15 @@ function copyPublicExcludingTexts() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => {
+  // `vite dev` (serve) talks to a locally-run proxy; builds bake the deployed
+  // proxy URL from the site profile, so dev.inscript.org / inscript.org both
+  // reach https://api.inscript.org/abs/v1 rather than the visitor's localhost.
+  const apiBibleProxyBase = command === 'serve'
+    ? 'http://localhost:8787/v1'
+    : (siteConfig.apiBibleProxyBase || 'https://api.inscript.org/abs/v1');
+
+  return {
   // Root directory for the app
   root: 'browserbible',
 
@@ -137,7 +145,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '4.0.0'),
     __DISABLED_WINDOW_TYPES__: JSON.stringify(siteConfig.disabledWindowTypes),
     __DISABLED_FEATURES__: JSON.stringify(siteConfig.disabledFeatures),
-    __API_BIBLE_PROXY_BASE__: JSON.stringify(siteConfig.apiBibleProxyBase || 'http://localhost:8787/v1')
+    __API_BIBLE_PROXY_BASE__: JSON.stringify(apiBibleProxyBase)
   },
 
   // Plugins
@@ -145,4 +153,5 @@ export default defineConfig({
     siteProfile !== 'dev' && copyPublicExcludingTexts(),
     compression({ algorithms: ['gzip', 'brotliCompress'] })
   ].filter(Boolean)
+  };
 });
