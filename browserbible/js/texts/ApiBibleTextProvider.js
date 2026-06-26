@@ -213,6 +213,18 @@ export function parseChapterContent(content, sectionid) {
   return html.join('');
 }
 
+const addBlankTargets = (html) => html.replace(/<a\s/gi, '<a target="_blank" rel="noopener" ');
+
+function buildAboutHtml(textInfo, details) {
+  return `<div class="about-text">
+  <h1>${escapeHtml(details?.nameLocal || details?.name || textInfo.name)}</h1>
+  <p class="about-language">${escapeHtml(details?.language?.name || textInfo.langName || '')}</p>
+  <div class="about-publisher">${addBlankTargets(details?.info || '')}</div>
+  <p class="about-copyright">${escapeHtml(details?.copyright || '')}</p>
+  <p class="about-source">Provided through <a href="https://api.bible" target="_blank" rel="noopener">API.Bible</a>.</p>
+</div>`;
+}
+
 function buildManifest() {
   const config = getConfig();
   const includeIds = config.apiBibleIncludeIds ?? [];
@@ -279,13 +291,21 @@ function getTextInfo(textid, callback) {
     return;
   }
 
-  fetch(`${config.apiBibleProxyBase}/bibles/${info.apiId}/books?include-chapters=true`)
+  const base = config.apiBibleProxyBase;
+
+  // Bible-level metadata (copyright, publisher blurb) for the about panel. Runs
+  // alongside the books call; best-effort, so a failure just means a sparser panel.
+  const detailsReq = fetch(`${base}/bibles/${info.apiId}?include-full-details=true`)
+    .then(response => (response.ok ? response.json() : null))
+    .catch(() => null);
+
+  fetch(`${base}/bibles/${info.apiId}/books?include-chapters=true`)
     .then(response => {
       if (isQuotaResponse(response)) throw new Error('quota_exceeded');
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     })
-    .then(data => {
+    .then(async data => {
       info.divisions = [];
       info.divisionNames = [];
       info.sections = [];
@@ -303,6 +323,9 @@ function getTextInfo(textid, callback) {
           info.sections.push(`${dbsCode}${chapter.number}`);
         }
       }
+
+      const details = await detailsReq;
+      info.aboutHtml = buildAboutHtml(info, details?.data);
 
       callback(info);
     })
