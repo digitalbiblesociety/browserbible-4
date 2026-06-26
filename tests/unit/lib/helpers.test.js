@@ -106,6 +106,14 @@ describe('elem', () => {
     const el = elem('div', { children: [a, b] });
     expect(el.children.length).toBe(2);
   });
+
+  it('flattens an array passed as a variadic child', () => {
+    const spans = ['a', 'b', 'c'].map(t => elem('span', t));
+    const el = elem('div', {}, spans);
+    expect(el.children.length).toBe(3);
+    expect(el.textContent).toBe('abc');
+    expect(el.firstChild).toBe(spans[0]);
+  });
 });
 
 describe('insertAfter', () => {

@@ -80,7 +80,7 @@ export function elem(tag, props = {}, ...children) {
   // Text shorthand: elem('span', 'Hello')
   if (typeof props === 'string') {
     el.textContent = props;
-    children = children.filter(Boolean);
+    children = children.flat(Infinity).filter(Boolean);
     if (children.length) el.append(...children);
     return el;
   }
@@ -97,7 +97,7 @@ export function elem(tag, props = {}, ...children) {
     }
   }
 
-  children = children.filter(Boolean);
+  children = children.flat(Infinity).filter(Boolean);
   if (children.length) el.append(...children);
   return el;
 }
