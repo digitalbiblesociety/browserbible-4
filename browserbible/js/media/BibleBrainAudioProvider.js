@@ -1,6 +1,7 @@
 import { BaseAudioProvider } from './BaseAudioProvider.js';
 import { getConfig } from '../core/config.js';
 import { NT_BOOKS, BOOK_DATA } from '../bible/BibleData.js';
+import { linkedAudioFor } from '../data/biblebrainDuplicates.js';
 
 const PLAIN_TYPE = 'audio';
 const DRAMA_TYPE = 'audio_drama';
@@ -168,5 +169,31 @@ export class BibleBrainAudioProvider extends BaseAudioProvider {
 
   async getPrevFragment(textInfo, audioInfo, fragmentid) {
     return this._step(textInfo, audioInfo, fragmentid, -1);
+  }
+}
+
+/**
+ * Bible Brain audio for an existing text whose *text* duplicates a Bible Brain
+ * edition. The duplicate BB text is excluded from the picker, but its audio is
+ * kept and matched back here by the text's id/abbr (like DbsAudioProvider, so it
+ * doesn't rely on a field surviving on the textInfo). Registered last, so it only
+ * fills in texts with no local or DBS audio.
+ */
+export class LinkedBibleBrainAudioProvider extends BibleBrainAudioProvider {
+  get name() { return 'biblebrain-linked'; }
+
+  async getAudioInfo(textInfo) {
+    if (!isEnabled(getConfig())) return null;
+
+    const audioFilesets = linkedAudioFor(textInfo)?.audioFilesets;
+    if (!Array.isArray(audioFilesets) || audioFilesets.length === 0) return null;
+
+    return {
+      type: 'biblebrain',
+      title: textInfo.name,
+      audioFilesets,
+      hasPlainAudio: audioFilesets.some(fs => fs.type === PLAIN_TYPE),
+      hasDramaAudio: audioFilesets.some(fs => fs.type === DRAMA_TYPE)
+    };
   }
 }

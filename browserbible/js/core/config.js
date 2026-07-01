@@ -3,6 +3,8 @@
  * Central configuration management with defaults and custom overrides
  */
 
+import { bibleBrainExcludeIds } from '../data/biblebrainDuplicates.js';
+
 const defaultConfig = {
   settingsPrefix: '20260501',
 
@@ -46,7 +48,9 @@ const defaultConfig = {
     ? __BIBLE_BRAIN_PROXY_BASE__
     : '',
   bibleBrainLanguages: [],
-  bibleBrainExcludeIds: [],
+  // Bible Brain texts that duplicate an existing DBS/inscript text (see
+  // js/data/biblebrainDuplicates.js).
+  bibleBrainExcludeIds,
 
   newBibleWindowVersion: 'ENGWEB',
   newWindowFragmentid: 'JN1_1',
