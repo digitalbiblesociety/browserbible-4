@@ -93,7 +93,12 @@
       },
       "map": {
         "label": "Map",
-        "placeholder": "Search..."
+        "placeholder": "Search...",
+        "versenotloaded": "Text not available",
+        "openinbible": "Open in Bible",
+        "loading": "Loading…",
+        "moreresults": "{count} more matches",
+        "placesin": "Places in {reference}"
       },
       "search": {
         "label": "Search",

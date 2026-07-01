@@ -5,9 +5,12 @@
  */
 
 import { BaseWindow, registerWindowComponent } from '../BaseWindow.js';
-import { fuzzySearchLocations } from './fuzzy-search.js';
-import { buildDetailHTML } from './detail-panel.js';
+import { i18n } from '../../lib/i18n.js';
+import { searchLocations, parseReferenceQuery } from './fuzzy-search.js';
+import { getLocationsForReference } from './map-data.js';
+import { buildDetailHTML, hydrateVerseTexts } from './detail-panel.js';
 import { MapPanel } from './map-panel.js';
+import { DEFAULT_CENTER } from './constants.js';
 
 class MapWindowComponent extends BaseWindow {
   constructor() {
@@ -16,7 +19,8 @@ class MapWindowComponent extends BaseWindow {
     this.state = {
       ...this.state,
       selectedSuggestionIndex: -1,
-      currentSuggestions: []
+      currentSuggestions: [], // Array<{location, altName}>
+      referenceSuggestion: null // {sectionid, count, label} when the query parses as a reference
     };
 
     this.mapPanel = null;
@@ -27,18 +31,18 @@ class MapWindowComponent extends BaseWindow {
       <div class="window-header map-header">
         <div class="map-header-inner">
           <input type="text" placeholder="Search locations…" class="app-input map-nav" aria-label="Search locations" />
-          <div class="map-search-suggestions"></div>
+          <div class="map-search-suggestions" role="listbox" aria-label="Location suggestions"></div>
         </div>
-        <div class="map-mode-toggle">
-          <button class="map-mode-btn active" data-mode="passage">Passage</button>
-          <button class="map-mode-btn" data-mode="explore">Explore</button>
+        <div class="map-mode-toggle" role="group" aria-label="Map mode">
+          <button class="map-mode-btn active" data-mode="passage" aria-pressed="true">Passage</button>
+          <button class="map-mode-btn" data-mode="explore" aria-pressed="false">Explore</button>
         </div>
-        <div class="map-era-filter hidden">
-          <button class="map-era-btn active" data-era="all">All</button>
-          <button class="map-era-btn" data-era="ot">OT</button>
-          <button class="map-era-btn" data-era="nt">NT</button>
+        <div class="map-era-filter hidden" role="group" aria-label="Era filter">
+          <button class="map-era-btn active" data-era="all" aria-pressed="true">All</button>
+          <button class="map-era-btn" data-era="ot" aria-pressed="false">OT</button>
+          <button class="map-era-btn" data-era="nt" aria-pressed="false">NT</button>
         </div>
-        <span class="map-location-count"></span>
+        <span class="map-location-count" aria-live="polite"></span>
       </div>
       <div class="window-main map-main">
         <div class="svg-map-container">
@@ -49,7 +53,7 @@ class MapWindowComponent extends BaseWindow {
         </div>
         <div class="map-detail hidden">
           <div class="map-detail-toolbar">
-            <button class="map-detail-back">&#8592; Back</button>
+            <button class="map-detail-back" aria-label="Back to map">&#8592; Back</button>
           </div>
           <div class="map-detail-content"></div>
         </div>
@@ -94,9 +98,10 @@ class MapWindowComponent extends BaseWindow {
     this.addListener(this.refs.eraFilter, 'click', (e) => {
       const btn = e.target.closest('.map-era-btn');
       if (!btn) return;
-      this.refs.eraFilter.querySelectorAll('.map-era-btn').forEach(b =>
-        b.classList.toggle('active', b === btn)
-      );
+      this.refs.eraFilter.querySelectorAll('.map-era-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
       this.mapPanel?.setExploreEra(btn.dataset.era);
     });
 
@@ -105,6 +110,27 @@ class MapWindowComponent extends BaseWindow {
 
     // Detail panel
     this.addListener(this.refs.detailBack, 'click', () => this.hideDetail());
+
+    // Escape anywhere in the window body closes the open detail panel
+    this.addListener(this.refs.main, 'keydown', (e) => {
+      if (e.key === 'Escape' && !this.refs.detail.classList.contains('hidden')) {
+        e.preventDefault();
+        this.hideDetail();
+      }
+    });
+
+    // Click on the map background (not a drag, not a marker/cluster/control) closes it too
+    this.addListener(this.refs.mapContainer, 'mousedown', (e) => {
+      this._pointerDown = { x: e.clientX, y: e.clientY };
+    });
+    this.addListener(this.refs.mapContainer, 'click', (e) => {
+      if (this.refs.detail.classList.contains('hidden')) return;
+      if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .map-empty-state')) return;
+      const moved = this._pointerDown
+        ? Math.hypot(e.clientX - this._pointerDown.x, e.clientY - this._pointerDown.y)
+        : 0;
+      if (moved < 5) this.hideDetail();
+    });
     this.addListener(this.refs.detailContent, 'click', (e) => {
       const coloc = e.target.closest('.map-detail-colocated-item');
       if (coloc) {
@@ -126,14 +152,26 @@ class MapWindowComponent extends BaseWindow {
       }
     });
 
+    // Keep focus in the input while clicking inside the dropdown (blur would close it)
+    this.addListener(this.refs.searchSuggestions, 'mousedown', (e) => e.preventDefault());
+
     // Search suggestion clicks
     this.addListener(this.refs.searchSuggestions, 'click', (e) => {
+      if (e.target.closest('.map-suggestion-reference')) {
+        this.applyReferenceSuggestion();
+        return;
+      }
+      if (e.target.closest('.map-suggestion-more')) {
+        this.handleSearchInput(50); // re-render expanded; the dropdown scrolls
+        return;
+      }
       const item = e.target.closest('.map-suggestion-item');
       if (!item) return;
       const index = parseInt(item.getAttribute('data-index'), 10);
-      if (this.state.currentSuggestions[index]) {
-        this.mapPanel?.openLocation(this.state.currentSuggestions[index]);
-        this.refs.mapSearchInput.value = this.state.currentSuggestions[index].name;
+      const entry = this.state.currentSuggestions[index];
+      if (entry) {
+        this.mapPanel?.openLocation(entry.location);
+        this.refs.mapSearchInput.value = entry.location.name;
         this.hideSuggestions();
       }
     });
@@ -144,18 +182,37 @@ class MapWindowComponent extends BaseWindow {
       this.selectSuggestion(parseInt(item.getAttribute('data-index'), 10));
     }, true);
 
+    // Clicking a highlighted place name in any Bible window opens it on the map.
+    // The .linked-location spans only exist while this window is alive (created
+    // by MapPanel.highlight()), so this window owns the listener.
+    const windowsMain = document.querySelector('.windows-main');
+    if (windowsMain) {
+      this.addListener(windowsMain, 'click', (e) => this.handleLinkedLocationClick(e));
+    }
+
     this.on('message', (e) => this.handleMessage(e));
     this.on('globalmessage', (e) => this.handleGlobalMessage(e));
+  }
+
+  handleLinkedLocationClick(e) {
+    const span = e.target.closest('.linked-location');
+    if (!span || !this.mapPanel?.locationData) return;
+
+    const name = span.getAttribute('data-location-name') || span.textContent;
+    const verseid = span.closest('.verse, .v')?.getAttribute('data-id');
+
+    // Resolve via the verse context first — location names are not unique (e.g. Antioch)
+    const location =
+      (verseid && this.mapPanel.locationDataByVerse?.[verseid]?.find(l => l.name === name)) ||
+      this.mapPanel.locationData.find(l => l.name === name);
+
+    if (location) this.mapPanel.openLocation(location);
   }
 
   async init() {
     const initData = this.initData || {};
 
-    this.mapPanel = new MapPanel(this.refs.mapContainer, {
-      emptyState: this.refs.emptyState,
-      emptyMessage: this.refs.emptyMessage,
-      locationCount: this.refs.locationCount
-    });
+    this.mapPanel = new MapPanel(this.refs.mapContainer);
 
     // Show location detail inline instead of popover
     this.mapPanel._onLocationOpen = (location, colocated, verseTextLookup) => {
@@ -191,7 +248,9 @@ class MapWindowComponent extends BaseWindow {
 
   setMode(mode) {
     this.refs.modeToggle.querySelectorAll('.map-mode-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === mode);
+      const active = btn.dataset.mode === mode;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', String(active));
     });
     this.refs.eraFilter.classList.toggle('hidden', mode !== 'explore');
     this.mapPanel?.setMode(mode);
@@ -219,29 +278,66 @@ class MapWindowComponent extends BaseWindow {
   // --- Detail panel ---
 
   showDetail(location, colocated, verseTextLookup) {
+    // Only move focus when the user is already working inside this window —
+    // a passive textload must not steal focus from elsewhere in the app.
+    const hadFocusInside = this.contains(document.activeElement);
+
     this.refs.detail._colocatedLocations = colocated;
     this.refs.detailContent.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
+    hydrateVerseTexts(this.refs.detailContent, this.state.currentTextid);
     this.refs.detail.classList.remove('hidden');
+
+    if (hadFocusInside) {
+      const heading = this.refs.detailContent.querySelector('.map-detail-header h2');
+      if (heading) {
+        heading.setAttribute('tabindex', '-1');
+        heading.focus();
+      }
+    }
   }
 
   hideDetail() {
+    const hadFocusInside = this.contains(document.activeElement);
     this.refs.detail.classList.add('hidden');
     this.mapPanel?.resetMarkerOpacity();
+    if (hadFocusInside) this.refs.mapContainer.focus();
   }
 
   // --- Search ---
 
-  handleSearchInput() {
+  handleSearchInput(limit = 8) {
     const value = this.refs.mapSearchInput.value.trim();
     if (value.length < 2 || !this.mapPanel?.locationData) {
       this.hideSuggestions();
       return;
     }
-    this.showSuggestions(fuzzySearchLocations(value, this.mapPanel.locationData));
+
+    const { results, total } = searchLocations(value, this.mapPanel.locationData, limit);
+
+    // A query like "John 3" also offers "Places in John 3" (map-only filter)
+    let reference = null;
+    const sectionid = parseReferenceQuery(value);
+    if (sectionid) {
+      const count = getLocationsForReference(this.mapPanel.locationData, sectionid).length;
+      if (count > 0) {
+        reference = { sectionid, count, label: i18n.t('windows.map.placesin', { reference: value }) };
+      }
+    }
+
+    this.showSuggestions({ results, total, reference });
+  }
+
+  applyReferenceSuggestion() {
+    const ref = this.state.referenceSuggestion;
+    if (!ref) return;
+    this.setMode('passage');
+    this.mapPanel?.filterBySection(ref.sectionid);
+    this.updateEmptyState();
+    this.hideSuggestions();
   }
 
   handleSearchKeydown(e) {
-    if (!this.state.currentSuggestions.length) return;
+    if (!this.state.currentSuggestions.length && !this.state.referenceSuggestion) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -251,11 +347,16 @@ class MapWindowComponent extends BaseWindow {
       this.selectSuggestion(Math.max(this.state.selectedSuggestionIndex - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      const loc = this.state.currentSuggestions[this.state.selectedSuggestionIndex] ||
-                  this.state.currentSuggestions[0];
-      if (loc) {
-        this.mapPanel?.openLocation(loc);
-        this.refs.mapSearchInput.value = loc.name;
+      // No explicit selection: a reference suggestion wins, then the top hit
+      if (this.state.selectedSuggestionIndex < 0 && this.state.referenceSuggestion) {
+        this.applyReferenceSuggestion();
+        return;
+      }
+      const entry = this.state.currentSuggestions[this.state.selectedSuggestionIndex] ||
+                    this.state.currentSuggestions[0];
+      if (entry) {
+        this.mapPanel?.openLocation(entry.location);
+        this.refs.mapSearchInput.value = entry.location.name;
       }
       this.hideSuggestions();
     } else if (e.key === 'Escape') {
@@ -263,34 +364,55 @@ class MapWindowComponent extends BaseWindow {
     }
   }
 
-  showSuggestions(suggestions) {
-    this.state.currentSuggestions = suggestions;
+  showSuggestions({ results, total, reference }) {
+    this.state.currentSuggestions = results;
+    this.state.referenceSuggestion = reference || null;
     this.state.selectedSuggestionIndex = -1;
 
-    if (!suggestions.length) {
+    if (!results.length && !reference) {
       this.refs.searchSuggestions.style.display = 'none';
       return;
     }
 
-    this.refs.searchSuggestions.innerHTML = suggestions.map((loc, i) =>
-      `<div class="map-suggestion-item" data-index="${i}">
-        <span>${this.escapeHtml(loc.name)}</span>
-        <span class="verse-count">${loc.verses?.length || 0} verses</span>
-      </div>`
-    ).join('');
+    const rows = [];
 
+    if (reference) {
+      rows.push(`<div class="map-suggestion-reference" role="option" aria-selected="false">
+        <span>${this.escapeHtml(reference.label)}</span>
+        <span class="verse-count">${reference.count} locations</span>
+      </div>`);
+    }
+
+    rows.push(...results.map(({ location, altName }, i) => {
+      const display = altName ? `${altName} → ${location.name}` : location.name;
+      return `<div class="map-suggestion-item" role="option" aria-selected="false" data-index="${i}">
+        <span>${this.escapeHtml(display)}</span>
+        <span class="verse-count">${location.verses?.length || 0} verses</span>
+      </div>`;
+    }));
+
+    const remaining = total - results.length;
+    if (remaining > 0) {
+      rows.push(`<div class="map-suggestion-more" role="button">
+        ${this.escapeHtml(i18n.t('windows.map.moreresults', { count: remaining }))}
+      </div>`);
+    }
+
+    this.refs.searchSuggestions.innerHTML = rows.join('');
     this.refs.searchSuggestions.style.display = 'block';
   }
 
   hideSuggestions() {
     this.refs.searchSuggestions.style.display = 'none';
     this.state.currentSuggestions = [];
+    this.state.referenceSuggestion = null;
     this.state.selectedSuggestionIndex = -1;
   }
 
   selectSuggestion(index) {
     this.refs.searchSuggestions.querySelectorAll('.map-suggestion-item').forEach((item, i) => {
       item.classList.toggle('selected', i === index);
+      item.setAttribute('aria-selected', String(i === index));
     });
     this.state.selectedSuggestionIndex = index;
   }
@@ -307,6 +429,11 @@ class MapWindowComponent extends BaseWindow {
 
   handleMessage(e) {
     if (e.data.messagetype !== 'textload') return;
+
+    if (e.data.textid) {
+      this.state.currentTextid = e.data.textid;
+      if (this.mapPanel) this.mapPanel._detailTextid = e.data.textid;
+    }
 
     this.mapPanel?.removeHighlights();
 
@@ -335,8 +462,8 @@ class MapWindowComponent extends BaseWindow {
   }
 
   getData() {
-    const lat = this.mapPanel?.state.currentCenter?.lat ?? 31.78;
-    const lon = this.mapPanel?.state.currentCenter?.lon ?? 35.23;
+    const lat = this.mapPanel?.state.currentCenter?.lat ?? DEFAULT_CENTER.lat;
+    const lon = this.mapPanel?.state.currentCenter?.lon ?? DEFAULT_CENTER.lon;
     return {
       latitude: lat,
       longitude: lon,

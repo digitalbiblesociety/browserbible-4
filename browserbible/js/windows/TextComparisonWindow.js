@@ -7,7 +7,7 @@ import { Reference } from '../bible/BibleReference.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
 import { loadTexts, getText, loadSection, displayAbbr } from '../texts/TextLoader.js';
 import { diffWords } from '../lib/SimpleDiff.js';
-import { TextChooser } from '../ui/TextChooser.js';
+import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { TextNavigator } from '../ui/TextNavigator.js';
 
 const hasTouch = 'ontouchend' in document;
@@ -62,10 +62,14 @@ const extractPlainText = (content, verseId) => {
 
     let text = clone.innerHTML;
     text = text.replace(/<[^>]+>/gi, '');
+    // Pilcrows are paragraph formatting, not words; they'd show up as diffs.
+    text = text.replace(/¶/g, '');
     plainText += `${text} `;
   }
 
-  return plainText.trim();
+  // Collapse runs of whitespace left behind by stripped markup; mismatched
+  // whitespace tokens would otherwise show up as spurious diffs.
+  return plainText.replace(/\s+/g, ' ').trim();
 };
 
 /**
@@ -103,8 +107,8 @@ export class TextComparisonWindow extends BaseWindow {
       currentSectionId: null
     };
 
-    // UI components
-    this.sourceChooser = TextChooser();
+    // UI components (the text chooser is a shared global popover, like TextWindow's)
+    this.textChooser = getGlobalTextChooser();
     this.textNavigator = TextNavigator();
   }
 
@@ -113,8 +117,8 @@ export class TextComparisonWindow extends BaseWindow {
       <div class="window-header">
         <input type="text" class="app-input comparison-nav-input" value="" placeholder="John 3:16" aria-label="Go to passage" />
         <div class="comparison-select-group">
-          <span class="text-list-title comparison-source-title"></span>
-          <span class="comparison-target-select-wrapper"><select class="comparison-target-select"></select></span>
+          <div class="app-list comparison-source-title" role="button" aria-label="First version"></div>
+          <div class="app-list comparison-target-title" role="button" aria-label="Second version"></div>
         </div>
       </div>
       <div class="comparison-main"></div>
@@ -126,27 +130,20 @@ export class TextComparisonWindow extends BaseWindow {
     super.cacheRefs();
     this.refs.inputFragment = this.$('.comparison-nav-input');
     this.refs.sourceTitle = this.$('.comparison-source-title');
-    this.refs.targetSelect = this.$('.comparison-target-select');
+    this.refs.targetTitle = this.$('.comparison-target-title');
     this.refs.main = this.$('.comparison-main');
     this.refs.header = this.$('.window-header');
     this.refs.footer = this.$('.comparison-footer');
   }
 
   attachEventListeners() {
-    // Target select change
-    this.refs.targetSelect.addEventListener('change', () => this.handleTargetChange());
+    // Text chooser change - bound handler so the global singleton can be unsubscribed
+    this._textChooserHandler = this.bindHandler('textChooserChange', (e) => this.handleTextChooserChange(e));
+    this.textChooser.on('change', this._textChooserHandler);
 
-    // Target select focus - restore full names
-    this.refs.targetSelect.addEventListener('focus', () => this.handleTargetFocus());
-
-    // Target select blur - show only abbreviation
-    this.refs.targetSelect.addEventListener('blur', () => this.updateTargetSelectDisplay());
-
-    // Source chooser change
-    this.sourceChooser.on('change', (e) => this.handleSourceChange(e));
-
-    // Click on source title
-    this.refs.sourceTitle.addEventListener('click', () => this.showSourceChooser());
+    // Clicks on the version buttons open the shared chooser
+    this.refs.sourceTitle.addEventListener('click', () => this.showChooser(this.refs.sourceTitle));
+    this.refs.targetTitle.addEventListener('click', () => this.showChooser(this.refs.targetTitle));
 
     // Click on fragment input
     this.refs.inputFragment.addEventListener('click', () => this.handleFragmentClick());
@@ -183,12 +180,12 @@ export class TextComparisonWindow extends BaseWindow {
       }
     }
 
-    // Populate target select
-    this.populateTargetSelect();
-
-    if (this.refs.targetSelect.options.length > 0) {
-      this.refs.targetSelect.value = this.state.targetTextId;
+    const targetText = this.state.textInfoData.find(t => t.id === this.state.targetTextId);
+    if (targetText) {
+      this.refs.targetTitle.textContent = displayAbbr(targetText);
     }
+    // Fixes a missing or wrong-language target (e.g. a stale URL param)
+    this.updateTargetForNewLanguage();
 
     // Run initial comparison
     await this.doComparison();
@@ -196,48 +193,71 @@ export class TextComparisonWindow extends BaseWindow {
 
   cleanup() {
     super.cleanup();
+    if (this._textChooserHandler) {
+      this.textChooser.off('change', this._textChooserHandler);
+    }
+    const chooserTarget = this.textChooser.getTarget();
+    if (chooserTarget === this.refs.sourceTitle || chooserTarget === this.refs.targetTitle) {
+      this.textChooser.hide();
+    }
     if (this.textNavigator?.close) this.textNavigator.close();
-    if (this.sourceChooser?.close) this.sourceChooser.close();
   }
 
-  handleTargetChange() {
-    this.state.targetTextId = this.refs.targetSelect.value;
-    this.updateTargetSelectDisplay();
-    this.doComparison();
-  }
+  handleTextChooserChange(e) {
+    const target = e.data.target?.nodeType ? e.data.target : e.data.target?.[0];
+    if (target !== this.refs.sourceTitle && target !== this.refs.targetTitle) return;
 
-  handleTargetFocus() {
-    for (let i = 0; i < this.refs.targetSelect.options.length; i++) {
-      const option = this.refs.targetSelect.options[i];
-      const abbr = option.getAttribute('data-abbr');
-      if (abbr && this.state.textInfoData) {
-        const textInfo = this.state.textInfoData.find(t => t.id === option.value);
-        if (textInfo) {
-          option.textContent = `${displayAbbr(textInfo)} - ${textInfo.name}`;
-        }
-      }
+    // textInfo is null when a provider can't load the text's details (e.g. an
+    // unreachable API); the manifest entry has everything the header needs.
+    const textInfo = e.data.textInfo || this.state.textInfoData?.find(t => t.id === e.data.textid);
+    if (!textInfo) return;
+
+    if (target === this.refs.sourceTitle) {
+      this.handleSourceChange(textInfo);
+    } else {
+      this.handleTargetChange(textInfo);
     }
   }
 
-  handleSourceChange(e) {
-    const textInfo = e.data.textInfo;
+  handleTargetChange(textInfo) {
+    this.state.targetTextId = textInfo.id;
+    this.refs.targetTitle.textContent = displayAbbr(textInfo);
+    this.doComparison();
+  }
+
+  handleSourceChange(chosenInfo) {
+    // The chooser resolves texts via getText(), whose info.json may omit the
+    // language fields, so prefer the manifest entry when we have one.
+    const textInfo = this.state.textInfoData?.find(t => t.id === chosenInfo.id) || chosenInfo;
+
     this.state.sourceTextId = textInfo.id;
     this.refs.sourceTitle.textContent = displayAbbr(textInfo);
     this.state.currentSourceLang3 = textInfo.lang3 || textInfo.lang;
 
-    this.populateTargetSelect();
     this.updateTargetForNewLanguage();
     this.doComparison();
   }
 
-  showSourceChooser() {
-    if (this.state.textInfoData && this.state.sourceTextId) {
-      const currentTextInfo = this.state.textInfoData.find(t => t.id === this.state.sourceTextId);
-      this.sourceChooser.setTarget(this, this.refs.sourceTitle, 'bible');
-      if (currentTextInfo) {
-        this.sourceChooser.setTextInfo(currentTextInfo);
-      }
-      this.sourceChooser.show();
+  showChooser(anchor) {
+    if (!this.state.textInfoData) return;
+
+    const isTarget = anchor === this.refs.targetTitle;
+    const wasOpenHere = this.textChooser.getTarget() === anchor && this.textChooser.isVisible();
+
+    // Re-set the target every time: the second version is limited to the
+    // first version's language, which may have changed since the last open.
+    this.textChooser.setTarget(this, anchor, 'bible', isTarget ? this.state.currentSourceLang3 : null);
+
+    const textId = isTarget ? this.state.targetTextId : this.state.sourceTextId;
+    const currentTextInfo = this.state.textInfoData.find(t => t.id === textId);
+    if (currentTextInfo) {
+      this.textChooser.setTextInfo(currentTextInfo);
+    }
+
+    if (wasOpenHere) {
+      this.textChooser.hide();
+    } else {
+      this.textChooser.show();
     }
   }
 
@@ -267,66 +287,32 @@ export class TextComparisonWindow extends BaseWindow {
     this.doComparison();
   }
 
-  updateTargetSelectDisplay() {
-    const selectedOption = this.refs.targetSelect.options[this.refs.targetSelect.selectedIndex];
-    if (selectedOption) {
-      const abbr = selectedOption.getAttribute('data-abbr');
-      if (abbr) {
-        selectedOption.textContent = abbr;
-      }
-    }
-  }
-
-  populateTargetSelect() {
-    if (!this.state.textInfoData || !this.state.currentSourceLang3) return;
-
-    this.refs.targetSelect.innerHTML = '';
-
-    const sameLangTexts = this.state.textInfoData.filter(t =>
+  // Bibles in the same language as the current source
+  getComparableTexts() {
+    return this.state.textInfoData.filter(t =>
       (t.lang3 === this.state.currentSourceLang3 || t.lang === this.state.currentSourceLang3) &&
       t.hasText !== false &&
       (typeof t.type === 'undefined' || t.type === 'bible')
     );
-
-    for (const textInfo of sameLangTexts) {
-      const option = document.createElement('option');
-      option.value = textInfo.id;
-      option.textContent = `${displayAbbr(textInfo)} - ${textInfo.name}`;
-      option.setAttribute('data-abbr', displayAbbr(textInfo));
-      if (textInfo.id === this.state.targetTextId) {
-        option.selected = true;
-      }
-      this.refs.targetSelect.appendChild(option);
-    }
-
-    this.updateTargetSelectDisplay();
   }
 
+  // When the source switches language (or the target is unknown), pick a
+  // same-language target so the initial comparison is meaningful. The user can
+  // still choose any text from the chooser afterwards.
   updateTargetForNewLanguage() {
-    if (this.refs.targetSelect.options.length === 0) return;
+    if (!this.state.textInfoData || !this.state.currentSourceLang3) return;
 
     const currentTargetText = this.state.textInfoData.find(t => t.id === this.state.targetTextId);
     const targetLang = currentTargetText ? (currentTargetText.lang3 || currentTargetText.lang) : null;
 
-    if (targetLang !== this.state.currentSourceLang3) {
-      let foundDifferent = false;
-      for (let i = 0; i < this.refs.targetSelect.options.length; i++) {
-        if (this.refs.targetSelect.options[i].value !== this.state.sourceTextId) {
-          this.state.targetTextId = this.refs.targetSelect.options[i].value;
-          this.refs.targetSelect.value = this.state.targetTextId;
-          foundDifferent = true;
-          break;
-        }
-      }
+    if (targetLang === this.state.currentSourceLang3) return;
 
-      if (!foundDifferent && this.refs.targetSelect.options.length > 0) {
-        this.state.targetTextId = this.refs.targetSelect.options[0].value;
-        this.refs.targetSelect.value = this.state.targetTextId;
-      }
-      this.updateTargetSelectDisplay();
-    } else {
-      this.refs.targetSelect.value = this.state.targetTextId;
-      this.updateTargetSelectDisplay();
+    const sameLangTexts = this.getComparableTexts();
+    const replacement = sameLangTexts.find(t => t.id !== this.state.sourceTextId) || sameLangTexts[0];
+
+    if (replacement) {
+      this.state.targetTextId = replacement.id;
+      this.refs.targetTitle.textContent = displayAbbr(replacement);
     }
   }
 
@@ -393,7 +379,12 @@ export class TextComparisonWindow extends BaseWindow {
   }
 
   async doComparison() {
-    if (this.state.isLoading) return;
+    // A comparison is already in flight; re-run when it finishes so a quick
+    // second version change isn't silently dropped.
+    if (this.state.isLoading) {
+      this._rerunComparison = true;
+      return;
+    }
     if (!this.state.sourceTextId || !this.state.targetTextId) return;
 
     try {
@@ -438,6 +429,10 @@ export class TextComparisonWindow extends BaseWindow {
       this.showError('Failed to load passage. Please try again.');
     } finally {
       this.hideLoading();
+      if (this._rerunComparison) {
+        this._rerunComparison = false;
+        this.doComparison();
+      }
     }
   }
 

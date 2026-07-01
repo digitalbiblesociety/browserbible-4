@@ -35,3 +35,20 @@ test.describe('window-type smoke', () => {
     });
   }
 });
+
+test.describe('link/unlink button', () => {
+  // Open two windows so the single-window CSS (which hides all link buttons)
+  // no longer applies, then confirm only the linkable window shows one.
+  test('comparison window has no link button; bible window does', async ({ page, makeUrl }) => {
+    await page.goto(makeUrl({
+      w1: 'bible', t1: 'ENGWEB', v1: 'JN1_1',
+      w2: 'comparison'
+    }));
+
+    await expect(page.locator('.window.BibleWindow')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('.window.TextComparisonWindow')).toHaveCount(1, { timeout: 15_000 });
+
+    await expect(page.locator('.window.BibleWindow .link-button')).toHaveCount(1);
+    await expect(page.locator('.window.TextComparisonWindow .link-button')).toHaveCount(0);
+  });
+});

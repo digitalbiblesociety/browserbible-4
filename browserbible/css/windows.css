@@ -164,6 +164,51 @@ body {
 	vertical-align: middle;
 }
 
+/* Drag a header to reorder windows (no-op with one window or in compact tabs) */
+body:not(.one-window):not(.compact-ui) .window .window-header {
+	cursor: grab;
+}
+
+body.window-reordering,
+body.window-reordering * {
+	cursor: grabbing !important;
+	user-select: none !important;
+}
+
+/* While a drag is in progress nothing else should react to the pointer:
+   no hover styles, tooltips, or mouseenter focus handlers */
+body.window-reordering .window,
+body.window-reordering .window-splitter,
+body.window-reordering .windows-header {
+	pointer-events: none;
+}
+
+/* The window being dragged rides above everything: setting a z-index makes
+   it one stacking context, so neighbors' chrome (close buttons at --z-chrome,
+   panels, splitters at --z-popover) can no longer paint through it */
+.window.reordering {
+	opacity: 0.75;
+	z-index: var(--z-menu);
+	box-shadow: var(--shadow-popup);
+}
+
+/* Applied while a displaced window slides into its new slot (duration
+   mirrored in WindowManager's slideMs) */
+.window.window-slide {
+	transition: translate 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Applied to the dragged window on drop: it snaps into its slot with a
+   little spring while the lift fades, riding above its neighbors until it
+   lands (duration mirrored in WindowManager's snapMs) */
+.window.window-snap {
+	z-index: var(--z-menu);
+	transition:
+		translate 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+		opacity 0.32s ease,
+		box-shadow 0.32s ease;
+}
+
 .window-title {
 	display: block;
 	font-size: 18px;

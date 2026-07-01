@@ -34,6 +34,19 @@ describe('getLocationsForReference', () => {
     expect(getLocationsForReference(sample, 'GN1')).toEqual([]);
   });
 
+  it('does not match a longer chapter number sharing the same prefix', () => {
+    const psalms = [
+      { name: 'Zion', verses: ['PS119_5'] },
+      { name: 'Jerusalem', verses: ['PS1_1'] }
+    ];
+    expect(getLocationsForReference(psalms, 'PS1').map(l => l.name)).toEqual(['Jerusalem']);
+    expect(getLocationsForReference(psalms, 'PS11')).toEqual([]);
+
+    const john = [{ name: 'Bethany', verses: ['JN11_1'] }];
+    expect(getLocationsForReference(john, 'JN1')).toEqual([]);
+    expect(getLocationsForReference(john, 'JN11').map(l => l.name)).toEqual(['Bethany']);
+  });
+
   it('returns [] for null/empty inputs', () => {
     expect(getLocationsForReference(null, 'MT2')).toEqual([]);
     expect(getLocationsForReference(sample, '')).toEqual([]);

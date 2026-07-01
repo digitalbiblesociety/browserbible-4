@@ -57,6 +57,9 @@ export function TextChooser() {
   let target = null;
   let selectedTextInfo = null;
   let listData = null;
+  // When set (a lang/lang3 code), only texts in that language are listed —
+  // e.g. the comparison window's second version, which must match the first.
+  let langFilter = null;
 
   // Virtual scrolling state
   let processedData = []; // Flat array of {type: 'header'|'text', data, searchText, langHeader}
@@ -261,7 +264,9 @@ export function TextChooser() {
 
     getText(textid, function(data) {
       selectedTextInfo = data;
-      ext.trigger('change', { type: 'change', target: this, data: { textInfo: selectedTextInfo, target: target } });
+      // textInfo is null when the provider fails to load the text's details;
+      // textid always identifies what was clicked.
+      ext.trigger('change', { type: 'change', target: this, data: { textInfo: selectedTextInfo, textid, target: target } });
     });
   }
 
@@ -292,10 +297,11 @@ export function TextChooser() {
   }
 
   function buildGroupedData() {
-    const key = textType + '|' + (listData ? listData.length : 0);
+    const key = textType + '|' + (langFilter || '') + '|' + (listData ? listData.length : 0);
     if (groupedCacheKey === key && groupedCache) return groupedCache;
 
     const arrayOfTexts = listData.filter(t => {
+      if (langFilter && t.lang3 !== langFilter && t.lang !== langFilter) return false;
       if (textType === 'audio') {
         return t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt;
       }
@@ -368,6 +374,10 @@ export function TextChooser() {
       }
     }
 
+    // With a language filter, the whole list is one language already — a
+    // pinned current-language section would just duplicate it.
+    if (langFilter) return result;
+
     const currentLang = selectedTextInfo?.langNameEnglish
       || getConfig().pinnedLanguage
       || 'English';
@@ -401,7 +411,7 @@ export function TextChooser() {
     const currentLang = selectedTextInfo?.langNameEnglish
       || getConfig().pinnedLanguage
       || 'English';
-    const key = textType + '|' + listData.length + '|' + recentlyUsed.recent.join(',') + '|' + currentLang;
+    const key = textType + '|' + (langFilter || '') + '|' + listData.length + '|' + recentlyUsed.recent.join(',') + '|' + currentLang;
     if (processedDataKey === key && processedData.length > 0) return;
     processedDataKey = key;
 
@@ -414,10 +424,11 @@ export function TextChooser() {
     scheduleRender();
   }
 
-  function setTarget(_container, _target, _textType) {
-    const needsRerender = _textType !== textType;
+  function setTarget(_container, _target, _textType, _langFilter = null) {
+    const needsRerender = _textType !== textType || _langFilter !== langFilter;
     target = _target;
     textType = _textType;
+    langFilter = _langFilter;
 
     if (needsRerender && listData) {
       processTexts(listData);

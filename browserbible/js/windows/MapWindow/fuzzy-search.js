@@ -3,6 +3,8 @@
  * Jaro-Winkler similarity algorithm for location search
  */
 
+import { Reference } from '../../bible/BibleReference.js';
+
 const findMatches = (s1, s2, matchWindow) => {
   const len1 = s1.length;
   const len2 = s2.length;
@@ -72,48 +74,77 @@ const jaroWinkler = (s1, s2) => {
 };
 
 /**
- * Search locations with fuzzy matching
- * Returns sorted results by relevance
+ * Score a single name against the (lowercased) query.
+ * Exact match 2, prefix 1.5+, contains 1+, otherwise Jaro-Winkler above 0.7.
+ * @returns {number} 0 when the name doesn't match at all
  */
-export const fuzzySearchLocations = (query, locations, limit = 8) => {
-  if (!query || !locations) return [];
+const scoreName = (queryLower, name) => {
+  const nameLower = name.toLowerCase();
+
+  if (nameLower === queryLower) return 2;
+  if (nameLower.startsWith(queryLower)) return 1.5 + jaroWinkler(queryLower, nameLower);
+  if (nameLower.includes(queryLower)) return 1 + jaroWinkler(queryLower, nameLower);
+
+  const score = jaroWinkler(queryLower, nameLower);
+  return score > 0.7 ? score : 0;
+};
+
+// Alternate-name hits rank just below equally-good primary-name hits
+const ALT_NAME_PENALTY = 0.95;
+
+/**
+ * Search locations by name (and optional altNames) with fuzzy matching.
+ * @returns {{ results: Array<{location: Object, altName: string|null}>, total: number }}
+ *   results - the top matches, best first; altName is set when the hit was an alternate name
+ *   total - how many locations matched overall (for "N more results" UI)
+ */
+export const searchLocations = (query, locations, limit = 8) => {
+  if (!query || !locations) return { results: [], total: 0 };
 
   const queryLower = query.toLowerCase();
-  const results = [];
+  const matched = [];
 
   for (const location of locations) {
-    const nameLower = location.name.toLowerCase();
+    let score = scoreName(queryLower, location.name);
+    let altName = null;
 
-    // Exact match gets highest score
-    if (nameLower === queryLower) {
-      results.push({ location, score: 2 });
-      continue;
+    for (const alt of location.altNames || []) {
+      const altScore = scoreName(queryLower, alt) * ALT_NAME_PENALTY;
+      if (altScore > score) {
+        score = altScore;
+        altName = alt;
+      }
     }
 
-    // Starts with query gets boosted score
-    if (nameLower.startsWith(queryLower)) {
-      results.push({ location, score: 1.5 + jaroWinkler(queryLower, nameLower) });
-      continue;
-    }
-
-    // Contains query gets medium boost
-    if (nameLower.includes(queryLower)) {
-      results.push({ location, score: 1 + jaroWinkler(queryLower, nameLower) });
-      continue;
-    }
-
-    // Fuzzy match
-    const score = jaroWinkler(queryLower, nameLower);
-    if (score > 0.7) {
-      results.push({ location, score });
-    }
+    if (score > 0) matched.push({ location, score, altName });
   }
 
   // Sort by score descending, then by verse count for ties
-  results.sort((a, b) => {
+  matched.sort((a, b) => {
     if (Math.abs(b.score - a.score) > 0.01) return b.score - a.score;
     return (b.location.verses?.length || 0) - (a.location.verses?.length || 0);
   });
 
-  return results.slice(0, limit).map(r => r.location);
+  return {
+    results: matched.slice(0, limit).map(({ location, altName }) => ({ location, altName })),
+    total: matched.length
+  };
+};
+
+/**
+ * Search locations with fuzzy matching.
+ * Returns the matching locations sorted by relevance (legacy shape).
+ */
+export const fuzzySearchLocations = (query, locations, limit = 8) =>
+  searchLocations(query, locations, limit).results.map(r => r.location);
+
+/**
+ * Try to read the query as a Bible reference ("John 3", "GN12", "1 Kings 8").
+ * @returns {string|null} A section id like "JN3", or null when the query isn't a reference
+ */
+export const parseReferenceQuery = (query) => {
+  if (!query || !/\d/.test(query)) return null;
+  const ref = Reference(query.trim());
+  if (!ref?.bookid || !(ref.chapter1 >= 1)) return null;
+  return ref.bookid + ref.chapter1;
 };

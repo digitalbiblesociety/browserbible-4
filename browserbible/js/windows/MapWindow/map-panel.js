@@ -9,16 +9,19 @@
  * updateMarkerScales, triggerSettingsChange).
  */
 
-import { SVG_WIDTH, SVG_HEIGHT, CLUSTER_RADIUS_PX } from './constants.js';
+import { SVG_WIDTH, SVG_HEIGHT, CLUSTER_RADIUS_PX, DEFAULT_CENTER, ZOOM_STEP, COLOCATED_EPSILON, CLUSTER_BREAK_MARGIN } from './constants.js';
 import { svgToGeo, geoToSvg } from './geo-utils.js';
 import { getViewTransform } from './view-transform.js';
 import { NT_BOOKS } from '../../bible/BibleData.js';
 import * as MarkerRenderer from './marker-renderer.js';
 import { loadLocationData, getLocationsForReference } from './map-data.js';
-import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox, setViewBoxSize, refit } from './pan-zoom.js';
+import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox, setViewBoxSize, refit, zoomBy, isAtMinZoom, isAtMaxZoom } from './pan-zoom.js';
 import { createDetailPanel, openDetailPanel, destroyDetailPanel } from './detail-panel.js';
 import { highlightLocations, removeHighlights } from './highlight.js';
 import { computeClusters, renderClusters, applyClusterVisibility } from './clustering.js';
+
+// Trailing delay before clusters/labels recompute after a burst of zoom input
+const DECORATION_SETTLE_MS = 150;
 
 // Cached AVIF decode-support probe (1×1 AVIF data URI). Resolves once, reused thereafter.
 let _avifSupport = null;
@@ -44,7 +47,7 @@ export class MapPanel {
       isPanning: false,
       mode: 'passage',
       currentReference: null,
-      currentCenter: { lat: 31.78, lon: 35.23 },
+      currentCenter: { ...DEFAULT_CENTER },
       exploreEra: 'all' // 'all' | 'ot' | 'nt'
     };
     this.viewBox = { x: 0, y: 0, width: SVG_WIDTH, height: SVG_HEIGHT };
@@ -62,6 +65,7 @@ export class MapPanel {
     this._onSettingsChange = null; // optional callback(lat, lon)
     this._verseTextLookup = null; // optional (verseId: string) => string | null
     this._onLocationOpen = null; // optional callback(location, colocated, verseTextLookup) — bypasses popover
+    this._detailTextid = null; // optional Bible text id for hydrating detail verse snippets
   }
 
   /**
@@ -97,13 +101,22 @@ export class MapPanel {
   setMode(mode) {
     this.state.mode = mode;
     this._filterMarkers();
+    this.resetView();
+  }
 
-    if (mode === 'explore') {
-      centerOn(this, 35.23, 31.78, 1);
-    } else if (this.state.currentReference && this.locationData) {
+  /**
+   * Reset the view to the natural fit for the current mode: the current
+   * passage's locations in passage mode, otherwise the full map.
+   */
+  resetView() {
+    if (this.state.mode === 'passage' && this.state.currentReference && this.locationData) {
       const locations = getLocationsForReference(this.locationData, this.state.currentReference);
-      if (locations.length > 0) centerOnBounds(this, locations);
+      if (locations.length > 0) {
+        centerOnBounds(this, locations);
+        return;
+      }
     }
+    centerOn(this, DEFAULT_CENTER.lon, DEFAULT_CENTER.lat, 1);
   }
 
   /**
@@ -144,6 +157,8 @@ export class MapPanel {
    * Clean up event listeners and remove the detail panel.
    */
   destroy() {
+    clearTimeout(this._settleTimer);
+    clearTimeout(this._decorTimer);
     destroyDetailPanel(this.detailPanel);
     removeHighlights(this.markersOverlay);
     this._eventListeners.forEach(({ el, event, handler }) => {
@@ -179,14 +194,36 @@ export class MapPanel {
     refit(this);
   }
 
-  /** Called by pan-zoom.js after zoom or pan end — resets overlay and recalculates all positions. */
-  updateMarkerScales() {
+  /**
+   * Called by pan-zoom.js after zoom or pan end — resets the overlay and
+   * recalculates all positions. With `defer: true` (used during wheel/pinch
+   * bursts), markers reposition immediately but the expensive decoration pass
+   * (re-clustering + label deconfliction) waits for a short settle timer —
+   * the same technique Leaflet uses during continuous zoom.
+   */
+  updateMarkerScales({ defer = false } = {}) {
     if (!this.markersOverlay) return;
 
     // Reset the pan-translate so individual marker positions are authoritative again
     this._panOffset.x = 0;
     this._panOffset.y = 0;
     this.markersOverlay.style.transform = '';
+
+    clearTimeout(this._decorTimer);
+    if (defer) {
+      // Existing markers and cluster badges track the new viewBox right away
+      const containerRect = this.container.getBoundingClientRect();
+      MarkerRenderer.repositionAllMarkers(this.markersOverlay, this.viewBox, containerRect);
+      this._updateZoomControlState();
+      this._decorTimer = setTimeout(() => this._decorateMarkers(), DECORATION_SETTLE_MS);
+    } else {
+      this._decorateMarkers();
+    }
+  }
+
+  /** Decoration pass: recompute clusters, then position everything and deconflict labels. */
+  _decorateMarkers() {
+    if (!this.markersOverlay) return;
 
     this.markersOverlay.querySelectorAll('.map-marker.clustered').forEach(m => {
       m.classList.remove('clustered');
@@ -200,6 +237,7 @@ export class MapPanel {
     const containerRect = this.container.getBoundingClientRect();
     MarkerRenderer.repositionAllMarkers(this.markersOverlay, this.viewBox, containerRect);
     MarkerRenderer.deconflictLabels(this.markersOverlay);
+    this._updateZoomControlState();
   }
 
   /** Called by pan-zoom.js when panning ends. */
@@ -235,8 +273,15 @@ export class MapPanel {
       this.markersOverlay = document.createElement('div');
       this.markersOverlay.className = 'map-markers-overlay';
 
+      // Keyboard-operable map surface (arrow keys pan, +/− zoom — see pan-zoom.js)
+      this.container.tabIndex = 0;
+      this.container.setAttribute('role', 'application');
+      this.container.setAttribute('aria-label',
+        'Interactive Bible map. Use arrow keys to pan, plus and minus to zoom, Home to reset the view.');
+
       this.container.appendChild(this.svgElement);
       this.container.appendChild(this.markersOverlay);
+      this._createZoomControls();
 
       centerOn(this, this.state.currentCenter.lon, this.state.currentCenter.lat, 4);
       setupPanZoom(this);
@@ -246,6 +291,53 @@ export class MapPanel {
       console.error('MapPanel: failed to load SVG map:', err);
       this.container.innerHTML = '<div style="padding:20px;color:var(--text-color)">Failed to load map</div>';
     }
+  }
+
+  /** On-screen zoom controls: + / − / reset view. */
+  _createZoomControls() {
+    const controls = document.createElement('div');
+    controls.className = 'map-zoom-controls';
+    controls.setAttribute('role', 'group');
+    controls.setAttribute('aria-label', 'Map zoom');
+
+    const makeButton = (className, label, html) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `map-zoom-btn ${className}`;
+      button.setAttribute('aria-label', label);
+      button.title = label;
+      button.innerHTML = html;
+      controls.appendChild(button);
+      return button;
+    };
+
+    this._zoomInBtn = makeButton('map-zoom-in', 'Zoom in', '+');
+    this._zoomOutBtn = makeButton('map-zoom-out', 'Zoom out', '−');
+    const fitBtn = makeButton('map-zoom-fit', 'Reset view',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg>');
+
+    this.addListener(this._zoomInBtn, 'click', () => {
+      zoomBy(this, 1 / ZOOM_STEP);
+      this.triggerSettingsChange();
+    });
+    this.addListener(this._zoomOutBtn, 'click', () => {
+      zoomBy(this, ZOOM_STEP);
+      this.triggerSettingsChange();
+    });
+    this.addListener(fitBtn, 'click', () => {
+      this.resetView();
+      this.triggerSettingsChange();
+    });
+
+    this.container.appendChild(controls);
+  }
+
+  /** Disable +/− at the zoom bounds; doubles as the zoom-level indicator. */
+  _updateZoomControlState() {
+    if (!this._zoomInBtn) return;
+    this._zoomInBtn.disabled = isAtMaxZoom(this);
+    this._zoomOutBtn.disabled = isAtMinZoom(this);
   }
 
   /**
@@ -305,7 +397,8 @@ export class MapPanel {
 
       let show = !isPassageMode;
       if (isPassageMode && this.state.currentReference && marker.locationData) {
-        show = marker.locationData.verses.some(v => v.startsWith(this.state.currentReference));
+        // Verse IDs are always BOOKCH_V — require the separator so "PS1" can't match "PS119_5"
+        show = marker.locationData.verses.some(v => v.startsWith(this.state.currentReference + '_'));
       } else if (!isPassageMode && this.state.exploreEra !== 'all' && marker.locationData) {
         const era = marker.locationData._era;
         show = era === 'both' || era === this.state.exploreEra;
@@ -351,14 +444,14 @@ export class MapPanel {
         if (!marker.locationData || marker.locationData === location || marker._svgX === undefined) return;
         const dx = marker._svgX - svgX;
         const dy = marker._svgY - svgY;
-        if (dx * dx + dy * dy < 0.25) colocated.push(marker.locationData);
+        if (dx * dx + dy * dy < COLOCATED_EPSILON * COLOCATED_EPSILON) colocated.push(marker.locationData);
       });
     }
 
     if (this._onLocationOpen) {
       this._onLocationOpen(location, colocated, this._verseTextLookup);
     } else {
-      openDetailPanel(this.detailPanel, location, anchorRect, this._verseTextLookup, colocated);
+      openDetailPanel(this.detailPanel, location, anchorRect, this._verseTextLookup, colocated, this._detailTextid);
     }
   }
 
@@ -396,6 +489,17 @@ export class MapPanel {
         this._handleClusterClick(cluster._clusterData);
       }
     });
+
+    // Cluster keyboard activation (clusters are focusable buttons)
+    this.addListener(this.container, 'keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const cluster = e.target.closest?.('.map-cluster');
+      if (cluster && cluster._clusterData) {
+        e.preventDefault();
+        e.stopPropagation();
+        this._handleClusterClick(cluster._clusterData);
+      }
+    });
   }
 
   _handleClusterClick(clusterData) {
@@ -414,7 +518,7 @@ export class MapPanel {
     }
 
     // Truly co-located pins — no amount of zooming will separate them
-    if (maxDist < 0.5) {
+    if (maxDist < COLOCATED_EPSILON) {
       this._openLocation(locations[0]);
       return;
     }
@@ -433,7 +537,7 @@ export class MapPanel {
       // separation and zoom there directly (one click, no second click needed).
       // Formula (for viewBox.width < SVG_WIDTH/6): W < sqrt(d * SVG_WIDTH * cW / (6 * R))
       const separationWidth = Math.max(
-        Math.sqrt(maxDist * SVG_WIDTH * containerWidth / (6 * CLUSTER_RADIUS_PX)) * 0.75,
+        Math.sqrt(maxDist * SVG_WIDTH * containerWidth / (6 * CLUSTER_RADIUS_PX)) * CLUSTER_BREAK_MARGIN,
         30
       );
       const cx = this.viewBox.x + this.viewBox.width / 2;

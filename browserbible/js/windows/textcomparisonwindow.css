@@ -1,96 +1,35 @@
-.comparison-select-group {
+/* The header puts the passage input and the version pair on one row, wrapping
+   onto a second row (and growing) when the window is narrow instead of letting
+   the controls overflow onto the content below. */
+.window.TextComparisonWindow .window-header {
 	display: flex;
-	margin: 0 5px 0 0;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 5px;
+	height: auto;
+	min-height: 50px;
 }
 
-.comparison-select-group .text-list-title {
-	width: 100px;
-	padding: 7px 24px 6px 10px;
-	border: solid 1px var(--color-border);
-	background: var(--color-background);
-	color: var(--color-text-muted);
-	cursor: pointer;
-	font-size: 90%;
-	height: 30px;
-	box-sizing: border-box;
+.window.TextComparisonWindow .window-header .app-input,
+.window.TextComparisonWindow .window-header .app-list {
+	margin: 0;
+}
+
+/* The two version buttons form a single segmented control. */
+.comparison-select-group {
+	display: flex;
+}
+
+.comparison-select-group .app-list {
+	width: 110px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	position: relative;
-}
-.comparison-select-group .text-list-title::after {
-	content: '';
-	position: absolute;
-	right: 4px;
-	top: 50%;
-	translate: 0 -50%;
-	width: 16px;
-	height: 16px;
-	background-color: currentColor;
-	mask-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-	mask-size: contain;
-	mask-repeat: no-repeat;
 }
 
-.comparison-select-group .text-list-title:hover {
-	border-color: var(--color-border);
-}
-
-.comparison-select-group .text-list-title:first-child {
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border-right: none;
-}
-
-.comparison-select-group .text-list-title:last-child {
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-}
-
-.comparison-target-select {
-	width: 100px;
-	padding: 7px 24px 6px 10px;
-	border: solid 1px var(--color-border);
-	background: var(--color-background);
-	color: var(--color-text-muted);
-	font-size: 90%;
-	height: 30px;
-	box-sizing: border-box;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-left: none;
-	appearance: none;
-	background-color: var(--color-background);
-	background-image: none;
-	position: relative;
-}
-.comparison-target-select-wrapper {
-	position: relative;
-}
-.comparison-target-select-wrapper::after {
-	content: '';
-	position: absolute;
-	right: 4px;
-	top: 50%;
-	translate: 0 -50%;
-	width: 16px;
-	height: 16px;
-	background-color: var(--color-text-muted);
-	mask-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-	mask-size: contain;
-	mask-repeat: no-repeat;
-	pointer-events: none;
-}
-
-.comparison-target-select:hover {
-	border-color: var(--color-border);
-	border-left: none;
-}
-
-.comparison-target-select:focus-visible {
-	outline: none;
-	border-color: var(--color-primary);
-	border-left: none;
+/* Collapse the doubled border where the two buttons meet. */
+.comparison-select-group .app-list + .app-list {
+	margin-inline-start: -1px;
 }
 
 .comparison-nav-input {
@@ -100,34 +39,88 @@
 .comparison-main {
 	overflow: auto;
 	background: var(--color-background);
+	padding: 0 20px 20px;
 }
 
 .comparison-table {
-	margin: 15px;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+/* Version abbreviations stay visible while the passage scrolls. */
+.comparison-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: var(--z-base);
+	background: var(--color-background);
+	padding: 12px 24px 8px 0;
+	border-bottom: 1px solid var(--color-border);
+	font-family: var(--font-family-sans);
+	font-size: var(--font-size-sm);
+	letter-spacing: 0.04em;
+	color: var(--color-text-muted);
+	text-align: start;
 }
 
 .comparison-table td,
-.comparison-table th {
+.comparison-table tbody th {
 	vertical-align: top;
+	border-bottom: 1px solid color-mix(in oklab, var(--color-border) 45%, transparent);
+}
+
+.comparison-table tbody tr:last-child td,
+.comparison-table tbody tr:last-child th {
+	border-bottom: none;
+}
+
+/* Verse numbers */
+.comparison-table tbody th {
+	width: 1%;
+	padding: 14px 12px 12px 0;
+	font-family: var(--font-family-sans);
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	color: var(--color-text-muted);
+	text-align: end;
+	white-space: nowrap;
 }
 
 .comparison-table td {
-	padding: 0 2px 5px 2px;
+	padding: 12px 24px 12px 0;
+	font-family: var(--font-family-serif);
+	font-size: 17px;
+	line-height: 1.7;
 }
 
+.comparison-table thead th:last-child,
+.comparison-table td:last-child {
+	padding-inline-end: 0;
+}
+
+/* Words the comparison version adds or changes. */
 .comparison-table ins {
 	color: var(--color-primary);
+	background: color-mix(in oklab, var(--color-primary) 12%, transparent);
+	border-radius: 3px;
+	padding: 0 3px;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
 	text-decoration: none;
+	font-style: italic;
 }
 
+/* Words only in the base version. */
 .comparison-table del {
 	color: var(--color-text-muted);
+	opacity: 0.75;
 	text-decoration: line-through;
+	text-decoration-thickness: 1px;
 }
 
-.comparison-error {
-	padding: 20px;
-	text-align: center;
-	color: var(--color-text-muted);
-	font-style: italic;
+/* The diff emits a removed word and its replacement back-to-back with no
+   whitespace between them, so give the pair some breathing room. */
+.comparison-table del + ins,
+.comparison-table ins + del {
+	margin-inline-start: 0.35em;
 }

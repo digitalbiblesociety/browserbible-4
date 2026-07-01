@@ -6,6 +6,12 @@
 	cursor: pointer;
 	background: var(--color-success);
 	border-bottom: solid 1px var(--color-success);
+	transition: filter 0.15s ease;
+}
+
+.linked-location:hover {
+	text-decoration: underline;
+	filter: brightness(1.08);
 }
 
 
@@ -21,6 +27,11 @@
 
 .svg-map-container.panning {
 	cursor: grabbing;
+}
+
+.svg-map-container:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: -2px;
 }
 
 .svg-map-container svg {
@@ -73,6 +84,12 @@
 .map-marker[data-tier="3"] .map-marker-icon { width: 18px; height: 18px; }
 .map-marker[data-tier="4"] .map-marker-icon { width: 14px; height: 14px; }
 
+/* Icon color by importance tier; highlighted (mentioned in current passage) wins */
+.map-marker .map-marker-icon { color: #e08080; }
+.map-marker[data-tier="1"] .map-marker-icon { color: #c41e3a; }
+.map-marker[data-tier="2"] .map-marker-icon { color: #d45a5a; }
+.map-marker.highlighted .map-marker-icon { color: #135c13; }
+
 .map-marker-icon {
 	display: block;
 	flex-shrink: 0;
@@ -81,9 +98,14 @@
 	overflow: visible;
 }
 
-.map-marker:hover .map-marker-icon {
+.map-marker:hover .map-marker-icon,
+.map-marker:focus-visible .map-marker-icon {
 	transform: scale(1.2);
 	filter: brightness(1.15);
+}
+
+.map-marker:focus-visible {
+	outline: none; /* the scaled icon + shown label are the focus indicator */
 }
 
 
@@ -110,7 +132,8 @@
 }
 
 .map-marker-label.label-shown,
-.map-marker:hover .map-marker-label {
+.map-marker:hover .map-marker-label,
+.map-marker:focus-visible .map-marker-label {
 	opacity: 1;
 	pointer-events: auto;
 	cursor: pointer;
@@ -138,6 +161,12 @@
 	background: oklch(0.48 0.18 25);
 }
 
+.map-cluster:focus-visible {
+	outline: 2px solid var(--color-background, #fff);
+	outline-offset: 1px;
+	background: oklch(0.48 0.18 25);
+}
+
 .map-cluster-text {
 	color: #fff;
 	font-family: var(--font-family-sans, sans-serif);
@@ -145,6 +174,56 @@
 	font-size: 12px;
 	pointer-events: none;
 	line-height: 1;
+}
+
+
+/* === Zoom Controls === */
+
+.map-zoom-controls {
+	position: absolute;
+	right: 12px;
+	bottom: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	z-index: 2;
+}
+
+.map-zoom-btn {
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	background: var(--color-background);
+	color: var(--color-text);
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: var(--shadow-popup);
+	transition: background 0.15s ease;
+}
+
+.map-zoom-btn:hover:not(:disabled) {
+	background: var(--color-background-hover);
+}
+
+.map-zoom-btn:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.map-zoom-btn:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 1px;
+}
+
+.map-zoom-btn svg {
+	width: 16px;
+	height: 16px;
+	pointer-events: none;
 }
 
 
@@ -176,6 +255,12 @@ map-window .svg-map-container {
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+
+/* Clear the window chrome (close/link buttons) pinned to the top-right corner.
+   Needs .window for specificity over the generic `.window .window-header` padding. */
+.window .window-header.map-header {
+	padding-right: 76px;
 }
 
 .map-header-inner {
@@ -293,6 +378,42 @@ map-window .svg-map-container {
 .map-suggestion-item .verse-count {
 	color: var(--color-text-muted);
 	font-size: 11px;
+}
+
+/* "Places in John 3" row offered when the query parses as a reference */
+.map-suggestion-reference {
+	padding: 8px 12px;
+	cursor: pointer;
+	border-bottom: 1px solid var(--color-border);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: var(--color-primary);
+	font-weight: 600;
+}
+
+.map-suggestion-reference:hover {
+	background: var(--color-background-hover);
+}
+
+.map-suggestion-reference .verse-count {
+	color: var(--color-text-muted);
+	font-size: 11px;
+	font-weight: 400;
+}
+
+/* "N more matches" footer — expands the dropdown */
+.map-suggestion-more {
+	padding: 6px 12px;
+	cursor: pointer;
+	text-align: center;
+	font-size: 12px;
+	color: var(--color-text-muted);
+}
+
+.map-suggestion-more:hover {
+	background: var(--color-background-hover);
+	color: var(--color-text);
 }
 
 
@@ -419,10 +540,31 @@ map-window .svg-map-container {
 .map-detail-verses .search-result-row {
 	display: flex;
 	align-items: baseline;
+	cursor: pointer;
 }
 
 .map-detail-verses .search-result-ref {
 	float: none;
+}
+
+/* Rows navigate the Bible window on click — show the affordance on hover */
+.map-detail-verses .search-result-row:hover {
+	background: var(--color-background-hover);
+}
+
+.map-detail-verses .search-result-row:hover .search-result-ref::after {
+	content: ' ↗';
+	color: var(--color-primary);
+}
+
+/* Verse snippets being fetched / unavailable */
+.verse-text-pending {
+	color: var(--color-text-muted);
+}
+
+.verse-text-missing {
+	color: var(--color-text-muted);
+	font-style: italic;
 }
 
 

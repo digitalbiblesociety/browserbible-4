@@ -10,7 +10,7 @@ import { elem } from '../../lib/helpers.esm.js';
 import { MAP_BOUNDS, ICON_SIZES } from './constants.js';
 import { geoToSvg, getImportanceTier } from './geo-utils.js';
 import { getViewTransform } from './view-transform.js';
-import { createLocationIcon } from './icon-library.js';
+import { createLocationIcon, getLocationTypeName } from './icon-library.js';
 
 /**
  * Reposition all markers AND cluster indicators in the overlay.
@@ -46,6 +46,10 @@ const createMarker = (location, x, y, tier, onLocationClick) => {
   marker.className = 'map-marker';
   marker.setAttribute('data-tier', tier);
   marker.setAttribute('data-type', location.type || 'other');
+  marker.setAttribute('tabindex', '0');
+  marker.setAttribute('role', 'button');
+  marker.setAttribute('aria-label',
+    `${location.name}, ${getLocationTypeName(location.type || 'other')}, ${location.verses.length} verses`);
   marker._svgX = x;
   marker._svgY = y;
   marker.locationData = location;
@@ -54,12 +58,20 @@ const createMarker = (location, x, y, tier, onLocationClick) => {
   marker._anchorX = iconSize / 2;
   marker._anchorY = iconSize / 2;
 
-  marker.appendChild(createLocationIcon(location.type || 'other', tier));
+  marker.appendChild(createLocationIcon(location.type || 'other'));
   marker.appendChild(elem('div', { className: 'map-marker-label', textContent: location.name }));
 
   marker.addEventListener('click', (e) => {
     e.stopPropagation();
     onLocationClick(location);
+  });
+
+  marker.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      onLocationClick(location);
+    }
   });
 
   return marker;

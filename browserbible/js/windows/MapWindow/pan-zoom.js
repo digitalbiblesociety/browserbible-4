@@ -3,11 +3,22 @@
  * Mouse wheel zoom, drag panning, and touch gesture handling for the SVG map
  */
 
-import { SVG_WIDTH, SVG_HEIGHT } from './constants.js';
+import { SVG_WIDTH, SVG_HEIGHT, MIN_VIEW_WIDTH, ZOOM_STEP, WHEEL_ZOOM_FACTOR, KEY_PAN_FRACTION } from './constants.js';
 import { geoToSvg, svgToGeo } from './geo-utils.js';
 import { getViewTransform, screenToSvg } from './view-transform.js';
 
-const MIN_VIEW_WIDTH = 12;
+/**
+ * Trailing debounce after a burst of zoom/pan inputs: persist the map center,
+ * and (for inputs that only translated the overlay) recalculate marker positions.
+ */
+const SETTLE_MS = 400;
+function scheduleSettle(component, refreshMarkers = false) {
+  clearTimeout(component._settleTimer);
+  component._settleTimer = setTimeout(() => {
+    if (refreshMarkers) component.updateMarkerScales();
+    component.triggerSettingsChange();
+  }, SETTLE_MS);
+}
 
 /** Current container aspect (w/h), falling back to the map aspect before layout. */
 function containerAspect(component) {
@@ -61,6 +72,47 @@ export function updateViewBox(svgElement, viewBox) {
   if (svgElement) {
     svgElement.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
   }
+}
+
+/**
+ * Zoom by a viewBox-width factor (>1 zooms out, <1 zooms in), keeping the SVG
+ * point under the given container-relative pixel fixed on screen.
+ * `defer` postpones the marker decoration pass during rapid input bursts.
+ */
+export function zoomAtPoint(component, px, py, factor, { defer = false } = {}) {
+  const rect = component.refs.mapContainer.getBoundingClientRect();
+
+  // SVG point under the anchor before zooming
+  const before = screenToSvg(px, py, component.viewBox, getViewTransform(component.viewBox, rect));
+
+  setViewBoxSize(component, component.viewBox.width * factor);
+
+  // Keep that same SVG point under the anchor after zooming
+  const t = getViewTransform(component.viewBox, rect);
+  component.viewBox.x = before.x - (px - t.offsetX) / t.scale;
+  component.viewBox.y = before.y - (py - t.offsetY) / t.scale;
+
+  constrainViewBox(component.viewBox);
+  updateViewBox(component.svgElement, component.viewBox);
+  component.updateMarkerScales({ defer });
+}
+
+/**
+ * Zoom by a factor anchored at the container center.
+ */
+export function zoomBy(component, factor) {
+  const rect = component.refs.mapContainer.getBoundingClientRect();
+  zoomAtPoint(component, rect.width / 2, rect.height / 2, factor);
+}
+
+/** Fully zoomed out — the viewBox already spans the map in one dimension. */
+export function isAtMinZoom(component) {
+  return component.viewBox.width >= SVG_WIDTH || component.viewBox.height >= SVG_HEIGHT;
+}
+
+/** Fully zoomed in — the viewBox width is at its lower clamp. */
+export function isAtMaxZoom(component) {
+  return component.viewBox.width <= MIN_VIEW_WIDTH;
 }
 
 /**
@@ -161,32 +213,27 @@ export function centerOnBounds(component, locations) {
 export function setupPanZoom(component) {
   const mapContainer = component.refs.mapContainer;
 
-  // Mouse wheel zoom
+  // Mouse wheel zoom, centered on the cursor
   component.addListener(mapContainer, 'wheel', (e) => {
     e.preventDefault();
     const rect = mapContainer.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // SVG point under the cursor before zooming
-    const before = screenToSvg(mouseX, mouseY, component.viewBox, getViewTransform(component.viewBox, rect));
-
-    const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
-    setViewBoxSize(component, component.viewBox.width * zoomFactor);
-
-    // Keep that same SVG point under the cursor after zooming
-    const t2 = getViewTransform(component.viewBox, rect);
-    component.viewBox.x = before.x - (mouseX - t2.offsetX) / t2.scale;
-    component.viewBox.y = before.y - (mouseY - t2.offsetY) / t2.scale;
-
-    constrainViewBox(component.viewBox);
-    updateViewBox(component.svgElement, component.viewBox);
-    component.updateMarkerScales();
+    const factor = e.deltaY > 0 ? WHEEL_ZOOM_FACTOR : 1 / WHEEL_ZOOM_FACTOR;
+    zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, factor, { defer: true });
+    scheduleSettle(component);
   }, { passive: false });
+
+  // Double-click zoom (markers, clusters, and controls handle their own clicks)
+  component.addListener(mapContainer, 'dblclick', (e) => {
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
+    e.preventDefault();
+    const rect = mapContainer.getBoundingClientRect();
+    zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, 1 / ZOOM_STEP);
+    scheduleSettle(component);
+  });
 
   // Mouse drag panning
   component.addListener(mapContainer, 'mousedown', (e) => {
-    if (e.target.closest('.map-marker') || e.target.closest('.map-cluster')) return;
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
     component.state.isPanning = true;
     component.panStart = { x: e.clientX, y: e.clientY };
     mapContainer.classList.add('panning');
@@ -266,24 +313,12 @@ export function setupPanZoom(component) {
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      const scale = lastTouchDist / newDist;
-
       const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
       const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
 
-      // Pinch midpoint in SVG space before zooming
-      const before = screenToSvg(centerX, centerY, component.viewBox, getViewTransform(component.viewBox, rect));
-      setViewBoxSize(component, component.viewBox.width * scale);
-
-      const t2 = getViewTransform(component.viewBox, rect);
-      component.viewBox.x = before.x - (centerX - t2.offsetX) / t2.scale;
-      component.viewBox.y = before.y - (centerY - t2.offsetY) / t2.scale;
-
+      // Zoom anchored at the pinch midpoint
+      zoomAtPoint(component, centerX, centerY, lastTouchDist / newDist, { defer: true });
       lastTouchDist = newDist;
-
-      constrainViewBox(component.viewBox);
-      updateViewBox(component.svgElement, component.viewBox);
-      component.updateMarkerScales();
     }
   }, { passive: false });
 
@@ -292,4 +327,56 @@ export function setupPanZoom(component) {
     component.updateMarkerScales();
     component.triggerSettingsChange();
   }, { passive: true });
+
+  setupKeyboard(component);
+}
+
+/**
+ * Keyboard controls on the (focusable) map container:
+ * arrows pan, +/− zoom, Home/0 resets the view.
+ */
+function setupKeyboard(component) {
+  const mapContainer = component.refs.mapContainer;
+
+  const panByFraction = (fx, fy) => {
+    const rect = mapContainer.getBoundingClientRect();
+    const t = getViewTransform(component.viewBox, rect);
+    const prevX = component.viewBox.x;
+    const prevY = component.viewBox.y;
+    component.viewBox.x += component.viewBox.width * fx;
+    component.viewBox.y += component.viewBox.height * fy;
+    constrainViewBox(component.viewBox);
+    updateViewBox(component.svgElement, component.viewBox);
+    // Same overlay-translate technique as drag panning; decorations refresh on settle
+    component.panMarkersBy((prevX - component.viewBox.x) * t.scale, (prevY - component.viewBox.y) * t.scale);
+    scheduleSettle(component, true);
+  };
+
+  component.addListener(mapContainer, 'keydown', (e) => {
+    if (e.target !== mapContainer) return;
+
+    switch (e.key) {
+      case 'ArrowLeft': panByFraction(-KEY_PAN_FRACTION, 0); break;
+      case 'ArrowRight': panByFraction(KEY_PAN_FRACTION, 0); break;
+      case 'ArrowUp': panByFraction(0, -KEY_PAN_FRACTION); break;
+      case 'ArrowDown': panByFraction(0, KEY_PAN_FRACTION); break;
+      case '+': case '=':
+        zoomBy(component, 1 / ZOOM_STEP);
+        scheduleSettle(component);
+        break;
+      case '-': case '_':
+        zoomBy(component, ZOOM_STEP);
+        scheduleSettle(component);
+        break;
+      case 'Home': case '0':
+        if (typeof component.resetView === 'function') {
+          component.resetView();
+          component.triggerSettingsChange();
+        }
+        break;
+      default:
+        return; // unhandled key — don't preventDefault
+    }
+    e.preventDefault();
+  });
 }

@@ -32,12 +32,13 @@ export function indexLocationsByVerse(locationData) {
 /**
  * Get all locations mentioned in a given Bible section
  * @param {Array} locationData - Array of location objects
- * @param {string} sectionid - Section ID prefix (e.g., "AC13")
+ * @param {string} sectionid - Section ID (e.g., "AC13")
  * @returns {Array} Matching locations
  */
 export function getLocationsForReference(locationData, sectionid) {
   if (!sectionid || !locationData) return [];
+  // Verse IDs are always BOOKCH_V — require the separator so "PS1" can't match "PS119_5"
   return locationData.filter(loc =>
-    loc.verses.some(v => v.startsWith(sectionid))
+    loc.verses.some(v => v.startsWith(sectionid + '_'))
   );
 }

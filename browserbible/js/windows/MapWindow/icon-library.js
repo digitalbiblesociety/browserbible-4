@@ -69,28 +69,19 @@ const LOCATION_ICONS = {
 };
 
 /**
- * Create an SVG icon element for a location type
+ * Create an SVG icon element for a location type.
+ * Color comes from CSS (tier-based rules on .map-marker[data-tier]).
  * @param {string} type - Location type (city, mountain, etc.)
- * @param {number} tier - Importance tier (1-4)
- * @param {string} color - Icon color (defaults to tier-based color)
  * @returns {SVGElement} SVG icon element
  */
-export function createLocationIcon(type, tier, color = null) {
+export function createLocationIcon(type) {
   // Fallback to 'other' if type not found
   const iconPath = LOCATION_ICONS[type] || LOCATION_ICONS.other;
 
-  // Tier-based colors
-  if (!color) {
-    const tierColors = { 1: '#c41e3a', 2: '#d45a5a' };
-    color = tierColors[tier] || '#e08080';
-  }
-
-  // Create SVG element
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('class', 'map-marker-icon');
   svg.setAttribute('data-type', type);
-  svg.style.color = color;
   svg.style.overflow = 'visible';
 
   // Parse and append icon paths

@@ -33,7 +33,7 @@ describe('computeClusters', () => {
 
   it('returns empty results when containerWidth is 0', () => {
     const overlay = makeOverlay([{ x: 100, y: 100 }]);
-    expect(computeClusters(overlay, VIEW_BOX_FULL, 0)).toEqual({ clusters: [], singles: [] });
+    expect(computeClusters(overlay, VIEW_BOX_FULL, 0)).toEqual({ clusters: [], singles: [], hidden: [] });
   });
 
   it('keeps far-apart markers as singles', () => {
@@ -106,6 +106,15 @@ describe('renderClusters / clearClusters', () => {
 
   it('clearClusters is a no-op for null overlay', () => {
     expect(() => clearClusters(null)).not.toThrow();
+  });
+
+  it('renders clusters as focusable buttons with a group label', () => {
+    const overlay = document.createElement('div');
+    renderClusters(overlay, [{ x: 0, y: 0, count: 4, members: [] }]);
+    const el = overlay.querySelector('.map-cluster');
+    expect(el.getAttribute('role')).toBe('button');
+    expect(el.getAttribute('tabindex')).toBe('0');
+    expect(el.getAttribute('aria-label')).toContain('4 locations');
   });
 });
 

@@ -49,8 +49,31 @@ export const DEMOTED_LOCATIONS = new Set([
   'Mahanaim?', 'Kiriath-jearim?'
 ]);
 
+// Default map center (Jerusalem) used before any saved position exists
+export const DEFAULT_CENTER = { lat: 31.78, lon: 35.23 };
+
+// Zoom-in limit: the viewBox width can never shrink below this many SVG units
+export const MIN_VIEW_WIDTH = 12;
+
+// Zoom factor for the +/− buttons, double-click, and keyboard zoom
+export const ZOOM_STEP = 1.5;
+
+// Zoom factor per mouse-wheel tick
+export const WHEEL_ZOOM_FACTOR = 1.1;
+
+// Fraction of the viewBox panned per arrow-key press
+export const KEY_PAN_FRACTION = 0.15;
+
 // Cluster radius in screen pixels — markers within this distance merge into clusters
 export const CLUSTER_RADIUS_PX = 60;
+
+// Markers closer than this many SVG units are treated as the same geographic
+// point: no amount of zooming will separate them, so they never form a cluster badge
+export const COLOCATED_EPSILON = 0.5;
+
+// Safety margin applied to the computed cluster-breaking viewBox width so one
+// cluster click reliably zooms past the radius where the cluster re-forms
+export const CLUSTER_BREAK_MARGIN = 0.75;
 
 // Icon sizes for each tier (in pixels) — must match CSS .map-marker[data-tier] .map-marker-icon
 export const ICON_SIZES = {

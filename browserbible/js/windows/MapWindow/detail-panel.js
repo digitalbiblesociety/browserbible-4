@@ -5,6 +5,9 @@
 
 import { Reference } from '../../bible/BibleReference.js';
 import { BOOK_DATA } from '../../bible/BibleData.js';
+import { loadSection } from '../../texts/TextLoader.js';
+import { getConfig } from '../../core/config.js';
+import { i18n } from '../../lib/i18n.js';
 import { getLocationTypeName } from './icon-library.js';
 import { getImportanceTier } from './geo-utils.js';
 
@@ -15,10 +18,27 @@ const TIER_LABELS = {
   4: 'Minor location'
 };
 
+// Sections fetched immediately when a detail panel opens; the rest hydrate
+// as their rows scroll into view (Jerusalem-scale locations have hundreds of verses).
+const EAGER_HYDRATE_SECTIONS = 10;
+
+const SNIPPET_LENGTH = 150;
+
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+function truncate(text) {
+  return text.length > SNIPPET_LENGTH ? text.slice(0, SNIPPET_LENGTH) + '…' : text;
+}
+
+/** Verse element → plain snippet text (notes, cross-refs, and verse numbers stripped). */
+function cleanVerseText(el) {
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll('.note, .cf, .vnum, .v-num, .verse-num, sup').forEach(n => n.remove());
+  return clone.textContent.trim() || null;
 }
 
 /**
@@ -27,10 +47,7 @@ function escapeHtml(str) {
  */
 function getVerseTextFromDOM(verseId) {
   const el = document.querySelector(`.${CSS.escape(verseId)}`);
-  if (!el) return null;
-  const clone = el.cloneNode(true);
-  clone.querySelectorAll('.note, .cf, .vnum, .v-num, .verse-num, sup').forEach(n => n.remove());
-  return clone.textContent.trim() || null;
+  return el ? cleanVerseText(el) : null;
 }
 
 /**
@@ -58,18 +75,110 @@ function buildVerseList(verses, verseTextLookup) {
 
 /**
  * Render the verse list using search-result CSS classes (shared with SearchWindow).
- * Each row carries .verse so existing click handlers still work.
+ * Each row carries .verse so existing click handlers still work. Rows without
+ * synchronously-available text get a pending placeholder that hydrateVerseTexts fills.
  */
 function renderVerseList(verseItems) {
+  const openTitle = escapeHtml(i18n.t('windows.map.openinbible'));
   return verseItems.map(item => {
     const textHtml = item.text
-      ? `<span class="search-result-text">${escapeHtml(item.text.length > 150 ? item.text.slice(0, 150) + '…' : item.text)}</span>`
-      : '';
-    return `<div class="search-result-row verse" data-sectionid="${item.sectionid}" data-fragmentid="${item.fragmentid}">
+      ? `<span class="search-result-text">${escapeHtml(truncate(item.text))}</span>`
+      : '<span class="search-result-text verse-text-pending">…</span>';
+    return `<div class="search-result-row verse" title="${openTitle}" data-sectionid="${item.sectionid}" data-fragmentid="${item.fragmentid}">
       <span class="search-result-ref">${escapeHtml(item.display)}</span>
       ${textHtml}
     </div>`;
   }).join('');
+}
+
+/**
+ * Fill pending verse rows with text fetched on demand via TextLoader.
+ * Rows are grouped by section; the first EAGER_HYDRATE_SECTIONS sections load
+ * immediately, the rest when scrolled into view. Failed or absent verses show
+ * an i18n'd "not available" message — never a silent blank.
+ *
+ * @param {HTMLElement} containerEl - Element containing the rendered verse rows
+ * @param {string|null} textid - Bible text to fetch from (falls back to the first
+ *   rendered Bible section's text, then the configured default version)
+ * @param {Function} [loadSectionFn] - Injectable for tests; defaults to TextLoader.loadSection
+ */
+export function hydrateVerseTexts(containerEl, textid, loadSectionFn = loadSection) {
+  if (!containerEl) return;
+
+  // Re-hydration replaces the content — drop any observer watching stale rows
+  containerEl._hydrateObserver?.disconnect();
+  containerEl._hydrateObserver = null;
+
+  const pending = containerEl.querySelectorAll('.verse-text-pending');
+  if (!pending.length) return;
+
+  const resolvedTextid = textid
+    || document.querySelector('.BibleWindow .section[data-textid]')?.getAttribute('data-textid')
+    || getConfig().newBibleWindowVersion;
+  if (!resolvedTextid) return;
+
+  // Group pending rows by section so each section is fetched once
+  const bySection = new Map();
+  for (const span of pending) {
+    const row = span.closest('.verse');
+    const sectionid = row?.getAttribute('data-sectionid');
+    if (!sectionid) continue;
+    if (!bySection.has(sectionid)) bySection.set(sectionid, []);
+    bySection.get(sectionid).push({ span, row });
+  }
+
+  const fill = (span, text) => {
+    span.classList.remove('verse-text-pending');
+    if (text) {
+      span.textContent = truncate(text);
+    } else {
+      span.classList.add('verse-text-missing');
+      span.textContent = i18n.t('windows.map.versenotloaded');
+    }
+  };
+
+  const hydrateSection = (sectionid) => {
+    const entries = bySection.get(sectionid);
+    if (!entries) return;
+    bySection.delete(sectionid);
+
+    loadSectionFn(resolvedTextid, sectionid, (contentEl) => {
+      for (const { span, row } of entries) {
+        const fragmentid = row.getAttribute('data-fragmentid');
+        // A verse can be split across elements (e.g. paragraph breaks) — join them
+        const parts = [...contentEl.querySelectorAll(`.${CSS.escape(fragmentid)}`)]
+          .map(cleanVerseText).filter(Boolean);
+        fill(span, parts.length ? parts.join(' ') : null);
+      }
+    }, () => {
+      for (const { span } of entries) fill(span, null);
+    });
+  };
+
+  const sectionids = [...bySection.keys()];
+  sectionids.slice(0, EAGER_HYDRATE_SECTIONS).forEach(hydrateSection);
+
+  const lazySections = new Set(sectionids.slice(EAGER_HYDRATE_SECTIONS));
+  if (!lazySections.size) return;
+
+  if (typeof IntersectionObserver !== 'function') {
+    lazySections.forEach(hydrateSection);
+    return;
+  }
+
+  const observer = new IntersectionObserver((observations) => {
+    for (const obs of observations) {
+      if (!obs.isIntersecting) continue;
+      const sectionid = obs.target.getAttribute('data-sectionid');
+      hydrateSection(sectionid); // no-op if already hydrated
+    }
+    if (!bySection.size) observer.disconnect();
+  }, { root: containerEl, rootMargin: '200px 0px' });
+
+  for (const sectionid of lazySections) {
+    for (const { row } of bySection.get(sectionid)) observer.observe(row);
+  }
+  containerEl._hydrateObserver = observer;
 }
 
 /**
@@ -125,10 +234,12 @@ export function buildDetailHTML(location, verseTextLookup = null, colocated = []
  * @param {HTMLElement} panel - The popover element
  * @param {Object} location - Location data object
  * @param {DOMRect} anchorRect - Bounding rect of the clicked marker (screen coords)
+ * @param {string|null} textid - Bible text used to hydrate verse snippets on demand
  */
-export function openDetailPanel(panel, location, anchorRect, verseTextLookup = null, colocated = []) {
+export function openDetailPanel(panel, location, anchorRect, verseTextLookup = null, colocated = [], textid = null) {
   panel._colocatedLocations = colocated;
   panel.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
+  hydrateVerseTexts(panel, textid);
 
   // Position near the anchor
   if (anchorRect) {

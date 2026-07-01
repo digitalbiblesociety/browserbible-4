@@ -60,7 +60,10 @@ function parseShortCode(input) {
 
 function findBook(input) {
   for (const { name, bid } of bookNameIndex) {
-    if (input.startsWith(name) && /[\d.\s]|$/.test(input[name.length] || '')) {
+    // The book name must be followed by a digit, dot, space, or end of input —
+    // otherwise "jerusalem" would match the abbreviation "je" (Jeremiah).
+    const next = input[name.length];
+    if (input.startsWith(name) && (next === undefined || /[\d.\s]/.test(next))) {
       return { bookid: bid, remainder: input.substring(name.length) };
     }
   }

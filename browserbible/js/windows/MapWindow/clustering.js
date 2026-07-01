@@ -5,7 +5,7 @@
  */
 
 import { elem } from '../../lib/helpers.esm.js';
-import { SVG_WIDTH, CLUSTER_RADIUS_PX } from './constants.js';
+import { SVG_WIDTH, CLUSTER_RADIUS_PX, COLOCATED_EPSILON } from './constants.js';
 
 /**
  * Compute clusters from visible markers based on the current viewport.
@@ -16,7 +16,7 @@ import { SVG_WIDTH, CLUSTER_RADIUS_PX } from './constants.js';
  * @returns {{ clusters: Array, singles: HTMLElement[] }}
  */
 export function computeClusters(overlay, viewBox, containerWidth) {
-  if (!overlay || !containerWidth) return { clusters: [], singles: [] };
+  if (!overlay || !containerWidth) return { clusters: [], singles: [], hidden: [] };
 
   // Scale cluster radius down at high zoom so nearby locations can separate
   const zoomRatio = viewBox.width / SVG_WIDTH; // 1 at full extent, small at max zoom
@@ -77,7 +77,7 @@ export function computeClusters(overlay, viewBox, containerWidth) {
         }
       }
 
-      if (maxDistSq < 0.25) { // threshold: 0.5 SVG units — pins at the same geographic point
+      if (maxDistSq < COLOCATED_EPSILON * COLOCATED_EPSILON) { // pins at the same geographic point
         // Show only the pin with the most verse entries; hide the rest
         const best = allMembers.reduce((a, b) => {
           const av = a.marker.locationData?.verses?.length ?? 0;
@@ -118,6 +118,9 @@ export function renderClusters(overlay, clusters) {
   for (const cluster of clusters) {
     const div = document.createElement('div');
     div.className = 'map-cluster';
+    div.setAttribute('tabindex', '0');
+    div.setAttribute('role', 'button');
+    div.setAttribute('aria-label', `Group of ${cluster.count} locations, activate to zoom in`);
     div._svgX = cluster.x;
     div._svgY = cluster.y;
     div._clusterData = cluster;

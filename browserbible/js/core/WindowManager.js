@@ -32,27 +32,35 @@ class Window {
 
     this.node = elem('div', { className: `window ${className} active` });
     const closeBtn = elem('span', { className: 'close-button' });
-    const linkBtn = elem('span', { className: 'link-button' });
-    this.closeContainer = elem('div', { className: 'close-container' }, linkBtn, closeBtn);
+
+    // The comparison window navigates independently and never participates in
+    // linked navigation, so it doesn't get a link/unlink button.
+    const supportsLinking = className !== 'TextComparisonWindow';
+    const linkBtn = supportsLinking ? elem('span', { className: 'link-button' }) : null;
+    this.closeContainer = linkBtn
+      ? elem('div', { className: 'close-container' }, linkBtn, closeBtn)
+      : elem('div', { className: 'close-container' }, closeBtn);
 
     // Linked windows follow (and broadcast) navigation; unlinked windows
     // scroll and navigate independently of the rest.
     this.linked = data?.linked !== false;
 
-    const updateLinkButton = () => {
-      linkBtn.innerHTML = this.linked ? linkedSvg : unlinkedSvg;
-      linkBtn.classList.toggle('unlinked', !this.linked);
-      linkBtn.title = this.linked
-        ? 'Linked: follows navigation in other windows. Click to unlink.'
-        : 'Unlinked: navigates independently. Click to relink.';
-    };
-    updateLinkButton();
-
-    linkBtn.addEventListener('click', () => {
-      this.linked = !this.linked;
+    if (linkBtn) {
+      const updateLinkButton = () => {
+        linkBtn.innerHTML = this.linked ? linkedSvg : unlinkedSvg;
+        linkBtn.classList.toggle('unlinked', !this.linked);
+        linkBtn.title = this.linked
+          ? 'Linked: follows navigation in other windows. Click to unlink.'
+          : 'Unlinked: navigates independently. Click to relink.';
+      };
       updateLinkButton();
-      manager.trigger('settingschange', { type: 'settingschange', target: this, data: null });
-    });
+
+      linkBtn.addEventListener('click', () => {
+        this.linked = !this.linked;
+        updateLinkButton();
+        manager.trigger('settingschange', { type: 'settingschange', target: this, data: null });
+      });
+    }
     const tabLabel = elem('span', { className: `window-tab-label ${className}-tab` });
     const iconSvg = getWindowIcon(className);
     if (iconSvg) {
@@ -217,6 +225,8 @@ export class WindowManager {
     this.windowWidths = []; // proportional widths (0-1)
 
     mixinEventEmitter(this);
+
+    this._bindReorderEvents();
   }
 
   /**
@@ -242,6 +252,7 @@ export class WindowManager {
     this.windows.push(win);
 
     this._resetWindowWidths();
+    this._applyWindowOrder();
     this._rebuildSplitters();
 
     setTimeout(() => this.app?.resize?.(), 10);
@@ -271,6 +282,7 @@ export class WindowManager {
     }
 
     this._resetWindowWidths();
+    this._applyWindowOrder();
     this._rebuildSplitters();
 
     setTimeout(() => this.app?.resize?.(), 10);
@@ -353,6 +365,180 @@ export class WindowManager {
    */
   getWindows() {
     return this.windows;
+  }
+
+  /**
+   * Keep visual order in sync with the windows array via flex `order`.
+   * Window nodes are never moved in the DOM: re-inserting a node disconnects
+   * its web component, and disconnectedCallback() tears down all of its
+   * listeners with no re-init path.
+   */
+  _applyWindowOrder() {
+    this.windows.forEach((win, i) => {
+      win.node.style.order = i;
+    });
+  }
+
+  _moveWindow(fromIndex, toIndex) {
+    const [win] = this.windows.splice(fromIndex, 1);
+    this.windows.splice(toIndex, 0, win);
+
+    // Widths travel with their window so a resized window keeps its size
+    const [width] = this.windowWidths.splice(fromIndex, 1);
+    this.windowWidths.splice(toIndex, 0, width);
+
+    this._applyWindowOrder();
+    this.size();
+  }
+
+  /**
+   * Drag a window header left/right to reorder windows. Delegated from the
+   * container so it works for every window type's header, including content
+   * rendered after the window is created.
+   */
+  _bindReorderEvents() {
+    const interactiveSelector =
+      'input, textarea, select, button, a, [contenteditable], .app-list, .header-icon';
+    const dragThreshold = 5; // px before a press becomes a drag, so clicks stay clicks
+    const slideMs = 180; // matches the .window-slide transition in windows.css
+    const snapMs = 320; // matches the .window-snap transition in windows.css
+
+    let win = null;
+    let startX = 0;
+    let dragging = false;
+    let moved = false;
+
+    // A window's layout slot with any in-flight translate factored out, so
+    // measurements stay stable while slide animations are running.
+    const translateX = (node) => parseFloat(getComputedStyle(node).translate) || 0;
+    const slotLeft = (node) => node.getBoundingClientRect().left - translateX(node);
+    const slotMid = (node) => slotLeft(node) + node.getBoundingClientRect().width / 2;
+
+    // Animate a window from `offset` px back into its natural slot
+    const slideHome = (node, offset) => {
+      node.classList.remove('window-slide', 'window-snap');
+      node.style.translate = `${offset}px 0`;
+      node.offsetWidth; // commit the start position before transitioning
+      node.classList.add('window-slide');
+      node.style.translate = '';
+      clearTimeout(node._slideTimer);
+      node._slideTimer = setTimeout(() => node.classList.remove('window-slide'), slideMs + 70);
+    };
+
+    // Drop the dragged window into its slot with a springy snap; the lift
+    // (opacity, shadow) eases away in the same motion
+    const snapHome = (node) => {
+      node.classList.remove('window-slide');
+      node.classList.add('window-snap');
+      node.style.translate = '';
+      clearTimeout(node._slideTimer);
+      node._slideTimer = setTimeout(() => node.classList.remove('window-snap'), snapMs + 70);
+    };
+
+    const swapWith = (neighbor, fromIndex, toIndex, clientX) => {
+      const neighborLeft = slotLeft(neighbor.node);
+      const draggedLeft = slotLeft(win.node);
+
+      this._moveWindow(fromIndex, toIndex);
+
+      // Rebase so the dragged window stays under the pointer in its new slot
+      startX += slotLeft(win.node) - draggedLeft;
+      win.node.style.translate = `${clientX - startX}px 0`;
+
+      slideHome(neighbor.node, neighborLeft - slotLeft(neighbor.node));
+      moved = true;
+    };
+
+    const onMove = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+
+      if (!dragging) {
+        if (Math.abs(clientX - startX) < dragThreshold) return;
+        dragging = true;
+
+        // If grabbed mid-animation, freeze the in-flight position and carry
+        // it into the drag so the window doesn't jump
+        const inFlight = translateX(win.node);
+        if (inFlight) {
+          win.node.style.translate = `${inFlight}px 0`;
+          startX -= inFlight;
+        }
+        win.node.classList.remove('window-slide', 'window-snap');
+        clearTimeout(win.node._slideTimer);
+
+        win.node.classList.add('reordering');
+        document.body.classList.add('window-reordering');
+      }
+
+      e.preventDefault();
+
+      // The dragged window follows the pointer
+      const dx = clientX - startX;
+      win.node.style.translate = `${dx}px 0`;
+
+      const index = this.windows.indexOf(win);
+      const next = this.windows[index + 1];
+      const prev = this.windows[index - 1];
+
+      // Swap as soon as the dragged window's leading edge crosses the
+      // neighbor's midpoint. Comparing the pointer instead would force a much
+      // longer drag: it starts inside the dragged window, so it would have to
+      // cross the rest of that window before even entering the neighbor.
+      const winLeft = slotLeft(win.node) + dx;
+      const winRight = winLeft + win.node.getBoundingClientRect().width;
+
+      if (next && winRight > slotMid(next.node)) {
+        swapWith(next, index, index + 1, clientX);
+      } else if (prev && winLeft < slotMid(prev.node)) {
+        swapWith(prev, index, index - 1, clientX);
+      }
+    };
+
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+
+      if (dragging) {
+        win.node.classList.remove('reordering');
+        snapHome(win.node);
+        document.body.classList.remove('window-reordering');
+
+        if (moved) {
+          this.trigger('settingschange', { type: 'settingschange', target: this, data: null });
+        }
+      }
+
+      win = null;
+      dragging = false;
+      moved = false;
+    };
+
+    const onDown = (e) => {
+      if (this.windows.length < 2) return;
+      if (document.body.classList.contains('compact-ui')) return;
+      if (e.target.closest(interactiveSelector)) return;
+
+      const header = e.target.closest('.window-header');
+      if (!header) return;
+
+      const windowNode = header.closest('.window');
+      win = this.windows.find(w => w.node === windowNode) || null;
+      if (!win) return;
+
+      if (!e.touches) e.preventDefault(); // stop text selection from starting
+
+      startX = e.touches ? e.touches[0].clientX : e.clientX;
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('touchend', onUp);
+    };
+
+    this.nodeEl.addEventListener('mousedown', onDown);
+    this.nodeEl.addEventListener('touchstart', onDown, { passive: true });
   }
 
   _resetWindowWidths() {
