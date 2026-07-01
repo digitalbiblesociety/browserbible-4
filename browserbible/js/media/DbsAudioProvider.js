@@ -20,6 +20,17 @@ function dbsNumToCode(num) {
   return null;
 }
 
+export function dbsAudioMatches(entry, textInfo) {
+  const id = textInfo.id;
+  const abbr = textInfo.abbr || textInfo.id;
+
+  return entry.abbr === id ||
+    entry.id === id ||
+    entry.davar_id === id ||
+    entry.abbr === abbr ||
+    entry.id === abbr;
+}
+
 export class DbsAudioProvider extends BaseAudioProvider {
   constructor() {
     super();
@@ -59,16 +70,7 @@ export class DbsAudioProvider extends BaseAudioProvider {
    * Find a matching DBS entry for the given textInfo
    */
   _findMatch(index, textInfo) {
-    const id = textInfo.id;
-    const abbr = textInfo.abbr || textInfo.id;
-
-    return index.find(entry =>
-      entry.abbr === id ||
-      entry.id === id ||
-      entry.davar_id === id ||
-      entry.abbr === abbr ||
-      entry.id === abbr
-    ) || null;
+    return index.find(entry => dbsAudioMatches(entry, textInfo)) || null;
   }
 
   /**

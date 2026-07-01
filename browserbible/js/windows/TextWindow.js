@@ -444,6 +444,14 @@ export class TextWindowComponent extends BaseWindow {
         return;
       }
 
+      // The first attempt may have failed only because the manifest wasn't loaded
+      // yet (e.g. a deep link to an online text). Retry now that they all are.
+      try {
+        this.state.currentTextInfo = await getTextAsync(textid);
+        await this.startup();
+        return;
+      } catch { /* fall through to the first-available text */ }
+
       const textsWithType = textInfoData.filter((ti) => ti.type === this.state.textType);
 
       let newTextInfo = null;

@@ -217,6 +217,8 @@ export function AudioController(id, container, toggleButton, scroller) {
 
         audioDataManager.getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption, (newFragmentAudioData) => {
           if (fragmentAudioData == null || newFragmentAudioData == null || fragmentAudioData.id != newFragmentAudioData.id) {
+            // New chapter (or no audio): drop the previous chapter's verse highlight.
+            setReadingVerse(null);
             if (!newFragmentAudioData || newFragmentAudioData.url == null) {
               audio.removeAttribute('src');
               title.innerHTML = '[No audio]';
@@ -297,8 +299,18 @@ export function AudioController(id, container, toggleButton, scroller) {
     if (autoplayCheckbox.checked) {
       audio.addEventListener('loadeddata', playWhenLoaded);
       nextButton.click();
+    } else {
+      // Not auto-advancing: clear the highlight and reset for replay.
+      setReadingVerse(null);
+      lastTimestampVerse = 0;
     }
   });
+
+  // Highlight the verse being read (scoped to this window), clearing any prior one.
+  const setReadingVerse = (verseEl) => {
+    containerEl.querySelectorAll('.v.audio-reading').forEach(el => el.classList.remove('audio-reading'));
+    if (verseEl) verseEl.classList.add('audio-reading');
+  };
 
   audio.addEventListener('timeupdate', () => {
     currenttime.innerHTML = secondsToTimeCode(audio.currentTime);
@@ -333,10 +345,10 @@ export function AudioController(id, container, toggleButton, scroller) {
       if (currentVerse !== lastTimestampVerse) {
         lastTimestampVerse = currentVerse;
 
-        const verses = sectionNode.querySelectorAll('.v');
-        const verseEl = (currentVerse > 0 && currentVerse <= verses.length)
-          ? verses[currentVerse - 1]
-          : null;
+        // Match by fragment id, not DOM position — verse numbers can have gaps.
+        const verseEl = sectionNode.querySelector(`.v[data-id="${sectionid}_${currentVerse}"]`);
+
+        setReadingVerse(verseEl);
 
         if (verseEl) {
           const paneTop = offset(pane).top;
@@ -344,7 +356,7 @@ export function AudioController(id, container, toggleButton, scroller) {
           const verseTop = offset(verseEl).top;
           const verseTopAdjusted = verseTop - paneTop + scrollTop;
 
-          scroller.setFocus(true);
+          scroller.setFocus?.(true);
           pane.scrollTop = verseTopAdjusted;
         }
       }
@@ -371,7 +383,7 @@ export function AudioController(id, container, toggleButton, scroller) {
 
     if (scrollOffset <= 0) scrollOffset = 0;
 
-    scroller.setFocus(true);
+    scroller.setFocus?.(true);
     pane.scrollTop = nodeTopAdjusted + scrollOffset;
   });
 
@@ -425,6 +437,16 @@ export function AudioController(id, container, toggleButton, scroller) {
     optionsDramaticDrama.checked = !hasNonDrama;
   };
 
+  const configureBibleBrainDramaOptions = (info) => {
+    optionsDramaticBox.style.display = '';
+
+    const hasBoth = info.hasPlainAudio && info.hasDramaAudio;
+    optionsDramaticAudio.disabled = !hasBoth;
+    optionsDramaticDrama.disabled = !hasBoth;
+    optionsDramaticAudio.checked = info.hasPlainAudio;
+    optionsDramaticDrama.checked = !info.hasPlainAudio;
+  };
+
   const initializeAudioPlayback = () => {
     if (fragmentid != '') {
       const newFragmentid = fragmentid;
@@ -456,13 +478,16 @@ export function AudioController(id, container, toggleButton, scroller) {
 
     if (audioInfo.type == 'local' || audioInfo.type == 'dbs') {
       optionsDramaticBox.style.display = 'none';
+    } else if (audioInfo.type == 'biblebrain') {
+      configureBibleBrainDramaOptions(audioInfo);
     } else if (audioInfo.type == 'fcbh') {
       configureFcbhDramaOptions(audioInfo);
     }
 
     initializeAudioPlayback();
 
-    if (toggleButtonEl) toggleButtonEl.style.display = '';
+    // loadAudio() shows the toggle button only once the current chapter's audio is
+    // confirmed (and hides it otherwise), so don't force it visible here.
     ext.trigger('audioavailable', { type: 'audioavailable', data: { hasAudio: true } });
   };
 

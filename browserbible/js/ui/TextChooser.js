@@ -13,6 +13,7 @@ import { getConfig } from '../core/config.js';
 import audioEarSvg from '../../css/images/audio-ear.svg?raw';
 import morphSvg from '../../css/images/morphology-gray-dark.svg?raw';
 import bibleApiLogoSvg from '../../public/img/bible-api_logo.svg?raw';
+import bibleBrainLogoSvg from '../../public/img/bible-brain_logo.svg?raw';
 
 const hasTouch = 'ontouchend' in document;
 const ROW_HEIGHT = 32; // Fixed row height for virtual scrolling
@@ -37,6 +38,13 @@ const apiBibleTemplate = (() => {
   span.className = 'text-chooser-provider-apibible';
   span.title = 'Powered by API.Bible';
   span.innerHTML = bibleApiLogoSvg;
+  return span;
+})();
+const bibleBrainTemplate = (() => {
+  const span = document.createElement('span');
+  span.className = 'text-chooser-provider-biblebrain';
+  span.title = 'Powered by Bible Brain';
+  span.innerHTML = bibleBrainLogoSvg;
   return span;
 })();
 
@@ -227,6 +235,9 @@ export function TextChooser() {
       }
       if (text.providerName === 'apibible') {
         row.appendChild(apiBibleTemplate.cloneNode(true));
+      }
+      if (text.providerName === 'biblebrain') {
+        row.appendChild(bibleBrainTemplate.cloneNode(true));
       }
     }
 

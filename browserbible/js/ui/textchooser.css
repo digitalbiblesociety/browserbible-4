@@ -95,6 +95,24 @@
 	border: solid 1px var(--color-border);
 	contain: strict;
 	will-change: scroll-position;
+	scrollbar-gutter: stable;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-border) var(--color-background-alt);
+}
+
+.text-chooser .text-chooser-main::-webkit-scrollbar {
+	width: 12px;
+}
+.text-chooser .text-chooser-main::-webkit-scrollbar-track {
+	background: var(--color-background-alt);
+}
+.text-chooser .text-chooser-main::-webkit-scrollbar-thumb {
+	background: var(--color-border);
+	border-radius: 6px;
+	border: 3px solid var(--color-background-alt);
+}
+.text-chooser .text-chooser-main::-webkit-scrollbar-thumb:hover {
+	background: var(--color-text-muted);
 }
 
 .text-chooser .text-chooser-scroll-content {
@@ -224,7 +242,8 @@
 .text-chooser-row .text-chooser-audio,
 .text-chooser-row .text-chooser-lemma,
 .text-chooser-row .text-chooser-provider-fcbh,
-.text-chooser-row .text-chooser-provider-apibible {
+.text-chooser-row .text-chooser-provider-apibible,
+.text-chooser-row .text-chooser-provider-biblebrain {
 	color: var(--color-text-muted);
 }
 .text-chooser-row .text-chooser-audio svg,
@@ -233,6 +252,11 @@
 .text-chooser-row .text-chooser-provider-apibible svg {
 	width: 16px;
 	height: 16px;
+}
+.text-chooser-row .text-chooser-provider-biblebrain svg {
+	width: auto;
+	height: 16px;
+	fill: currentColor;
 }
 
 table.collapsible .text-chooser-row-header {

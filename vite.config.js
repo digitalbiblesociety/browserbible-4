@@ -39,6 +39,10 @@ export default defineConfig(({ command }) => {
     ? 'http://localhost:8787/v1'
     : (siteConfig.apiBibleProxyBase || 'https://api.inscript.org/abs/v1');
 
+  const bibleBrainProxyBase = command === 'serve'
+    ? 'http://localhost:8787/fcbh/v4'
+    : (siteConfig.bibleBrainProxyBase || '');
+
   return {
   // Root directory for the app
   root: 'browserbible',
@@ -145,7 +149,8 @@ export default defineConfig(({ command }) => {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '4.0.0'),
     __DISABLED_WINDOW_TYPES__: JSON.stringify(siteConfig.disabledWindowTypes),
     __DISABLED_FEATURES__: JSON.stringify(siteConfig.disabledFeatures),
-    __API_BIBLE_PROXY_BASE__: JSON.stringify(apiBibleProxyBase)
+    __API_BIBLE_PROXY_BASE__: JSON.stringify(apiBibleProxyBase),
+    __BIBLE_BRAIN_PROXY_BASE__: JSON.stringify(bibleBrainProxyBase)
   },
 
   // Plugins

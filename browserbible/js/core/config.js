@@ -41,6 +41,13 @@ const defaultConfig = {
     'd6e14a625393b4da-01'  // NLT
   ],
 
+  bibleBrainEnabled: true,
+  bibleBrainProxyBase: (typeof __BIBLE_BRAIN_PROXY_BASE__ !== 'undefined')
+    ? __BIBLE_BRAIN_PROXY_BASE__
+    : '',
+  bibleBrainLanguages: [],
+  bibleBrainExcludeIds: [],
+
   newBibleWindowVersion: 'ENGWEB',
   newWindowFragmentid: 'JN1_1',
   newCommentaryWindowTextId: 'commentary:ENGWES',

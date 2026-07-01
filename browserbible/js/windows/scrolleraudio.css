@@ -209,3 +209,9 @@
 	translate: -50% 0;
 	cursor: ew-resize;
 }
+
+.v.audio-reading {
+	background-color: color-mix(in oklab, var(--color-primary) 22%, transparent);
+	border-radius: 3px;
+	transition: background-color 0.15s ease-in;
+}

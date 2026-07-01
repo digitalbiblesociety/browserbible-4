@@ -1,5 +1,6 @@
 {
   "disabledWindowTypes": ["MapWindow", "NotesWindow", "DeafBibleWindow"],
   "disabledFeatures": ["enableHighlighterPlugin"],
-  "apiBibleProxyBase": "https://api.inscript.org/abs/v1"
+  "apiBibleProxyBase": "https://api.inscript.org/abs/v1",
+  "bibleBrainProxyBase": ""
 }

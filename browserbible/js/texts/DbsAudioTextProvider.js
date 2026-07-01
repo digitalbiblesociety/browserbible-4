@@ -8,6 +8,7 @@
 import { getConfig } from '../core/config.js';
 import { getTextInfoData } from './TextLoader.js';
 import { OT_BOOKS, NT_BOOKS, BOOK_DATA } from '../bible/BibleData.js';
+import { dbsAudioMatches } from '../media/DbsAudioProvider.js';
 
 const providerName = 'dbs-audio';
 
@@ -49,21 +50,16 @@ function getTextManifest(callback) {
       return;
     }
 
-    // Annotate existing text entries that have matching DBS audio
     const existingEntries = getTextInfoData() || [];
-    const existingIds = new Set(existingEntries.map(t => t.id));
 
-    const abbrSet = new Set(index.map(e => e.abbr));
     for (const entry of existingEntries) {
-      if (abbrSet.has(entry.id) || abbrSet.has(entry.abbr)) {
+      if (index.some(e => dbsAudioMatches(e, entry))) {
         entry.hasAudio = true;
       }
     }
 
-    // Create entries for audio Bibles that don't already have text entries
-    const existingAbbrs = new Set(existingEntries.map(t => t.abbr).filter(Boolean));
     const newEntries = index
-      .filter(e => e.abbr && !existingIds.has(e.abbr) && !existingAbbrs.has(e.abbr))
+      .filter(e => e.abbr && !existingEntries.some(t => dbsAudioMatches(e, t)))
       .map(e => ({
         type: 'bible',
         id: e.abbr,
