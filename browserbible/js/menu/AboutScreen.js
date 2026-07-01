@@ -15,12 +15,10 @@ export function AboutScreen() {
   const getWindow = () => {
     if (!aboutWindow) {
       aboutWindow = new MovableWindow(500, 250, i18n.t('menu.labels.about'));
-      aboutWindow.body.appendChild(elem('iframe', {
-        className: 'about-frame',
-        title: i18n.t('menu.labels.about'),
-        srcdoc: aboutHtml,
-        style: { width: '100%', height: '100%', border: '0', display: 'block' }
-      }));
+      const aboutDoc = new DOMParser().parseFromString(aboutHtml, 'text/html');
+      const aboutContent = elem('div', { className: 'about-screen' });
+      aboutContent.append(...aboutDoc.body.children);
+      aboutWindow.body.appendChild(aboutContent);
 
       const aboutTitle = aboutWindow.title;
       aboutTitle.classList.add('i18n');

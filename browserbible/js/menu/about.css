@@ -1,0 +1,42 @@
+.about-screen {
+	max-width: 42rem;
+	margin: 0 auto;
+	padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
+	line-height: 1.6;
+}
+
+.about-screen h1 {
+	margin-bottom: 0;
+}
+
+.about-screen a {
+	color: var(--color-primary);
+}
+
+.about-screen summary {
+	cursor: pointer;
+}
+
+.about-screen details {
+	margin: var(--spacing-sm) 0;
+}
+
+.about-screen kbd {
+	padding: 1px 5px;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	background: var(--color-background-alt);
+	font-size: 85%;
+}
+
+.about-screen footer {
+	margin-top: var(--spacing-xl);
+	padding-top: var(--spacing-md);
+	border-top: 1px solid var(--color-border);
+	color: var(--color-text-muted);
+}
+
+.about-screen footer small {
+	display: block;
+	margin-bottom: var(--spacing-sm);
+}
