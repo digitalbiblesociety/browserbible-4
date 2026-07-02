@@ -42,6 +42,7 @@ class MediaWindowComponent extends BaseWindow {
 
     this.mediaLibraries = null;
     this.contentToProcess = null;
+    this.pendingSelect = null;
 
     this._resizeTimeout = null;
     this._resizeHandler = null;
@@ -113,11 +114,7 @@ class MediaWindowComponent extends BaseWindow {
     this.$$('.media-filter-btn').forEach(btn => {
       this.addListener(btn, 'click', () => {
         const filterType = btn.getAttribute('data-filter');
-        this.state.filters[filterType] = !this.state.filters[filterType];
-        btn.classList.toggle('active', this.state.filters[filterType]);
-        // Force re-render of thumbs
-        this.state.currentSectionId = '';
-        this.processContent();
+        this.setFilter(filterType, !this.state.filters[filterType]);
       });
     });
 
@@ -158,6 +155,16 @@ class MediaWindowComponent extends BaseWindow {
     if (MediaLibrary) {
       MediaLibrary.getMediaLibraries((data) => {
         this.mediaLibraries = data;
+
+        // A focus request that arrived before the libraries loaded, or came
+        // in as init data on a freshly opened window
+        const select = this.pendingSelect ?? this.initData?.select;
+        this.pendingSelect = null;
+        if (select?.sectionid && document.querySelector(`.section[data-id="${select.sectionid}"]`)) {
+          this.selectMediaItem(select);
+          return;
+        }
+
         if (this.contentToProcess) {
           this.processContent();
         } else {
@@ -165,6 +172,68 @@ class MediaWindowComponent extends BaseWindow {
         }
       });
     }
+  }
+
+  setFilter(filterType, enabled) {
+    this.state.filters[filterType] = enabled;
+    this.$(`.media-filter-btn[data-filter="${filterType}"]`)?.classList.toggle('active', enabled);
+    this.state.currentSectionId = ''; // force re-render of thumbs
+    this.processContent();
+  }
+
+  /**
+   * Open the gallery on a specific item, e.g. from the media popup.
+   * Safe at any lifecycle point: before the libraries load the request is
+   * stashed and init() replays it.
+   * @param {{sectionid: string, verseid: string, folder: string, filename: string}} select
+   */
+  selectMediaItem(select) {
+    if (!select) return;
+
+    if (!this.mediaLibraries) {
+      this.pendingSelect = select;
+      return;
+    }
+
+    if (this.state.currentSectionId !== select.sectionid) {
+      const section = document.querySelector(`.section[data-id="${select.sectionid}"]`);
+      if (section) {
+        this.contentToProcess = section;
+        this.processContent();
+      }
+    }
+
+    let index = this.findGalleryIndex(select);
+    if (index < 0 && !this.state.filters.art) {
+      this.setFilter('art', true); // the popup only lists art images
+      index = this.findGalleryIndex(select);
+    }
+    if (index < 0) return; // no match; the rendered thumbs are still useful
+
+    this.showGalleryItem(index).then(() => {
+      this.refs.thumbsContainer?.querySelector('.media-library-thumbs a.selected')
+        ?.scrollIntoView?.({ block: 'nearest' });
+    });
+  }
+
+  /**
+   * Gallery index for a popup selection: exact folder+filename, then the
+   * base file of a `-color` variant (the gallery skips those but the popup
+   * shows them), then anything on the same verse.
+   * @returns {number} index into state.galleryItems, or -1
+   */
+  findGalleryIndex({ folder, filename, verseid }) {
+    const items = this.state.galleryItems;
+    let index = items.findIndex(item => item.folder === folder && item.filename === filename);
+
+    const base = filename?.replace(/-color.*$/, '');
+    if (index < 0 && base !== filename) {
+      index = items.findIndex(item => item.folder === folder && item.filename === base);
+    }
+    if (index < 0) {
+      index = items.findIndex(item => item.verseid === verseid);
+    }
+    return index;
   }
 
   cleanup() {
@@ -474,7 +543,7 @@ class MediaWindowComponent extends BaseWindow {
         if (mediaInfo.filename?.includes('-color')) continue;
 
         const { fullUrl, thumbUrl } = this.buildMediaUrls(mediaLibrary, mediaInfo);
-        const galleryItem = this.createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category);
+        const galleryItem = this.createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category, verseid);
         galleryItems.push(galleryItem);
 
         htmlParts.push(this.renderThumbLink(galleryItem, mediaLibrary, mediaInfo, reference));
@@ -500,7 +569,7 @@ class MediaWindowComponent extends BaseWindow {
     };
   }
 
-  createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category) {
+  createGalleryItem(mediaLibrary, mediaInfo, fullUrl, thumbUrl, reference, category, verseid) {
     return {
       url: fullUrl,
       thumbUrl,
@@ -510,7 +579,11 @@ class MediaWindowComponent extends BaseWindow {
       date: mediaInfo.date || '',
       reference: reference.toString(),
       category,
-      chapterNumber: mediaLibrary.type === 'jfm' ? mediaInfo.filename : null
+      chapterNumber: mediaLibrary.type === 'jfm' ? mediaInfo.filename : null,
+      // identity for selectMediaItem lookups from the media popup
+      folder: mediaLibrary.folder,
+      filename: mediaInfo.filename,
+      verseid
     };
   }
 

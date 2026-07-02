@@ -194,6 +194,13 @@
 	background: var(--color-background-hover);
 }
 
+/* Subtle filter-match highlight (overrides the UA's opaque yellow <mark>) */
+.text-chooser mark.text-chooser-match {
+	background: color-mix(in srgb, var(--color-highlight) 55%, transparent);
+	color: inherit;
+	border-radius: 2px;
+}
+
 .text-chooser-row.selected {
 	color: var(--color-background);
 }
@@ -230,7 +237,8 @@
 .text-chooser-row .text-chooser-lemma,
 .text-chooser-row .text-chooser-abs,
 .text-chooser-row .text-chooser-fcbh,
-.text-chooser-row .text-chooser-provider-apibible {
+.text-chooser-row .text-chooser-provider-apibible,
+.text-chooser-row .text-chooser-provider-biblebrain {
 	width: 20px;
 	height: 20px;
 	flex-shrink: 0;
@@ -254,8 +262,8 @@
 	height: 16px;
 }
 .text-chooser-row .text-chooser-provider-biblebrain svg {
-	width: auto;
-	height: 16px;
+	width: 16px;
+	height: auto;
 	fill: currentColor;
 }
 

@@ -1,23 +1,16 @@
-import { renderSearchSuggestions, stripHtml } from './render.js';
+import { renderSearchSuggestions } from './render.js';
+import { searchNotes } from './query.js';
 
-/**
- * Update search suggestions based on current query
- * @param {object} state - Component state
- * @param {object} refs - Component refs
- */
-export function updateSearchSuggestions(state, refs) {
-  const query = refs.search.value.trim().toLowerCase();
+/** Rebuild the suggestions dropdown for the current search query. */
+export function updateSearchSuggestions(state, refs, notes, getPlainText) {
+  const query = refs.search.value.trim();
 
   if (!query) {
     hideSearchSuggestions(state, refs);
     return;
   }
 
-  const matches = state.notes.filter(n => {
-    const titleMatch = (n.title || '').toLowerCase().includes(query);
-    const contentMatch = stripHtml(n.content || '').toLowerCase().includes(query);
-    return titleMatch || contentMatch;
-  }).slice(0, 5); // Limit to 5 suggestions
+  const matches = searchNotes(notes, query, getPlainText, 5);
 
   state.searchSuggestions = matches;
   state.selectedSuggestionIndex = matches.length > 0 ? 0 : -1;
@@ -29,16 +22,11 @@ export function updateSearchSuggestions(state, refs) {
 
   refs.searchSuggestions.innerHTML = '';
   refs.searchSuggestions.appendChild(
-    renderSearchSuggestions(matches, state.selectedSuggestionIndex)
+    renderSearchSuggestions(matches, state.selectedSuggestionIndex, getPlainText)
   );
   refs.searchSuggestions.classList.add('visible');
 }
 
-/**
- * Hide search suggestions dropdown
- * @param {object} state - Component state
- * @param {object} refs - Component refs
- */
 export function hideSearchSuggestions(state, refs) {
   refs.searchSuggestions.classList.remove('visible');
   refs.searchSuggestions.innerHTML = '';
@@ -46,12 +34,7 @@ export function hideSearchSuggestions(state, refs) {
   state.selectedSuggestionIndex = -1;
 }
 
-/**
- * Update which suggestion is selected (keyboard/hover navigation)
- * @param {object} state - Component state
- * @param {object} refs - Component refs
- * @param {number} newIndex - New selection index
- */
+/** Move the keyboard selection to newIndex, wrapping at either end. */
 export function updateSuggestionSelection(state, refs, newIndex) {
   const count = state.searchSuggestions.length;
   if (count === 0) return;
@@ -68,13 +51,8 @@ export function updateSuggestionSelection(state, refs, newIndex) {
 }
 
 /**
- * Select a suggestion by index
- * Returns the selected note ID, or null if invalid index.
- * Caller is responsible for calling selectNote() and renderNotesList().
- * @param {object} state - Component state
- * @param {object} refs - Component refs
- * @param {number} index - Suggestion index to select
- * @returns {string|null} Selected note ID
+ * Pick a suggestion by index and clear the search box.
+ * @returns {string|null} Note id; the caller selects it and re-renders the list
  */
 export function selectSuggestion(state, refs, index) {
   if (index < 0 || index >= state.searchSuggestions.length) return null;

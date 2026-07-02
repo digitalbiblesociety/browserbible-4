@@ -1,113 +1,64 @@
-import { createVerseDetector } from '@verse-detection/VerseDetectionPlugin.js';
-import { BOOK_CODES } from '@verse-detection/BookCodes.js';
+/**
+ * Print notes, optionally inlining the text of detected verse references.
+ *
+ * Verse text loads through the app's own text providers (TextLoader), so
+ * printing works offline with local content. All note-derived strings are
+ * escaped/sanitized before they reach the print document.
+ */
 
+import { loadSection } from '../../texts/TextLoader.js';
 import { getConfig } from '../../core/config.js';
+import { t } from '../../lib/i18n.js';
 import { showNotice } from './notice.js';
+import { stripHtml, escapeHtml, sanitizeHtml } from './sanitize.js';
+import { detectReferences } from './references.js';
 
-const CONTENT_BASE_URL = `https://inscript.bible.cloud/${getConfig().textsPath}`;
-const DEFAULT_TEXT_ID = 'ENGWEB';
+// loadSection never calls back when a text's provider is missing; don't let
+// one bad reference hang the whole print job.
+const SECTION_LOAD_TIMEOUT_MS = 15_000;
 
-
-function stripHtml(html) {
-  const spaced = html
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/?(?:div|p|li|h[1-6]|blockquote|tr)[^>]*>/gi, '\n');
-  const tmp = document.createElement('div');
-  tmp.innerHTML = spaced;
-  return tmp.textContent || tmp.innerText || '';
+function loadSectionAsync(textid, sectionid) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`Timed out loading ${textid}/${sectionid}`)),
+      SECTION_LOAD_TIMEOUT_MS
+    );
+    loadSection(
+      textid,
+      sectionid,
+      (node) => { clearTimeout(timer); resolve(node); },
+      (err) => { clearTimeout(timer); reject(err); }
+    );
+  });
 }
 
 /**
- * Parse a verse reference string into components for fetching
- * @param {string} book - Canonical book name
- * @param {string} reference - Chapter:verse reference string
- * @returns {{ sectionId: string, startVerse: number|null, endVerse: number|null } | null}
+ * Pull the verse text for a detected reference out of a loaded section node.
+ * loadSection hands each caller a freshly built node, so in-place cleanup
+ * of footnotes/verse numbers is safe.
  */
-function parseRefForFetch(book, reference) {
-  const bookCode = BOOK_CODES[book];
-  if (!bookCode) return null;
+function extractVersesFromNode(sectionEl, { sectionid, startVerse, endVerse }) {
+  if (!sectionEl) return '';
 
-  const chapterMatch = reference.match(/^(\d+)/);
-  if (!chapterMatch) return null;
-
-  const chapter = chapterMatch[1];
-  const sectionId = `${bookCode}${chapter}`;
-
-  const verseMatch = reference.match(/:(\d+)/);
-  const endVerseMatch = reference.match(/:(\d+)\s*[-\u2013\u2014]\s*(\d+)/);
-
-  let startVerse = verseMatch ? parseInt(verseMatch[1], 10) : null;
-  let endVerse = endVerseMatch ? parseInt(endVerseMatch[2], 10) : startVerse;
-
-  return { sectionId, startVerse, endVerse };
-}
-
-/**
- * Fetch verse text from remote chapter HTML
- * @param {string} book - Canonical book name
- * @param {string} reference - Reference string like "3:16"
- * @param {string} [textId] - Text/version ID override
- * @returns {Promise<string>} Verse text content
- */
-async function fetchVerseText(book, reference, textId) {
-  const parsed = parseRefForFetch(book, reference);
-  if (!parsed) {
-    console.warn('[print] parseRefForFetch returned null for', book, reference);
-    return '';
-  }
-
-  const tid = textId || DEFAULT_TEXT_ID;
-  const url = `${CONTENT_BASE_URL}/${tid}/${parsed.sectionId}.html`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.warn('[print] Fetch failed:', response.status, url);
-      return '';
-    }
-
-    const html = await response.text();
-    return extractVersesFromHtml(html, parsed);
-  } catch (err) {
-    console.error('[print] Fetch error:', err);
-    return '';
-  }
-}
-
-function extractVersesFromHtml(html, parsed) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  if (!parsed.startVerse) {
-    // Chapter only — return all text
-    const section = doc.querySelector('.section');
-    if (section) {
-      // Strip footnote elements for clean print text
-      section.querySelectorAll('.note, .cf').forEach(el => el.remove());
-      section.querySelectorAll('.v-num, .verse-num').forEach(el => el.remove());
-      return section.textContent?.trim() || '';
-    }
-    return '';
+  if (!startVerse) {
+    // Chapter-only reference: use the whole section
+    sectionEl.querySelectorAll('.note, .cf, .v-num, .verse-num').forEach(el => el.remove());
+    return sectionEl.textContent?.trim() || '';
   }
 
   const texts = [];
-  const start = parsed.startVerse;
-  const end = parsed.endVerse || start;
+  const start = startVerse;
+  const end = endVerse || start;
 
   for (let v = start; v <= end; v++) {
-    const verseId = `${parsed.sectionId}_${v}`;
-    const verseEl = doc.querySelector(`[data-id="${verseId}"], .${verseId}`);
+    const verseId = `${sectionid}_${v}`;
+    const verseEl = sectionEl.querySelector(`[data-id="${verseId}"], .${verseId}`);
     if (verseEl) {
-      // Strip footnotes and verse numbers for clean text
       verseEl.querySelectorAll('.note, .cf').forEach(el => el.remove());
       verseEl.querySelectorAll('.v-num, .verse-num').forEach(el => el.remove());
       const text = verseEl.textContent?.trim();
       if (text) {
-        if (start !== end) {
-          texts.push(`${v} ${text}`);
-        } else {
-          texts.push(text);
-        }
+        texts.push(start !== end ? `${v} ${text}` : text);
       }
     }
   }
@@ -115,61 +66,42 @@ function extractVersesFromHtml(html, parsed) {
   return texts.join(' ');
 }
 
+async function loadVerseText(textid, ref) {
+  try {
+    const sectionEl = await loadSectionAsync(textid, ref.sectionid);
+    return extractVersesFromNode(sectionEl, ref);
+  } catch (err) {
+    console.warn('[print] Could not load verse text for', ref.label, err);
+    return '';
+  }
+}
+
 /**
- * Detect verse references in note content and optionally fetch their text
- * @param {string} htmlContent - Note HTML content
- * @param {boolean} includeVerseText - Whether to fetch and inline verse text
- * @returns {Promise<string>} Processed HTML with verse blockquotes appended
+ * Sanitize note content and, when requested, append blockquotes with the
+ * text of each detected verse reference. Verses that fail to load are
+ * skipped so printing still works offline.
+ * @param {string} textid - Bible version to load verse text from
+ * @returns {Promise<string>}
  */
-async function processNoteContentForPrint(htmlContent, includeVerseText) {
-  if (!htmlContent) return '';
+async function processNoteContentForPrint(htmlContent, includeVerseText, textid) {
+  const safeHtml = sanitizeHtml(htmlContent || '');
+  if (!includeVerseText || !safeHtml) return safeHtml;
 
-  let detector, plainText, verses;
-  try {
-    detector = createVerseDetector();
-  } catch (err) {
-    console.error('[print] createVerseDetector() threw:', err);
-    return htmlContent;
-  }
+  const refs = detectReferences(stripHtml(safeHtml));
+  if (refs.length === 0) return safeHtml;
 
-  try {
-    plainText = stripHtml(htmlContent);
-  } catch (err) {
-    console.error('[print] stripHtml threw:', err);
-    return htmlContent;
-  }
-
-  try {
-    verses = detector.detectVerses(plainText);
-  } catch (err) {
-    console.error('[print] detectVerses threw:', err);
-    return htmlContent;
-  }
-
-  if (!includeVerseText || verses.length === 0) {
-    return htmlContent;
-  }
   const verseTexts = await Promise.all(
-    verses.map(async (verse) => {
-      const textId = verse.version || DEFAULT_TEXT_ID;
-      const text = await fetchVerseText(verse.book, verse.reference, textId);
-      return {
-        ref: `${verse.book} ${verse.reference}`,
-        version: verse.version,
-        text
-      };
-    })
+    refs.map(async (ref) => ({ ref, text: await loadVerseText(textid, ref) }))
   );
 
   const blockquotes = verseTexts
-    .filter(v => v.text)
-    .map(v => {
-      const versionLabel = v.version ? ` (${v.version})` : '';
-      return `<blockquote class="print-verse-text"><strong>${v.ref}${versionLabel}</strong><br>${v.text}</blockquote>`;
-    })
+    .filter((v) => v.text)
+    .map((v) =>
+      `<blockquote class="print-verse-text"><strong>${escapeHtml(v.ref.label)}</strong><br>${escapeHtml(v.text)}</blockquote>`
+    )
     .join('\n');
 
-  return htmlContent + (blockquotes ? '\n' + blockquotes : '');
+  return safeHtml + (blockquotes ? '\n' + blockquotes : '');
 }
 
 function buildPrintHtml(title, notesHtml) {
@@ -177,7 +109,7 @@ function buildPrintHtml(title, notesHtml) {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>${title}</title>
+  <title>${escapeHtml(title)}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -243,57 +175,74 @@ function buildPrintHtml(title, notesHtml) {
 </head>
 <body>
   <div class="print-no-print" style="text-align:center;margin-bottom:12pt;">
-    <button onclick="window.print()" style="font-size:14pt;padding:8px 24px;cursor:pointer;">Print</button>
-    <button onclick="window.close()" style="font-size:14pt;padding:8px 24px;cursor:pointer;margin-left:8px;">Close</button>
+    <button onclick="window.print()" style="font-size:14pt;padding:8px 24px;cursor:pointer;">${escapeHtml(t('windows.notes.printButton'))}</button>
+    <button onclick="window.close()" style="font-size:14pt;padding:8px 24px;cursor:pointer;margin-left:8px;">${escapeHtml(t('windows.notes.closeButton'))}</button>
   </div>
-  <h1>${title}</h1>
+  <h1>${escapeHtml(title)}</h1>
   ${notesHtml}
 </body>
 </html>`;
 }
 
 /**
- * Print notes — main entry point
- * @param {Array} notes - Array of note objects to print
- * @param {{ includeVerseText?: boolean, title?: string }} options
+ * Print notes (main entry point). Must be called from a user gesture: the
+ * popup opens synchronously (before any await) so popup blockers allow it,
+ * then the assembled document loads into it via a Blob URL. Nothing goes
+ * through document.write.
+ * @param {Array} notes - Note objects to print
+ * @param {{ includeVerseText?: boolean, title?: string, textId?: string }} options
  */
 export async function printNotes(notes, options = {}) {
   if (!notes || notes.length === 0) {
-    showNotice('No notes to print');
+    showNotice(t('windows.notes.noNotesToPrint'));
     return;
   }
 
-  const includeVerseText = options.includeVerseText || false;
-  const title = options.title || (notes.length === 1 ? (notes[0].title || 'Note') : 'Notes');
-
-  // Process all notes
-  const noteHtmlParts = [];
-  for (const note of notes) {
-    const noteTitle = note.title || 'Untitled';
-    const metaParts = [];
-
-    if (note.referenceDisplay) {
-      metaParts.push(`Verse: ${note.referenceDisplay}`);
-    }
-    metaParts.push(`Modified: ${new Date(note.modified).toLocaleString()}`);
-
-    const content = await processNoteContentForPrint(note.content || '', includeVerseText);
-
-    noteHtmlParts.push(
-      `<div class="print-note">
-        <div class="print-note-title">${noteTitle}</div>
-        <div class="print-meta">${metaParts.join(' | ')}</div>
-        <div class="print-content">${content}</div>
-      </div>`
-    );
-  }
-
-  const fullHtml = buildPrintHtml(title, noteHtmlParts.join('\n'));
-
-  // Open print window
   const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    printWindow.document.write(fullHtml);
-    printWindow.document.close();
+  if (!printWindow) {
+    showNotice(t('windows.notes.popupBlocked'));
+    return;
   }
+  try {
+    printWindow.document.body.textContent = t('windows.notes.preparingPrint');
+  } catch {
+    // Cross-origin surprises are non-fatal; the blob navigation still lands.
+  }
+
+  const includeVerseText = options.includeVerseText || false;
+  const textId = options.textId || getConfig().newBibleWindowVersion;
+  const title = options.title ||
+    (notes.length === 1 ? (notes[0].title || t('windows.notes.untitled')) : t('windows.notes.label'));
+
+  let fullHtml;
+  try {
+    const noteHtmlParts = [];
+    for (const note of notes) {
+      const metaParts = [];
+      if (note.referenceDisplay) {
+        metaParts.push(`${t('windows.notes.verseLabel')}: ${escapeHtml(note.referenceDisplay)}`);
+      }
+      metaParts.push(`${t('windows.notes.modifiedLabel')}: ${escapeHtml(new Date(note.modified).toLocaleString())}`);
+
+      const content = await processNoteContentForPrint(note.content || '', includeVerseText, textId);
+
+      noteHtmlParts.push(
+        `<div class="print-note">
+          <div class="print-note-title">${escapeHtml(note.title || t('windows.notes.untitled'))}</div>
+          <div class="print-meta">${metaParts.join(' | ')}</div>
+          <div class="print-content">${content}</div>
+        </div>`
+      );
+    }
+    fullHtml = buildPrintHtml(title, noteHtmlParts.join('\n'));
+  } catch (err) {
+    printWindow.close();
+    throw err;
+  }
+
+  const url = URL.createObjectURL(new Blob([fullHtml], { type: 'text/html' }));
+  printWindow.location = url;
+  // The blob must stay alive until the popup finishes loading it; a
+  // load-event revoke is unreliable cross-window, so just wait it out.
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }

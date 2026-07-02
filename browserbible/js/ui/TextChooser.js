@@ -5,6 +5,7 @@
  */
 
 import { elem, offset } from '../lib/helpers.esm.js';
+import { fuzzyIncludes, matchRanges } from '../lib/fuzzy.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import AppSettings from '../common/AppSettings.js';
 import { loadTexts, getText, displayAbbr } from '../texts/TextLoader.js';
@@ -67,6 +68,7 @@ export function TextChooser() {
   let scrollTop = 0;
   let viewportHeight = 0;
   let filterText = '';
+  let filterTokens = []; // filterText split into words; each must match (substring or fuzzy)
   let rafId = null;
 
   const recentlyUsedKey = 'texts-recently-used';
@@ -100,6 +102,7 @@ export function TextChooser() {
         selectText(item.data.id);
         filter.value = '';
         filterText = '';
+        filterTokens = [];
         applyFilter();
       }
     }
@@ -110,6 +113,7 @@ export function TextChooser() {
     if (newFilter === filterText) return;
 
     filterText = newFilter;
+    filterTokens = filterText.split(/\s+/).filter(Boolean);
     applyFilter();
   }
 
@@ -128,10 +132,12 @@ export function TextChooser() {
     const matchingHeaders = new Set();
     const matchingTextIndices = new Set();
 
-    // First pass: find matching texts and their headers
+    // First pass: find matching texts and their headers. Every filter word
+    // must match somewhere, as a substring or fuzzily (typo-tolerant).
     for (let i = 0; i < processedData.length; i++) {
       const item = processedData[i];
-      if (item.type === 'text' && item.searchText.includes(filterText)) {
+      if (item.type !== 'text') continue;
+      if (filterTokens.every(token => fuzzyIncludes(item.searchText, item.searchWords, token))) {
         matchingTextIndices.add(i);
         matchingHeaders.add(item.langHeader);
       }
@@ -202,6 +208,24 @@ export function TextChooser() {
     scrollContent.replaceChildren(fragment);
   }
 
+  // Wrap the parts of `str` the current filter matched in <mark> elements.
+  // Returns the plain string when there is no filter or no match.
+  function highlighted(str) {
+    if (!filterTokens.length || !str) return str;
+    const ranges = matchRanges(str, filterTokens);
+    if (!ranges.length) return str;
+
+    const parts = [];
+    let pos = 0;
+    for (const [start, end] of ranges) {
+      if (start > pos) parts.push(str.slice(pos, start));
+      parts.push(elem('mark', { className: 'text-chooser-match' }, str.slice(start, end)));
+      pos = end;
+    }
+    if (pos < str.length) parts.push(str.slice(pos));
+    return parts;
+  }
+
   function createRowElement(item, top) {
     const row = elem('div', {
       style: { position: 'absolute', top: `${top}px`, left: '0', right: '0', height: `${ROW_HEIGHT}px` }
@@ -216,7 +240,7 @@ export function TextChooser() {
     } else if (item.type === 'header') {
       row.className = 'text-chooser-row-header';
       row.dataset.langName = item.data;
-      row.appendChild(elem('span', { className: 'name' }, item.data));
+      row.appendChild(elem('span', { className: 'name' }, highlighted(item.data)));
       if (item.langCode) {
         row.appendChild(elem('span', { className: 'text-chooser-lang-code' }, item.langCode));
       }
@@ -227,8 +251,8 @@ export function TextChooser() {
       row.className = 'text-chooser-row' + (isSelected ? ' selected' : '');
       row.dataset.id = text.id;
 
-      row.appendChild(elem('span', { className: 'text-chooser-abbr' }, displayAbbr(text)));
-      row.appendChild(elem('span', { className: 'text-chooser-name' }, text.name));
+      row.appendChild(elem('span', { className: 'text-chooser-abbr' }, highlighted(displayAbbr(text))));
+      row.appendChild(elem('span', { className: 'text-chooser-name' }, highlighted(text.name)));
 
       if (text.hasLemma) {
         row.appendChild(lemmaTemplate.cloneNode(true));
@@ -294,9 +318,11 @@ export function TextChooser() {
   // Cache of the full processedData. Skips even the cheap concat if nothing relevant changed.
   let processedDataKey = null;
 
-  function buildSearchText(text) {
-    return [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
+  // searchText for substring matches; searchWords for fuzzy (per-word) matches.
+  function buildSearchFields(text) {
+    const searchText = [text.name, text.abbr, text.langName || '', text.langNameEnglish || '']
       .join(' ').toLowerCase();
+    return { searchText, searchWords: searchText.split(/\s+/).filter(Boolean) };
   }
 
   function buildGroupedData() {
@@ -337,7 +363,7 @@ export function TextChooser() {
         result.push({
           type: 'text',
           data: text,
-          searchText: buildSearchText(text),
+          ...buildSearchFields(text),
           langHeader: displayName
         });
       }
@@ -370,7 +396,7 @@ export function TextChooser() {
           result.push({
             type: 'text',
             data: text,
-            searchText: buildSearchText(text),
+            ...buildSearchFields(text),
             langHeader: recentHeader
           });
         }
@@ -399,7 +425,7 @@ export function TextChooser() {
         result.push({
           type: 'text',
           data: text,
-          searchText: buildSearchText(text),
+          ...buildSearchFields(text),
           langHeader: currentLang
         });
       }
@@ -512,6 +538,7 @@ export function TextChooser() {
       if (filter.value !== '') {
         filter.value = '';
         filterText = '';
+        filterTokens = [];
         applyFilter();
       }
 

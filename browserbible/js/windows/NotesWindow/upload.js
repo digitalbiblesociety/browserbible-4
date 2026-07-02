@@ -1,12 +1,30 @@
 /**
- * Parse imported files (Markdown, Plain Text, RTF) back into note objects
+ * Parse imported files (Markdown, Plain Text, RTF, JSON backup) back into
+ * note objects.
+ *
+ * The "Verse:"/"Created:"/"Modified:" markers are part of the export file
+ * format (they must round-trip through the parsers below), so they stay
+ * English regardless of UI language.
  */
 
+import { Reference } from '../../bible/BibleReference.js';
+import { generateId, normalizeNote } from './NotesStore.js';
+import { sanitizeHtml } from './sanitize.js';
+
 /**
- * Generate a UUID for note IDs
+ * Resolve a human reference string ("John 3:16") to the fragmentid the app
+ * uses internally, so imported linked notes match the current-verse filter.
+ * @param {string|null} referenceDisplay
+ * @returns {{reference: string|null, referenceDisplay: string|null}}
  */
-function generateId() {
-  return 'note_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+function normalizeReference(referenceDisplay) {
+  if (!referenceDisplay) return { reference: null, referenceDisplay: null };
+  const ref = Reference(referenceDisplay);
+  if (ref?.isValid()) {
+    return { reference: ref.toSection(), referenceDisplay: ref.toString() };
+  }
+  // Unparseable: keep the display text but don't pretend it's a link.
+  return { reference: null, referenceDisplay };
 }
 
 /**
@@ -94,7 +112,6 @@ function parseMarkdownImport(text) {
 
     const lines = trimmed.split('\n');
     let title = '';
-    let reference = null;
     let referenceDisplay = null;
     let created = null;
     let modified = null;
@@ -105,29 +122,24 @@ function parseMarkdownImport(text) {
       const line = lines[i];
 
       if (!headerDone) {
-        // Title line
         const titleMatch = line.match(/^# (.+)$/);
         if (titleMatch) {
           title = titleMatch[1].trim();
           continue;
         }
 
-        // Verse reference
         const verseMatch = line.match(/^\*\*Verse:\*\*\s*(.+)$/);
         if (verseMatch) {
           referenceDisplay = verseMatch[1].trim();
-          reference = referenceDisplay;
           continue;
         }
 
-        // Created date
         const createdMatch = line.match(/^\*Created:\s*(.+)\*$/);
         if (createdMatch) {
           created = parseDate(createdMatch[1]);
           continue;
         }
 
-        // Modified date
         const modifiedMatch = line.match(/^\*Modified:\s*(.+)\*$/);
         if (modifiedMatch) {
           modified = parseDate(modifiedMatch[1]);
@@ -140,7 +152,7 @@ function parseMarkdownImport(text) {
           continue;
         }
 
-        // If we hit non-header content, everything from here is content
+        // First non-header line: everything from here is content
         if (title) {
           headerDone = true;
           if (line !== '') {
@@ -160,8 +172,7 @@ function parseMarkdownImport(text) {
       id: generateId(),
       title: title || 'Imported Note',
       content: markdownToHtml(contentMd),
-      reference,
-      referenceDisplay,
+      ...normalizeReference(referenceDisplay),
       created: created || now,
       modified: modified || now
     });
@@ -187,7 +198,6 @@ function parseHeaderSections(text, divider, versePattern) {
 
     const lines = trimmed.split('\n');
     let title = '';
-    let reference = null;
     let referenceDisplay = null;
     let created = null;
     let modified = null;
@@ -204,16 +214,13 @@ function parseHeaderSections(text, divider, versePattern) {
       }
 
       if (title && !modified) {
-        // Verse reference
         const verseMatch = line.match(versePattern);
         if (verseMatch) {
           referenceDisplay = verseMatch[1].trim();
-          reference = referenceDisplay;
           contentStartIndex = i + 1;
           continue;
         }
 
-        // Created date
         const createdMatch = line.match(/^Created:\s*(.+)$/);
         if (createdMatch) {
           created = parseDate(createdMatch[1]);
@@ -221,7 +228,6 @@ function parseHeaderSections(text, divider, versePattern) {
           continue;
         }
 
-        // Modified date
         const modifiedMatch = line.match(/^Modified:\s*(.+)$/);
         if (modifiedMatch) {
           modified = parseDate(modifiedMatch[1]);
@@ -252,8 +258,7 @@ function parseHeaderSections(text, divider, versePattern) {
       id: generateId(),
       title: title || 'Imported Note',
       content: contentHtml,
-      reference,
-      referenceDisplay,
+      ...normalizeReference(referenceDisplay),
       created: created || now,
       modified: modified || now
     });
@@ -273,28 +278,22 @@ function parsePlainTextImport(text) {
  * Strip RTF control codes and extract plain text
  */
 function stripRtf(rtf) {
-  // Remove RTF header/footer braces
   let text = rtf;
-  // Remove {\rtf1...} header
+  // Header and font/color tables
   text = text.replace(/^\{\\rtf1[^}]*\}?\s*/i, '');
-  // Remove font tables etc
   text = text.replace(/\{\\fonttbl[^}]*\}/g, '');
   text = text.replace(/\{\\colortbl[^}]*\}/g, '');
-  // Convert \par to newlines
+  // \par becomes a newline
   text = text.replace(/\\par\s*/g, '\n');
-  // Remove bold/italic/underline markers but keep content
+  // Drop formatting markers but keep their content
   text = text.replace(/\{\\b\s+(.*?)\}/g, '$1');
   text = text.replace(/\{\\i\s+(.*?)\}/g, '$1');
   text = text.replace(/\{\\ul\s+(.*?)\}/g, '$1');
-  // Remove font size markers but keep content
   text = text.replace(/\{\\fs\d+\s+(.*?)\}/g, '$1');
-  // Remove remaining control words
+  // Remaining control words, braces, and escapes
   text = text.replace(/\\[a-z]+\d*\s?/g, '');
-  // Remove braces
   text = text.replace(/[{}]/g, '');
-  // Unescape RTF special chars
   text = text.replace(/\\\\/g, '\\');
-  // Clean up whitespace
   text = text.replace(/\n{3,}/g, '\n\n');
   return text.trim();
 }
@@ -308,21 +307,55 @@ function parseRtfImport(text) {
 }
 
 /**
+ * Parse a JSON backup (as produced by the JSON download) back into notes.
+ * Original ids are kept so restores merge instead of duplicating.
+ * @param {string} text
+ * @returns {Array} Notes
+ * @throws {Error} 'invalid-backup' when the payload isn't a notes backup
+ */
+function parseJsonImport(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error('invalid-backup');
+  }
+
+  const rawNotes = Array.isArray(parsed) ? parsed : parsed?.notes;
+  if (!Array.isArray(rawNotes)) {
+    throw new Error('invalid-backup');
+  }
+
+  return rawNotes
+    .map((raw) => {
+      const note = normalizeNote(raw);
+      if (note) note.content = sanitizeHtml(note.content);
+      return note;
+    })
+    .filter(Boolean);
+}
+
+/**
  * Parse an imported file into note objects
  * @param {string} text - File content
  * @param {string} filename - Original filename (used for format detection)
- * @returns {Array} Array of note objects
+ * @returns {{notes: Array, mode: 'add'|'merge'}} Parsed notes and how the
+ *   store should ingest them: 'merge' dedupes by id (JSON backups keep their
+ *   original ids), 'add' prepends everything (text formats get fresh ids)
+ * @throws {Error} 'invalid-backup' for malformed JSON backups
  */
 export function parseImportedFile(text, filename) {
   const ext = filename.split('.').pop().toLowerCase();
 
   switch (ext) {
+    case 'json':
+      return { notes: parseJsonImport(text), mode: 'merge' };
     case 'md':
-      return parseMarkdownImport(text);
+      return { notes: parseMarkdownImport(text), mode: 'add' };
     case 'rtf':
-      return parseRtfImport(text);
+      return { notes: parseRtfImport(text), mode: 'add' };
     case 'txt':
     default:
-      return parsePlainTextImport(text);
+      return { notes: parsePlainTextImport(text), mode: 'add' };
   }
 }

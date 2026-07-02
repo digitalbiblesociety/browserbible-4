@@ -1,10 +1,7 @@
 import { showNotice } from './notice.js';
-
-function stripHtml(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || '';
-}
+import { stripHtml } from './sanitize.js';
+import { SCHEMA_VERSION } from './NotesStore.js';
+import { t } from '../../lib/i18n.js';
 
 function escapeRtf(text) {
   if (!text) return '';
@@ -65,7 +62,7 @@ function htmlToRtf(html) {
   return rtf;
 }
 
-function notesToPlainText(notes) {
+export function notesToPlainText(notes) {
   const lines = [];
   const divider = '='.repeat(50);
 
@@ -85,7 +82,7 @@ function notesToPlainText(notes) {
   return lines.join('\n');
 }
 
-function notesToMarkdown(notes) {
+export function notesToMarkdown(notes) {
   const lines = [];
 
   for (const note of notes) {
@@ -105,7 +102,7 @@ function notesToMarkdown(notes) {
   return lines.join('\n');
 }
 
-function notesToRtf(notes) {
+export function notesToRtf(notes) {
   const lines = ['{\\rtf1\\ansi\\deff0'];
   lines.push('{\\fonttbl{\\f0 Times New Roman;}}');
 
@@ -134,13 +131,24 @@ function notesToRtf(notes) {
 }
 
 /**
- * Download notes in the specified format
- * @param {Array} notes - Array of note objects
- * @param {string} format - 'markdown', 'text', or 'rtf'
+ * JSON backup: the only export that round-trips every field (ids, pinned,
+ * timestamps, fragmentid links) through import unchanged.
+ */
+export function notesToJson(notes) {
+  return JSON.stringify(
+    { version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), notes },
+    null,
+    2
+  );
+}
+
+/**
+ * Download notes as a file.
+ * @param {string} format - 'markdown', 'text', 'rtf', or 'json'
  */
 export function downloadNotes(notes, format) {
   if (!notes || notes.length === 0) {
-    showNotice('No notes to download');
+    showNotice(t('windows.notes.noNotesToDownload'));
     return;
   }
 
@@ -156,6 +164,11 @@ export function downloadNotes(notes, format) {
       content = notesToRtf(notes);
       filename = 'notes.rtf';
       mimeType = 'application/rtf';
+      break;
+    case 'json':
+      content = notesToJson(notes);
+      filename = `notes-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      mimeType = 'application/json';
       break;
     case 'text':
     default:

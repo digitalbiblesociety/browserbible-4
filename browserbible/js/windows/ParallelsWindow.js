@@ -5,6 +5,7 @@
 import { BaseWindow, AsyncHelpers, registerWindowComponent } from './BaseWindow.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
 import { i18n } from '../lib/i18n.js';
+import { toBcp47Lang } from '../lib/bcp47.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { loadSection, getText, loadTexts } from '../texts/TextLoader.js';
 
@@ -14,15 +15,97 @@ const loadSectionAsync = (textInfo, sectionId) => AsyncHelpers.promisifyWithErro
   (ti, sid, success, error) => loadSection(ti, sid, success, error),
   textInfo, sectionId
 );
-const iso2iana = {
-  afr: 'af', arz: 'ar', bul: 'bg', cat: 'ca', cym: 'cy', dan: 'da',
-  dut: 'nl', eng: 'en', epo: 'eo', est: 'et', fin: 'fi', fra: 'fr',
-  fre: 'fr', glg: 'gl', grc: 'el', grk: 'el', heb: 'he', hun: 'hu',
-  ice: 'is', ina: 'ia', isl: 'is', ita: 'it', lat: 'la', lit: 'lt',
-  mon: 'mn', nld: 'nl', nno: 'nn', nob: 'nb', por: 'pt', rus: 'ru',
-  slv: 'sl', spa: 'es', swe: 'sv', tur: 'tr', ukr: 'uk', wel: 'cy'
-};
-const convertLang = (iso) => iso2iana[iso] ?? iso;
+
+/**
+ * Localized book name for the current text: the text's own division names win,
+ * then BOOK_DATA names for the text's language, then English, then the code.
+ */
+export function getBookName(textInfo, bookid) {
+  const divIndex = textInfo?.divisions?.indexOf(bookid) ?? -1;
+  const divName = divIndex >= 0 ? textInfo?.divisionNames?.[divIndex] : null;
+  if (divName) return Array.isArray(divName) ? divName[0] : divName;
+
+  const names = BOOK_DATA[bookid]?.names ?? {};
+  const langNames = names[textInfo?.lang] ?? names.eng ?? [];
+  const first = langNames[0];
+  const name = Array.isArray(first) ? first[0] : first;
+  return name ?? bookid;
+}
+
+/**
+ * Parse a passage reference into section loads. Handles the formats found in
+ * the parallels data: "1:3", "2:2-3", "1:1-12, 14-17", "8:28-34; 9:1",
+ * cross-chapter ranges "8:32-9:9" / "15:39- 16:12", and bare chapters "13".
+ *
+ * @returns {Array<{sectionid: string, fragmentids: string[]}>} one entry per
+ *   chapter section, in reading order
+ */
+export function parsePassageReference(passage, bookid) {
+  const chapterCounts = BOOK_DATA[bookid]?.chapters ?? [];
+  const versesIn = (ch) => chapterCounts[ch - 1] ?? 200;
+  const refs = [];
+  let chapter = null;
+
+  const pushRange = (startCh, startV, endCh, endV) => {
+    let c = startCh;
+    let v = startV;
+    while ((c < endCh || (c === endCh && v <= endV)) && refs.length < 2000) {
+      refs.push({ chapter: c, verse: v });
+      v++;
+      if (c < endCh && v > versesIn(c)) {
+        c++;
+        v = 1;
+      }
+    }
+  };
+
+  for (const rawSegment of String(passage).split(';')) {
+    const segment = rawSegment.trim();
+    if (!segment) continue;
+
+    let list = segment;
+    const chapterMatch = segment.match(/^(\d+)\s*:\s*(.*)$/);
+    if (chapterMatch) {
+      chapter = parseInt(chapterMatch[1], 10);
+      list = chapterMatch[2];
+    } else if (/^\d+$/.test(segment)) {
+      // bare chapter reference
+      chapter = parseInt(segment, 10);
+      pushRange(chapter, 1, chapter, versesIn(chapter));
+      continue;
+    }
+    if (chapter === null) continue;
+
+    for (const rawItem of list.split(',')) {
+      const item = rawItem.trim();
+      if (!item) continue;
+      const m = item.match(/^(\d+)(?:\s*-\s*(?:(\d+)\s*:\s*)?(\d+)[ab]?)?$/);
+      if (!m) continue;
+
+      const startVerse = parseInt(m[1], 10);
+      if (!m[3]) {
+        refs.push({ chapter, verse: startVerse });
+        continue;
+      }
+      const endChapter = m[2] ? parseInt(m[2], 10) : chapter;
+      pushRange(chapter, startVerse, endChapter, parseInt(m[3], 10));
+      chapter = endChapter;
+    }
+  }
+
+  const groups = [];
+  for (const ref of refs) {
+    const sectionid = `${bookid}${ref.chapter}`;
+    const last = groups[groups.length - 1];
+    const fragmentid = `${sectionid}_${ref.verse}`;
+    if (last?.sectionid === sectionid) {
+      last.fragmentids.push(fragmentid);
+    } else {
+      groups.push({ sectionid, fragmentids: [fragmentid] });
+    }
+  }
+  return groups;
+}
 
 class ParallelsWindowComponent extends BaseWindow {
   constructor() {
@@ -34,13 +117,14 @@ class ParallelsWindowComponent extends BaseWindow {
       currentTextInfo: null,
       textsInitialized: false,
       parallelsData: null,
-      currentParallelData: null,
-      currentCells: null,
-      currentCellIndex: -1
+      currentParallelData: null
     };
 
     this.textChooser = getGlobalTextChooser();
     this.columnFormat = 'inlinetitle';
+    // bumped whenever the parallel set or version changes, so in-flight
+    // passage loads for the previous table know to stop
+    this._loadGeneration = 0;
   }
 
   async render() {
@@ -102,18 +186,13 @@ class ParallelsWindowComponent extends BaseWindow {
   async init() {
     this.refs.textlistui.innerHTML = 'Version';
 
+    // A window added from the menu arrives with empty initData; fall back to
+    // defaults so the first open isn't a blank pane.
     const initData = this.initData || {};
-    if (Object.keys(initData).length === 0) {
-      return;
-    }
-
-    if (!initData.textid) {
-      initData.textid = this.config.newBibleWindowVersion;
-    }
 
     await Promise.all([
       this.loadParallelsIndex(initData.parallelid),
-      this.loadInitialText(initData.textid)
+      this.loadInitialText(initData.textid || this.config.newBibleWindowVersion)
     ]);
 
     this.startup();
@@ -156,18 +235,14 @@ class ParallelsWindowComponent extends BaseWindow {
 
     if (textRow?.classList.contains('parallel-entry-text-collapsed')) {
       textRow.classList.remove('parallel-entry-text-collapsed');
-      this.state.currentCells = textRow.querySelectorAll('td');
-      this.state.currentCellIndex = 0;
-      this.loadNextPassage();
+      this.loadCells(textRow.querySelectorAll('td'));
     } else if (textRow) {
       textRow.classList.add('parallel-entry-text-collapsed');
     }
   }
 
   handleShowAll() {
-    this.state.currentCells = this.refs.main.querySelectorAll('tr.parallel-entry-text-collapsed td');
-    this.state.currentCellIndex = 0;
-    this.loadNextPassage();
+    this.loadCells(this.refs.main.querySelectorAll('tr.parallel-entry-text-collapsed td'));
   }
 
   handleHideAll() {
@@ -201,6 +276,7 @@ class ParallelsWindowComponent extends BaseWindow {
       }
     } catch (err) {
       console.error('Error loading parallels data', err);
+      this.showError('Failed to load parallels list', err);
     }
   }
 
@@ -240,6 +316,7 @@ class ParallelsWindowComponent extends BaseWindow {
         this.refs.textlistui.innerHTML = this.state.currentTextInfo.abbr;
       } catch (fallbackErr) {
         console.error('Error loading fallback text', fallbackErr);
+        this.showError('Failed to load Bible text', fallbackErr);
       }
     }
   }
@@ -253,8 +330,9 @@ class ParallelsWindowComponent extends BaseWindow {
   async loadParallelData() {
     this.refs.main.innerHTML = '';
     this.state.currentParallelData = null;
-    this.state.currentCells = null;
-    this.state.currentCellIndex = -1;
+    this._loadGeneration++;
+
+    if (!this.refs.parallelsList.value) return;
 
     try {
       const response = await fetch(`${this.config.baseContentUrl}content/parallels/${this.refs.parallelsList.value}`);
@@ -265,16 +343,18 @@ class ParallelsWindowComponent extends BaseWindow {
       this.createParallel();
     } catch (err) {
       console.error('Error loading parallel data', err);
+      this.showError('Failed to load parallel passages', err);
     }
   }
 
   createParallelHeader(title, description) {
+    // description is bundled app content and may contain markup (links)
     return [
       `<h1>${this.escapeHtml(title)}</h1>`,
-      `<p class="parallel-description">${this.escapeHtml(description)}</p>`,
+      `<p class="parallel-description">${description ?? ''}</p>`,
       '<div class="parallels-buttons">',
-      `<span class="parallel-show-all">${i18n.t('windows.parallel.showall')}</span>`,
-      `<span class="parallel-hide-all">${i18n.t('windows.parallel.hideall')}</span>`,
+      `<button type="button" class="parallel-show-all">${i18n.t('windows.parallel.showall')}</button>`,
+      `<button type="button" class="parallel-hide-all">${i18n.t('windows.parallel.hideall')}</button>`,
       '</div>'
     ];
   }
@@ -286,7 +366,7 @@ class ParallelsWindowComponent extends BaseWindow {
   createPassageCells(row, style) {
     const cells = [];
     const books = row.books ?? this.state.currentParallelData.books;
-    const lang = convertLang(this.state.currentTextInfo.lang);
+    const lang = toBcp47Lang(this.state.currentTextInfo?.lang) ?? '';
 
     for (let j = 0, jl = row.passages.length; j < jl; j++) {
       const passage = row.passages[j];
@@ -294,7 +374,7 @@ class ParallelsWindowComponent extends BaseWindow {
       if (passage === null) {
         cells.push(`<td class="parallel-passage" ${style}>-</td>`);
       } else {
-        const bookName = BOOK_DATA[books[j]].names[this.state.currentTextInfo.lang][0];
+        const bookName = getBookName(this.state.currentTextInfo, books[j]);
         cells.push(`<td class="parallel-passage" ${style} lang="${lang}">${this.escapeHtml(bookName)} ${this.escapeHtml(passage)}</td>`);
       }
     }
@@ -305,7 +385,7 @@ class ParallelsWindowComponent extends BaseWindow {
   createTextCells(row) {
     const cells = [];
     const books = row.books ?? this.state.currentParallelData.books;
-    const lang = convertLang(this.state.currentTextInfo.lang);
+    const lang = toBcp47Lang(this.state.currentTextInfo?.lang) ?? '';
 
     for (let j = 0, jl = row.passages.length; j < jl; j++) {
       const passage = row.passages[j];
@@ -313,7 +393,7 @@ class ParallelsWindowComponent extends BaseWindow {
       if (passage === null) {
         cells.push('<td></td>');
       } else {
-        cells.push(`<td class="reading-text" data-bookid="${books[j]}" data-passage="${passage}" lang="${lang}"></td>`);
+        cells.push(`<td class="reading-text" data-bookid="${this.escapeHtml(books[j])}" data-passage="${this.escapeHtml(passage)}" lang="${lang}"></td>`);
       }
     }
 
@@ -366,46 +446,13 @@ class ParallelsWindowComponent extends BaseWindow {
     this.refs.main.innerHTML = html.join('');
   }
 
-  loadNextPassage() {
-    if (this.state.currentCellIndex < this.state.currentCells.length) {
-      const cell = this.state.currentCells[this.state.currentCellIndex];
+  async loadCells(cells) {
+    const generation = this._loadGeneration;
 
-      this.processCell(cell, () => {
-        this.state.currentCellIndex++;
-        this.loadNextPassage();
-      });
+    for (const cell of cells) {
+      if (generation !== this._loadGeneration) return;
+      await this.processCell(cell, generation);
     }
-  }
-
-  parseVerseRange(verseRange, sectionid) {
-    const fragmentids = [];
-
-    if (verseRange.length === 1) {
-      fragmentids.push(`${sectionid}_${verseRange[0].trim()}`);
-    } else if (verseRange.length === 2) {
-      const start = parseInt(verseRange[0], 10);
-      const end = parseInt(verseRange[1], 10);
-
-      for (let verse = start; verse <= end; verse++) {
-        fragmentids.push(`${sectionid}_${verse}`);
-      }
-    }
-
-    return fragmentids;
-  }
-
-  parsePassageReference(passage, bookid) {
-    const sectionid = bookid + passage.split(':')[0];
-    const verseParts = passage.split(':')[1];
-    const verseRanges = verseParts.split(',');
-    const fragmentids = [];
-
-    for (let i = 0, il = verseRanges.length; i < il; i++) {
-      const verseRange = verseRanges[i].split('-');
-      fragmentids.push(...this.parseVerseRange(verseRange, sectionid));
-    }
-
-    return { sectionid, fragmentids };
   }
 
   prepareContentElement(content) {
@@ -426,8 +473,6 @@ class ParallelsWindowComponent extends BaseWindow {
   }
 
   appendVerseNodes(cell, contentEl, fragmentids) {
-    cell.innerHTML = '';
-
     for (let i = 0, il = fragmentids.length; i < il; i++) {
       const fragmentid = fragmentids[i];
       const verseNode = contentEl.querySelector(`.v[data-id="${fragmentid}"]`);
@@ -442,34 +487,33 @@ class ParallelsWindowComponent extends BaseWindow {
     }
   }
 
-  async processCell(cell, callback) {
+  async processCell(cell, generation) {
     cell.closest('tr')?.classList.remove('parallel-entry-text-collapsed');
 
-    if (cell.classList.contains('parallel-text-loaded')) {
-      callback?.();
-      return;
-    }
+    if (cell.classList.contains('parallel-text-loaded')) return;
 
     const bookid = cell.getAttribute('data-bookid');
     const passage = cell.getAttribute('data-passage');
 
-    if (!bookid || !passage) {
-      callback?.();
-      return;
+    if (!bookid || !passage) return;
+
+    const groups = parsePassageReference(passage, bookid);
+    cell.innerHTML = '';
+
+    for (const { sectionid, fragmentids } of groups) {
+      try {
+        const content = await loadSectionAsync(this.state.currentTextInfo, sectionid);
+
+        // the table may have been rebuilt while this section was in flight
+        if (generation !== this._loadGeneration || !cell.isConnected) return;
+
+        this.appendVerseNodes(cell, this.prepareContentElement(content), fragmentids);
+      } catch (err) {
+        // section not available in this text (e.g. NT-only Bibles); leave the cell empty
+      }
     }
 
-    try {
-      const { sectionid, fragmentids } = this.parsePassageReference(passage, bookid);
-      const content = await loadSectionAsync(this.state.currentTextInfo, sectionid);
-      const contentEl = this.prepareContentElement(content);
-
-      this.appendVerseNodes(cell, contentEl, fragmentids);
-
-      cell.classList.add('parallel-text-loaded');
-      callback?.();
-    } catch (err) {
-      callback?.();
-    }
+    cell.classList.add('parallel-text-loaded');
   }
 
   size(width, height) {

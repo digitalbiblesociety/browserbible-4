@@ -1,11 +1,22 @@
 /**
  * NotesWindow - Web Component for note-taking with verse linking
+ *
+ * Notes live in a shared NotesStore (one per tab, synced across tabs), so
+ * multiple Notes windows stay consistent. This class owns the editor buffer
+ * and view state (filter/sort/search/selection) only.
  */
 
 import { BaseWindow, registerWindowComponent } from './BaseWindow.js';
+import { Reference } from '../bible/BibleReference.js';
+import { t } from '../lib/i18n.js';
 import { downloadNotes } from './NotesWindow/download.js';
 import { parseImportedFile } from './NotesWindow/upload.js';
 import { printNotes } from './NotesWindow/print.js';
+import { getSharedNotesStore } from './NotesWindow/NotesStore.js';
+import { filterAndSortNotes } from './NotesWindow/query.js';
+import { sanitizeHtml, stripHtml } from './NotesWindow/sanitize.js';
+import { detectReferences } from './NotesWindow/references.js';
+import { showNotice, showConfirm } from './NotesWindow/notice.js';
 import {
   updateSearchSuggestions,
   hideSearchSuggestions,
@@ -15,18 +26,11 @@ import {
 import {
   renderWindowStructure,
   renderNotesList,
-  stripHtml
+  renderDetectedRefs
 } from './NotesWindow/render.js';
 
-const STORAGE_KEY = 'browserbible_notes';
 const AUTOSAVE_DELAY_MS = 1000;
-
-/**
- * Generate a UUID for note IDs
- */
-function generateId() {
-  return 'note_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-}
+const NARROW_WIDTH_PX = 480;
 
 /**
  * NotesWindow Web Component
@@ -38,11 +42,12 @@ class NotesWindowComponent extends BaseWindow {
 
     this.state = {
       ...this.state,
-      notes: [],
       currentNoteId: null,
       currentReference: null,
       currentReferenceDisplay: null,
+      currentTextId: null,
       filterMode: 'all',
+      sortMode: 'modified',
       searchQuery: '',
       isDirty: false,
       sidebarVisible: true,
@@ -50,7 +55,10 @@ class NotesWindowComponent extends BaseWindow {
       selectedSuggestionIndex: -1
     };
 
+    this.store = getSharedNotesStore();
     this._autosaveTimer = null;
+    this._selfChange = false;
+    this._quotaNotified = false;
   }
 
   async render() {
@@ -76,6 +84,7 @@ class NotesWindowComponent extends BaseWindow {
     this.refs.printMenu = this.$('.notes-print-menu');
     this.refs.printVersesCheckbox = this.$('.notes-print-verses-checkbox');
     this.refs.filter = this.$('.notes-filter');
+    this.refs.sortSelect = this.$('.notes-sort');
     this.refs.search = this.$('.notes-search');
     this.refs.searchSuggestions = this.$('.notes-search-suggestions');
     this.refs.sidebar = this.$('.notes-sidebar');
@@ -84,40 +93,35 @@ class NotesWindowComponent extends BaseWindow {
     this.refs.titleInput = this.$('.notes-title-input');
     this.refs.referenceBadge = this.$('.notes-reference-badge');
     this.refs.unlinkBtn = this.$('.notes-unlink-btn');
+    this.refs.pinToggle = this.$('.notes-pin-toggle');
     this.refs.deleteBtn = this.$('.notes-delete-btn');
     this.refs.toolbar = this.$('.notes-richtext-toolbar');
     this.refs.editor = this.$('.notes-editor');
+    this.refs.detectedRefs = this.$('.notes-detected-refs');
     this.refs.status = this.$('.notes-status');
     this.refs.modified = this.$('.notes-modified');
     this.refs.emptyState = this.$('.notes-empty-state');
   }
 
   attachEventListeners() {
-    // Sidebar toggle button
     this.addListener(this.refs.sidebarToggle, 'click', () => this.toggleSidebar());
-
-    // New note button
     this.addListener(this.refs.newBtn, 'click', () => this.createNewNote());
-
-    // Link button
     this.addListener(this.refs.linkBtn, 'click', () => this.linkCurrentNote());
 
-    // Download button
     this.addListener(this.refs.downloadBtn, 'click', () => {
       this.refs.downloadMenu.classList.toggle('visible');
     });
 
-    // Download menu items
     this.addListener(this.refs.downloadMenu, 'click', (e) => {
       const item = e.target.closest('.notes-download-item');
       if (item) {
-        const format = item.dataset.format;
-        downloadNotes(this.state.notes, format);
+        this.saveCurrentNote();
+        downloadNotes(this.store.getAll(), item.dataset.format);
         this.refs.downloadMenu.classList.remove('visible');
       }
     });
 
-    // Hide download menu on outside click
+    // Close dropdown menus on outside click
     this.addListener(document, 'click', (e) => {
       if (!e.target.closest('.notes-download-container')) {
         this.refs.downloadMenu.classList.remove('visible');
@@ -127,12 +131,10 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Upload button
     this.addListener(this.refs.uploadBtn, 'click', () => {
       this.refs.uploadInput.click();
     });
 
-    // Upload file input change
     this.addListener(this.refs.uploadInput, 'change', () => {
       const file = this.refs.uploadInput.files[0];
       if (file) {
@@ -141,12 +143,10 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Print button
     this.addListener(this.refs.printBtn, 'click', () => {
       this.refs.printMenu.classList.toggle('visible');
     });
 
-    // Print menu items
     this.addListener(this.refs.printMenu, 'click', (e) => {
       const item = e.target.closest('.notes-print-item');
       if (item) {
@@ -162,20 +162,24 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Filter dropdown
     this.addListener(this.refs.filter, 'change', () => {
       this.state.filterMode = this.refs.filter.value;
       this.renderNotesList();
+      this.notifySettingsChange();
     });
 
-    // Search input
+    this.addListener(this.refs.sortSelect, 'change', () => {
+      this.state.sortMode = this.refs.sortSelect.value;
+      this.renderNotesList();
+      this.notifySettingsChange();
+    });
+
     this.addListener(this.refs.search, 'input', () => {
       this.state.searchQuery = this.refs.search.value;
-      updateSearchSuggestions(this.state, this.refs);
+      updateSearchSuggestions(this.state, this.refs, this.store.getAll(), this.getPlainText);
       this.renderNotesList();
     });
 
-    // Search keyboard navigation
     this.addListener(this.refs.search, 'keydown', (e) => {
       if (!this.refs.searchSuggestions.classList.contains('visible')) return;
 
@@ -193,19 +197,18 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Search blur - hide suggestions
+    // Delay on blur so a click on a suggestion lands before the list hides
     this.addListener(this.refs.search, 'blur', () => {
       setTimeout(() => hideSearchSuggestions(this.state, this.refs), 150);
     });
 
-    // Search focus - show suggestions if query exists
     this.addListener(this.refs.search, 'focus', () => {
       if (this.refs.search.value.trim()) {
-        updateSearchSuggestions(this.state, this.refs);
+        updateSearchSuggestions(this.state, this.refs, this.store.getAll(), this.getPlainText);
       }
     });
 
-    // Suggestion click
+    // mousedown so the pick fires before the search input's blur
     this.addListener(this.refs.searchSuggestions, 'mousedown', (e) => {
       const item = e.target.closest('.notes-suggestion-item');
       if (item) {
@@ -214,27 +217,32 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Note list click
     this.addListener(this.refs.list, 'click', (e) => {
+      const pinBtn = e.target.closest('.notes-pin-btn');
+      if (pinBtn) {
+        const item = pinBtn.closest('.notes-list-item');
+        if (item) this.togglePinNote(item.dataset.noteId);
+        return;
+      }
       const item = e.target.closest('.notes-list-item');
       if (item) {
         this.selectNote(item.dataset.noteId);
       }
     });
 
-    // Title input
     this.addListener(this.refs.titleInput, 'input', () => {
       this.markDirty();
       this.scheduleAutosave();
     });
 
-    // Unlink button
     this.addListener(this.refs.unlinkBtn, 'click', () => this.unlinkCurrentNote());
 
-    // Delete button
+    this.addListener(this.refs.pinToggle, 'click', () => {
+      if (this.state.currentNoteId) this.togglePinNote(this.state.currentNoteId);
+    });
+
     this.addListener(this.refs.deleteBtn, 'click', () => this.deleteCurrentNote());
 
-    // Toolbar buttons
     this.addListener(this.refs.toolbar, 'click', (e) => {
       const btn = e.target.closest('button');
       if (btn) {
@@ -244,13 +252,21 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Editor input
     this.addListener(this.refs.editor, 'input', () => {
+      this.normalizeEmptyEditor();
       this.markDirty();
       this.scheduleAutosave();
     });
 
-    // Keyboard shortcuts in editor
+    this.addListener(this.refs.editor, 'paste', (e) => this.handlePaste(e));
+
+    this.addListener(this.refs.detectedRefs, 'click', (e) => {
+      const chip = e.target.closest('.notes-ref-chip');
+      if (chip) {
+        this.navigateToReference(chip.dataset.fragmentid, chip.dataset.sectionid);
+      }
+    });
+
     this.addListener(this.refs.editor, 'keydown', (e) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {
@@ -270,120 +286,199 @@ class NotesWindowComponent extends BaseWindow {
       }
     });
 
-    // Message handling for Bible navigation
     this.on('message', (e) => this.handleMessage(e));
   }
 
   async init() {
-    this.loadNotes();
-    this.renderNotesList();
-    this.updateEditorVisibility();
+    // Bound getter shared with search/render helpers
+    this.getPlainText = (id) => this.store.getPlainText(id);
 
-    // Load initial state from params
-    const initNoteId = this.getParam('noteId');
+    this._onStoreChange = (e) => this.handleStoreChange(e);
+    this._onStoreError = (e) => this.handleStoreError(e);
+    this.store.on('change', this._onStoreChange);
+    this.store.on('error', this._onStoreError);
+
+    // The corrupt-load error fires during store construction, before any
+    // window can subscribe, so read the flag instead.
+    if (this.store.corruptionDetected) {
+      showNotice(t('windows.notes.corruptError'));
+    }
+
     const initFilter = this.getParam('filter');
-
     if (initFilter) {
       this.state.filterMode = initFilter;
       this.refs.filter.value = initFilter;
     }
 
+    const initSort = this.getParam('sort');
+    if (initSort) {
+      this.state.sortMode = initSort;
+      this.refs.sortSelect.value = initSort;
+    }
+
+    // Settings restore round-trips as a boolean, URL params as a string
+    const initSidebar = this.getParam('sidebarVisible');
+    if (initSidebar === false || initSidebar === 'false') {
+      this.state.sidebarVisible = false;
+      this.refs.sidebar.classList.add('hidden');
+    }
+
+    this.renderNotesList();
+    this.updateEditorVisibility();
+
+    const initNoteId = this.getParam('noteId');
     if (initNoteId) {
       this.selectNote(initNoteId);
     }
+
+    // Ask Bible windows to re-broadcast their position so linking works
+    // before the user's next navigation.
+    this.requestCurrentContent();
   }
 
   cleanup() {
     if (this._autosaveTimer) {
       clearTimeout(this._autosaveTimer);
+      this._autosaveTimer = null;
       this.saveCurrentNote();
     }
+    // The shared store outlives this window, so always detach.
+    if (this._onStoreChange) this.store.off('change', this._onStoreChange);
+    if (this._onStoreError) this.store.off('error', this._onStoreError);
     super.cleanup();
   }
 
-  handleMessage(e) {
-    if (e.data.messagetype === 'nav' && e.data.type === 'bible' && e.data.locationInfo) {
-      // Update current reference from Bible navigation
-      this.state.currentReference = e.data.locationInfo.fragmentid || null;
-      this.state.currentReferenceDisplay = this.formatReferenceDisplay(e.data.locationInfo);
+  // --- Store events ---
 
-      // If filter is set to "current verse", update the list
-      if (this.state.filterMode === 'reference') {
+  handleStoreChange() {
+    this.renderNotesList();
+
+    const currentId = this.state.currentNoteId;
+    if (!currentId) return;
+
+    const note = this.store.get(currentId);
+    if (!note) {
+      // Deleted in another window/tab. With local edits pending, keep the
+      // buffer; the next autosave re-adds it through store.update().
+      if (!this.state.isDirty) {
+        this.state.currentNoteId = null;
+        this.updateEditorVisibility();
         this.renderNotesList();
       }
+      return;
     }
+
+    // Skip editor refresh for this window's own writes and while the user
+    // has unsaved local edits (their keystrokes win).
+    if (this._selfChange || this.state.isDirty) return;
+
+    this.refs.titleInput.value = note.title || '';
+    this.refs.editor.innerHTML = sanitizeHtml(note.content || '');
+    this.normalizeEmptyEditor();
+    this.updateEditorChrome(note);
+    this.refs.modified.textContent = t('windows.notes.modified', { date: new Date(note.modified).toLocaleString() });
+    this.updateDetectedRefs();
+  }
+
+  handleStoreError(e) {
+    if (e.code === 'quota') {
+      this.refs.status.textContent = t('windows.notes.notSaved');
+      if (!this._quotaNotified) {
+        this._quotaNotified = true;
+        showNotice(t('windows.notes.quotaError'));
+      }
+    } else if (e.code === 'corrupt') {
+      showNotice(t('windows.notes.corruptError'));
+    } else {
+      this.refs.status.textContent = t('windows.notes.saveFailed');
+    }
+  }
+
+  /** Mark store writes from this window so change events don't bounce back into the editor. */
+  _withStoreWrite(fn) {
+    this._selfChange = true;
+    try {
+      return fn();
+    } finally {
+      this._selfChange = false;
+    }
+  }
+
+  // --- Navigation messages ---
+
+  handleMessage(e) {
+    const data = e?.data;
+    if (!data) return;
+
+    if (data.messagetype === 'nav' && data.type === 'bible' && data.locationInfo) {
+      this.setCurrentReference(data.locationInfo.fragmentid || null);
+    } else if (data.messagetype === 'textload') {
+      // Covers replies to requestCurrentContent() and regular text loads.
+      // Carries the position and the Bible version (used to print verse text).
+      if (data.textid) this.state.currentTextId = data.textid;
+      if (data.fragmentid) this.setCurrentReference(data.fragmentid);
+    }
+  }
+
+  setCurrentReference(fragmentid) {
+    this.state.currentReference = fragmentid || null;
+    this.state.currentReferenceDisplay = fragmentid
+      ? this.formatReferenceDisplay({ fragmentid })
+      : null;
+
+    if (this.state.filterMode === 'reference') {
+      this.renderNotesList();
+    }
+  }
+
+  requestCurrentContent() {
+    // Historical message name: TextWindow answers exactly this shape
+    // (originally added for MapWindow) by re-broadcasting a 'textload'.
+    this.trigger('globalmessage', {
+      type: 'globalmessage',
+      target: this,
+      data: { messagetype: 'maprequest', requesttype: 'currentcontent' }
+    });
+  }
+
+  navigateToReference(fragmentid, sectionid) {
+    if (!fragmentid) return;
+    this.setCurrentReference(fragmentid);
+    this.trigger('globalmessage', {
+      type: 'globalmessage',
+      target: this,
+      data: { messagetype: 'nav', type: 'bible', locationInfo: { sectionid, fragmentid } }
+    });
   }
 
   formatReferenceDisplay(locationInfo) {
-    if (!locationInfo?.fragmentid) return null;
-    // Convert fragmentid like "JN3_16" to display like "John 3:16"
-    // This is a simple version; could use BibleReference for better formatting
-    const fid = locationInfo.fragmentid;
-    const match = fid.match(/^([A-Z0-9]+)(\d+)_(\d+)$/);
-    if (match) {
-      return `${match[1]} ${match[2]}:${match[3]}`;
-    }
-    return fid;
+    const fid = locationInfo?.fragmentid;
+    if (!fid) return null;
+    const ref = Reference(fid);
+    return ref?.isValid() ? ref.toString() : fid;
   }
 
-  loadNotes() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const data = JSON.parse(stored);
-        this.state.notes = data.notes || [];
-      } else {
-        this.state.notes = [];
-      }
-    } catch (e) {
-      console.error('Failed to load notes:', e);
-      this.state.notes = [];
-    }
-  }
-
-  saveNotes() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ notes: this.state.notes }));
-    } catch (e) {
-      console.error('Failed to save notes:', e);
-    }
-  }
+  // --- List rendering ---
 
   getFilteredNotes() {
-    let notes = [...this.state.notes];
-
-    // Apply filter
-    switch (this.state.filterMode) {
-      case 'linked':
-        notes = notes.filter(n => n.reference);
-        break;
-      case 'standalone':
-        notes = notes.filter(n => !n.reference);
-        break;
-      case 'reference':
-        notes = notes.filter(n => n.reference === this.state.currentReference);
-        break;
-    }
-
-    // Apply search
-    if (this.state.searchQuery) {
-      const query = this.state.searchQuery.toLowerCase();
-      notes = notes.filter(n =>
-        (n.title || '').toLowerCase().includes(query) ||
-        stripHtml(n.content || '').toLowerCase().includes(query)
-      );
-    }
-
-    // Sort by modified date descending
-    notes.sort((a, b) => b.modified - a.modified);
-
-    return notes;
+    return filterAndSortNotes(this.store.getAll(), {
+      filterMode: this.state.filterMode,
+      currentReference: this.state.currentReference,
+      searchQuery: this.state.searchQuery,
+      sortMode: this.state.sortMode,
+      getPlainText: this.getPlainText
+    });
   }
 
   renderNotesList() {
     const notes = this.getFilteredNotes();
+    const emptyMessage = this.store.getAll().length === 0
+      ? t('windows.notes.emptyListHint')
+      : t('windows.notes.noNotesFound');
     this.refs.list.innerHTML = '';
-    this.refs.list.appendChild(renderNotesList(notes, this.state.currentNoteId));
+    this.refs.list.appendChild(
+      renderNotesList(notes, this.state.currentNoteId, this.getPlainText, emptyMessage)
+    );
   }
 
   updateEditorVisibility() {
@@ -399,55 +494,61 @@ class NotesWindowComponent extends BaseWindow {
   toggleSidebar() {
     this.state.sidebarVisible = !this.state.sidebarVisible;
     this.refs.sidebar.classList.toggle('hidden', !this.state.sidebarVisible);
+    this.notifySettingsChange();
   }
 
   selectSuggestion(index) {
     const noteId = selectSuggestion(this.state, this.refs, index);
     if (noteId) {
+      this.state.searchQuery = '';
       this.selectNote(noteId);
       this.renderNotesList();
     }
   }
 
+  // --- Note operations ---
+
   createNewNote() {
-    // Save any current note first
     this.saveCurrentNote();
 
-    const now = Date.now();
-    const newNote = {
-      id: generateId(),
-      title: '',
-      content: '',
-      reference: null,
-      referenceDisplay: null,
-      created: now,
-      modified: now
-    };
-
-    this.state.notes.unshift(newNote);
-    this.saveNotes();
-    this.selectNote(newNote.id);
-    this.renderNotesList();
-
-    // Focus the title input
+    const note = this._withStoreWrite(() => this.store.create({}));
+    this.selectNote(note.id);
     this.refs.titleInput.focus();
   }
 
   selectNote(noteId) {
-    // Save current note before switching
     this.saveCurrentNote();
 
-    const note = this.state.notes.find(n => n.id === noteId);
+    const note = this.store.get(noteId);
     if (!note) return;
 
     this.state.currentNoteId = noteId;
     this.state.isDirty = false;
 
-    // Update editor
+    // Sanitize on the way in: old data or other sources may predate the
+    // write-side sanitization
     this.refs.titleInput.value = note.title || '';
-    this.refs.editor.innerHTML = note.content || '';
+    this.refs.editor.innerHTML = sanitizeHtml(note.content || '');
+    this.normalizeEmptyEditor();
 
-    // Update reference badge
+    this.updateEditorChrome(note);
+    this.refs.modified.textContent = t('windows.notes.modified', { date: new Date(note.modified).toLocaleString() });
+    this.refs.status.textContent = '';
+
+    this.updateEditorVisibility();
+    this.renderNotesList();
+    this.updateDetectedRefs();
+
+    // In narrow mode the sidebar overlays the editor, so close it after picking
+    if (this.classList.contains('notes-narrow') && this.state.sidebarVisible) {
+      this.toggleSidebar();
+    }
+
+    this.notifySettingsChange();
+  }
+
+  /** Sync the reference badge, unlink button, and pin toggle to a note. */
+  updateEditorChrome(note) {
     if (note.reference) {
       this.refs.referenceBadge.textContent = note.referenceDisplay || note.reference;
       this.refs.referenceBadge.classList.add('visible');
@@ -457,164 +558,200 @@ class NotesWindowComponent extends BaseWindow {
       this.refs.unlinkBtn.classList.remove('visible');
     }
 
-    // Update modified display
-    this.refs.modified.textContent = `Modified: ${new Date(note.modified).toLocaleString()}`;
-    this.refs.status.textContent = '';
-
-    this.updateEditorVisibility();
-    this.renderNotesList();
-
-    this.trigger('settingschange', { type: 'settingschange', target: this, data: null });
+    this.refs.pinToggle.classList.toggle('active', !!note.pinned);
+    this.refs.pinToggle.title = t(note.pinned ? 'windows.notes.unpin' : 'windows.notes.pin');
+    this.refs.pinToggle.setAttribute('aria-pressed', String(!!note.pinned));
   }
 
   saveCurrentNote() {
     if (!this.state.currentNoteId || !this.state.isDirty) return;
 
-    const note = this.state.notes.find(n => n.id === this.state.currentNoteId);
-    if (!note) return;
+    const title = this.refs.titleInput.value.trim() || this.getAutoTitle();
+    const content = sanitizeHtml(this.refs.editor.innerHTML);
 
-    note.title = this.refs.titleInput.value.trim() || this.getAutoTitle();
-    note.content = this.refs.editor.innerHTML;
-    note.modified = Date.now();
+    const updated = this._withStoreWrite(() =>
+      this.store.update(this.state.currentNoteId, { title, content })
+    );
 
-    this.saveNotes();
     this.state.isDirty = false;
-    this.refs.status.textContent = 'Saved';
-    this.refs.modified.textContent = `Modified: ${new Date(note.modified).toLocaleString()}`;
+    this.refs.modified.textContent = t('windows.notes.modified', { date: new Date(updated.modified).toLocaleString() });
+    if (!this.store.hasPendingWrites) {
+      this._quotaNotified = false;
+      this.refs.status.textContent = t('windows.notes.saved');
+    }
 
-    this.renderNotesList();
+    this.updateDetectedRefs();
   }
 
   getAutoTitle() {
-    // Use first line of content as title
     const text = stripHtml(this.refs.editor.innerHTML);
     const firstLine = text.split('\n')[0].trim();
-    return firstLine.substring(0, 50) || 'Untitled';
+    return firstLine.substring(0, 50) || t('windows.notes.untitled');
   }
 
-  deleteCurrentNote() {
+  async deleteCurrentNote() {
     if (!this.state.currentNoteId) return;
 
-    const confirmed = window.confirm('Delete this note?');
+    const confirmed = await showConfirm(t('windows.notes.deleteConfirm'), {
+      confirmLabel: t('windows.notes.delete')
+    });
     if (!confirmed) return;
 
-    const index = this.state.notes.findIndex(n => n.id === this.state.currentNoteId);
-    if (index > -1) {
-      this.state.notes.splice(index, 1);
-      this.saveNotes();
-    }
+    const noteId = this.state.currentNoteId;
 
+    // Cancel any pending autosave; it would re-add the deleted note
+    if (this._autosaveTimer) {
+      clearTimeout(this._autosaveTimer);
+      this._autosaveTimer = null;
+    }
     this.state.currentNoteId = null;
     this.state.isDirty = false;
+
+    this._withStoreWrite(() => this.store.remove(noteId));
+
     this.updateEditorVisibility();
     this.renderNotesList();
+    this.notifySettingsChange();
   }
 
   linkCurrentNote() {
-    if (!this.state.currentNoteId) {
-      // Create a new note and link it
-      this.createNewNote();
-    }
-
+    // Bail before creating anything when there's nowhere to link to
     if (!this.state.currentReference) {
-      this.refs.status.textContent = 'Navigate to a verse to link';
+      this.refs.status.textContent = t('windows.notes.navigateToLink');
       return;
     }
 
-    const note = this.state.notes.find(n => n.id === this.state.currentNoteId);
-    if (!note) return;
+    if (!this.state.currentNoteId) {
+      this.createNewNote();
+    }
+    const noteId = this.state.currentNoteId;
+    if (!noteId) return;
 
-    note.reference = this.state.currentReference;
-    note.referenceDisplay = this.state.currentReferenceDisplay;
-    note.modified = Date.now();
+    this.saveCurrentNote();
+    const updated = this._withStoreWrite(() => this.store.update(noteId, {
+      reference: this.state.currentReference,
+      referenceDisplay: this.state.currentReferenceDisplay
+    }));
 
-    this.saveNotes();
-
-    // Update UI
-    this.refs.referenceBadge.textContent = note.referenceDisplay || note.reference;
-    this.refs.referenceBadge.classList.add('visible');
-    this.refs.unlinkBtn.classList.add('visible');
-    this.refs.status.textContent = `Linked to ${note.referenceDisplay}`;
-
-    this.renderNotesList();
+    this.updateEditorChrome(updated);
+    this.refs.status.textContent = t('windows.notes.linkedTo', { reference: updated.referenceDisplay || updated.reference });
   }
 
   unlinkCurrentNote() {
     if (!this.state.currentNoteId) return;
 
-    const note = this.state.notes.find(n => n.id === this.state.currentNoteId);
+    const note = this.store.get(this.state.currentNoteId);
     if (!note) return;
 
-    note.reference = null;
-    note.referenceDisplay = null;
-    note.modified = Date.now();
+    const updated = this._withStoreWrite(() => this.store.update(note.id, {
+      reference: null,
+      referenceDisplay: null
+    }));
 
-    this.saveNotes();
-
-    // Update UI
-    this.refs.referenceBadge.classList.remove('visible');
-    this.refs.unlinkBtn.classList.remove('visible');
-    this.refs.status.textContent = 'Verse link removed';
-
-    this.renderNotesList();
+    this.updateEditorChrome(updated);
+    this.refs.status.textContent = t('windows.notes.linkRemoved');
   }
+
+  togglePinNote(noteId) {
+    const note = this.store.get(noteId);
+    if (!note) return;
+
+    // Keep modified unchanged so pinning doesn't reorder the list
+    const updated = this._withStoreWrite(() =>
+      this.store.update(noteId, { pinned: !note.pinned, modified: note.modified })
+    );
+
+    if (noteId === this.state.currentNoteId) {
+      this.updateEditorChrome(updated);
+    }
+  }
+
+  // --- Import / export / print ---
 
   importFile(file) {
     const reader = new FileReader();
-    reader.onload = () => {
-      const text = reader.result;
-      const imported = parseImportedFile(text, file.name);
 
-      if (imported.length === 0) {
-        this.refs.status.textContent = 'No notes found in file';
+    reader.onerror = () => {
+      this.refs.status.textContent = t('windows.notes.importReadError');
+      showNotice(t('windows.notes.importReadError'));
+    };
+
+    reader.onload = () => {
+      let parsed;
+      try {
+        parsed = parseImportedFile(reader.result, file.name);
+      } catch {
+        this.refs.status.textContent = t('windows.notes.importInvalid');
+        showNotice(t('windows.notes.importInvalid'));
         return;
       }
 
-      this.state.notes.unshift(...imported);
-      this.saveNotes();
-      this.renderNotesList();
-      this.selectNote(imported[0].id);
-      this.refs.status.textContent = `Imported ${imported.length} note${imported.length !== 1 ? 's' : ''}`;
+      const { notes, mode } = parsed;
+      if (notes.length === 0) {
+        this.refs.status.textContent = t('windows.notes.importNone');
+        return;
+      }
+
+      const result = this._withStoreWrite(() => this.store.importNotes(notes, { mode }));
+
+      if (mode === 'merge') {
+        this.refs.status.textContent = t('windows.notes.importMerged', {
+          added: result.added, updated: result.updated, skipped: result.skipped
+        });
+      } else {
+        this.refs.status.textContent = t('windows.notes.imported', { count: result.added });
+        this.selectNote(notes[0].id);
+      }
     };
+
     reader.readAsText(file);
   }
 
   printCurrentNote(includeVerseText) {
     if (!this.state.currentNoteId) {
-      this.refs.status.textContent = 'Select a note to print';
+      this.refs.status.textContent = t('windows.notes.selectToPrint');
       return;
     }
 
-    const note = this.state.notes.find(n => n.id === this.state.currentNoteId);
+    this.saveCurrentNote();
+    const note = this.store.get(this.state.currentNoteId);
     if (!note) return;
 
-    this.refs.status.textContent = includeVerseText ? 'Preparing print with verses...' : '';
-    printNotes([note], { includeVerseText }).then(() => {
+    this.refs.status.textContent = includeVerseText ? t('windows.notes.preparingPrint') : '';
+    printNotes([note], { includeVerseText, textId: this.state.currentTextId }).then(() => {
       this.refs.status.textContent = '';
     }).catch(err => {
       console.error('[NotesWindow] printCurrentNote error:', err);
-      this.refs.status.textContent = 'Print error — see console';
+      this.refs.status.textContent = t('windows.notes.printError');
     });
   }
 
   printAllNotes(includeVerseText) {
-    if (this.state.notes.length === 0) {
-      this.refs.status.textContent = 'No notes to print';
+    this.saveCurrentNote();
+    const notes = this.store.getAll();
+    if (notes.length === 0) {
+      this.refs.status.textContent = t('windows.notes.noNotesToPrint');
       return;
     }
 
-    this.refs.status.textContent = includeVerseText ? 'Preparing print with verses...' : '';
-    printNotes(this.state.notes, { includeVerseText, title: 'All Notes' }).then(() => {
+    this.refs.status.textContent = includeVerseText ? t('windows.notes.preparingPrint') : '';
+    printNotes(notes, {
+      includeVerseText,
+      title: t('windows.notes.printAllTitle'),
+      textId: this.state.currentTextId
+    }).then(() => {
       this.refs.status.textContent = '';
     }).catch(err => {
       console.error('[NotesWindow] printAllNotes error:', err);
-      this.refs.status.textContent = 'Print error — see console';
+      this.refs.status.textContent = t('windows.notes.printError');
     });
   }
 
+  // --- Editor helpers ---
+
   markDirty() {
     this.state.isDirty = true;
-    this.refs.status.textContent = 'Unsaved changes';
+    this.refs.status.textContent = t('windows.notes.unsavedChanges');
   }
 
   scheduleAutosave() {
@@ -622,6 +759,7 @@ class NotesWindowComponent extends BaseWindow {
       clearTimeout(this._autosaveTimer);
     }
     this._autosaveTimer = setTimeout(() => {
+      this._autosaveTimer = null;
       this.saveCurrentNote();
     }, AUTOSAVE_DELAY_MS);
   }
@@ -633,22 +771,80 @@ class NotesWindowComponent extends BaseWindow {
     this.scheduleAutosave();
   }
 
+  handlePaste(e) {
+    e.preventDefault();
+    const html = e.clipboardData?.getData('text/html');
+    if (html) {
+      document.execCommand('insertHTML', false, sanitizeHtml(html));
+    } else {
+      const text = e.clipboardData?.getData('text/plain') || '';
+      if (text) document.execCommand('insertText', false, text);
+    }
+    this.markDirty();
+    this.scheduleAutosave();
+  }
+
+  /**
+   * contentEditable leaves a lone <br> (or an empty block) behind when all
+   * text is deleted, which defeats the :empty placeholder. Clear it.
+   */
+  normalizeEmptyEditor() {
+    const html = this.refs.editor.innerHTML;
+    const trimmed = html.trim();
+    if (trimmed === '' || trimmed === '<br>' || trimmed === '<div><br></div>' || trimmed === '<p><br></p>') {
+      if (html !== '') this.refs.editor.innerHTML = '';
+    }
+  }
+
+  updateDetectedRefs() {
+    const container = this.refs.detectedRefs;
+    container.innerHTML = '';
+
+    const note = this.state.currentNoteId ? this.store.get(this.state.currentNoteId) : null;
+    const refs = note ? detectReferences(this.store.getPlainText(note.id)) : [];
+    const fragment = renderDetectedRefs(refs);
+
+    if (fragment) {
+      container.appendChild(fragment);
+      container.classList.add('visible');
+    } else {
+      container.classList.remove('visible');
+    }
+  }
+
+  // --- Chrome plumbing ---
+
+  notifySettingsChange() {
+    this.trigger('settingschange', { type: 'settingschange', target: this, data: null });
+  }
+
   size(width, height) {
-    if (this.refs.header) {
-      this.refs.header.style.width = `${width}px`;
-    }
-    if (this.refs.main) {
-      this.refs.main.style.width = `${width}px`;
-      this.refs.main.style.height = `${height - (this.refs.header?.offsetHeight || 50)}px`;
-    }
+    this.style.width = `${width}px`;
+    this.style.height = `${height}px`;
+
+    // The flex column layout sizes .notes-main; no height math needed here
+    this.classList.toggle('notes-narrow', width > 0 && width < NARROW_WIDTH_PX);
+
+    this.trigger('resize', {
+      type: 'resize',
+      target: this,
+      data: { width, height }
+    });
   }
 
   getData() {
     return {
+      // Flat keys persist across reloads via AppSettings
+      noteId: this.state.currentNoteId,
+      filter: this.state.filterMode,
+      sort: this.state.sortMode,
+      sidebarVisible: this.state.sidebarVisible,
+      // params (+ paramKeys) round-trip through the URL
       params: {
         win: 'notes',
         noteId: this.state.currentNoteId,
-        filter: this.state.filterMode
+        filter: this.state.filterMode,
+        sort: this.state.sortMode
       }
     };
   }
@@ -657,7 +853,7 @@ class NotesWindowComponent extends BaseWindow {
 registerWindowComponent('notes-window', NotesWindowComponent, {
   windowType: 'notes',
   displayName: 'Notes',
-  paramKeys: { noteId: 'n', filter: 'f' }
+  paramKeys: { noteId: 'n', filter: 'f', sort: 'o' }
 });
 
 export { NotesWindowComponent as NotesWindow };

@@ -5,6 +5,7 @@
 
 import { elem } from '../lib/helpers.esm.js';
 import { getConfig } from '../core/config.js';
+import { getApp } from '../core/registry.js';
 import { InfoWindow } from '../ui/InfoWindow.js';
 import { Reference } from '../bible/BibleReference.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
@@ -38,7 +39,7 @@ export const MediaLibraryPlugin = () => {
   // Get MediaLibrary from global if available
   const MediaLibrary = window.MediaLibrary;
 
-  const showImagePopup = (icon, mediaLibrary, mediaForVerse, reference) => {
+  const showImagePopup = (icon, mediaLibrary, mediaForVerse, reference, verseid, sectionid) => {
     const bodyEl = mediaPopup.body;
     bodyEl.innerHTML = '';
 
@@ -47,13 +48,47 @@ export const MediaLibraryPlugin = () => {
       const ext = Array.isArray(mediaInfo.exts) ? mediaInfo.exts[0] : mediaInfo.exts;
       const fullUrl = getMediaUrl(mediaLibrary, mediaInfo.filename, ext, mediaLibrary.largeSuffix);
       const thumbUrl = getMediaUrl(mediaLibrary, mediaInfo.filename, ext, mediaLibrary.thumbSuffix || null);
-      html += `<li><a href="${fullUrl}" target="_blank"><img src="${thumbUrl}" /></a></li>`;
+      html += `<li><a href="${fullUrl}" target="_blank" data-folder="${mediaLibrary.folder}" data-filename="${mediaInfo.filename}" data-verseid="${verseid}" data-sectionid="${sectionid}"><img src="${thumbUrl}" /></a></li>`;
     }
 
     bodyEl.appendChild(elem('strong', {}, reference));
     bodyEl.appendChild(elem('ul', { className: 'inline-image-library-thumbs', innerHTML: html }));
     mediaPopup.position(icon).show();
   };
+
+  // A direct controller call rather than a message broadcast: it works on
+  // unlinked MediaWindows (App only broadcasts to linked ones) and a
+  // just-created controller may not have attached its message listener yet.
+  const openInMediaWindow = (select) => {
+    const wm = getApp()?.windowManager;
+    if (!wm) return;
+
+    const mediaWin = wm.getWindows().find(w => w.className === 'MediaWindow');
+    if (mediaWin) {
+      mediaWin.controller?.selectMediaItem?.(select);
+      wm.activate(mediaWin.id);
+    } else {
+      wm.add('MediaWindow', { select }); // the Window ctor self-activates
+    }
+  };
+
+  // A plain click on a popup thumb opens it in the MediaWindow; modified
+  // clicks keep the browser's open-in-new-tab behavior. Only image popups
+  // have an .inline-image-library-thumbs list, so videos are unaffected.
+  mediaPopup.body.addEventListener('click', (e) => {
+    const anchor = e.target.closest('.inline-image-library-thumbs a');
+    if (!anchor) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+
+    e.preventDefault();
+    mediaPopup.hide();
+    openInMediaWindow({
+      sectionid: anchor.getAttribute('data-sectionid'),
+      verseid: anchor.getAttribute('data-verseid'),
+      folder: anchor.getAttribute('data-folder'),
+      filename: anchor.getAttribute('data-filename')
+    });
+  });
 
   const showVideo = (icon, mediaLibrary, mediaForVerse) => {
     const videoMediaInfo = mediaForVerse[0];
@@ -141,7 +176,9 @@ export const MediaLibraryPlugin = () => {
       const mediaForVerse = mediaLibrary.data?.[verseid];
       if (!mediaForVerse || mediaForVerse.length === 0) return;
 
-      if (mediaLibrary.type === 'image') showImagePopup(icon, mediaLibrary, mediaForVerse, reference);
+      const sectionid = icon.closest('.section')?.getAttribute('data-id') ?? verseid.split('_')[0];
+
+      if (mediaLibrary.type === 'image') showImagePopup(icon, mediaLibrary, mediaForVerse, reference, verseid, sectionid);
       else if (mediaLibrary.type === 'video') showVideo(icon, mediaLibrary, mediaForVerse);
       else if (mediaLibrary.type === 'jfm') showJfmVideo(icon, mediaLibrary, mediaForVerse);
     });

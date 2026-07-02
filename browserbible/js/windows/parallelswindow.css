@@ -73,10 +73,12 @@
 	margin: 5px 0;
 }
 
-.parallels-buttons span {
+.parallels-buttons button {
 	padding: 8px 10px;
 	background-color: var(--color-primary);
 	color: var(--color-background);
+	border: none;
+	font: inherit;
 	font-size: 90%;
 	cursor: pointer;
 }

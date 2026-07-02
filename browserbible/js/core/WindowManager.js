@@ -368,6 +368,22 @@ export class WindowManager {
   }
 
   /**
+   * Bring a window to the front, same as clicking its tab. Matters in
+   * compact-ui where `.window.active` controls which window is visible.
+   * @param {string} id - Window ID
+   */
+  activate(id) {
+    const win = this.windows.find(w => w.id === id);
+    if (!win) return;
+
+    document.querySelectorAll('.window, .window-tab').forEach(el => {
+      el.classList.remove('active');
+    });
+    win.tab.classList.add('active');
+    win.node.classList.add('active');
+  }
+
+  /**
    * Keep visual order in sync with the windows array via flex `order`.
    * Window nodes are never moved in the DOM: re-inserting a node disconnects
    * its web component, and disconnectedCallback() tears down all of its

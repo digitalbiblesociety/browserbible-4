@@ -109,5 +109,5 @@ registerWindowType({
   className: 'NotesWindow',
   WindowClass: NotesWindow,
   displayName: 'Notes',
-  paramKeys: { noteId: 'n', filter: 'f' }
+  paramKeys: { noteId: 'n', filter: 'f', sort: 'o' }
 });
