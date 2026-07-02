@@ -42,12 +42,16 @@ function cleanVerseText(el) {
 }
 
 /**
- * Extract verse text from any Bible window currently rendered in the DOM.
- * Bible windows give each verse element a CSS class matching its verse ID (e.g. "GN12_6").
+ * Verse elements rendered in Bible windows, indexed by verse ID: one DOM
+ * query instead of a document-wide querySelector per verse.
  */
-function getVerseTextFromDOM(verseId) {
-  const el = document.querySelector(`.${CSS.escape(verseId)}`);
-  return el ? cleanVerseText(el) : null;
+function buildDomVerseIndex() {
+  const index = new Map();
+  document.querySelectorAll('.BibleWindow .verse[data-id], .BibleWindow .v[data-id]').forEach(el => {
+    const id = el.getAttribute('data-id');
+    if (!index.has(id)) index.set(id, el);
+  });
+  return index;
 }
 
 /**
@@ -58,12 +62,19 @@ function getVerseTextFromDOM(verseId) {
  * @returns {Array} [{sectionid, fragmentid, display, text}]
  */
 function buildVerseList(verses, verseTextLookup) {
+  let domIndex = null; // built on first use
+  const domVerseText = (verseId) => {
+    if (!domIndex) domIndex = buildDomVerseIndex();
+    const el = domIndex.get(verseId);
+    return el ? cleanVerseText(el) : null;
+  };
+
   return verses.map(verseId => {
     const ref = new Reference(verseId);
     const bookName = BOOK_DATA[ref.bookid]?.names?.eng?.[0] ?? ref.bookid;
     const sectionid = ref.bookid + ref.chapter1;
     const fragmentid = `${sectionid}_${ref.verse1}`;
-    const text = verseTextLookup?.(verseId) ?? getVerseTextFromDOM(verseId);
+    const text = verseTextLookup?.(verseId) ?? domVerseText(verseId);
     return {
       sectionid,
       fragmentid,
@@ -169,6 +180,7 @@ export function hydrateVerseTexts(containerEl, textid, loadSectionFn = loadSecti
   const observer = new IntersectionObserver((observations) => {
     for (const obs of observations) {
       if (!obs.isIntersecting) continue;
+      observer.unobserve(obs.target); // done watching this row
       const sectionid = obs.target.getAttribute('data-sectionid');
       hydrateSection(sectionid); // no-op if already hydrated
     }
@@ -281,6 +293,8 @@ function closeDetailPanel(panel) {
  */
 export function destroyDetailPanel(panel) {
   if (panel) {
+    panel._hydrateObserver?.disconnect();
+    panel._hydrateObserver = null;
     closeDetailPanel(panel);
     panel.remove();
   }

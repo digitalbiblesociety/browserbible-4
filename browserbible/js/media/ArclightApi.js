@@ -5,6 +5,7 @@
  */
 
 import { getConfig } from '../core/config.js';
+import { ISO_639_3_TO_1 } from '../lib/bcp47.js';
 
 const cache = {
   languageMap: {},      // iso3 -> languageId
@@ -61,8 +62,10 @@ async function getLanguageId(langCode) {
     const data = await apiRequest('/media-languages', params);
     let languages = data._embedded?.mediaLanguages || [];
 
-    if (languages.length === 0 && code.length === 3) {
-      const bcp47Data = await apiRequest('/media-languages', { bcp47: code.substring(0, 2) });
+    // Retry with the real ISO 639-1 code ("spa" → "es") when one exists
+    const iso1 = code.length === 3 ? ISO_639_3_TO_1[code] : null;
+    if (languages.length === 0 && iso1) {
+      const bcp47Data = await apiRequest('/media-languages', { bcp47: iso1 });
       languages = bcp47Data._embedded?.mediaLanguages || [];
     }
 

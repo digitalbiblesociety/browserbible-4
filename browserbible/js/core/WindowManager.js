@@ -398,7 +398,7 @@ export class WindowManager {
    */
   _bindReorderEvents() {
     const interactiveSelector =
-      'input, textarea, select, button, a, [contenteditable], .app-list, .header-icon';
+      'input, textarea, select, button, a, [contenteditable], .app-list, .header-icon, .map-search-suggestions';
     const dragThreshold = 5; // px before a press becomes a drag, so clicks stay clicks
     const slideMs = 180; // matches the .window-slide transition in windows.css
     const snapMs = 320; // matches the .window-snap transition in windows.css
@@ -407,12 +407,22 @@ export class WindowManager {
     let startX = 0;
     let dragging = false;
     let moved = false;
+    // Slot geometry per window node. Only a swap changes layout, so measuring
+    // at drag start and after swaps keeps mousemove free of forced reflows.
+    let slots = null;
 
     // A window's layout slot with any in-flight translate factored out, so
     // measurements stay stable while slide animations are running.
     const translateX = (node) => parseFloat(getComputedStyle(node).translate) || 0;
-    const slotLeft = (node) => node.getBoundingClientRect().left - translateX(node);
-    const slotMid = (node) => slotLeft(node) + node.getBoundingClientRect().width / 2;
+
+    const measureSlots = () => {
+      slots = new Map();
+      for (const w of this.windows) {
+        const rect = w.node.getBoundingClientRect();
+        const left = rect.left - translateX(w.node);
+        slots.set(w.node, { left, mid: left + rect.width / 2, width: rect.width });
+      }
+    };
 
     // Animate a window from `offset` px back into its natural slot
     const slideHome = (node, offset) => {
@@ -436,16 +446,17 @@ export class WindowManager {
     };
 
     const swapWith = (neighbor, fromIndex, toIndex, clientX) => {
-      const neighborLeft = slotLeft(neighbor.node);
-      const draggedLeft = slotLeft(win.node);
+      const neighborLeft = slots.get(neighbor.node).left;
+      const draggedLeft = slots.get(win.node).left;
 
       this._moveWindow(fromIndex, toIndex);
+      measureSlots(); // the reorder moved every slot
 
       // Rebase so the dragged window stays under the pointer in its new slot
-      startX += slotLeft(win.node) - draggedLeft;
+      startX += slots.get(win.node).left - draggedLeft;
       win.node.style.translate = `${clientX - startX}px 0`;
 
-      slideHome(neighbor.node, neighborLeft - slotLeft(neighbor.node));
+      slideHome(neighbor.node, neighborLeft - slots.get(neighbor.node).left);
       moved = true;
     };
 
@@ -468,6 +479,7 @@ export class WindowManager {
 
         win.node.classList.add('reordering');
         document.body.classList.add('window-reordering');
+        measureSlots();
       }
 
       e.preventDefault();
@@ -484,12 +496,13 @@ export class WindowManager {
       // neighbor's midpoint. Comparing the pointer instead would force a much
       // longer drag: it starts inside the dragged window, so it would have to
       // cross the rest of that window before even entering the neighbor.
-      const winLeft = slotLeft(win.node) + dx;
-      const winRight = winLeft + win.node.getBoundingClientRect().width;
+      const slot = slots.get(win.node);
+      const winLeft = slot.left + dx;
+      const winRight = winLeft + slot.width;
 
-      if (next && winRight > slotMid(next.node)) {
+      if (next && winRight > slots.get(next.node).mid) {
         swapWith(next, index, index + 1, clientX);
-      } else if (prev && winLeft < slotMid(prev.node)) {
+      } else if (prev && winLeft < slots.get(prev.node).mid) {
         swapWith(prev, index, index - 1, clientX);
       }
     };
@@ -499,6 +512,7 @@ export class WindowManager {
       document.removeEventListener('mouseup', onUp);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('touchend', onUp);
+      document.removeEventListener('touchcancel', onUp);
 
       if (dragging) {
         win.node.classList.remove('reordering');
@@ -513,9 +527,12 @@ export class WindowManager {
       win = null;
       dragging = false;
       moved = false;
+      slots = null;
     };
 
     const onDown = (e) => {
+      if (win) return; // already tracking a press; ignore extra fingers/buttons
+      if (!e.touches && e.button !== 0) return;
       if (this.windows.length < 2) return;
       if (document.body.classList.contains('compact-ui')) return;
       if (e.target.closest(interactiveSelector)) return;
@@ -527,7 +544,12 @@ export class WindowManager {
       win = this.windows.find(w => w.node === windowNode) || null;
       if (!win) return;
 
-      if (!e.touches) e.preventDefault(); // stop text selection from starting
+      if (!e.touches) {
+        e.preventDefault(); // stop text selection from starting
+        // preventDefault also blocks the native blur, which the map search
+        // dropdown relies on to close
+        if (document.activeElement !== document.body) document.activeElement?.blur?.();
+      }
 
       startX = e.touches ? e.touches[0].clientX : e.clientX;
 
@@ -535,6 +557,9 @@ export class WindowManager {
       document.addEventListener('mouseup', onUp);
       document.addEventListener('touchmove', onMove, { passive: false });
       document.addEventListener('touchend', onUp);
+      // An OS-cancelled touch (notification shade, incoming call) must still
+      // end the drag, or body.window-reordering freezes all pointer input.
+      document.addEventListener('touchcancel', onUp);
     };
 
     this.nodeEl.addEventListener('mousedown', onDown);

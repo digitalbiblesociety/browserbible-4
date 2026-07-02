@@ -262,11 +262,14 @@ export function TextChooser() {
     storeRecentlyUsed(textid);
     textChooser.hidePopover();
 
+    // `target` is shared chooser state and may point at a different window
+    // by the time getText resolves — capture it now.
+    const clickTarget = target;
     getText(textid, function(data) {
       selectedTextInfo = data;
       // textInfo is null when the provider fails to load the text's details;
       // textid always identifies what was clicked.
-      ext.trigger('change', { type: 'change', target: this, data: { textInfo: selectedTextInfo, textid, target: target } });
+      ext.trigger('change', { type: 'change', target: this, data: { textInfo: selectedTextInfo, textid, target: clickTarget } });
     });
   }
 

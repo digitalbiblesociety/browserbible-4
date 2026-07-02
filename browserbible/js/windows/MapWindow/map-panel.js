@@ -23,6 +23,41 @@ import { computeClusters, renderClusters, applyClusterVisibility } from './clust
 // Trailing delay before clusters/labels recompute after a burst of zoom input
 const DECORATION_SETTLE_MS = 150;
 
+// Map assets never change, so panels share one fetch across open/close
+// cycles. Failures aren't cached; a later open retries.
+let _svgTextPromise = null;
+function fetchSvgText() {
+  if (!_svgTextPromise) {
+    _svgTextPromise = fetch('content/maps/biblical-map.svg').then((response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.text();
+    });
+    _svgTextPromise.catch(() => { _svgTextPromise = null; });
+  }
+  return _svgTextPromise;
+}
+
+let _pinDataPromise = null;
+function fetchPinData() {
+  if (!_pinDataPromise) {
+    _pinDataPromise = loadLocationData().then((mapData) => {
+      // Precompute era for each location (verse IDs use 2-char book prefixes; NT/OT sets don't collide)
+      const ntBookSet = new Set(NT_BOOKS);
+      for (const loc of mapData) {
+        let hasOT = false, hasNT = false;
+        for (const v of loc.verses) {
+          if (ntBookSet.has(v.slice(0, 2))) { hasNT = true; } else { hasOT = true; }
+          if (hasOT && hasNT) break;
+        }
+        loc._era = (hasOT && hasNT) ? 'both' : (hasNT ? 'nt' : 'ot');
+      }
+      return mapData;
+    });
+    _pinDataPromise.catch(() => { _pinDataPromise = null; });
+  }
+  return _pinDataPromise;
+}
+
 // Cached AVIF decode-support probe (1×1 AVIF data URI). Resolves once, reused thereafter.
 let _avifSupport = null;
 function supportsAvif() {
@@ -87,12 +122,15 @@ export class MapPanel {
    */
   filterBySection(sectionId) {
     this.state.currentReference = sectionId;
-    this._filterMarkers();
 
-    if (this.state.mode === 'passage' && sectionId && this.locationData) {
-      const locations = getLocationsForReference(this.locationData, sectionId);
-      if (locations.length > 0) centerOnBounds(this, locations);
-    }
+    const locations = (this.state.mode === 'passage' && sectionId && this.locationData)
+      ? getLocationsForReference(this.locationData, sectionId)
+      : null;
+    const willRecenter = !!locations && locations.length > 0;
+
+    // centerOnBounds runs a full decoration pass itself — skip the interim one
+    this._filterMarkers({ updateScales: !willRecenter });
+    if (willRecenter) centerOnBounds(this, locations);
   }
 
   /**
@@ -100,7 +138,8 @@ export class MapPanel {
    */
   setMode(mode) {
     this.state.mode = mode;
-    this._filterMarkers();
+    // resetView always ends in a decoration pass (centerOn/centerOnBounds)
+    this._filterMarkers({ updateScales: false });
     this.resetView();
   }
 
@@ -138,10 +177,16 @@ export class MapPanel {
 
   /**
    * Highlight location names in Bible window text and their map markers.
+   * @param {string|null} [sectionid] - Scope the text walk to one loaded section
    */
-  highlight() {
+  highlight(sectionid = null) {
     if (this.locationDataByVerse) {
-      highlightLocations(this.markersOverlay, this.locationDataByVerse);
+      highlightLocations(this.markersOverlay, this.locationDataByVerse, sectionid);
+      // reposition skips hidden markers, so freshly unhidden ones sit stale
+      if (this.markersOverlay) {
+        MarkerRenderer.repositionAllMarkers(
+          this.markersOverlay, this.viewBox, this.container.getBoundingClientRect());
+      }
     }
   }
 
@@ -225,6 +270,12 @@ export class MapPanel {
   _decorateMarkers() {
     if (!this.markersOverlay) return;
 
+    // Clear any pan translate accumulated while the settle timer was pending;
+    // the positions below are absolute, and translate on top double-shifts.
+    this._panOffset.x = 0;
+    this._panOffset.y = 0;
+    this.markersOverlay.style.transform = '';
+
     this.markersOverlay.querySelectorAll('.map-marker.clustered').forEach(m => {
       m.classList.remove('clustered');
     });
@@ -256,9 +307,8 @@ export class MapPanel {
 
   async _initMap() {
     try {
-      const response = await fetch('content/maps/biblical-map.svg');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const svgText = await response.text();
+      const pinDataPromise = fetchPinData(); // starts alongside the SVG fetch
+      const svgText = await fetchSvgText();
 
       const parser = new DOMParser();
       const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
@@ -285,7 +335,7 @@ export class MapPanel {
 
       centerOn(this, this.state.currentCenter.lon, this.state.currentCenter.lat, 4);
       setupPanZoom(this);
-      await this._loadPins();
+      await this._loadPins(pinDataPromise);
       this._lazyLoadRelief();
     } catch (err) {
       console.error('MapPanel: failed to load SVG map:', err);
@@ -358,34 +408,21 @@ export class MapPanel {
     else setTimeout(apply, 200);
   }
 
-  async _loadPins() {
+  async _loadPins(pinDataPromise = fetchPinData()) {
     try {
-      const mapData = await loadLocationData();
-      this.locationData = mapData;
-
-      // Precompute era for each location (verse IDs use 2-char book prefixes; NT/OT sets don't collide)
-      const ntBookSet = new Set(NT_BOOKS);
-      for (const loc of mapData) {
-        let hasOT = false, hasNT = false;
-        for (const v of loc.verses) {
-          if (ntBookSet.has(v.slice(0, 2))) { hasNT = true; } else { hasOT = true; }
-          if (hasOT && hasNT) break;
-        }
-        loc._era = (hasOT && hasNT) ? 'both' : (hasNT ? 'nt' : 'ot');
-      }
+      this.locationData = await pinDataPromise;
       this.locationDataByVerse = MarkerRenderer.createPins(
         this.markersOverlay,
         this.locationData,
         (location) => this._openLocation(location)
       );
-      this.updateMarkerScales();
-      this._filterMarkers();
+      this._filterMarkers(); // ends in a full decoration pass
     } catch (err) {
       console.error('MapPanel: error loading pins', err);
     }
   }
 
-  _filterMarkers() {
+  _filterMarkers({ updateScales = true } = {}) {
     if (!this.markersOverlay || !this.locationDataByVerse) return;
 
     const isPassageMode = this.state.mode === 'passage';
@@ -407,7 +444,7 @@ export class MapPanel {
       marker.classList.toggle('filtered-out', !show);
     });
 
-    this.updateMarkerScales();
+    if (updateScales) this.updateMarkerScales();
   }
 
   _openLocation(location) {

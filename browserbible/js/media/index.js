@@ -69,7 +69,12 @@ const MediaLibrary = (() => {
         return Promise.all(loadPromises);
       })
       .then(results => {
-        mediaLibraries = results.filter(lib => lib !== null);
+        const loaded = results.filter(lib => lib !== null);
+        // all listed libraries failing is a network problem, not an empty catalog
+        if (results.length > 0 && loaded.length === 0) {
+          throw new Error('no media library info.json could be loaded');
+        }
+        mediaLibraries = loaded;
         isLoading = false;
 
         while (pendingCallbacks.length > 0) {
@@ -79,7 +84,8 @@ const MediaLibrary = (() => {
       })
       .catch(err => {
         console.error('Error loading media libraries:', err);
-        mediaLibraries = [];
+        // mediaLibraries stays null so the next caller retries; a startup
+        // network blip shouldn't hide media for the whole session
         isLoading = false;
 
         while (pendingCallbacks.length > 0) {

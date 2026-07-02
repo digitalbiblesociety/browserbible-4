@@ -141,9 +141,16 @@ export class TextComparisonWindow extends BaseWindow {
     this._textChooserHandler = this.bindHandler('textChooserChange', (e) => this.handleTextChooserChange(e));
     this.textChooser.on('change', this._textChooserHandler);
 
-    // Clicks on the version buttons open the shared chooser
-    this.refs.sourceTitle.addEventListener('click', () => this.showChooser(this.refs.sourceTitle));
-    this.refs.targetTitle.addEventListener('click', () => this.showChooser(this.refs.targetTitle));
+    // Clicks on the version buttons open the shared chooser. The popover
+    // light-dismisses on the press itself, before click fires, so pointerdown
+    // is the last chance to see whether it was open on this anchor.
+    for (const anchor of [this.refs.sourceTitle, this.refs.targetTitle]) {
+      anchor.addEventListener('pointerdown', () => {
+        this._chooserWasOpenHere =
+          this.textChooser.isVisible() && this.textChooser.getTarget() === anchor;
+      });
+      anchor.addEventListener('click', () => this.showChooser(anchor));
+    }
 
     // Click on fragment input
     this.refs.inputFragment.addEventListener('click', () => this.handleFragmentClick());
@@ -242,7 +249,9 @@ export class TextComparisonWindow extends BaseWindow {
     if (!this.state.textInfoData) return;
 
     const isTarget = anchor === this.refs.targetTitle;
-    const wasOpenHere = this.textChooser.getTarget() === anchor && this.textChooser.isVisible();
+    // captured on pointerdown; isVisible() is already false by click time
+    const wasOpenHere = this._chooserWasOpenHere;
+    this._chooserWasOpenHere = false;
 
     // Re-set the target every time: the second version is limited to the
     // first version's language, which may have changed since the last open.

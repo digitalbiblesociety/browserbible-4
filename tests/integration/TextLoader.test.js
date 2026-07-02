@@ -68,7 +68,7 @@ describe('TextLoader.loadSection — caching and dispatch', () => {
     // Caller asks for the same chapter — fallback path is exercised when the
     // requested id matches by chapter number.
     await new Promise(resolve => loadSection(textInfo, 'JN03', resolve));
-    expect(provider.loadSection).toHaveBeenCalledWith('ENGKJV', 'JN3', expect.any(Function), undefined);
+    expect(provider.loadSection).toHaveBeenCalledWith('ENGKJV', 'JN3', expect.any(Function), expect.any(Function));
   });
 
   it('does nothing when sectionid is null', async () => {

@@ -162,7 +162,8 @@ class MapWindowComponent extends BaseWindow {
         return;
       }
       if (e.target.closest('.map-suggestion-more')) {
-        this.handleSearchInput(50); // re-render expanded; the dropdown scrolls
+        // show 50 more per click; the dropdown scrolls
+        this.handleSearchInput(this.state.currentSuggestions.length + 50);
         return;
       }
       const item = e.target.closest('.map-suggestion-item');
@@ -299,6 +300,9 @@ class MapWindowComponent extends BaseWindow {
   hideDetail() {
     const hadFocusInside = this.contains(document.activeElement);
     this.refs.detail.classList.add('hidden');
+    // stop lazy verse hydration while hidden
+    this.refs.detailContent._hydrateObserver?.disconnect();
+    this.refs.detailContent._hydrateObserver = null;
     this.mapPanel?.resetMarkerOpacity();
     if (hadFocusInside) this.refs.mapContainer.focus();
   }
@@ -435,14 +439,20 @@ class MapWindowComponent extends BaseWindow {
       if (this.mapPanel) this.mapPanel._detailTextid = e.data.textid;
     }
 
-    this.mapPanel?.removeHighlights();
+    // Scope the text walk to the newly loaded section; wrapping is idempotent,
+    // so sections walked earlier keep their spans. A text's first message
+    // walks everything: content rendered before this window opened, or
+    // replaced by a version change. Filtering reads marker highlight state,
+    // so highlight comes first.
+    if (!this._seenTextids) this._seenTextids = new Set();
+    const scoped = e.data.textid && this._seenTextids.has(e.data.textid);
+    if (e.data.textid) this._seenTextids.add(e.data.textid);
+    this.mapPanel?.highlight(scoped ? e.data.sectionid : null);
 
     if (e.data.sectionid) {
       this.mapPanel?.filterBySection(e.data.sectionid);
       this.updateEmptyState();
     }
-
-    this.mapPanel?.highlight();
   }
 
   handleGlobalMessage(e) {

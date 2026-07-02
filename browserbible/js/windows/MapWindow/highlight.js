@@ -62,11 +62,20 @@ function wrapMatches(root, regex, nameByMatch) {
  * Highlight location names in Bible window DOM elements and corresponding map markers
  * @param {HTMLElement} markersGroup - The markers overlay element
  * @param {Object} locationDataByVerse - Verse-to-locations index
+ * @param {string|null} [sectionid] - Only walk this section's verses (wrapping
+ *   is idempotent, so sections walked earlier keep their spans). Marker classes
+ *   are always synced against every rendered verse.
  */
-export function highlightLocations(markersGroup, locationDataByVerse) {
-  const highlightedNames = new Set();
+export function highlightLocations(markersGroup, locationDataByVerse, sectionid = null) {
+  let verses = null;
+  if (sectionid) {
+    const scope = `.BibleWindow .section[data-id="${CSS.escape(sectionid)}"]`;
+    verses = document.querySelectorAll(`${scope} .verse, ${scope} .v`);
+    if (!verses.length) verses = null; // section not found; walk everything
+  }
+  if (!verses) verses = document.querySelectorAll('.BibleWindow .verse, .BibleWindow .v');
 
-  document.querySelectorAll('.BibleWindow .verse, .BibleWindow .v').forEach((verse) => {
+  verses.forEach((verse) => {
     const verseid = verse.getAttribute('data-id');
     const verseLocations = locationDataByVerse?.[verseid];
     if (!verseLocations) return;
@@ -80,7 +89,6 @@ export function highlightLocations(markersGroup, locationDataByVerse) {
       if (matchName && !nameByMatch.has(matchName.toLowerCase())) {
         nameByMatch.set(matchName.toLowerCase(), location.name);
       }
-      highlightedNames.add(location.name);
     }
     if (nameByMatch.size === 0) return;
 
@@ -94,11 +102,23 @@ export function highlightLocations(markersGroup, locationDataByVerse) {
     wrapMatches(verse, regex, nameByMatch);
   });
 
-  if (markersGroup && highlightedNames.size > 0) {
+  if (markersGroup) {
+    // Markers reflect every rendered verse, not just the walked section.
+    // Syncing both ways clears stale highlights after a navigation jump.
+    const highlightedNames = new Set();
+    document.querySelectorAll('.BibleWindow .verse, .BibleWindow .v').forEach((verse) => {
+      const verseLocations = locationDataByVerse?.[verse.getAttribute('data-id')];
+      if (!verseLocations) return;
+      for (const location of verseLocations) highlightedNames.add(location.name);
+    });
+
     markersGroup.querySelectorAll('.map-marker').forEach((marker) => {
-      if (marker.locationData && highlightedNames.has(marker.locationData.name)) {
+      if (!marker.locationData) return;
+      if (highlightedNames.has(marker.locationData.name)) {
         marker.classList.add('highlighted');
         marker.classList.remove('filtered-out');
+      } else {
+        marker.classList.remove('highlighted');
       }
     });
   }

@@ -47,6 +47,7 @@ export function setViewBoxSize(component, width) {
  */
 export function refit(component) {
   if (!component.svgElement) return;
+  component._gestureRect = null; // container geometry changed
   setViewBoxSize(component, component.viewBox.width);
   constrainViewBox(component.viewBox);
   updateViewBox(component.svgElement, component.viewBox);
@@ -79,8 +80,9 @@ export function updateViewBox(svgElement, viewBox) {
  * point under the given container-relative pixel fixed on screen.
  * `defer` postpones the marker decoration pass during rapid input bursts.
  */
-export function zoomAtPoint(component, px, py, factor, { defer = false } = {}) {
-  const rect = component.refs.mapContainer.getBoundingClientRect();
+export function zoomAtPoint(component, px, py, factor, { defer = false, rect = null } = {}) {
+  // callers in an input burst pass the rect they already measured
+  rect = rect || component.refs.mapContainer.getBoundingClientRect();
 
   // SVG point under the anchor before zooming
   const before = screenToSvg(px, py, component.viewBox, getViewTransform(component.viewBox, rect));
@@ -102,7 +104,7 @@ export function zoomAtPoint(component, px, py, factor, { defer = false } = {}) {
  */
 export function zoomBy(component, factor) {
   const rect = component.refs.mapContainer.getBoundingClientRect();
-  zoomAtPoint(component, rect.width / 2, rect.height / 2, factor);
+  zoomAtPoint(component, rect.width / 2, rect.height / 2, factor, { rect });
 }
 
 /** Fully zoomed out — the viewBox already spans the map in one dimension. */
@@ -213,13 +215,26 @@ export function centerOnBounds(component, locations) {
 export function setupPanZoom(component) {
   const mapContainer = component.refs.mapContainer;
 
-  // Mouse wheel zoom, centered on the cursor
+  // Mouse wheel zoom, centered on the cursor. Trackpads fire several wheel
+  // events per painted frame, so factors accumulate and apply once per rAF.
+  let pendingWheel = null;
   component.addListener(mapContainer, 'wheel', (e) => {
     e.preventDefault();
-    const rect = mapContainer.getBoundingClientRect();
     const factor = e.deltaY > 0 ? WHEEL_ZOOM_FACTOR : 1 / WHEEL_ZOOM_FACTOR;
-    zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, factor, { defer: true });
-    scheduleSettle(component);
+    if (pendingWheel) {
+      pendingWheel.factor *= factor;
+      pendingWheel.clientX = e.clientX;
+      pendingWheel.clientY = e.clientY;
+      return;
+    }
+    pendingWheel = { factor, clientX: e.clientX, clientY: e.clientY };
+    requestAnimationFrame(() => {
+      const { factor, clientX, clientY } = pendingWheel;
+      pendingWheel = null;
+      const rect = mapContainer.getBoundingClientRect();
+      zoomAtPoint(component, clientX - rect.left, clientY - rect.top, factor, { defer: true, rect });
+      scheduleSettle(component);
+    });
   }, { passive: false });
 
   // Double-click zoom (markers, clusters, and controls handle their own clicks)
@@ -227,21 +242,23 @@ export function setupPanZoom(component) {
     if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
     e.preventDefault();
     const rect = mapContainer.getBoundingClientRect();
-    zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, 1 / ZOOM_STEP);
+    zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, 1 / ZOOM_STEP, { rect });
     scheduleSettle(component);
   });
 
-  // Mouse drag panning
+  // Mouse drag panning. The container rect can't change mid-gesture, so it's
+  // measured once on pointer-down rather than per mousemove.
   component.addListener(mapContainer, 'mousedown', (e) => {
     if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
     component.state.isPanning = true;
     component.panStart = { x: e.clientX, y: e.clientY };
+    component._gestureRect = mapContainer.getBoundingClientRect();
     mapContainer.classList.add('panning');
   });
 
   component.addListener(document, 'mousemove', (e) => {
     if (!component.state.isPanning) return;
-    const rect = mapContainer.getBoundingClientRect();
+    const rect = component._gestureRect || mapContainer.getBoundingClientRect();
     const t = getViewTransform(component.viewBox, rect);
     const dx = (e.clientX - component.panStart.x) / t.scale;
     const dy = (e.clientY - component.panStart.y) / t.scale;
@@ -275,6 +292,7 @@ export function setupPanZoom(component) {
   let lastTouchDist = 0;
 
   component.addListener(mapContainer, 'touchstart', (e) => {
+    component._gestureRect = mapContainer.getBoundingClientRect();
     if (e.touches.length === 1) {
       component.state.isPanning = true;
       component.panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -289,7 +307,7 @@ export function setupPanZoom(component) {
 
   component.addListener(mapContainer, 'touchmove', (e) => {
     e.preventDefault();
-    const rect = mapContainer.getBoundingClientRect();
+    const rect = component._gestureRect || mapContainer.getBoundingClientRect();
 
     if (e.touches.length === 1 && component.state.isPanning) {
       const t = getViewTransform(component.viewBox, rect);
@@ -317,7 +335,7 @@ export function setupPanZoom(component) {
       const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
 
       // Zoom anchored at the pinch midpoint
-      zoomAtPoint(component, centerX, centerY, lastTouchDist / newDist, { defer: true });
+      zoomAtPoint(component, centerX, centerY, lastTouchDist / newDist, { defer: true, rect });
       lastTouchDist = newDist;
     }
   }, { passive: false });

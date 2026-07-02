@@ -20,7 +20,9 @@ import { createLocationIcon, getLocationTypeName } from './icon-library.js';
 export const repositionAllMarkers = (overlay, viewBox, containerRect) => {
   if (!overlay || !containerRect || !containerRect.width) return;
   const t = getViewTransform(viewBox, containerRect);
-  overlay.querySelectorAll('.map-marker, .map-cluster').forEach(el => {
+  // Skips hidden markers — nearly all of them in passage mode. Safe because
+  // every unhide path (filter, decluster, highlight) repositions again after.
+  overlay.querySelectorAll('.map-marker:not(.filtered-out):not(.clustered), .map-cluster').forEach(el => {
     if (el._svgX === undefined) return;
     const x = t.offsetX + (el._svgX - viewBox.x) * t.scale - el._anchorX;
     const y = t.offsetY + (el._svgY - viewBox.y) * t.scale - el._anchorY;

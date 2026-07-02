@@ -16,6 +16,9 @@ const textData = {};
 
 const cachedTexts = {};
 
+// In-flight section loads by "textid|sectionid"; concurrent callers share one fetch
+const pendingSectionLoads = {};
+
 export function registerTextProvider(name, provider) {
   textProviders.set(name, provider);
 }
@@ -31,8 +34,13 @@ export function loadSection(textInfo, sectionid, successCallback, errorCallback)
     textid = textInfo;
 
     getText(textid, (textInfo) => {
+      // getText calls back with null when it has no errorCallback to use
+      if (!textInfo) {
+        errorCallback?.(new Error(`No text info for "${textid}"`));
+        return;
+      }
       loadSection(textInfo, sectionid, successCallback, errorCallback);
-    });
+    }, errorCallback);
     return;
   } else {
     textid = textInfo.id;
@@ -73,13 +81,29 @@ export function loadSection(textInfo, sectionid, successCallback, errorCallback)
 
   const provider = textProviders.get(textInfo.providerName);
   if (provider) {
+    const pendingKey = `${textid}|${sectionid}`;
+    if (pendingSectionLoads[pendingKey]) {
+      pendingSectionLoads[pendingKey].push({ successCallback, errorCallback });
+      return;
+    }
+    pendingSectionLoads[pendingKey] = [{ successCallback, errorCallback }];
+
     provider.loadSection(textid, sectionid, (html) => {
       cachedTexts[textid][sectionid] = html;
 
-      const temp = document.createElement('div');
-      temp.innerHTML = cachedTexts[textid][sectionid];
-      successCallback(temp.firstChild || temp);
-    }, errorCallback);
+      const waiters = pendingSectionLoads[pendingKey] || [];
+      delete pendingSectionLoads[pendingKey];
+      for (const waiter of waiters) {
+        // fresh nodes per caller, since callers adopt and mutate them
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        waiter.successCallback(temp.firstChild || temp);
+      }
+    }, (...args) => {
+      const waiters = pendingSectionLoads[pendingKey] || [];
+      delete pendingSectionLoads[pendingKey];
+      for (const waiter of waiters) waiter.errorCallback?.(...args);
+    });
   }
 }
 
