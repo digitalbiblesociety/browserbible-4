@@ -20,6 +20,9 @@ const hasTouch = 'ontouchend' in document;
 const ROW_HEIGHT = 32; // Fixed row height for virtual scrolling
 const BUFFER_ROWS = 5; // Extra rows to render above/below viewport
 
+const hasAudioContent = (text) =>
+  !!(text.hasAudio || text.audioDirectory || text.fcbh_audio_ot || text.fcbh_audio_nt);
+
 // Pre-parse SVG icons once; cloneNode per row instead of innerHTML parsing.
 const lemmaTemplate = (() => {
   const span = document.createElement('span');
@@ -92,18 +95,22 @@ export function TextChooser() {
 
   // When a provider is disabled at runtime (e.g. API.Bible hits its monthly
   // limit) it removes its texts and fires this event so an open chooser drops them.
-  document.addEventListener('texts:provider-disabled', () => refresh());
+  document.addEventListener('texts:provider-disabled', refresh);
+
+  function clearFilter() {
+    filter.value = '';
+    filterText = '';
+    filterTokens = [];
+    applyFilter();
+  }
 
   function handleFilterKeydown(e) {
-    if (e.key === 'Enter' || e.keyCode === 13) {
+    if (e.key === 'Enter') {
       const visibleTextRows = filteredIndices.filter(i => processedData[i].type === 'text');
       if (visibleTextRows.length === 1) {
         const item = processedData[visibleTextRows[0]];
         selectText(item.data.id);
-        filter.value = '';
-        filterText = '';
-        filterTokens = [];
-        applyFilter();
+        clearFilter();
       }
     }
   }
@@ -257,7 +264,7 @@ export function TextChooser() {
       if (text.hasLemma) {
         row.appendChild(lemmaTemplate.cloneNode(true));
       }
-      if (text.hasAudio || text.audioDirectory || text.fcbh_audio_ot || text.fcbh_audio_nt) {
+      if (hasAudioContent(text)) {
         row.appendChild(audioTemplate.cloneNode(true));
       }
       if (text.providerName === 'apibible') {
@@ -293,7 +300,7 @@ export function TextChooser() {
       selectedTextInfo = data;
       // textInfo is null when the provider fails to load the text's details;
       // textid always identifies what was clicked.
-      ext.trigger('change', { type: 'change', target: this, data: { textInfo: selectedTextInfo, textid, target: clickTarget } });
+      ext.trigger('change', { type: 'change', target: null, data: { textInfo: selectedTextInfo, textid, target: clickTarget } });
     });
   }
 
@@ -332,7 +339,7 @@ export function TextChooser() {
     const arrayOfTexts = listData.filter(t => {
       if (langFilter && t.lang3 !== langFilter && t.lang !== langFilter) return false;
       if (textType === 'audio') {
-        return t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt;
+        return hasAudioContent(t);
       }
       if (t.hasText === false) return false;
       const thisTextType = t.type === undefined ? 'bible' : t.type;
@@ -536,10 +543,7 @@ export function TextChooser() {
       }
 
       if (filter.value !== '') {
-        filter.value = '';
-        filterText = '';
-        filterTokens = [];
-        applyFilter();
+        clearFilter();
       }
 
       // Reset scroll on reopen so the new column's content isn't shown

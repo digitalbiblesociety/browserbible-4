@@ -1,38 +1,21 @@
-/**
- * DeafBibleWindow - Web Component for Deaf Bible content with video switching
- */
+// DeafBibleWindow - TextWindow chrome with a DeafVideoPlayer in place of the text pane.
 
 import { TextWindowComponent, registerWindowComponent } from './TextWindow.js';
+import { DeafVideoPlayer } from './DeafVideoPlayer.js';
 
-/**
- * DeafBibleWindow Web Component
- * Extends TextWindow with video switching functionality
- */
 export class DeafBibleWindow extends TextWindowComponent {
   constructor() {
     super();
     this.state.textType = 'deafbible';
   }
 
-  attachEventListeners() {
-    super.attachEventListeners();
+  createScroller() {
+    return DeafVideoPlayer(this.refs.main);
+  }
 
-    this.addEventListener('click', (e) => {
-      const button = e.target.closest('.deaf-video-header input');
-      if (button) {
-        const url = button.getAttribute('data-src');
-        const video = button.closest('.deaf-video')?.querySelector('video');
-
-        button.classList.add('active');
-        [...button.parentElement.children].filter(s => s !== button).forEach(sib => {
-          sib.classList.remove('active');
-        });
-
-        if (video) {
-          video.setAttribute('src', url);
-        }
-      }
-    });
+  createAudioController() {
+    if (this.refs.audioui) this.refs.audioui.style.display = 'none';
+    return null;
   }
 }
 

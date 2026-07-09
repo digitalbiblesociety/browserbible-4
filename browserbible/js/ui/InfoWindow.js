@@ -22,7 +22,7 @@ export function InfoWindow(id = null) {
 
   close.addEventListener('click', hide);
 
-  // Handle popover toggle events (fires on light dismiss - click outside or Escape)
+  // Single source of the 'hide' event
   container.addEventListener('toggle', (e) => {
     if (e.newState === 'closed') {
       ext.trigger('hide');
@@ -37,7 +37,6 @@ export function InfoWindow(id = null) {
 
   function hide() {
     container.hidePopover();
-    ext.trigger('hide');
     return ext;
   }
 
@@ -77,9 +76,7 @@ export function InfoWindow(id = null) {
   }
 
   function destroy() {
-    if (container.parentNode) {
-      container.parentNode.removeChild(container);
-    }
+    container.remove();
   }
 
   let ext = {
@@ -93,7 +90,6 @@ export function InfoWindow(id = null) {
   };
 
   mixinEventEmitter(ext);
-  ext._events = {};
 
   return ext;
 }

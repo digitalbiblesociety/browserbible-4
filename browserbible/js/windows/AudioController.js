@@ -1,6 +1,6 @@
 // Controls audio playback synchronized with text scrolling
 
-import { elem, offset } from '../lib/helpers.esm.js';
+import { elem, offset, secondsToTimeCode } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { i18n } from '../lib/i18n.js';
 import { Reference } from '../bible/BibleReference.js';
@@ -69,6 +69,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   let sectionNode = null;
   let hasAudio = false;
   let lastTimestampVerse = 0;
+  let audioRequestId = 0;
 
   i18n.translatePage(options);
 
@@ -215,7 +216,11 @@ export function AudioController(id, container, toggleButton, scroller) {
           audioOption = 'audio';
         }
 
+        const requestId = ++audioRequestId;
         audioDataManager.getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption, (newFragmentAudioData) => {
+          // Drop responses superseded by close() or a newer request.
+          if (block == null || requestId !== audioRequestId) return;
+
           if (fragmentAudioData == null || newFragmentAudioData == null || fragmentAudioData.id != newFragmentAudioData.id) {
             // New chapter (or no audio): drop the previous chapter's verse highlight.
             setReadingVerse(null);
@@ -501,6 +506,7 @@ export function AudioController(id, container, toggleButton, scroller) {
       duration.innerHTML = secondsToTimeCode(0);
 
       textInfo = newTextInfo;
+      audioRequestId++;
 
       if (!audio.paused && !audio.ended) {
         try {
@@ -518,18 +524,16 @@ export function AudioController(id, container, toggleButton, scroller) {
     }
   };
 
-  const secondsToTimeCode = (time) => {
-    const minutes = Math.floor(time / 60) % 60;
-    const seconds = Math.floor(time % 60);
-    return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-  };
-
   const size = (width) => {
     block.style.width = `${width}px`;
   };
 
   const close = () => {
     ext.clearListeners();
+    document.removeEventListener('click', docClick);
+    isDraggingSliderHandle = false;
+    document.removeEventListener('mousemove', documentMouseMove);
+    document.removeEventListener('mouseup', documentMouseUp);
 
     if (block?.parentNode) {
       block.parentNode.removeChild(block);

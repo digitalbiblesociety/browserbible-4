@@ -41,7 +41,7 @@ function htmlToMarkdown(html) {
 function htmlToRtf(html) {
   if (!html) return '';
 
-  let rtf = html;
+  let rtf = escapeRtf(html);
   rtf = rtf.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '{\\b $1}');
   rtf = rtf.replace(/<b[^>]*>(.*?)<\/b>/gi, '{\\b $1}');
   rtf = rtf.replace(/<em[^>]*>(.*?)<\/em>/gi, '{\\i $1}');
@@ -58,7 +58,6 @@ function htmlToRtf(html) {
   const txt = document.createElement('textarea');
   txt.innerHTML = rtf;
   rtf = txt.value;
-  rtf = escapeRtf(rtf);
   return rtf;
 }
 

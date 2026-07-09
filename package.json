@@ -23,6 +23,7 @@
     "fetch-starter-pack": "node tests/scripts/fetch-starter-pack.mjs",
     "repair-starter-pack": "node tests/scripts/repair-starter-pack.mjs",
     "build-basemap": "node tools/build-basemap.mjs",
+    "generate-deaf-index": "node tools/generate-deaf-bible-index.mjs",
     "lint": "eslint browserbible/js",
     "lint:fix": "eslint browserbible/js --fix",
     "vd:dev": "vite --config verse-detection/vite.config.js serve verse-detection",

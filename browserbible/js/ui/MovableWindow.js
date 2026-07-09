@@ -3,7 +3,7 @@ import { elem } from '../lib/helpers.esm.js';
 /**
  * Create a movable window
  * @param {number} width - Window width
- * @param {number} height - Window height
+ * @param {number} height - Body height (window is this plus the header)
  * @param {string} titleText - Window title
  * @param {string} id - Optional element ID
  * @returns {Object} Window API object
@@ -46,9 +46,7 @@ export function MovableWindow(width = 300, height = 200, titleText = '', id = nu
   }
 
   function destroy() {
-    if (container.parentNode) {
-      container.parentNode.removeChild(container);
-    }
+    container.remove();
   }
 
   const ext = {

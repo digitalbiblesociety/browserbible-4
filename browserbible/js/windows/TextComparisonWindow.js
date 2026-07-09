@@ -207,7 +207,7 @@ export class TextComparisonWindow extends BaseWindow {
     if (chooserTarget === this.refs.sourceTitle || chooserTarget === this.refs.targetTitle) {
       this.textChooser.hide();
     }
-    if (this.textNavigator?.close) this.textNavigator.close();
+    this.textNavigator?.destroy();
   }
 
   handleTextChooserChange(e) {

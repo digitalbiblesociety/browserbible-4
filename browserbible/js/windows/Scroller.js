@@ -137,6 +137,9 @@ export function Scroller(node) {
   let currentTextInfo = null;
   let locationInfo = {};
   let ignoreScrollEvent = false;
+  let loadEpoch = 0;
+  let pendingLoadSectionid = null;
+  let pendingLoadFragmentid = null;
   let speedLastPos = null;
   let speedDelta = 0;
   let globalTimeout = null;
@@ -438,9 +441,27 @@ export function Scroller(node) {
     if (sectionid === 'null' || sectionid === null || sectionid === '') return;
     if (!wrapper) return;
 
+    if (loadType === 'text') {
+      // Coalesce repeat loads of the section already being fetched (a burst of
+      // sync navs during a cold scroll) instead of cancelling the in-flight fetch.
+      if (sectionid === pendingLoadSectionid) {
+        pendingLoadFragmentid = fragmentid;
+        return;
+      }
+      // New navigation supersedes anything in flight (its callback bails on epoch).
+      loadEpoch++;
+      pendingLoadSectionid = null;
+      pendingLoadFragmentid = null;
+    }
+    const epoch = loadEpoch;
+
     if (isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
 
     if (loadType === 'text') {
+      // Mark pending so follow-up navs coalesce onto this fetch.
+      pendingLoadSectionid = sectionid;
+      pendingLoadFragmentid = fragmentid;
+
       const message = currentTextInfo?.loadingMessage
         ? `<div class="loading-message">${currentTextInfo.loadingMessage}</div>`
         : '';
@@ -452,8 +473,10 @@ export function Scroller(node) {
     const wrapperHeightBefore = wrapper.offsetHeight;
 
     const handleLoadError = (_errTextid, _errSectionid, detail) => {
-      if (!wrapper) return;
+      if (epoch !== loadEpoch || !wrapper) return;
       if (loadType !== 'text') return;
+      pendingLoadSectionid = null;
+      pendingLoadFragmentid = null;
 
       if (detail?.message) {
         showLoadError(detail.message);
@@ -463,13 +486,24 @@ export function Scroller(node) {
     };
 
     loadSection(currentTextInfo, sectionid, (content) => {
-      if (!wrapper || isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
+      if (epoch !== loadEpoch || !wrapper) return;
+
+      // Retire the pending marker before any early return; land on the latest
+      // coalesced target fragment.
+      let targetFragmentid = fragmentid;
+      if (loadType === 'text') {
+        targetFragmentid = pendingLoadFragmentid ?? fragmentid;
+        pendingLoadSectionid = null;
+        pendingLoadFragmentid = null;
+      }
+
+      if (isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
 
       ignoreScrollEvent = true;
       insertContent(loadType, content, nodeScrolltopBefore, wrapperHeightBefore);
 
-      if (loadType === 'text' && fragmentid) {
-        scrollTo(fragmentid);
+      if (loadType === 'text' && targetFragmentid) {
+        scrollTo(targetFragmentid);
         locationInfo = null;
         updateLocationInfo();
       }
@@ -546,6 +580,10 @@ export function Scroller(node) {
     }
 
     currentTextInfo = textinfo;
+    // Switching texts invalidates any in-flight load; clear the pending marker.
+    loadEpoch++;
+    pendingLoadSectionid = null;
+    pendingLoadFragmentid = null;
   };
 
   const getLocationInfo = () => locationInfo;

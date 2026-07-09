@@ -580,6 +580,10 @@ export function TextNavigator() {
     return target;
   }
 
+  function destroy() {
+    changer.remove();
+  }
+
   let ext = {
     setTarget,
     getTarget,
@@ -590,11 +594,11 @@ export function TextNavigator() {
     node,
     setTextInfo,
     size,
-    close
+    close,
+    destroy
   };
 
   mixinEventEmitter(ext);
-  ext._events = {};
 
   return ext;
 }

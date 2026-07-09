@@ -430,8 +430,6 @@ class SearchWindowComponent extends BaseWindow {
   }
 
   doSearch() {
-    this.disable();
-
     this.state.textInfo = this.textChooser.getTextInfo();
 
     const text = this.refs.input.value.trim();
@@ -457,15 +455,16 @@ class SearchWindowComponent extends BaseWindow {
 
     this.refs.resultsBlock.classList.add('loading-indicator');
 
-    this.enable();
+    // Tag each search so only the latest one touches the UI (searches can't be cancelled).
+    const searchId = this._searchId = (this._searchId || 0) + 1;
 
     startSearch(
       textid,
       divisions,
       text,
-      (e) => this.searchLoadHandler(e),
-      (e) => this.searchIndexCompleteHandler(e),
-      (e) => this.searchCompleteHandler(e)
+      (e) => { if (searchId === this._searchId) this.searchLoadHandler(e); },
+      (e) => { if (searchId === this._searchId) this.searchIndexCompleteHandler(e); },
+      (e) => { if (searchId === this._searchId) this.searchCompleteHandler(e); }
     );
   }
 
@@ -692,16 +691,6 @@ class SearchWindowComponent extends BaseWindow {
     this.refs.searchProgressBar.style.display = 'none';
     this.refs.searchProgressBarLabel.innerHTML = '';
     this.refs.searchProgressBarInner.style.width = '0';
-  }
-
-  disable() {
-    this.refs.input.disabled = true;
-    this.refs.button.disabled = true;
-  }
-
-  enable() {
-    this.refs.input.disabled = false;
-    this.refs.button.disabled = false;
   }
 
   renderLemmaInfo() {

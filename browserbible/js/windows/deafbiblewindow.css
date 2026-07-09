@@ -1,90 +1,261 @@
+/* Deaf Bible video player (see DeafVideoPlayer.js) */
 
-
-.deafbible .mt {
-	margin-top: 1.5em;
+deaf-bible-window .scroller-main {
+	overflow: hidden;
+	padding: 0;
 }
 
-.deafbible .s {
-	margin-top: 0.5em;
-}
-
-.deafbible video{
-	margin: 0 0 2em 0;
+.deaf-player {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
 	width: 100%;
-	height: auto;
-	background: var(--color-toolbar-background);
+	background: var(--color-background);
+	outline: none;
 }
 
-.deafbible .inline-icon {
+.deaf-stage {
+	position: relative;
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+}
+
+.deaf-video {
+	max-width: 100%;
+	max-height: 100%;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background: #000;
+}
+
+.deaf-passage-title {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 8px 12px;
+	font-size: 0.9em;
+	color: #fff;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.deaf-stage:hover .deaf-passage-title {
+	opacity: 1;
+}
+
+.deaf-buffering {
+	position: absolute;
+	width: 44px;
+	height: 44px;
+	border: 4px solid rgba(255, 255, 255, 0.3);
+	border-top-color: #fff;
+	border-radius: 50%;
 	display: none;
 }
 
-
-
-.deafbible .v {
+.deaf-buffering.active {
 	display: block;
+	animation: deaf-spin 0.8s linear infinite;
 }
 
-.deafbible .selected-verse {
-	background: none;
-	color: var(--color-highlight);
-}
-.deafbible .selected-verse video {
-	outline: 5px solid var(--color-highlight);
+@keyframes deaf-spin {
+	to { transform: rotate(360deg); }
 }
 
-.deaf-video-header {
-	width: 100%;
+.deaf-controls {
 	display: flex;
-	gap: 2%;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: var(--color-toolbar-background);
+	border-top: solid 1px var(--color-border);
 }
 
-.deaf-video-header input[type=button] {
-	flex: 1;
-	margin: 2% 0;
-	height: 58px;
-	appearance: none;
-	background-color: var(--color-background);
-	border: solid 1px var(--color-border);
-	cursor: pointer;
-	background-repeat: no-repeat;
-	text-align: right;
-	padding: 10px;
-	background-position-x: 10px;
-}
-
-.deaf-video-header input[type=button]:hover {
-	background-color: var(--color-background-hover);
-}
-.deaf-video-header input[type=button].active {
-	background-color: var(--color-primary);
-	border-color: var(--color-border);
-	color: var(--color-background);
+.deaf-btn {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 6px;
 	border: 0;
+	background: none;
+	color: var(--color-text, currentColor);
+	cursor: pointer;
+	border-radius: 4px;
 }
 
-
-.deaf-video-header input[type=button].deaf-intro {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_intro.png);
+.deaf-btn:hover {
+	background: var(--color-background-hover);
 }
 
-.deaf-video-header input[type=button].deaf-story {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_story.png);
+.deaf-btn svg {
+	width: 100%;
+	height: 100%;
+	fill: currentColor;
 }
 
-.deaf-video-header input[type=button].deaf-lessons {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_more_info.png);
+.deaf-play.playing {
+	color: var(--color-primary);
 }
 
-
-.deaf-video-header input[type=button].deaf-intro.active {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_intro_active.png);
+.deaf-currenttime,
+.deaf-duration {
+	flex: 0 0 auto;
+	font-variant-numeric: tabular-nums;
+	font-size: 0.8em;
+	min-width: 42px;
+	text-align: center;
+	opacity: 0.8;
 }
 
-.deaf-video-header input[type=button].deaf-story.active {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_story_active.png);
+.deaf-playbar {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	min-width: 60px;
 }
 
-.deaf-video-header input[type=button].deaf-lessons.active {
-	background-image: url(//assets.bible.is/images/deaf/icon_door_more_info_active.png);
+.deaf-playbar-track {
+	position: relative;
+	width: 100%;
+	height: 6px;
+	background: var(--color-border);
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.deaf-playbar-progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 0;
+	background: var(--color-primary);
+	border-radius: 3px 0 0 3px;
+	pointer-events: none;
+}
+
+.deaf-playbar-markers {
+	position: absolute;
+	inset: 0;
+}
+
+.deaf-marker {
+	position: absolute;
+	top: -2px;
+	width: 2px;
+	height: 10px;
+	margin-left: -1px;
+	background: var(--color-background);
+	border: solid 1px var(--color-border);
+	border-radius: 1px;
+	cursor: pointer;
+}
+
+.deaf-marker:hover {
+	background: var(--color-primary);
+	transform: scaleY(1.3);
+}
+
+.deaf-marker.active {
+	background: var(--color-highlight, var(--color-primary));
+	border-color: var(--color-highlight, var(--color-primary));
+}
+
+.deaf-playbar-handle {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 14px;
+	height: 14px;
+	margin: -7px 0 0 -7px;
+	background: var(--color-primary);
+	border: solid 2px var(--color-background);
+	border-radius: 50%;
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.deaf-chapter-strip {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 6px 10px;
+	overflow-x: auto;
+	white-space: nowrap;
+	background: var(--color-background);
+	border-top: solid 1px var(--color-border);
+	scrollbar-width: thin;
+}
+
+.deaf-strip-book {
+	flex: 0 0 auto;
+	font-weight: bold;
+	font-size: 0.85em;
+	margin-right: 6px;
+	opacity: 0.75;
+}
+
+.deaf-strip-chapter {
+	flex: 0 0 auto;
+	min-width: 28px;
+	height: 28px;
+	padding: 0 8px;
+	border: solid 1px var(--color-border);
+	background: var(--color-background);
+	color: inherit;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.8em;
+}
+
+.deaf-strip-chapter:hover {
+	background: var(--color-background-hover);
+}
+
+.deaf-strip-chapter.active {
+	background: var(--color-primary);
+	color: var(--color-background);
+	border-color: var(--color-primary);
+}
+
+.deaf-options-panel {
+	position: absolute;
+	right: 10px;
+	bottom: 56px;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	background: var(--color-background);
+	border: solid 1px var(--color-border);
+	border-radius: 6px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+	font-size: 0.85em;
+}
+
+.deaf-options-panel label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+}
+
+.deaf-quality-box {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	border-top: solid 1px var(--color-border);
+	padding-top: 8px;
 }

@@ -10,6 +10,7 @@ import { BibleBrainTextProvider } from './BibleBrainTextProvider.js';
 import { ApiBibleTextProvider } from './ApiBibleTextProvider.js';
 import { CommentaryProvider } from './CommentaryProvider.js';
 import { DbsAudioTextProvider } from './DbsAudioTextProvider.js';
+import { DeafBibleTextProvider } from './DeafBibleTextProvider.js';
 import { BibleBrainLinkedAudioTextProvider } from './BibleBrainLinkedAudioTextProvider.js';
 
 registerTextProvider('local', LocalTextProvider);
@@ -17,5 +18,6 @@ registerTextProvider('biblebrain', BibleBrainTextProvider);
 registerTextProvider('apibible', ApiBibleTextProvider);
 registerTextProvider('commentary', CommentaryProvider);
 registerTextProvider('dbs-audio', DbsAudioTextProvider);
+registerTextProvider('deafbible', DeafBibleTextProvider);
 // Last: flags existing texts that have re-associated Bible Brain audio.
 registerTextProvider('biblebrain-linked-audio', BibleBrainLinkedAudioTextProvider);

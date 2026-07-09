@@ -213,6 +213,17 @@ export function data(el, key, value) {
   return undefined;
 }
 
+// Format seconds as `MM:SS` (or `H:MM:SS`); non-finite/negative treated as 0.
+export function secondsToTimeCode(time) {
+  if (!Number.isFinite(time) || time < 0) time = 0;
+  const hours = Math.floor(time / 3600);
+  const minutes = Math.floor(time / 60) % 60;
+  const seconds = Math.floor(time % 60);
+  const mm = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  const ss = seconds < 10 ? `0${seconds}` : `${seconds}`;
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
 const helpers = {
   extend,
   offset,
@@ -221,7 +232,8 @@ const helpers = {
   elem,
   insertAfter,
   on,
-  data
+  data,
+  secondsToTimeCode
 };
 
 export default helpers;

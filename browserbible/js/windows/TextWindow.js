@@ -19,7 +19,7 @@ export { registerWindowComponent } from './BaseWindow.js';
 
 const hasTouch = 'ontouchend' in document;
 
-const getTextAsync = (textId) => AsyncHelpers.promisify(getText, textId);
+const getTextAsync = (textId) => AsyncHelpers.promisifyWithError(getText, textId);
 const loadTextsAsync = () => AsyncHelpers.promisify(loadTexts);
 
 /**
@@ -139,19 +139,15 @@ export class TextWindowComponent extends BaseWindow {
   }
 
   async init() {
-    // Get text type from init data or attribute (preserve constructor default)
     this.state.textType = this.getParam('textType', this.state.textType || 'bible');
 
-    // Initialize UI
     this.refs.navui.innerHTML = 'Reference';
     this.refs.navui.value = 'Reference';
     this.refs.textlistui.innerHTML = 'Version';
 
-    // Create scroller and audio controller
-    this.scroller = Scroller(this.refs.main);
-    this.audioController = AudioController(this.windowId, this.refs.container, this.refs.audioui, this.scroller);
+    this.scroller = this.createScroller();
+    this.audioController = this.createAudioController();
 
-    // Set up scroller event handlers
     this.scroller.on('scroll', () => this.updateTextnav());
     this.scroller.on('locationchange', () => this.updateTextnav());
     this.scroller.on('load', () => this.updateTextnav());
@@ -161,8 +157,15 @@ export class TextWindowComponent extends BaseWindow {
       }
     });
 
-    // Load initial text
     await this.loadInitialText();
+  }
+
+  createScroller() {
+    return Scroller(this.refs.main);
+  }
+
+  createAudioController() {
+    return AudioController(this.windowId, this.refs.container, this.refs.audioui, this.scroller);
   }
 
   cleanup() {
@@ -307,7 +310,7 @@ export class TextWindowComponent extends BaseWindow {
     this.updateTabLabel(displayAbbr(newTextInfo));
 
     this.textNavigator.setTextInfo(newTextInfo);
-    this.audioController.setTextInfo(newTextInfo);
+    this.audioController?.setTextInfo(newTextInfo);
 
     if (this.state.currentTextInfo == null || newTextInfo.id !== this.state.currentTextInfo.id) {
       this.state.currentTextInfo = newTextInfo;
@@ -424,13 +427,22 @@ export class TextWindowComponent extends BaseWindow {
     }
   }
 
+  getDefaultTextId() {
+    switch (this.state.textType) {
+      case 'commentary':
+        return this.config.newCommentaryWindowTextId;
+      case 'deafbible':
+        return this.config.deafBibleWindowDefaultBibleVersion;
+      default:
+        return this.config.newBibleWindowVersion;
+    }
+  }
+
   async loadInitialText() {
     let textid = this.getParam('textid');
 
     if (!textid || textid === '') {
-      textid = this.state.textType === 'commentary'
-        ? this.config.newCommentaryWindowTextId
-        : this.config.newBibleWindowVersion;
+      textid = this.getDefaultTextId();
     }
 
     try {
@@ -466,8 +478,12 @@ export class TextWindowComponent extends BaseWindow {
         return;
       }
 
-      this.state.currentTextInfo = await getTextAsync(newTextInfo.id);
-      await this.startup();
+      try {
+        this.state.currentTextInfo = await getTextAsync(newTextInfo.id);
+        await this.startup();
+      } catch {
+        this.showError('Unable to load text');
+      }
     }
   }
 
@@ -477,13 +493,17 @@ export class TextWindowComponent extends BaseWindow {
     this.updateTabLabel(displayAbbr(this.state.currentTextInfo));
 
     this.textNavigator.setTextInfo(this.state.currentTextInfo);
-    this.audioController.setTextInfo(this.state.currentTextInfo);
+    this.audioController?.setTextInfo(this.state.currentTextInfo);
     this.scroller.setTextInfo(this.state.currentTextInfo);
 
     this.updateVersionCycler();
 
     let sectionid = this.getParam('sectionid');
-    const fragmentid = this.getParam('fragmentid');
+    let fragmentid = this.getParam('fragmentid');
+
+    if (!sectionid && !fragmentid && this.state.textType === 'deafbible') {
+      fragmentid = this.config.deafBibleWindowDefaultBibleFragmentid;
+    }
 
     if (!sectionid && fragmentid) {
       sectionid = fragmentid.split('_')[0];
@@ -495,7 +515,8 @@ export class TextWindowComponent extends BaseWindow {
   setTextInfoUI(textinfo) {
     if (textinfo.type === 'deafbible') {
       this.refs.textlistui.classList.add('app-list-image');
-      this.refs.textlistui.innerHTML = `<img src="${this.config.textsPath}/${textinfo.id}/${textinfo.id}.png" />`;
+      const cover = textinfo.cover || `${this.config.textsPath}/${textinfo.id}/${textinfo.id}.png`;
+      this.refs.textlistui.innerHTML = `<img src="${cover}" />`;
     } else {
       this.refs.textlistui.classList.remove('app-list-image');
       this.refs.textlistui.innerHTML = displayAbbr(textinfo);

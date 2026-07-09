@@ -17,7 +17,7 @@ const FONT_SIZE_MAX = 24;
 // Greek stopwords (common articles/prepositions to exclude from statistics)
 const GREEK_STOPWORDS = ['G2532', 'G3588', 'G846', 'G1722', 'G1519', 'G1537', 'G1611'];
 
-const getTextAsync = (textId) => AsyncHelpers.promisify(getText, textId);
+const getTextAsync = (textId) => AsyncHelpers.promisifyWithError(getText, textId);
 const loadSectionAsync = (textInfo, sectionId) => AsyncHelpers.promisifyWithError(
   (ti, sid, success, error) => loadSection(ti, sid, success, error),
   textInfo, sectionId
@@ -121,7 +121,10 @@ class StatisticsWindowComponent extends BaseWindow {
 
   handleMessage(e) {
     if (e.data.messagetype === 'nav' && e.data.type === 'bible' && e.data.locationInfo) {
-      this.startProcess(e.data.locationInfo.textid, e.data.locationInfo.sectionid);
+      const { textid, sectionid } = e.data.locationInfo;
+      const tid = textid || this.state.textid;
+      if (!tid || !sectionid) return;
+      this.startProcess(tid, sectionid);
     }
   }
 
@@ -175,6 +178,7 @@ class StatisticsWindowComponent extends BaseWindow {
 
       this.loadChapterInfo();
     } catch (err) {
+      this.refs.statsMainNode.classList.remove('loading-indicator');
       console.error('Error loading text info', err);
     }
   }
