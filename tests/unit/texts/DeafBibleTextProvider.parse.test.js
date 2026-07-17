@@ -6,55 +6,70 @@ import {
   DeafBibleTextProvider
 } from '@texts/DeafBibleTextProvider.js';
 
+// The internal entry shape produced by catalogToEntry from a catalog record.
 const ENTRY = {
   iso: 'ase',
   language: 'American Sign Language',
   direction: 'ltr',
-  primaryCountry: 'United States',
+  primaryCountry: 'US',
   directory: 'ase_american-sign-language',
   file: 'ase_american-sign-language_deaf_bible.json',
-  cover: 'https://video.dbs.org/DeafBible/covers/ase_american-sign-language/x.webp'
+  cover: ''
 };
 
+// A per-title metadata JSON in the current upstream shape (sections[].items with nested media).
+const mediaItem = (over) => ({
+  media: {
+    high: { url: over.high },
+    low: over.low ? { url: over.low } : undefined
+  },
+  book: over.book,
+  reference: over.reference,
+  title: over.title,
+  cover: over.cover,
+  duration_human: over.duration_human
+});
+
 const RAW = {
-  longDescription: 'Scripture in ASL.',
-  org_url: 'https://deafbiblesociety.com/about/',
-  chapters: [
-    {
-      book: 'Genesis',
-      reference: 'Genesis 1:1-31; 2:1-4',
-      title: 'The Creation of the World — Genesis 1:1-31; 2:1-4',
-      web_url: 'https://video.dbs.org/DeafBible/chapters/ase_american-sign-language/g_0001.mp4',
-      web_url_low: 'https://video.dbs.org/DeafBible/chapters_low/ase_american-sign-language/g_0001_360.mp4',
-      cover: 'https://video.dbs.org/DeafBible/covers/ase_american-sign-language/g_0001.webp'
-    },
-    // Same starting chapter as the next passage — must be grouped into GN2.
-    { book: 'Genesis', reference: 'Genesis 2:5-25', title: 'Man and Woman', web_url: 'https://video.dbs.org/a/g2a.mp4' },
-    { book: 'Genesis', reference: 'Genesis 2:18-24', title: 'Marriage', web_url: 'https://video.dbs.org/a/g2b.mp4' },
-    { book: 'John', reference: 'John 1:1-18', title: 'The Word', web_url: 'https://video.dbs.org/a/j1.mp4' }
-  ]
+  cover: 'https://meta.dbs.org/data/data-video/covers/DeafBible/ase_american-sign-language/title.webp',
+  description: 'Scripture in ASL.',
+  org: { url: 'https://deafbiblesociety.com/about/' },
+  language: { direction: 'ltr' },
+  country: { id: 'US', name: 'United States' },
+  sections: [{
+    items: [
+      mediaItem({
+        book: 'Genesis',
+        reference: 'Genesis 1:1-31; 2:1-4',
+        title: 'The Creation of the World — Genesis 1:1-31; 2:1-4',
+        high: 'https://video.dbs.org/DeafBible/chapters/ase_american-sign-language/g_0001.mp4',
+        low: 'https://video.dbs.org/DeafBible/chapters_low/ase_american-sign-language/g_0001_360.mp4',
+        cover: 'https://video.dbs.org/DeafBible/covers/ase_american-sign-language/g_0001.webp'
+      }),
+      // Same starting chapter as the next passage — must be grouped into GN2.
+      mediaItem({ book: 'Genesis', reference: 'Genesis 2:5-25', title: 'Man and Woman', high: 'https://video.dbs.org/a/g2a.mp4' }),
+      mediaItem({ book: 'Genesis', reference: 'Genesis 2:18-24', title: 'Marriage', high: 'https://video.dbs.org/a/g2b.mp4' }),
+      mediaItem({ book: 'John', reference: 'John 1:1-18', title: 'The Word', high: 'https://video.dbs.org/a/j1.mp4' })
+    ]
+  }]
 };
 
 describe('getTextManifest', () => {
   afterEach(() => { vi.unstubAllGlobals(); });
 
-  it('lists Deaf Bible titles fetched from index.json as deafbible texts', async () => {
-    const index = [
-      {
-        iso: 'ase',
-        language: 'American Sign Language',
-        direction: 'ltr',
-        primaryCountry: 'United States',
-        directory: 'ase_american-sign-language',
-        file: 'ase_american-sign-language_deaf_bible.json',
-        cover: 'https://video.dbs.org/DeafBible/covers/ase_american-sign-language/x.webp'
-      }
+  it('lists Deaf Bible titles from the video catalog, filtering out other products', async () => {
+    // Master catalog with abbreviated keys: two Deaf Bibles and one non-Deaf product.
+    const catalog = [
+      { i: 'ase', l: 'American Sign Language', o: 'DeafBible', c: 'US', j: 'ase_american-sign-language_deaf_bible.json', p: 'deafbible.webp', k: 1610 },
+      { i: 'aed', l: 'Argentine Sign Language', o: 'DeafBible', c: 'AR', j: 'aed_argentine-sign-language_deaf_bible.json', p: 'deafbible.webp', k: 136 },
+      { i: 'xyz', l: 'Some Language', o: 'Jesus', c: 'US', j: 'xyz_jesus.json', p: 'j.webp', k: 200 }
     ];
-    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(index) })));
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(catalog) })));
 
     const manifest = await new Promise((resolve) => { DeafBibleTextProvider.getTextManifest(resolve); });
 
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/index.json'));
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('video.json'));
+    expect(manifest).toHaveLength(2); // the Jesus-film entry is filtered out
     expect(manifest.every((t) => t.type === 'deafbible')).toBe(true);
     expect(manifest.every((t) => t.id.startsWith('deaf_'))).toBe(true);
     expect(manifest.every((t) => t.hasText === true)).toBe(true);
@@ -98,7 +113,7 @@ describe('buildTitle', () => {
     expect(info.abbr).toBe('ASE');
     expect(info.lang).toBe('ase');
     expect(info.name).toBe('American Sign Language');
-    expect(info.cover).toBe(ENTRY.cover);
+    expect(info.cover).toBe(RAW.cover); // per-title cover, not the (empty) catalog cover
   });
 
   it('collects divisions in first-appearance order', () => {
@@ -146,7 +161,7 @@ describe('buildSectionHtml', () => {
 
   it('splits numbered book codes (2-char code + chapter) correctly', () => {
     const built = buildTitle(ENTRY, {
-      chapters: [{ book: '1 Samuel', reference: '1 Samuel 11:1-15', title: 'Saul', web_url: 'https://video.dbs.org/a/s1.mp4' }]
+      sections: [{ items: [mediaItem({ book: '1 Samuel', reference: '1 Samuel 11:1-15', title: 'Saul', high: 'https://video.dbs.org/a/s1.mp4' })] }]
     });
     expect(built.info.sections).toEqual(['S111']);
     const html = buildSectionHtml(built.info, 'S111', built.sectionPassages.get('S111'));

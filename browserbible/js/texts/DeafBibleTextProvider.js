@@ -7,12 +7,15 @@ import { toBcp47Lang } from '../lib/bcp47.js';
 const providerName = 'deafbible';
 const fullName = 'Deaf Bible (Deaf Bible Society)';
 
-const DEFAULT_META_URL = 'https://meta.dbs.org/video/DeafBible';
+// Master catalog of all DBS video products; Deaf Bibles are the entries whose org is "DeafBible".
+const DEFAULT_CATALOG_URL = 'https://dbs.org/data/video.json';
+// Base for the per-title Deaf Bible metadata JSON files.
+const DEFAULT_META_URL = 'https://meta.dbs.org/data/data-video/video/DeafBible';
 
 // id -> { info, sectionPassages: Map<sectionid, passage[]> }
 const titleCache = {};
 
-// Title index (index.json), fetched once and cached.
+// Title index (derived from the catalog), fetched once and cached.
 let indexPromise = null;
 
 const escapeHtml = (s) => String(s ?? '')
@@ -41,22 +44,50 @@ const isEnabled = (config) => config.enableOnlineSources && config.deafBibleEnab
 
 const metaBase = (config) => (config.deafBibleMetaUrl || DEFAULT_META_URL).replace(/\/$/, '');
 
+const catalogUrl = (config) => config.deafBibleCatalogUrl || DEFAULT_CATALOG_URL;
+
 const idFor = (entry) => `deaf_${entry.iso.toUpperCase()}`;
 
 const bareId = (textid) => (textid.includes(':') ? textid.split(':')[1] : textid);
 
-// Fetch/cache the title index; resolves to [] on failure so callers degrade gracefully.
+// The catalog abbreviates keys; Deaf Bibles are the entries whose org ("o") is "DeafBible".
+const isDeafEntry = (e) => !!e && (e.o === 'DeafBible' || e.org === 'DeafBible');
+
+// Normalize a catalog entry to the internal shape the rest of the provider consumes.
+// Full country name / text direction aren't in the catalog; they're filled in per-title (buildTitle).
+const catalogToEntry = (e) => {
+  const file = e.j ?? e.file ?? '';
+  return {
+    iso: e.i ?? e.iso ?? '',
+    language: e.l ?? e.language ?? '',
+    direction: e.direction || 'ltr',
+    primaryCountry: e.c ?? e.primaryCountry ?? '',
+    cover: '',
+    file,
+    directory: file.replace(/_deaf_bible\.json$/, '')
+  };
+};
+
+// Fetch the master catalog, keep the Deaf Bible titles, and cache the result;
+// resolves to [] on failure so callers degrade gracefully.
 export function loadIndex(config) {
   if (indexPromise) return indexPromise;
 
-  indexPromise = fetch(`${metaBase(config)}/index.json`)
+  indexPromise = fetch(catalogUrl(config))
     .then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     })
-    .then((data) => (Array.isArray(data) ? data : (data?.titles ?? [])))
+    .then((data) => {
+      const list = Array.isArray(data) ? data : (data?.videos ?? data?.titles ?? []);
+      return list
+        .filter(isDeafEntry)
+        .map(catalogToEntry)
+        .filter((entry) => entry.iso && entry.file)
+        .sort((a, b) => a.language.localeCompare(b.language));
+    })
     .catch((error) => {
-      console.error('Deaf Bible index error:', error);
+      console.error('Deaf Bible catalog error:', error);
       indexPromise = null; // allow a later retry
       return [];
     });
@@ -69,12 +100,33 @@ const findEntry = (index, textid) => {
   return index.find((entry) => idFor(entry) === id) ?? null;
 };
 
-const createAboutHtml = (entry, raw) => `<div class="about-text">
+const createAboutHtml = (entry, raw) => {
+  const orig = raw?.source?.original ?? {};
+  const description = raw?.description || raw?.description_short
+    || raw?.longDescription || raw?.shortDescription
+    || orig.longDescription || orig.shortDescription || orig.film_description || '';
+  const orgUrl = raw?.org?.url || raw?.org_url || orig.org_url || 'https://deafbiblesociety.com/';
+  const country = raw?.country?.name || entry.primaryCountry || '';
+
+  return `<div class="about-text">
   <h1>${escapeHtml(entry.language)}</h1>
-  <p class="about-language">Deaf Bible${entry.primaryCountry ? ` &mdash; ${escapeHtml(entry.primaryCountry)}` : ''}</p>
-  <p>${escapeHtml(raw?.longDescription || raw?.shortDescription || raw?.film_description || '')}</p>
-  <p class="about-source">Provided by the <a href="${escapeHtml(raw?.org_url || 'https://deafbiblesociety.com/')}" target="_blank" rel="noopener">Deaf Bible Society</a>.</p>
+  <p class="about-language">Deaf Bible${country ? ` &mdash; ${escapeHtml(country)}` : ''}</p>
+  <p>${escapeHtml(description)}</p>
+  <p class="about-source">Provided by the <a href="${escapeHtml(orgUrl)}" target="_blank" rel="noopener">Deaf Bible Society</a>.</p>
 </div>`;
+};
+
+// Normalize a per-title passage (new "sections[].items" shape, or the legacy "chapters" shape)
+// into the flat record buildSectionHtml/DeafPlaylist consume.
+const normalizePassage = (item) => ({
+  book: item.book,
+  reference: item.reference,
+  title: item.title,
+  web_url: item.media?.high?.url ?? item.web_url ?? '',
+  web_url_low: item.media?.low?.url ?? item.web_url_low ?? '',
+  cover: item.cover ?? '',
+  length: item.duration_human ?? item.duration_seconds ?? item.length ?? ''
+});
 
 /**
  * Resolve a passage's book + starting chapter/verse to a DBS section id.
@@ -100,29 +152,37 @@ export function parsePassage(book, reference) {
 export function buildTitle(entry, raw) {
   const id = idFor(entry);
   const lang = entry.iso;
-  const dir = entry.direction || 'ltr';
+  const dir = raw?.language?.direction || entry.direction || 'ltr';
 
   const divisions = [];
   const divisionNames = [];
   const sections = [];
   const sectionPassages = new Map();
 
-  for (const chapter of raw.chapters ?? []) {
-    const parsed = parsePassage(chapter.book, chapter.reference || chapter.title);
+  // New titles group passages under sections[].items; legacy titles used a flat chapters[].
+  const rawItems = Array.isArray(raw.sections)
+    ? raw.sections.flatMap((section) => section?.items ?? [])
+    : (raw.chapters ?? []);
+
+  for (const item of rawItems) {
+    const passage = normalizePassage(item);
+    const parsed = parsePassage(passage.book, passage.reference || passage.title);
     if (!parsed) continue;
 
     const { code, sectionid, verse } = parsed;
 
     if (!divisions.includes(code)) {
       divisions.push(code);
-      divisionNames.push(BOOK_DATA[code]?.name || chapter.book);
+      divisionNames.push(BOOK_DATA[code]?.name || passage.book);
     }
     if (!sectionPassages.has(sectionid)) {
       sectionPassages.set(sectionid, []);
       sections.push(sectionid);
     }
-    sectionPassages.get(sectionid).push({ ...chapter, verse, sectionid });
+    sectionPassages.get(sectionid).push({ ...passage, verse, sectionid });
   }
+
+  const countryName = raw?.country?.name || entry.primaryCountry || '';
 
   const info = {
     type: 'deafbible',
@@ -137,8 +197,8 @@ export function buildTitle(entry, raw) {
     dir,
     hasText: true,
     hasAudio: false,
-    cover: entry.cover || '',
-    countries: entry.primaryCountry ? [entry.primaryCountry] : [],
+    cover: raw?.cover || entry.cover || '',
+    countries: countryName ? [countryName] : [],
     divisions,
     divisionNames,
     sections,

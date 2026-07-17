@@ -78,7 +78,8 @@ const defaultConfig = {
   deafBibleWindowDefaultBibleFragmentid: 'JN1_1',
   deafBibleWindowDefaultBibleVersion: 'deaf_ASE',
   deafBibleEnabled: true,
-  deafBibleMetaUrl: 'https://meta.dbs.org/video/DeafBible',
+  deafBibleCatalogUrl: 'https://dbs.org/data/video.json',
+  deafBibleMetaUrl: 'https://meta.dbs.org/data/data-video/video/DeafBible',
 
   // Menu components
   enableNavigationButtons: true,
