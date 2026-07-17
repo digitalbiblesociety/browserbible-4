@@ -37,17 +37,6 @@ class MapWindowComponent extends BaseWindow {
           <button type="button" class="app-list map-journey-list hidden" aria-haspopup="listbox" aria-expanded="false" aria-label="Journey"></button>
           <div class="map-journey-menu" role="listbox" aria-label="Journeys"></div>
         </div>
-        <div class="map-mode-toggle" role="group" aria-label="Map mode">
-          <button class="map-mode-btn active" data-mode="passage" aria-pressed="true">Passage</button>
-          <button class="map-mode-btn" data-mode="explore" aria-pressed="false">Explore</button>
-          <button class="map-mode-btn hidden" data-mode="journeys" aria-pressed="false">Journeys</button>
-        </div>
-        <div class="map-era-filter hidden" role="group" aria-label="Era filter">
-          <button class="map-era-btn active" data-era="all" aria-pressed="true">All</button>
-          <button class="map-era-btn" data-era="ot" aria-pressed="false">OT</button>
-          <button class="map-era-btn" data-era="nt" aria-pressed="false">NT</button>
-        </div>
-        <span class="map-location-count" aria-live="polite"></span>
       </div>
       <div class="window-main map-main">
         <div class="svg-map-container">
@@ -56,10 +45,21 @@ class MapWindowComponent extends BaseWindow {
             <button class="map-empty-explore-btn">Explore all locations</button>
           </div>
         </div>
-        <div class="map-detail hidden">
-          <div class="map-detail-toolbar">
-            <button class="map-detail-back" aria-label="Back to map">&#8592; Back</button>
+        <div class="map-controls-bar">
+          <button class="map-detail-back hidden" aria-label="Back to map">&#8592; Back</button>
+          <div class="map-mode-toggle" role="group" aria-label="Map mode">
+            <button class="map-mode-btn active" data-mode="passage" aria-pressed="true">Passage</button>
+            <button class="map-mode-btn" data-mode="explore" aria-pressed="false">Explore</button>
+            <button class="map-mode-btn hidden" data-mode="journeys" aria-pressed="false">Journeys</button>
           </div>
+          <div class="map-era-filter hidden" role="group" aria-label="Era filter">
+            <button class="map-era-btn active" data-era="all" aria-pressed="true">All</button>
+            <button class="map-era-btn" data-era="ot" aria-pressed="false">OT</button>
+            <button class="map-era-btn" data-era="nt" aria-pressed="false">NT</button>
+          </div>
+          <span class="map-location-count" aria-live="polite"></span>
+        </div>
+        <div class="map-detail hidden">
           <div class="map-detail-content"></div>
         </div>
       </div>
@@ -410,6 +410,7 @@ class MapWindowComponent extends BaseWindow {
       <div class="map-journey-stops">${rows}</div>
     `;
     this.refs.detail.classList.remove('hidden');
+    this.refs.detailBack.classList.remove('hidden');
     this._journeyListShowing = true;
     this._detailFromJourney = false;
     this._journeyListJourney = journey;
@@ -465,6 +466,7 @@ class MapWindowComponent extends BaseWindow {
     this.refs.detailContent.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
     hydrateVerseTexts(this.refs.detailContent, this.state.currentTextid);
     this.refs.detail.classList.remove('hidden');
+    this.refs.detailBack.classList.remove('hidden');
 
     if (hadFocusInside) {
       const heading = this.refs.detailContent.querySelector('.map-detail-header h2');
@@ -481,6 +483,7 @@ class MapWindowComponent extends BaseWindow {
     this._detailFromJourney = false;
     this._journeyListJourney = null;
     this.refs.detail.classList.add('hidden');
+    this.refs.detailBack.classList.add('hidden');
     // stop lazy verse hydration while hidden
     this.refs.detailContent._hydrateObserver?.disconnect();
     this.refs.detailContent._hydrateObserver = null;

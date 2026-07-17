@@ -243,9 +243,22 @@ map-window .map-main {
 }
 
 map-window .svg-map-container {
-	/* Map takes 60%; the bottom 40% is reserved for location/reference details. */
-	flex: 0 0 60%;
+	/* Map fills the space above the controls bar; when a detail opens it gives up
+	   the bottom 40% (see .map-detail). With no detail open, the map fills it all. */
+	flex: 1 1 0;
 	min-height: 0;
+}
+
+/* Persistent bar below the map, above the detail: mode toggle, era filter,
+   location count, and the contextual Back button (shown only with a detail open). */
+.map-controls-bar {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 12px;
+	border-top: 1px solid var(--color-border);
+	background: var(--color-background);
 }
 
 
@@ -546,6 +559,7 @@ map-window .svg-map-container {
 	font-size: 11px;
 	white-space: nowrap;
 	flex-shrink: 0;
+	margin-left: auto;
 }
 
 
@@ -627,8 +641,8 @@ map-window .svg-map-container {
 /* === Inline Detail Panel (below map) === */
 
 .map-detail {
-	/* Fills the reserved bottom 40%; content scrolls internally. */
-	flex: 1 1 0;
+	/* Takes the bottom 40% when open; the map fills the rest above the controls bar. */
+	flex: 0 0 40%;
 	min-height: 0;
 	display: flex;
 	flex-direction: column;
@@ -640,14 +654,8 @@ map-window .svg-map-container {
 	display: none;
 }
 
-.map-detail-toolbar {
-	flex-shrink: 0;
-	padding: 4px 12px;
-	border-bottom: 1px solid var(--color-border);
-	background: var(--color-background);
-}
-
 .map-detail-back {
+	flex-shrink: 0;
 	border: none;
 	background: none;
 	color: var(--color-primary);
@@ -655,6 +663,10 @@ map-window .svg-map-container {
 	font-size: 13px;
 	padding: 2px 4px;
 	border-radius: 3px;
+}
+
+.map-detail-back.hidden {
+	display: none;
 }
 
 .map-detail-back:hover {
