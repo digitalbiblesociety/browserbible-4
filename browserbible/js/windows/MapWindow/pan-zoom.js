@@ -239,7 +239,7 @@ export function setupPanZoom(component) {
 
   // Double-click zoom (markers, clusters, and controls handle their own clicks)
   component.addListener(mapContainer, 'dblclick', (e) => {
-    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop')) return;
     e.preventDefault();
     const rect = mapContainer.getBoundingClientRect();
     zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, 1 / ZOOM_STEP, { rect });
@@ -249,7 +249,7 @@ export function setupPanZoom(component) {
   // Mouse drag panning. The container rect can't change mid-gesture, so it's
   // measured once on pointer-down rather than per mousemove.
   component.addListener(mapContainer, 'mousedown', (e) => {
-    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls')) return;
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop')) return;
     component.state.isPanning = true;
     component.panStart = { x: e.clientX, y: e.clientY };
     component._gestureRect = mapContainer.getBoundingClientRect();

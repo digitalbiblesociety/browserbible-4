@@ -8,6 +8,7 @@ import { i18n } from '../lib/i18n.js';
 import { getApp } from '../core/registry.js';
 import { getText, loadSection } from '../texts/TextLoader.js';
 import { renderWordCloud } from '../lib/SimpleWordCloud.js';
+import { escapeRegExp, highlightTextMatches } from '../lib/textHighlighter.js';
 
 // Constants
 const INIT_DELAY_MS = 1500;
@@ -18,10 +19,7 @@ const FONT_SIZE_MAX = 24;
 const GREEK_STOPWORDS = ['G2532', 'G3588', 'G846', 'G1722', 'G1519', 'G1537', 'G1611'];
 
 const getTextAsync = (textId) => AsyncHelpers.promisifyWithError(getText, textId);
-const loadSectionAsync = (textInfo, sectionId) => AsyncHelpers.promisifyWithError(
-  (ti, sid, success, error) => loadSection(ti, sid, success, error),
-  textInfo, sectionId
-);
+const loadSectionAsync = (textInfo, sectionId) => AsyncHelpers.promisifyWithError(loadSection, textInfo, sectionId);
 
 const exclusions = {
   "es": ["de"],
@@ -101,15 +99,16 @@ class StatisticsWindowComponent extends BaseWindow {
   async init() {
     setTimeout(() => {
       const app = getApp();
-      if (app?.windowManager) {
-        const firstWindowSettings = app.windowManager.getSettings()[0];
+      if (!app?.windowManager) return;
 
-        if (firstWindowSettings?.data) {
-          const selectedSectionid = firstWindowSettings.data.sectionid;
-          const selectedTextid = firstWindowSettings.data.textid;
+      const bibleSettings = app.windowManager.getSettings()
+        .find((s) => s?.data?.textid && s?.data?.sectionid);
 
-          this.startProcess(selectedTextid, selectedSectionid);
-        }
+      if (bibleSettings) {
+        this.startProcess(bibleSettings.data.textid, bibleSettings.data.sectionid);
+      } else {
+        this.refs.statsMainNode.innerHTML =
+          '<div class="statistics-empty">Open a Bible window to see statistics for its current chapter.</div>';
       }
     }, INIT_DELAY_MS);
   }
@@ -122,61 +121,62 @@ class StatisticsWindowComponent extends BaseWindow {
   handleMessage(e) {
     if (e.data.messagetype === 'nav' && e.data.type === 'bible' && e.data.locationInfo) {
       const { textid, sectionid } = e.data.locationInfo;
-      const tid = textid || this.state.textid;
-      if (!tid || !sectionid) return;
-      this.startProcess(tid, sectionid);
+      this.startProcess(textid || this.state.textid, sectionid);
     }
   }
 
   startProcess(tid, sid) {
-    const tparts = tid.split(':');
+    if (!tid || !sid) return;
 
-    if (tparts.length > 1) {
-      tid = tparts[tparts.length - 1];
-    }
+    tid = tid.split(':').pop();
 
-    if (tid === this.state.textid && sid === this.state.sectionid) {
-      return;
-    }
+    if (tid === this.state.textid && sid === this.state.sectionid) return;
 
     this.removeHighlights();
+    this._statsEpoch = (this._statsEpoch ?? 0) + 1;
 
-    this.state.sectionid = sid;
-    this.state.textid = tid;
-    this.state.textInfo = null;
-    this.state.wordStats = [];
-    this.state.lemmaData = [];
-    this.state.hasLemma = false;
+    Object.assign(this.state, {
+      textid: tid,
+      sectionid: sid,
+      textInfo: null,
+      wordStats: [],
+      lemmaData: [],
+      hasLemma: false
+    });
 
     this.refs.main.scrollTop = 0;
     this.refs.statsMainNode.innerHTML = '';
     this.refs.statsMainNode.classList.add('loading-indicator');
 
-    this.loadIntro();
+    this.loadIntro(this._statsEpoch);
   }
 
-  async loadIntro() {
-    if (this.state.sectionid === '' || this.state.textid === '') {
-      return;
-    }
+  async loadIntro(epoch) {
+    if (!this.state.sectionid || !this.state.textid) return;
 
     try {
       const data = await getTextAsync(this.state.textid);
+      if (epoch !== this._statsEpoch) return;
       this.refs.statsMainNode.classList.remove('loading-indicator');
+
+      if (!data) {
+        this.refs.statsMainNode.innerHTML =
+          '<div class="statistics-empty">Unable to load this text.</div>';
+        return;
+      }
 
       this.state.textInfo = data;
 
-      const bibleReference = new Reference(this.state.sectionid);
-      bibleReference.lang = this.state.textInfo.lang;
-
-      if (bibleReference.toSection) {
+      const bibleReference = Reference(this.state.sectionid);
+      if (bibleReference) {
+        bibleReference.language = data.lang;
         const headerSpan = this.refs.header.querySelector('span');
         if (headerSpan) {
-          headerSpan.innerHTML = `${bibleReference.toString()} (${this.state.textInfo.abbr})`;
+          headerSpan.innerHTML = `${bibleReference.toString()} (${data.abbr})`;
         }
       }
 
-      this.loadChapterInfo();
+      this.loadChapterInfo(epoch);
     } catch (err) {
       this.refs.statsMainNode.classList.remove('loading-indicator');
       console.error('Error loading text info', err);
@@ -187,29 +187,18 @@ class StatisticsWindowComponent extends BaseWindow {
    * Process a verse containing lemma markup
    */
   processLemmaVerse(verse) {
-    verse.querySelectorAll('l').forEach((lemma) => {
-      const strongsArray = lemma.getAttribute('s').split(' ');
+    verse.querySelectorAll('l[s]').forEach((lemma) => {
+      const word = lemma.innerHTML;
 
-      for (const strongs of strongsArray) {
-        if (GREEK_STOPWORDS.includes(strongs)) {
-          continue;
-        }
+      for (const strongs of lemma.getAttribute('s').split(' ')) {
+        if (GREEK_STOPWORDS.includes(strongs)) continue;
 
-        const word = lemma.innerHTML;
-        const existingEntry = this.state.wordStats.find((wi) => wi.strongs === strongs);
-
-        if (existingEntry) {
-          existingEntry.count++;
-          if (!existingEntry.words.includes(word)) {
-            existingEntry.words.push(word);
-          }
+        const entry = this.state.wordStats.find((wi) => wi.strongs === strongs);
+        if (entry) {
+          entry.count++;
+          if (!entry.words.includes(word)) entry.words.push(word);
         } else {
-          this.state.wordStats.push({
-            strongs,
-            word,
-            words: [word],
-            count: 1
-          });
+          this.state.wordStats.push({ strongs, word, words: [word], count: 1 });
         }
       }
     });
@@ -219,37 +208,31 @@ class StatisticsWindowComponent extends BaseWindow {
    * Process a verse containing plain text (no lemma markup)
    */
   processTextVerse(verse) {
-    const verseHtml = verse.innerHTML;
-    let verseText = verseHtml.replace(/<.*?>/gi, '');
+    const { lang } = this.state.textInfo;
+    let verseText = verse.innerHTML.replace(/<.*?>/gi, '');
 
-    if (this.state.textInfo.lang.indexOf('en') === 0) {
+    if (lang.startsWith('en')) {
       verseText = verseText.replace(/[^A-Za-z\s]/g, '');
     }
 
-    const words = verseText.split(' ');
-    const langExclusions = exclusions[this.state.textInfo.lang];
+    const langExclusions = exclusions[lang];
 
-    for (const word of words) {
-      if (word === '' || langExclusions?.includes(word.toLowerCase())) {
-        continue;
-      }
+    for (const word of verseText.split(' ')) {
+      if (word === '' || langExclusions?.includes(word.toLowerCase())) continue;
 
-      const existingEntry = this.state.wordStats.find(
-        (wi) => wi.word === word || wi.word.toLowerCase() === word.toLowerCase()
+      const entry = this.state.wordStats.find(
+        (wi) => wi.word.toLowerCase() === word.toLowerCase()
       );
 
-      if (existingEntry) {
-        existingEntry.count++;
+      if (entry) {
+        entry.count++;
       } else {
-        this.state.wordStats.push({
-          word,
-          count: 1
-        });
+        this.state.wordStats.push({ word, count: 1 });
       }
     }
   }
 
-  async loadChapterInfo() {
+  async loadChapterInfo(epoch) {
     const resultsNode = this.createElement(`<div class="statistics-section statistics-frequent-words">
       <h3>${i18n.t('windows.stats.frequentwords')}</h3>
       <div class="statistics-wordcloud"></div>
@@ -262,21 +245,23 @@ class StatisticsWindowComponent extends BaseWindow {
 
     try {
       const content = await loadSectionAsync(this.state.textInfo, this.state.sectionid);
-
-      let contentEl;
-      if (typeof content === 'string') {
-        const temp = document.createElement('div');
-        temp.innerHTML = content;
-        contentEl = temp;
-      } else {
-        contentEl = content?.nodeType ? content : content?.[0];
+      if (epoch !== this._statsEpoch) {
+        resultsNode.remove();
+        return;
       }
 
-      const verses = contentEl.querySelectorAll('.verse, .v');
-      verses.forEach((verse) => {
+      let contentEl = content;
+      if (typeof content === 'string') {
+        contentEl = document.createElement('div');
+        contentEl.innerHTML = content;
+      } else if (!content?.nodeType) {
+        contentEl = content?.[0];
+      }
+
+      contentEl.querySelectorAll('.verse, .v').forEach((verse) => {
         verse.querySelectorAll('.note').forEach((n) => n.remove());
 
-        if (verse.querySelectorAll('l').length > 0) {
+        if (verse.querySelector('l[s]')) {
           this.state.hasLemma = true;
           this.processLemmaVerse(verse);
         } else {
@@ -289,25 +274,21 @@ class StatisticsWindowComponent extends BaseWindow {
       const counts = this.state.wordStats.map((o) => o.count);
       const max = Math.max(...counts);
       const min = Math.min(...counts);
+      const { dir } = this.state.textInfo;
 
-      let html = '';
-      const wordcloudData = [];
-
-      for (let i = 0; i < this.state.wordStats.length; i++) {
-        const wordInfo = this.state.wordStats[i];
-
+      const html = this.state.wordStats.map((wordInfo, i) => {
         const size = lerp(FONT_SIZE_MIN, FONT_SIZE_MAX, min, max, wordInfo.count);
-        let displayWord = wordInfo.words ? wordInfo.words.join(', ') : wordInfo.word;
+        let displayWord = wordInfo.words?.join(', ') ?? wordInfo.word;
 
         if (wordInfo.strongs) {
           displayWord = `<l s="${wordInfo.strongs}">${displayWord}</l>`;
         }
 
-        html += `<span class="word" style="font-size:${size}px" data-wordindex="${i}"><span dir="${this.state.textInfo.dir}">${displayWord}</span> <span dir="ltr">(${wordInfo.count})</span></span>`;
-        wordcloudData.push([wordInfo.word, wordInfo.count]);
-      }
+        return `<span class="word" style="font-size:${size}px" data-wordindex="${i}"><span dir="${dir}">${displayWord}</span> <span dir="ltr">(${wordInfo.count})</span></span>`;
+      }).join('');
+      const wordcloudData = this.state.wordStats.map((wi) => [wi.word, wi.count]);
 
-      wordFrequenciesNode.setAttribute('dir', this.state.textInfo.dir);
+      wordFrequenciesNode.setAttribute('dir', dir);
       wordFrequenciesNode.innerHTML = html;
       wordFrequenciesNode.classList.remove('loading-indicator');
 
@@ -323,10 +304,12 @@ class StatisticsWindowComponent extends BaseWindow {
       this.renderWordCloud(wordCloudNode, wordcloudData, min, max);
 
       if (this.state.hasLemma) {
-        this.loadLemmaInfo();
+        this.loadLemmaInfo(epoch);
       }
     } catch (err) {
       console.error('Error loading chapter info', err);
+      wordFrequenciesNode.classList.remove('loading-indicator');
+      wordFrequenciesNode.textContent = 'Unable to load this chapter.';
     }
   }
 
@@ -351,14 +334,10 @@ class StatisticsWindowComponent extends BaseWindow {
       list: wordcloudData,
       hover: (hoverWordInfo) => {
         this.removeHighlights();
+        if (!hoverWordInfo) return;
 
-        if (hoverWordInfo) {
-          const word = hoverWordInfo[0];
-          const wordInfo = this.state.wordStats.find((a) => a.word === word);
-          if (wordInfo) {
-            this.createHighlights(wordInfo);
-          }
-        }
+        const wordInfo = this.state.wordStats.find((wi) => wi.word === hoverWordInfo[0]);
+        if (wordInfo) this.createHighlights(wordInfo);
       },
       color: (word, weight) => {
         const rValue = Math.round(lerp(42, 22, min, max, weight));
@@ -369,7 +348,7 @@ class StatisticsWindowComponent extends BaseWindow {
     });
   }
 
-  async loadLemmaInfo() {
+  async loadLemmaInfo(epoch) {
     const lemmaNodeWrapper = this.createElement(`<div class="statistics-section statistics-rare-words">
       <h3>Rare Words</h3>
       <div class="statistics-results loading-indicator"></div>
@@ -377,37 +356,44 @@ class StatisticsWindowComponent extends BaseWindow {
     this.refs.statsMainNode.appendChild(lemmaNodeWrapper);
     const lemmaNode = lemmaNodeWrapper.querySelector('.statistics-results');
 
-    await this.loadAllLemmas();
-
-    this.state.lemmaData.sort(byCountDescending);
-
-    const rareWords = this.state.lemmaData.filter((lemma) => lemma.frequency <= 5);
-
-    let html = '';
-    for (const lemma of rareWords) {
-      const lemmaLang = lemma.word_info.strongs[0].toUpperCase() === 'G' ? 'gr' : 'he';
-      const dir = lemmaLang === 'gr' ? 'ltr' : 'rtl';
-      const testament = lemmaLang === 'gr' ? 'NT' : 'OT';
-
-      html += `<tr class="rare"><td><l s="${lemma.word_info.strongs}" lang="${lemmaLang === 'gr' ? 'grc' : 'he'}" dir="${dir}">${this.escapeHtml(lemma.lemma)}</td><td>${this.escapeHtml(lemma.word_info.words.join(', '))}</td><td>${lemma.word_info.count} of ${lemma.frequency} in ${testament}</td></tr>`;
+    const lemmaData = await this.loadAllLemmas();
+    if (epoch !== this._statsEpoch) {
+      lemmaNodeWrapper.remove();
+      return;
     }
+
+    this.state.lemmaData = lemmaData.sort(byCountDescending);
+
+    const html = this.state.lemmaData
+      .filter((lemma) => lemma.frequency <= 5)
+      .map((lemma) => {
+        const isGreek = lemma.word_info.strongs[0].toUpperCase() === 'G';
+        const lang = isGreek ? 'grc' : 'he';
+        const dir = isGreek ? 'ltr' : 'rtl';
+        const testament = isGreek ? 'NT' : 'OT';
+
+        return `<tr class="rare"><td><l s="${lemma.word_info.strongs}" lang="${lang}" dir="${dir}">${this.escapeHtml(lemma.lemma)}</l></td><td>${this.escapeHtml(lemma.word_info.words.join(', '))}</td><td>${lemma.word_info.count} of ${lemma.frequency} in ${testament}</td></tr>`;
+      }).join('');
 
     lemmaNode.innerHTML = `<table>${html}</table>`;
     lemmaNode.classList.remove('loading-indicator');
   }
 
   async loadAllLemmas() {
-    for (const wordInfo of this.state.wordStats) {
+    const results = await Promise.all(this.state.wordStats.map(async (wordInfo) => {
+      if (!wordInfo.strongs) return null;
       try {
         const response = await fetch(`${this.config.baseContentUrl}content/lexicons/strongs/entries/${wordInfo.strongs}.json`);
-        if (!response.ok) continue;
+        if (!response.ok) return null;
         const data = await response.json();
         data.word_info = wordInfo;
-        this.state.lemmaData.push(data);
+        return data;
       } catch {
-        // Ignore errors loading lexicon entries
+        return null;
       }
-    }
+    }));
+
+    return results.filter(Boolean);
   }
 
   removeHighlights() {
@@ -426,16 +412,20 @@ class StatisticsWindowComponent extends BaseWindow {
 
     document.querySelectorAll(`.${this.state.sectionid}`).forEach((el) => {
       if (wordInfo.strongs !== undefined) {
-        const strongsNum = wordInfo.strongs.substring(1);
-        el.querySelectorAll(`l[s*="${strongsNum}"],l[s*="${wordInfo.strongs}"]`).forEach((lEl) => {
-          lEl.classList.add('highlight', 'highlight-stats', 'lemma-highlight');
+        const target = wordInfo.strongs.toUpperCase();
+        const targetNum = target.replace(/^[GH]/, '');
+        el.querySelectorAll('l[s]').forEach((lEl) => {
+          const matches = lEl.getAttribute('s').toUpperCase().split(/\s+/).some((token) => {
+            const bare = token.replace(/[A-Z]$/, '');
+            return bare === target || bare.replace(/^[GH]/, '') === targetNum;
+          });
+          if (matches) {
+            lEl.classList.add('highlight', 'highlight-stats', 'lemma-highlight');
+          }
         });
       } else {
-        const XRegExp = window.XRegExp;
-        if (XRegExp) {
-          const r = new XRegExp(`\\b${wordInfo.word}\\b`, 'gi');
-          el.innerHTML = el.innerHTML.replace(r, (match) => `<span class="highlight highlight-stats">${match}</span>`);
-        }
+        const r = new RegExp(`\\b${escapeRegExp(wordInfo.word)}\\b`, 'gi');
+        highlightTextMatches(el, [r], 'highlight highlight-stats');
       }
     });
   }

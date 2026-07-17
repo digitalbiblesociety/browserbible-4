@@ -9,6 +9,7 @@ import { AudioController } from './AudioController.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getGlobalTextNavigator } from '../ui/TextNavigator.js';
 import { getText, getTextInfoData, displayAbbr } from '../texts/TextLoader.js';
+import { hasLinkedAudio } from '../data/biblebrainDuplicates.js';
 import { t as i18nT } from '../lib/i18n.js';
 
 const hasTouch = 'ontouchend' in document;
@@ -157,8 +158,8 @@ class AudioWindowComponent extends BaseWindow {
   handleNavKeypress(e) {
     if (e.keyCode === 13 || e.key === 'Enter') {
       const userinput = this.refs.navui.value;
-      const bibleref = new Reference(userinput);
-      const fragmentid = bibleref.toSection?.() ?? '';
+      const bibleref = Reference(userinput);
+      const fragmentid = bibleref?.toSection?.() ?? '';
       const sectionid = fragmentid.split('_')[0];
 
       if (sectionid !== '') {
@@ -194,8 +195,8 @@ class AudioWindowComponent extends BaseWindow {
   }
 
   changeLocation(inputLocation) {
-    const bibleref = new Reference(inputLocation);
-    const fragmentid = bibleref.toSection?.() ?? '';
+    const bibleref = Reference(inputLocation);
+    const fragmentid = bibleref?.toSection?.() ?? '';
     const sectionid = fragmentid.split('_')[0];
 
     const newLocationInfo = {
@@ -271,7 +272,8 @@ class AudioWindowComponent extends BaseWindow {
   _findBestAudioBible(activeBibleTextid) {
     const allTexts = getTextInfoData() || [];
     const audioTexts = allTexts.filter(t =>
-      t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt
+      t.hasAudio || t.audioDirectory || t.fcbh_audio_ot || t.fcbh_audio_nt ||
+      t.biblebrain?.audioFilesets?.length > 0 || hasLinkedAudio(t)
     );
 
     if (audioTexts.length === 0) return null;

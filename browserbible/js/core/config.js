@@ -123,16 +123,14 @@ const defaultConfig = {
   enableEng2pPlugin: true,
   eng2pEnableAll: true,
   eng2pDefaultSetting: 'none',
-  eng2pEnableYe: true,
-  eng2pEnableThee: true,
-  eng2pEnableEth: true,
-  eng2pEnableSt: true
+  eng2pShowWindowAtStartup: false
 };
 
 const customConfigs = {
   local: {
     baseContentUrl: '',
     localAudioEnabled: true,
+    serverSearchPath: '',
     windows: [
       { type: 'bible', data: { textid: 'ENGWEB', fragmentid: 'JN1_1' } },
       { type: 'bible', data: { textid: 'SPABES', fragmentid: 'JN1_1' } }

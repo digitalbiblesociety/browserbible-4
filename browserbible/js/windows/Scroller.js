@@ -136,10 +136,11 @@ export function Scroller(node) {
 
   let currentTextInfo = null;
   let locationInfo = {};
-  let ignoreScrollEvent = false;
+  let suppressedScrollTop = null;
   let loadEpoch = 0;
   let pendingLoadSectionid = null;
   let pendingLoadFragmentid = null;
+  const inflightDirectional = { next: null, prev: null };
   let speedLastPos = null;
   let speedDelta = 0;
   let globalTimeout = null;
@@ -176,12 +177,26 @@ export function Scroller(node) {
     globalTimeout = null;
   };
 
+  const setScrollTop = (top) => {
+    const before = nodeEl.scrollTop;
+    nodeEl.scrollTop = top;
+    const after = nodeEl.scrollTop;
+    if (after !== before) {
+      suppressedScrollTop = after;
+    }
+  };
+
   const handleScroll = () => {
-    if (ignoreScrollEvent) return;
+    const isProgrammatic = suppressedScrollTop !== null &&
+      Math.abs(nodeEl.scrollTop - suppressedScrollTop) <= 1;
+    suppressedScrollTop = null;
 
     updateLocationInfo();
     ext.trigger('scroll', { type: 'scroll', target: this, data: { locationInfo } });
-    startGlobalTimeout();
+
+    if (!isProgrammatic) {
+      startGlobalTimeout();
+    }
     startSpeedTest();
   };
 
@@ -286,7 +301,7 @@ export function Scroller(node) {
 
     const firstNodeOffsetAfter = firstNodeOfSecondSection ? offset(firstNodeOfSecondSection).top : 0;
     const offsetDifference = firstNodeOffsetAfter - firstNodeOffsetBefore;
-    nodeEl.scrollTop -= Math.abs(offsetDifference);
+    setScrollTop(nodeEl.scrollTop - Math.abs(offsetDifference));
   };
 
   const trimBottomSection = () => {
@@ -338,20 +353,15 @@ export function Scroller(node) {
     if (!wrapper.querySelector(`.${sectionid}`)) return false;
 
     // The section is already in the DOM. For an explicit navigation ('text'),
-    // still scroll to it: to the fragment when one is given and present,
-    // otherwise to the top of the section. ('next'/'prev' loads must not jump.)
     if (loadType === 'text') {
-      const targetid = fragmentid?.trim() && wrapper.querySelector(`.${fragmentid}`)
-        ? fragmentid
-        : sectionid;
-      scrollTo(targetid);
+      scrollTo(fragmentid?.trim() ? fragmentid : sectionid);
       locationInfo = null;
       updateLocationInfo();
     }
     return true;
   };
 
-  const insertContent = (loadType, content, nodeScrolltopBefore, wrapperHeightBefore) => {
+  const insertContent = (loadType, content) => {
     let contentEl = null;
     if (typeof content !== 'string') {
       contentEl = content?.nodeType ? content : content?.[0];
@@ -360,7 +370,7 @@ export function Scroller(node) {
     switch (loadType) {
       case 'text':
         wrapper.innerHTML = '';
-        nodeEl.scrollTop = 0;
+        setScrollTop(0);
         if (typeof content === 'string') {
           wrapper.innerHTML = content;
         } else if (contentEl) {
@@ -376,16 +386,17 @@ export function Scroller(node) {
         }
         break;
 
-      case 'prev':
+      case 'prev': {
+        const scrollTopBefore = nodeEl.scrollTop;
+        const wrapperHeightBefore = wrapper.offsetHeight;
         if (typeof content === 'string') {
           wrapper.insertAdjacentHTML('afterbegin', content);
         } else if (contentEl) {
           wrapper.insertBefore(contentEl, wrapper.firstChild);
         }
-        const wrapperHeightAfter = wrapper.offsetHeight;
-        const heightDifference = wrapperHeightAfter - wrapperHeightBefore;
-        nodeEl.scrollTop = nodeScrolltopBefore + heightDifference;
+        setScrollTop(scrollTopBefore + (wrapper.offsetHeight - wrapperHeightBefore));
         break;
+      }
     }
   };
 
@@ -403,7 +414,7 @@ export function Scroller(node) {
     const nearest = findNearestSection(sectionid, currentTextInfo?.sections);
 
     wrapper.innerHTML = '';
-    nodeEl.scrollTop = 0;
+    setScrollTop(0);
 
     const container = elem('div', { className: 'chapter-unavailable' });
     const message = elem('p', { className: 'chapter-unavailable-message' });
@@ -427,7 +438,7 @@ export function Scroller(node) {
     if (!wrapper) return;
 
     wrapper.innerHTML = '';
-    nodeEl.scrollTop = 0;
+    setScrollTop(0);
 
     const container = elem('div', { className: 'chapter-unavailable' });
     const messageEl = elem('p', { className: 'chapter-unavailable-message' });
@@ -452,6 +463,8 @@ export function Scroller(node) {
       loadEpoch++;
       pendingLoadSectionid = null;
       pendingLoadFragmentid = null;
+    } else if (inflightDirectional[loadType] === loadEpoch) {
+      return;
     }
     const epoch = loadEpoch;
 
@@ -466,13 +479,19 @@ export function Scroller(node) {
         ? `<div class="loading-message">${currentTextInfo.loadingMessage}</div>`
         : '';
       wrapper.innerHTML = `<div class="loading-indicator" style="height:${nodeEl.offsetHeight}px;">${message}</div>`;
-      nodeEl.scrollTop = 0;
+      setScrollTop(0);
+    } else {
+      inflightDirectional[loadType] = epoch;
     }
 
-    const nodeScrolltopBefore = nodeEl.scrollTop;
-    const wrapperHeightBefore = wrapper.offsetHeight;
+    const clearInflight = () => {
+      if (loadType !== 'text' && inflightDirectional[loadType] === epoch) {
+        inflightDirectional[loadType] = null;
+      }
+    };
 
     const handleLoadError = (_errTextid, _errSectionid, detail) => {
+      clearInflight();
       if (epoch !== loadEpoch || !wrapper) return;
       if (loadType !== 'text') return;
       pendingLoadSectionid = null;
@@ -486,6 +505,7 @@ export function Scroller(node) {
     };
 
     loadSection(currentTextInfo, sectionid, (content) => {
+      clearInflight();
       if (epoch !== loadEpoch || !wrapper) return;
 
       // Retire the pending marker before any early return; land on the latest
@@ -499,16 +519,13 @@ export function Scroller(node) {
 
       if (isAlreadyLoaded(loadType, sectionid, fragmentid)) return;
 
-      ignoreScrollEvent = true;
-      insertContent(loadType, content, nodeScrolltopBefore, wrapperHeightBefore);
+      insertContent(loadType, content);
 
       if (loadType === 'text' && targetFragmentid) {
         scrollTo(targetFragmentid);
         locationInfo = null;
         updateLocationInfo();
       }
-
-      ignoreScrollEvent = false;
 
       if (currentTextInfo) {
         ext.trigger('globalmessage', {
@@ -531,27 +548,57 @@ export function Scroller(node) {
     }, handleLoadError);
   };
 
+  const findNearestFragment = (fragmentid) => {
+    const parts = fragmentid.split('_');
+    if (parts.length < 2) return null;
+
+    const sectionid = parts[0];
+    const targetVerse = parseInt(parts[1], 10);
+    const sectionEl = wrapper.querySelector(`.${sectionid}`);
+    if (!sectionEl || isNaN(targetVerse)) return null;
+
+    let best = null;
+    let bestDistance = Infinity;
+    for (const el of sectionEl.querySelectorAll('.verse, .v')) {
+      const id = el.getAttribute('data-id');
+      if (!id || !id.startsWith(`${sectionid}_`)) continue;
+      const verse = parseInt(id.split('_')[1], 10);
+      if (isNaN(verse)) continue;
+      const distance = Math.abs(verse - targetVerse);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = el;
+      }
+    }
+    return best;
+  };
+
+  const scrollToElement = (el, scrollOffset) => {
+    const paneTop = offset(nodeEl).top;
+    const scrollTop = nodeEl.scrollTop;
+    const nodeTop = offset(el).top;
+
+    setScrollTop(nodeTop - paneTop + scrollTop + (scrollOffset || 0));
+  };
+
   const scrollTo = (fragmentid, scrollOffset) => {
     if (fragmentid == null || !wrapper) return;
 
-    const fragment = wrapper.querySelector(`.${fragmentid}`);
-
+    const fragment = wrapper.querySelector(`.${fragmentid}`) ?? findNearestFragment(fragmentid);
     if (fragment) {
-      const paneTop = offset(nodeEl).top;
-      const scrollTop = nodeEl.scrollTop;
-      const nodeTop = offset(fragment).top;
-      const nodeTopAdjusted = nodeTop - paneTop + scrollTop;
+      scrollToElement(fragment, scrollOffset);
+      return;
+    }
 
-      ignoreScrollEvent = true;
-      nodeEl.scrollTop = nodeTopAdjusted + (scrollOffset || 0);
-      ignoreScrollEvent = false;
-    } else {
-      const sectionid = fragmentid.split('_')[0];
-      const hasSection = currentTextInfo?.sections?.indexOf(sectionid) > -1;
+    const sectionid = fragmentid.split('_')[0];
+    const sectionEl = wrapper.querySelector(`.${sectionid}`);
+    if (sectionEl) {
+      scrollToElement(sectionEl, 0);
+      return;
+    }
 
-      if (hasSection) {
-        load('text', sectionid, fragmentid);
-      }
+    if (currentTextInfo?.sections?.indexOf(sectionid) > -1) {
+      load('text', sectionid, fragmentid);
     }
   };
 
@@ -643,6 +690,7 @@ export function Scroller(node) {
     setTextInfo,
     getLocationInfo,
     scrollTo,
+    setScrollTop,
     close,
     broadcastCurrentContent
   };

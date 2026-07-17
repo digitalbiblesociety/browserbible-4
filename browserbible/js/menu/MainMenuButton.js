@@ -6,6 +6,7 @@
 
 import { elem } from '../lib/helpers.esm.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
+import { VERSION } from '../core/registry.js';
 /**
  * Create the main menu button
  * @param {HTMLElement} parentNode - Parent container
@@ -14,7 +15,7 @@ import { mixinEventEmitter } from '../common/EventEmitter.js';
 export function MainMenuButton(parentNode) {
   const mainMenuLogo = elem('div', { id: 'app-logo' },
     elem('img', { src: './img/inscript_logo.svg', alt: 'Logo', width: 114, height: 22 }),
-    elem('span', { className: 'app-version-pill' }, '5.0')
+    elem('span', { className: 'app-version-pill' }, VERSION.split('.').slice(0, 2).join('.'))
   );
   const mainMenuButton = elem('div', { id: 'main-menu-button' });
   const mainMenuDropDown = elem('div', { id: 'main-menu-dropdown', popover: '' },

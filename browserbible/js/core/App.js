@@ -200,17 +200,23 @@ export class App {
     const windows = this.windowManager.getWindows();
 
     const sender = windows.find(win => win.id === e.id);
-    if (sender && !sender.linked) return;
+    const senderLinked = !sender || sender.linked;
 
-    for (const win of windows) {
-      if (win.id !== e.id && win.linked) {
-        win.trigger('message', e);
+    if (senderLinked) {
+      for (const win of windows) {
+        if (win.id !== e.id && win.linked) {
+          win.trigger('message', e);
+        }
       }
     }
 
     for (const plugin of this.plugins) {
       if (plugin.trigger) {
-        plugin.trigger('message', e);
+        try {
+          plugin.trigger('message', e);
+        } catch (err) {
+          console.error('Plugin message handler error:', err);
+        }
       }
     }
   }

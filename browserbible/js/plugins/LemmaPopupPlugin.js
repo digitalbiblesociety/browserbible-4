@@ -83,6 +83,7 @@ export function LemmaPopupPlugin() {
   const lemmaPopup = InfoWindow('lemma-popup');
 
   lemmaPopup.on('hide', () => {
+    lemmaPopup.currentWord = null;
     document.querySelectorAll('.selected-lemma').forEach((el) => {
       el.classList.remove('selected-lemma');
     });
@@ -165,8 +166,7 @@ export function LemmaPopupPlugin() {
       const lemmaEl = e.target.closest('.BibleWindow l');
       if (!lemmaEl) return;
 
-      // Toggle popup if clicking same word
-      if (containerEl.style.display !== 'none' && lemmaPopup.currentWord === lemmaEl) {
+      if (containerEl.matches(':popover-open') && lemmaPopup.currentWord === lemmaEl) {
         lemmaPopup.hide();
         lemmaPopup.currentWord = null;
         lemmaEl.classList.remove('selected-lemma');
@@ -174,7 +174,7 @@ export function LemmaPopupPlugin() {
       }
 
       // Hide any existing popup
-      if (containerEl.style.display !== 'none') {
+      if (containerEl.matches(':popover-open')) {
         lemmaPopup.hide();
       }
 

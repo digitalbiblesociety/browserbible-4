@@ -20,7 +20,7 @@ function getCurrentVersion() {
 
   if (appSettings) {
     for (const settings of appSettings) {
-      if (settings.windowType === 'BibleWindow') {
+      if (settings.windowType === 'BibleWindow' && settings.data?.textid) {
         textid = settings.data.textid;
         break;
       }

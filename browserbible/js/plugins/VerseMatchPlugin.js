@@ -11,7 +11,8 @@ function toggleMatches(e, on) {
   if (!verse) return;
 
   const verseid = verse.getAttribute('data-id');
-  document.querySelectorAll(`.BibleWindow .${verseid}`).forEach((el) => {
+  if (!verseid) return;
+  document.querySelectorAll(`.BibleWindow .${CSS.escape(verseid)}`).forEach((el) => {
     el.classList.toggle('selected-verse', on);
   });
 }

@@ -31,8 +31,8 @@ export function NavigationButtons(parentNode) {
     if (locationIndex > 0) {
       backButton.classList.remove('inactive');
 
-      const lastRef = new Reference(locations[locations.length - 2]);
-      compactLabel.innerHTML = lastRef.toString();
+      const lastRef = Reference(locations[locationIndex - 1]);
+      compactLabel.innerHTML = lastRef?.toString() ?? '';
 
       compactBackButton.classList.add('active');
     } else {

@@ -22,7 +22,7 @@ export const repositionAllMarkers = (overlay, viewBox, containerRect) => {
   const t = getViewTransform(viewBox, containerRect);
   // Skips hidden markers — nearly all of them in passage mode. Safe because
   // every unhide path (filter, decluster, highlight) repositions again after.
-  overlay.querySelectorAll('.map-marker:not(.filtered-out):not(.clustered), .map-cluster').forEach(el => {
+  overlay.querySelectorAll('.map-marker:not(.filtered-out):not(.clustered), .map-cluster, .journey-stop').forEach(el => {
     if (el._svgX === undefined) return;
     const x = t.offsetX + (el._svgX - viewBox.x) * t.scale - el._anchorX;
     const y = t.offsetY + (el._svgY - viewBox.y) * t.scale - el._anchorY;

@@ -23,7 +23,7 @@ export function FontSizeSettings() {
   document.head.appendChild(elem('style', styleCode));
 
   if (!config.enableFontSizeSelector) {
-    setFontSize(fontSizeDefault);
+    document.body.classList.add(`config-font-size-${fontSizeDefault}`);
     return;
   }
 

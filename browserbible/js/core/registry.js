@@ -9,8 +9,7 @@ const menuComponents = new Map();
 const textProviders = new Map();
 const audioSources = [];
 
-/** @type {string} Application version */
-export const VERSION = '4.0.0';
+export const VERSION = '5.0.0';
 
 // ─── Plugins ────────────────────────────────────────────────────────────────
 
@@ -38,13 +37,14 @@ export const getAllPlugins = () => Array.from(plugins.entries());
  * @param {Object} [config.paramKeys] - URL param key mappings
  */
 export const registerWindowType = (config) => {
-  const { param, className, WindowClass, displayName, paramKeys = {} } = config;
+  const { param, className, WindowClass, displayName, paramKeys = {}, init } = config;
   windowTypes.set(param, {
     param,
     className,
     WindowClass,
     displayName,
-    paramKeys
+    paramKeys,
+    init
   });
 };
 

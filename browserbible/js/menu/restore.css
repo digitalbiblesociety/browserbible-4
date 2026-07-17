@@ -10,8 +10,19 @@
 	padding: 0 0 0 24px;
 	height: 20px;
 	line-height: 20px;
-	background: transparent url(../../css/images/restore.svg) left center no-repeat;
-	background-size: 20px 20px;
+}
+
+.window-reset::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	translate: 0 -50%;
+	width: 20px;
+	height: 20px;
+	background-color: currentColor;
+	-webkit-mask: url(../../css/images/restore.svg) center / 20px 20px no-repeat;
+	mask: url(../../css/images/restore.svg) center / 20px 20px no-repeat;
 }
 
 .window-reset:hover {

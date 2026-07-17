@@ -221,6 +221,8 @@ class ParallelsWindowComponent extends BaseWindow {
     if (e.data.target !== this.refs.textlistui) return;
 
     const newTextInfo = e.data.textInfo;
+    if (!newTextInfo) return;
+
     this.refs.textlistui.innerHTML = newTextInfo.abbr;
 
     if (this.state.currentTextInfo === null || newTextInfo.id !== this.state.currentTextInfo.id) {
@@ -330,7 +332,7 @@ class ParallelsWindowComponent extends BaseWindow {
   async loadParallelData() {
     this.refs.main.innerHTML = '';
     this.state.currentParallelData = null;
-    this._loadGeneration++;
+    const generation = ++this._loadGeneration;
 
     if (!this.refs.parallelsList.value) return;
 
@@ -339,9 +341,12 @@ class ParallelsWindowComponent extends BaseWindow {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
+      if (generation !== this._loadGeneration) return;
+
       this.state.currentParallelData = data;
       this.createParallel();
     } catch (err) {
+      if (generation !== this._loadGeneration) return;
       console.error('Error loading parallel data', err);
       this.showError('Failed to load parallel passages', err);
     }
@@ -500,6 +505,7 @@ class ParallelsWindowComponent extends BaseWindow {
     const groups = parsePassageReference(passage, bookid);
     cell.innerHTML = '';
 
+    let hadError = false;
     for (const { sectionid, fragmentids } of groups) {
       try {
         const content = await loadSectionAsync(this.state.currentTextInfo, sectionid);
@@ -510,10 +516,13 @@ class ParallelsWindowComponent extends BaseWindow {
         this.appendVerseNodes(cell, this.prepareContentElement(content), fragmentids);
       } catch (err) {
         // section not available in this text (e.g. NT-only Bibles); leave the cell empty
+        hadError = true;
       }
     }
 
-    cell.classList.add('parallel-text-loaded');
+    if (!hadError || cell.childNodes.length > 0) {
+      cell.classList.add('parallel-text-loaded');
+    }
   }
 
   size(width, height) {

@@ -18,8 +18,9 @@ body {
 :focus-visible   			 {outline: 2px solid var(--color-primary);outline-offset: 2px;}
 .close-container 			 {background: var(--color-background-alt);z-index:var(--z-chrome);position: absolute;top:0;right:0;width:72px;height:40px;}
 .compact-ui .close-container {height: 39px;}
-.close-button 				 {font-family: var(--font-family-sans);position: absolute;z-index: var(--z-chrome);top: 15px;right: 10px;cursor: pointer;color: var(--color-text-muted);width: 20px;height: 20px;border-radius: 10px;text-align: center;background: url(images/close-button.svg) top center no-repeat;background-position: 0 0;}
-.close-button:hover 		 {background-color: var(--color-error);background-position: 0 -20px;color: var(--color-background);}
+.close-button 				 {font-family: var(--font-family-sans);position: absolute;z-index: var(--z-chrome);top: 15px;right: 10px;cursor: pointer;color: var(--color-text-muted);width: 20px;height: 20px;border-radius: 10px;text-align: center;}
+.close-button::before 		 {content: "";position: absolute;inset: 0;background-color: currentColor;-webkit-mask: url(images/close-button.svg) center / 12px 12px no-repeat;mask: url(images/close-button.svg) center / 12px 12px no-repeat;}
+.close-button:hover 		 {background-color: var(--color-error);color: var(--color-background);}
 
 .link-button {
 	position: absolute;

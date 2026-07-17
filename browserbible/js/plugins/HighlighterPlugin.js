@@ -32,11 +32,19 @@ function loadHighlights() {
   }
 }
 
+let warnedSaveFailure = false;
+
 function saveHighlights(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // storage full or unavailable
+    return true;
+  } catch (err) {
+    console.warn('Highlighter: could not persist highlights', err);
+    if (!warnedSaveFailure) {
+      warnedSaveFailure = true;
+      alert('Your highlight could not be saved (browser storage is full or unavailable). It will disappear when the page reloads.');
+    }
+    return false;
   }
 }
 
@@ -389,6 +397,15 @@ export const HighlighterPlugin = () => {
     window.getSelection()?.removeAllRanges();
     applyHighlightMark(pendingVerse, startOffset, endOffset, color, highlight.id);
     addHighlight(pendingTextId, highlight);
+
+    document.querySelectorAll(CONTROLLER_SELECTORS).forEach(controller => {
+      if (controller.state?.currentTextInfo?.id !== pendingTextId) return;
+      controller.querySelectorAll(`.v[data-id="${CSS.escape(highlight.verseId)}"], .verse[data-id="${CSS.escape(highlight.verseId)}"]`).forEach(verseEl => {
+        if (verseEl === pendingVerse) return;
+        if (verseEl.querySelector(`.user-highlight[data-hl-id="${highlight.id}"]`)) return;
+        applyHighlightMark(verseEl, startOffset, endOffset, color, highlight.id);
+      });
+    });
 
     hidePalette(palette);
     clearPending();

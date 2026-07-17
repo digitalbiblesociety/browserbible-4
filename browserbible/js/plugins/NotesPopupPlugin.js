@@ -26,6 +26,10 @@ export const NotesPopupPlugin = () => {
 
   const notesPopup = InfoWindow('NotesPopup');
 
+  notesPopup.on('hide', () => {
+    notesPopup.currentWord = null;
+  });
+
   const notesPopupBody = notesPopup.body;
 
   // Handle clicks on bible refs within notes
@@ -71,8 +75,7 @@ export const NotesPopupPlugin = () => {
       if (key) {
         e.preventDefault();
 
-        // hide if second click
-        if (notesPopup.container.style.display !== 'none' && notesPopup.currentWord === key) {
+        if (notesPopup.container.matches(':popover-open') && notesPopup.currentWord === key) {
           notesPopup.hide();
           notesPopup.currentWord = null;
           return;

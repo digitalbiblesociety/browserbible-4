@@ -42,35 +42,18 @@ export class LocalAudioProvider extends BaseAudioProvider {
     }
   }
 
-  _findFragmentData(audioInfo, fragmentid) {
-    const verseParts = fragmentid.split('_');
-    const sectionid = verseParts[0];
-    const verseNumber = parseInt(verseParts[1], 10);
-    let fragmentIndex = 0;
-    let fragmentData = null;
+  _findFragmentData(audio_info, section_id) {
+    const [book_id, verse] = section_id.split('_');
+    const verse_number = parseInt(verse, 10);
 
-    for (const [i, fragmentFileinfo] of audioInfo.fragments.entries()) {
-      const startFragmentParts = fragmentFileinfo.start.split('_');
-      const startSectionid = startFragmentParts[0];
+    const index = audio_info.fragments.findIndex(({ start, end }) => {
+      const [current_book_id, verse_start] = start.split('_');
+      return book_id === current_book_id
+        && verse_number >= parseInt(verse_start, 10)
+        && verse_number <= parseInt(end.split('_')[1], 10);
+    });
 
-      if (sectionid === startSectionid) {
-        const startVerseNumber = parseInt(startFragmentParts[1], 10);
-        const endFragmentParts = fragmentFileinfo.end.split('_');
-        const endVerseNumber = parseInt(endFragmentParts[1], 10);
-
-        if (verseNumber >= startVerseNumber && verseNumber <= endVerseNumber) {
-          fragmentIndex = i;
-          fragmentData = fragmentFileinfo;
-          break;
-        }
-      }
-    }
-
-    if (fragmentData != null) {
-      fragmentData.index = fragmentIndex;
-    }
-
-    return fragmentData;
+    return index === -1 ? null : { ...audio_info.fragments[index], index };
   }
 
   async getFragmentAudio(textInfo, audioInfo, fragmentid, audioOption) {

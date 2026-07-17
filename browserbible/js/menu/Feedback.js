@@ -78,8 +78,7 @@ export function Feedback() {
   };
 
   feedbackButton.addEventListener('click', () => {
-    const feedbackContainer = feedbackWindow.container;
-    if (feedbackContainer.style.display !== 'none' && feedbackContainer.offsetParent !== null) {
+    if (feedbackWindow.isVisible()) {
       hideFeedback();
     } else {
       feedbackWindow.show();
@@ -91,7 +90,7 @@ export function Feedback() {
       });
 
       const mainMenuDropdown = document.querySelector('#main-menu-dropdown');
-      if (mainMenuDropdown) mainMenuDropdown.style.display = 'none';
+      mainMenuDropdown?.hidePopover?.();
 
       modalOverlay.style.width = `${window.innerWidth}px`;
       modalOverlay.style.height = `${window.innerHeight}px`;

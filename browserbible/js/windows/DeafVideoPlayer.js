@@ -461,7 +461,11 @@ export function DeafVideoPlayer(node) {
     const epoch = ++loadEpoch;
     ensurePlaylist().then((pl) => {
       if (epoch !== loadEpoch || !pl) return;
-      if (pl.isEmpty) return;
+      if (pl.isEmpty) {
+        passageTitle.textContent = 'Videos are unavailable right now. Check your connection and try again.';
+        return;
+      }
+      passageTitle.textContent = '';
 
       let index = fragmentid ? pl.indexOfFragment(fragmentid) : -1;
       if (index < 0 && sectionid) index = pl.indexOfSection(sectionid);

@@ -6,6 +6,8 @@
 
 import { BaseWindow, registerWindowComponent } from '../BaseWindow.js';
 import { i18n } from '../../lib/i18n.js';
+import { Reference } from '../../bible/BibleReference.js';
+import { BOOK_DATA } from '../../bible/BibleData.js';
 import { searchLocations, parseReferenceQuery } from './fuzzy-search.js';
 import { getLocationsForReference } from './map-data.js';
 import { buildDetailHTML, hydrateVerseTexts } from './detail-panel.js';
@@ -32,10 +34,13 @@ class MapWindowComponent extends BaseWindow {
         <div class="map-header-inner">
           <input type="text" placeholder="Search locations…" class="app-input map-nav" aria-label="Search locations" />
           <div class="map-search-suggestions" role="listbox" aria-label="Location suggestions"></div>
+          <button type="button" class="app-list map-journey-list hidden" aria-haspopup="listbox" aria-expanded="false" aria-label="Journey"></button>
+          <div class="map-journey-menu" role="listbox" aria-label="Journeys"></div>
         </div>
         <div class="map-mode-toggle" role="group" aria-label="Map mode">
           <button class="map-mode-btn active" data-mode="passage" aria-pressed="true">Passage</button>
           <button class="map-mode-btn" data-mode="explore" aria-pressed="false">Explore</button>
+          <button class="map-mode-btn hidden" data-mode="journeys" aria-pressed="false">Journeys</button>
         </div>
         <div class="map-era-filter hidden" role="group" aria-label="Era filter">
           <button class="map-era-btn active" data-era="all" aria-pressed="true">All</button>
@@ -70,7 +75,10 @@ class MapWindowComponent extends BaseWindow {
     this.refs.searchSuggestions = this.$('.map-search-suggestions');
     this.refs.mapContainer = this.$('.svg-map-container');
     this.refs.modeToggle = this.$('.map-mode-toggle');
+    this.refs.journeysModeBtn = this.$('.map-mode-btn[data-mode="journeys"]');
     this.refs.eraFilter = this.$('.map-era-filter');
+    this.refs.journeyList = this.$('.map-journey-list');
+    this.refs.journeyMenu = this.$('.map-journey-menu');
     this.refs.locationCount = this.$('.map-location-count');
     this.refs.emptyState = this.$('.map-empty-state');
     this.refs.emptyMessage = this.$('.map-empty-message');
@@ -91,7 +99,38 @@ class MapWindowComponent extends BaseWindow {
     // Mode toggle
     this.addListener(this.refs.modeToggle, 'click', (e) => {
       const btn = e.target.closest('.map-mode-btn');
-      if (btn) this.setMode(btn.dataset.mode);
+      if (!btn) return;
+      this.setMode(btn.dataset.mode);
+      if (btn.dataset.mode === 'journeys' && this.mapPanel) {
+        // First entry shows the first journey immediately; re-entry restores
+        // the stop list of the journey already selected in the dropdown
+        const activeIds = this.mapPanel.getActiveJourneyIds();
+        if (activeIds.length === 0) {
+          const first = this.refs.journeyMenu.querySelector('.map-journey-menu-item');
+          if (first) this.selectJourney(first.dataset.journeyId);
+        } else {
+          this.showJourneyStops(this.mapPanel.getJourney(activeIds[0]));
+        }
+      }
+    });
+
+    // Journey dropdown (replaces the search box while in journeys mode)
+    this.addListener(this.refs.journeyList, 'click', () => this.toggleJourneyMenu());
+    this.addListener(this.refs.journeyMenu, 'click', (e) => {
+      const item = e.target.closest('.map-journey-menu-item');
+      if (item) this.selectJourney(item.dataset.journeyId);
+    });
+    this.addListener(document, 'click', (e) => {
+      if (this.refs.journeyMenu.style.display !== 'block') return;
+      if (e.target.closest('.map-journey-list, .map-journey-menu')) return;
+      this.toggleJourneyMenu(false);
+    });
+    this.addListener(this.refs.header, 'keydown', (e) => {
+      if (e.key === 'Escape' && this.refs.journeyMenu.style.display === 'block') {
+        e.preventDefault();
+        this.toggleJourneyMenu(false);
+        this.refs.journeyList.focus();
+      }
     });
 
     // Era filter
@@ -109,7 +148,15 @@ class MapWindowComponent extends BaseWindow {
     this.addListener(this.refs.emptyExploreBtn, 'click', () => this.setMode('explore'));
 
     // Detail panel
-    this.addListener(this.refs.detailBack, 'click', () => this.hideDetail());
+    this.addListener(this.refs.detailBack, 'click', () => {
+      // From a stop's location detail, back returns to the journey stop list
+      if (this._detailFromJourney && this._journeyListJourney) {
+        this.showJourneyStops(this._journeyListJourney);
+        this.mapPanel?.resetMarkerOpacity();
+        return;
+      }
+      this.hideDetail();
+    });
 
     // Escape anywhere in the window body closes the open detail panel
     this.addListener(this.refs.main, 'keydown', (e) => {
@@ -125,7 +172,7 @@ class MapWindowComponent extends BaseWindow {
     });
     this.addListener(this.refs.mapContainer, 'click', (e) => {
       if (this.refs.detail.classList.contains('hidden')) return;
-      if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .map-empty-state')) return;
+      if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .map-empty-state, .journey-stop')) return;
       const moved = this._pointerDown
         ? Math.hypot(e.clientX - this._pointerDown.x, e.clientY - this._pointerDown.y)
         : 0;
@@ -149,6 +196,14 @@ class MapWindowComponent extends BaseWindow {
             fragmentid: link.getAttribute('data-fragmentid')
           }}
         });
+        return;
+      }
+      // Journey stop rows (outside the verse links) open the stop's location
+      const stopRow = e.target.closest('.map-journey-stop-row');
+      if (stopRow && this._journeyListJourney) {
+        const stop = this._journeyListJourney.stops[
+          parseInt(stopRow.getAttribute('data-stop-index'), 10)];
+        if (stop) this.mapPanel?.openStop(stop);
       }
     });
 
@@ -181,7 +236,7 @@ class MapWindowComponent extends BaseWindow {
       const item = e.target.closest('.map-suggestion-item');
       if (!item) return;
       this.selectSuggestion(parseInt(item.getAttribute('data-index'), 10));
-    }, true);
+    }, { capture: true });
 
     // Clicking a highlighted place name in any Bible window opens it on the map.
     // The .linked-location spans only exist while this window is alive (created
@@ -239,6 +294,16 @@ class MapWindowComponent extends BaseWindow {
     };
 
     await this.mapPanel.init(initData.latitude, initData.longitude);
+
+    // Journeys are additive: the mode button stays hidden unless journeys.json
+    // loads (the file is absent on content servers that predate the feature)
+    this.mapPanel.loadJourneys().then((journeys) => {
+      if (!journeys?.length || !this.refs.journeysModeBtn) return;
+      this.refs.journeysModeBtn.classList.remove('hidden');
+      this.renderJourneyMenu(journeys);
+      if (initData.journey) this.restoreJourneys(String(initData.journey));
+    }).catch(() => { /* stays hidden */ });
+
     this.requestCurrentBibleContent();
   }
 
@@ -254,12 +319,120 @@ class MapWindowComponent extends BaseWindow {
       btn.setAttribute('aria-pressed', String(active));
     });
     this.refs.eraFilter.classList.toggle('hidden', mode !== 'explore');
+
+    // Journeys mode swaps the location search box for the journey dropdown
+    const journeysMode = mode === 'journeys';
+    this.refs.mapSearchInput.classList.toggle('hidden', journeysMode);
+    this.refs.journeyList.classList.toggle('hidden', !journeysMode);
+    if (journeysMode) {
+      this.hideSuggestions();
+    } else {
+      this.toggleJourneyMenu(false);
+      if (this._journeyListShowing) this.hideDetail();
+    }
+
     this.mapPanel?.setMode(mode);
     this.updateEmptyState();
   }
 
+  // --- Journeys ---
+
+  /** Localized journey display name, falling back to the data file's name. */
+  journeyName(journey) {
+    const key = `windows.map.journeynames.${journey.id}`;
+    const name = i18n.t(key);
+    return name === key ? journey.name : name;
+  }
+
+  renderJourneyMenu(journeys) {
+    this.refs.journeyMenu.innerHTML = journeys.map(j =>
+      `<button type="button" class="map-journey-menu-item" role="option" aria-selected="false"
+        data-journey-id="${this.escapeHtml(j.id)}" style="--journey-color:${this.escapeHtml(j.color)}">
+        <span class="map-journey-dot"></span>${this.escapeHtml(this.journeyName(j))}
+      </button>`
+    ).join('');
+  }
+
+  toggleJourneyMenu(open) {
+    const show = open ?? this.refs.journeyMenu.style.display !== 'block';
+    this.refs.journeyMenu.style.display = show ? 'block' : 'none';
+    this.refs.journeyList.setAttribute('aria-expanded', String(show));
+  }
+
+  selectJourney(journeyId) {
+    if (!this.mapPanel?.selectJourney(journeyId)) return;
+    const journey = this.mapPanel.getJourney(journeyId);
+
+    // The dropdown trigger shows the current journey; the menu marks it selected
+    this.refs.journeyList.innerHTML =
+      `<span class="map-journey-dot" style="--journey-color:${this.escapeHtml(journey.color)}"></span>
+       <span class="map-journey-list-label">${this.escapeHtml(this.journeyName(journey))}</span>`;
+    this.refs.journeyMenu.querySelectorAll('.map-journey-menu-item').forEach(item => {
+      item.setAttribute('aria-selected', String(item.dataset.journeyId === journeyId));
+    });
+
+    this.toggleJourneyMenu(false);
+    this.showJourneyStops(journey);
+    this.updateEmptyState();
+    this.mapPanel.triggerSettingsChange(); // persist journey selection via getData()
+  }
+
+  /** Ordered stop list for a journey, rendered into the inline detail area. */
+  showJourneyStops(journey) {
+    if (!journey) return;
+
+    const rows = journey.stops.map((stop, i) => {
+      const verses = (stop.verses || []).map(verseId => {
+        const ref = new Reference(verseId);
+        const bookName = BOOK_DATA[ref.bookid]?.names?.eng?.[0] ?? ref.bookid;
+        const sectionid = ref.bookid + ref.chapter1;
+        return `<span class="verse map-journey-stop-verse" data-sectionid="${sectionid}"
+          data-fragmentid="${sectionid}_${ref.verse1}">${this.escapeHtml(`${bookName} ${ref.chapter1}:${ref.verse1}`)}</span>`;
+      }).join('');
+      return `<div class="map-journey-stop-row" data-stop-index="${i}">
+        <span class="map-journey-stop-num" style="--journey-color:${this.escapeHtml(journey.color)}">${i + 1}</span>
+        <span class="map-journey-stop-name">${this.escapeHtml(stop.label || stop.name)}</span>
+        <span class="map-journey-stop-verses">${verses}</span>
+      </div>`;
+    }).join('');
+
+    // The list replaces any hydrating location detail
+    this.refs.detailContent._hydrateObserver?.disconnect();
+    this.refs.detailContent._hydrateObserver = null;
+
+    this.refs.detailContent.innerHTML = `
+      <div class="map-detail-header">
+        <h2><span class="map-journey-swatch" style="--journey-color:${this.escapeHtml(journey.color)}"></span>${this.escapeHtml(this.journeyName(journey))}</h2>
+        <div class="map-detail-meta">
+          <span class="map-detail-count">${this.escapeHtml(i18n.t('windows.map.journeystops', { count: journey.stops.length }))}</span>
+        </div>
+      </div>
+      <div class="map-journey-stops">${rows}</div>
+    `;
+    this.refs.detail.classList.remove('hidden');
+    this._journeyListShowing = true;
+    this._detailFromJourney = false;
+    this._journeyListJourney = journey;
+  }
+
+  /** Restore journeys mode from a persisted/shared journey id. */
+  restoreJourneys(param) {
+    const ids = String(param).split(',').filter(id => this.mapPanel?.getJourney(id));
+    if (!ids.length) return;
+    this.setMode('journeys');
+    this.selectJourney(ids[0]);
+  }
+
   updateEmptyState() {
     if (!this.mapPanel?.locationData) return;
+
+    if (this.mapPanel.state.mode === 'journeys') {
+      // The journey dropdown provides the context; no count in the header
+      this.refs.locationCount.textContent = '';
+      this.refs.emptyState.classList.remove('visible');
+      return;
+    }
+
     const isPassage = this.mapPanel.state.mode === 'passage';
     // Count locations in the current passage/era set. Clustered markers still count —
     // they're shown inside a cluster badge, not hidden (only `.filtered-out` is hidden).
@@ -283,6 +456,11 @@ class MapWindowComponent extends BaseWindow {
     // a passive textload must not steal focus from elsewhere in the app.
     const hadFocusInside = this.contains(document.activeElement);
 
+    // A location opened while the journey stop list is up (stop badge or row
+    // click) gets a Back that returns to the list rather than closing
+    this._detailFromJourney = this._journeyListShowing || this._detailFromJourney;
+    this._journeyListShowing = false;
+
     this.refs.detail._colocatedLocations = colocated;
     this.refs.detailContent.innerHTML = buildDetailHTML(location, verseTextLookup, colocated);
     hydrateVerseTexts(this.refs.detailContent, this.state.currentTextid);
@@ -299,6 +477,9 @@ class MapWindowComponent extends BaseWindow {
 
   hideDetail() {
     const hadFocusInside = this.contains(document.activeElement);
+    this._journeyListShowing = false;
+    this._detailFromJourney = false;
+    this._journeyListJourney = null;
     this.refs.detail.classList.add('hidden');
     // stop lazy verse hydration while hidden
     this.refs.detailContent._hydrateObserver?.disconnect();
@@ -474,11 +655,21 @@ class MapWindowComponent extends BaseWindow {
   getData() {
     const lat = this.mapPanel?.state.currentCenter?.lat ?? DEFAULT_CENTER.lat;
     const lon = this.mapPanel?.state.currentCenter?.lon ?? DEFAULT_CENTER.lon;
-    return {
+    const data = {
       latitude: lat,
       longitude: lon,
       params: { win: 'map', latitude: lat, longitude: lon }
     };
+
+    // Persist/share the journey selection only while journeys mode is on
+    if (this.mapPanel?.state.mode === 'journeys') {
+      const ids = this.mapPanel.getActiveJourneyIds();
+      if (ids.length) {
+        data.journey = ids.join(',');
+        data.params.journey = data.journey;
+      }
+    }
+    return data;
   }
 }
 

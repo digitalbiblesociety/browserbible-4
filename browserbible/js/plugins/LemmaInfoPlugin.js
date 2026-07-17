@@ -10,18 +10,19 @@ import { morphology } from '../bible/Morphology.js';
 export const LemmaInfoPlugin = () => {
   if (!getConfig().enableLemmaInfoPlugin) return {};
 
-  const lemmaInfo = elem('div', { className: 'lemma-info', style: { display: 'none' } });
-  document.body.appendChild(lemmaInfo);
-
   const windowsMain = document.querySelector('.windows-main');
   if (('ontouchend' in document) || !windowsMain) return {};
+
+  const lemmaInfo = elem('div', { className: 'lemma-info', style: { display: 'none' } });
+  document.body.appendChild(lemmaInfo);
 
   windowsMain.addEventListener('mouseover', (e) => {
     const l = e.target.closest('.BibleWindow l');
     if (!l) return;
-    const morph = l.getAttribute('m');
     const main = l.closest('.scroller-main');
-    const mainOffset = main ? offset(main) : { left: 0, top: 0 };
+    if (!main) return;
+    const morph = l.getAttribute('m');
+    const mainOffset = offset(main);
     const section = l.closest('.section');
     const lang = section?.getAttribute('lang') ?? '';
 

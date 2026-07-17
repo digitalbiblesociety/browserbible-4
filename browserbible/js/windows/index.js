@@ -33,7 +33,7 @@ registerWindowType({
   className: 'SearchWindow',
   WindowClass: SearchWindow,
   displayName: 'Search',
-  paramKeys: { textid: 't', searchtext: 's' }
+  paramKeys: { textid: 't', searchtext: 's', divisions: 'd' }
 });
 
 registerWindowType({
@@ -57,9 +57,10 @@ registerWindowType({
   className: 'TextComparisonWindow',
   WindowClass: TextComparisonWindow,
   displayName: 'Comparison',
-  paramKeys: { textids: 't', fragmentid: 'f' },
+  paramKeys: { sourceId: 't', targetId: 'u', fragmentid: 'f' },
   init: {
-    textids: `${config.newComparisonWindowSourceVersion}, ${config.newComparisonWindowTargetVersion}`,
+    sourceId: config.newComparisonWindowSourceVersion,
+    targetId: config.newComparisonWindowTargetVersion,
     fragmentid: 'John 3:16'
   }
 });
@@ -93,7 +94,7 @@ registerWindowType({
   className: 'MapWindow',
   WindowClass: MapWindow,
   displayName: 'Map',
-  paramKeys: { latitude: 'lat', longitude: 'lon' }
+  paramKeys: { latitude: 'lat', longitude: 'lon', journey: 'j' }
 });
 
 registerWindowType({

@@ -86,7 +86,13 @@
         "audio": "Audio available",
         "prevversion": "Previous version",
         "nextversion": "Next version",
-        "gotopassage": "Go to passage"
+        "gotopassage": "Go to passage",
+        "reference": "Reference",
+        "version": "Version",
+        "versioninfo": "Version Information",
+        "versioninfoname": "{0} Information",
+        "loadinginfo": "Loading information...",
+        "noinfo": "No additional information is available for this version."
       },
       "commentary": {
         "label": "Commentary"
@@ -98,7 +104,21 @@
         "openinbible": "Open in Bible",
         "loading": "Loading…",
         "moreresults": "{count} more matches",
-        "placesin": "Places in {reference}"
+        "placesin": "Places in {reference}",
+        "journeystops": "{count} stops",
+        "journeynames": {
+          "abraham": "Abraham's Journey",
+          "jacob": "Jacob's Flight and Return",
+          "exodus": "The Exodus",
+          "ark": "The Wanderings of the Ark",
+          "elijah": "Elijah's Travels",
+          "exile": "The Exile and Return",
+          "nativity": "The Nativity and Flight to Egypt",
+          "paul1": "Paul's First Journey",
+          "paul2": "Paul's Second Journey",
+          "paul3": "Paul's Third Journey",
+          "rome": "Paul's Voyage to Rome"
+        }
       },
       "search": {
         "label": "Search",

@@ -456,7 +456,7 @@ export function CommandPalette() {
 
   // Global keyboard shortcut
   document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       if (isOpen) {
         close();

@@ -111,12 +111,14 @@ export class DbsAudioProvider extends BaseAudioProvider {
           books.set(code, {
             dbsNum,
             dbsName,
-            chapters: []
+            chapters: [],
+            chapterFiles: new Map()
           });
           bookOrderSet.push(code);
         }
 
         books.get(code).chapters.push(chapter);
+        books.get(code).chapterFiles.set(chapter, chapterStr);
       }
 
       // Sort chapters within each book
@@ -171,7 +173,7 @@ export class DbsAudioProvider extends BaseAudioProvider {
     if (!bookInfo) return null;
     if (!bookInfo.chapters.includes(chapter)) return null;
 
-    const chapterStr = String(chapter).padStart(2, '0');
+    const chapterStr = bookInfo.chapterFiles?.get(chapter) ?? String(chapter).padStart(2, '0');
     const url = `${baseUrl}/${audioInfo.dbsId}/${bookInfo.dbsNum}_${bookInfo.dbsName}_${chapterStr}.mp3`;
     const id = `dbs:${audioInfo.dbsId}/${bookInfo.dbsNum}_${chapter}`;
 

@@ -10,11 +10,14 @@
  */
 
 import { SVG_WIDTH, SVG_HEIGHT, CLUSTER_RADIUS_PX, DEFAULT_CENTER, ZOOM_STEP, COLOCATED_EPSILON, CLUSTER_BREAK_MARGIN } from './constants.js';
+import { getConfig } from '../../core/config.js';
 import { svgToGeo, geoToSvg } from './geo-utils.js';
 import { getViewTransform } from './view-transform.js';
 import { NT_BOOKS } from '../../bible/BibleData.js';
 import * as MarkerRenderer from './marker-renderer.js';
-import { loadLocationData, getLocationsForReference } from './map-data.js';
+import { loadLocationData, getLocationsForReference, loadJourneyData, resolveStopLocation } from './map-data.js';
+import { ensureJourneyLayer, renderJourney, removeJourney } from './journey-layer.js';
+import { journeyBoundsLocations } from './route-geometry.js';
 import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox, setViewBoxSize, refit, zoomBy, isAtMinZoom, isAtMaxZoom } from './pan-zoom.js';
 import { createDetailPanel, openDetailPanel, destroyDetailPanel } from './detail-panel.js';
 import { highlightLocations, removeHighlights } from './highlight.js';
@@ -28,7 +31,7 @@ const DECORATION_SETTLE_MS = 150;
 let _svgTextPromise = null;
 function fetchSvgText() {
   if (!_svgTextPromise) {
-    _svgTextPromise = fetch('content/maps/biblical-map.svg').then((response) => {
+    _svgTextPromise = fetch(`${getConfig().baseContentUrl}content/maps/biblical-map.svg`).then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.text();
     });
@@ -58,6 +61,15 @@ function fetchPinData() {
   return _pinDataPromise;
 }
 
+let _journeyDataPromise = null;
+function fetchJourneyData() {
+  if (!_journeyDataPromise) {
+    _journeyDataPromise = loadJourneyData();
+    _journeyDataPromise.catch(() => { _journeyDataPromise = null; });
+  }
+  return _journeyDataPromise;
+}
+
 // Cached AVIF decode-support probe (1×1 AVIF data URI). Resolves once, reused thereafter.
 let _avifSupport = null;
 function supportsAvif() {
@@ -83,7 +95,8 @@ export class MapPanel {
       mode: 'passage',
       currentReference: null,
       currentCenter: { ...DEFAULT_CENTER },
-      exploreEra: 'all' // 'all' | 'ot' | 'nt'
+      exploreEra: 'all', // 'all' | 'ot' | 'nt'
+      activeJourneys: new Set() // journey ids shown in 'journeys' mode
     };
     this.viewBox = { x: 0, y: 0, width: SVG_WIDTH, height: SVG_HEIGHT };
     this.panStart = { x: 0, y: 0 };
@@ -93,6 +106,8 @@ export class MapPanel {
     this.locationData = null;
     this.locationDataByVerse = null;
     this.detailPanel = null;
+    this._journeys = null; // loaded journeys.json records (MapWindow opt-in)
+    this._journeyLayer = null; // <g> hosting route paths inside the basemap SVG
 
     this._panOffset = { x: 0, y: 0 };
     this._eventListeners = [];
@@ -134,10 +149,11 @@ export class MapPanel {
   }
 
   /**
-   * Switch between 'passage' and 'explore' modes.
+   * Switch between 'passage', 'explore', and 'journeys' modes.
    */
   setMode(mode) {
     this.state.mode = mode;
+    this._syncJourneyRendering();
     // resetView always ends in a decoration pass (centerOn/centerOnBounds)
     this._filterMarkers({ updateScales: false });
     this.resetView();
@@ -145,9 +161,17 @@ export class MapPanel {
 
   /**
    * Reset the view to the natural fit for the current mode: the current
-   * passage's locations in passage mode, otherwise the full map.
+   * passage's locations in passage mode, the active journeys in journeys
+   * mode, otherwise the full map.
    */
   resetView() {
+    if (this.state.mode === 'journeys') {
+      const locations = this._activeJourneys().flatMap(journeyBoundsLocations);
+      if (locations.length > 0) {
+        centerOnBounds(this, locations);
+        return;
+      }
+    }
     if (this.state.mode === 'passage' && this.state.currentReference && this.locationData) {
       const locations = getLocationsForReference(this.locationData, this.state.currentReference);
       if (locations.length > 0) {
@@ -165,6 +189,57 @@ export class MapPanel {
   setExploreEra(era) {
     this.state.exploreEra = era;
     this._filterMarkers();
+  }
+
+  /**
+   * Fetch journey definitions (cached module-wide, like the pins and SVG).
+   * Opt-in: only MapWindow calls this, so other MapPanel hosts pay nothing.
+   * Failure propagates so the caller can hide the Journeys UI.
+   * @returns {Promise<Array>} The journeys.json records
+   */
+  async loadJourneys() {
+    this._journeys = await fetchJourneyData();
+    return this._journeys;
+  }
+
+  /**
+   * Look up a loaded journey by id.
+   * @param {string} id
+   * @returns {Object|undefined}
+   */
+  getJourney(id) {
+    return this._journeys?.find(j => j.id === id);
+  }
+
+  /** Ids of the journeys currently toggled on. */
+  getActiveJourneyIds() {
+    return [...this.state.activeJourneys];
+  }
+
+  /**
+   * Show exactly one journey (journeys mode is single-select) and fit the
+   * view to its full extent (stops plus route waypoints).
+   * @param {string} id
+   * @returns {boolean} Whether the journey was found and selected
+   */
+  selectJourney(id) {
+    const journey = this.getJourney(id);
+    if (!journey) return false;
+
+    this.state.activeJourneys = new Set([id]);
+    this._syncJourneyRendering();
+    // centerOnBounds ends in a decoration pass, which positions the new badges
+    centerOnBounds(this, journeyBoundsLocations(journey));
+    return true;
+  }
+
+  /**
+   * Open the location detail for a journey stop, resolving it to its full
+   * maps.json record (complete verse list) when one exists.
+   * @param {Object} stop - Journey stop record
+   */
+  openStop(stop) {
+    this._openLocation(resolveStopLocation(stop, this.locationData));
   }
 
   /**
@@ -305,6 +380,31 @@ export class MapPanel {
 
   // --- Private ---
 
+  /** Loaded journey records currently toggled on. */
+  _activeJourneys() {
+    return (this._journeys || []).filter(j => this.state.activeJourneys.has(j.id));
+  }
+
+  /**
+   * Bring the rendered journey overlays in line with the current mode and
+   * active set: in journeys mode every active journey is (re)rendered,
+   * otherwise all journey elements are removed. Idempotent and cheap.
+   */
+  _syncJourneyRendering() {
+    if (!this.svgElement || !this.markersOverlay || !this._journeys) return;
+    if (!this._journeyLayer) this._journeyLayer = ensureJourneyLayer(this.svgElement);
+
+    const inJourneysMode = this.state.mode === 'journeys';
+    for (const journey of this._journeys) {
+      if (inJourneysMode && this.state.activeJourneys.has(journey.id)) {
+        renderJourney(this._journeyLayer, this.markersOverlay, journey,
+          (stop) => this.openStop(stop));
+      } else {
+        removeJourney(this._journeyLayer, this.markersOverlay, journey.id);
+      }
+    }
+  }
+
   async _initMap() {
     try {
       const pinDataPromise = fetchPinData(); // starts alongside the SVG fetch
@@ -426,6 +526,7 @@ export class MapPanel {
     if (!this.markersOverlay || !this.locationDataByVerse) return;
 
     const isPassageMode = this.state.mode === 'passage';
+    const isJourneysMode = this.state.mode === 'journeys';
     this.markersOverlay.querySelectorAll('.map-marker').forEach((marker) => {
       if (marker.classList.contains('highlighted')) {
         marker.classList.remove('filtered-out');
@@ -433,7 +534,10 @@ export class MapPanel {
       }
 
       let show = !isPassageMode;
-      if (isPassageMode && this.state.currentReference && marker.locationData) {
+      if (isJourneysMode) {
+        // Numbered journey badges replace the regular pins
+        show = false;
+      } else if (isPassageMode && this.state.currentReference && marker.locationData) {
         // Verse IDs are always BOOKCH_V — require the separator so "PS1" can't match "PS119_5"
         show = marker.locationData.verses.some(v => v.startsWith(this.state.currentReference + '_'));
       } else if (!isPassageMode && this.state.exploreEra !== 'all' && marker.locationData) {

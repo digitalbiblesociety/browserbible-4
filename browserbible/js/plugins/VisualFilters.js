@@ -595,10 +595,10 @@ export function VisualFilters() {
 
       if (transform.morph !== '') {
         if (transform.morphType === 'robinson') {
-          transform.morphRegExp = new RegExp(`^${transform.morph.replace(/\?/gi, '.{1}')}`, 'gi');
+          transform.morphRegExp = new RegExp(`^${transform.morph.replace(/\?/gi, '.{1}')}`, 'i');
         } else if (transform.morphType === 'morphhb') {
           transform.morphRegExp = new RegExp(
-            `(^H${transform.morph.replace(/\?/gi, '.{1}')})|(/${transform.morph.replace(/\?/gi, '.{1}')})`, 'gi'
+            `(^H${transform.morph.replace(/\?/gi, '.{1}')})|(/${transform.morph.replace(/\?/gi, '.{1}')})`, 'i'
           );
         }
       } else {
@@ -688,11 +688,15 @@ export function VisualFilters() {
     }
   });
 
+  let keyupTimer = null;
   tbody.addEventListener('keyup', (e) => {
     const target = e.target.closest('.visualfilters-strongs input, .visualfilters-morph input');
     if (target) {
-      saveTransforms();
-      VisualTransformer.resetTransforms(visualSettings);
+      clearTimeout(keyupTimer);
+      keyupTimer = setTimeout(() => {
+        saveTransforms();
+        VisualTransformer.resetTransforms(visualSettings);
+      }, 250);
     }
   });
 

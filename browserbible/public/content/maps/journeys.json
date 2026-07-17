@@ -1,0 +1,317 @@
+[
+  {
+    "id": "abraham",
+    "name": "Abraham's Journey",
+    "color": "#1565c0",
+    "stops": [
+      { "id": "ur", "name": "Ur", "label": "Ur of the Chaldeans", "coordinates": [46.103741, 30.962052], "verses": ["GN11_31", "GN15_7"] },
+      { "id": "haran", "name": "Haran", "coordinates": [39.032196, 36.863864], "verses": ["GN11_31", "GN12_4"] },
+      { "id": "shechem", "name": "Shechem", "coordinates": [35.281798, 32.213691], "verses": ["GN12_6"] },
+      { "id": "bethel", "name": "Bethel", "coordinates": [35.221032, 31.930539], "verses": ["GN12_8", "GN13_3"] },
+      { "id": "negeb", "name": "Negeb", "coordinates": [34.2, 30.3], "verses": ["GN12_9", "GN13_1"] },
+      { "id": "egypt", "name": "Egypt", "coordinates": [31.33822, 30.108086], "verses": ["GN12_10"] },
+      { "id": "hebron", "name": "Hebron", "coordinates": [35.094099, 31.535773], "verses": ["GN13_18"] }
+    ],
+    "legs": [
+      { "from": "ur", "to": "haran", "mode": "land", "via": [[44.4, 32.5], [42.3, 33.9], [40.5, 35.2], [39.4, 36.0]] },
+      { "from": "haran", "to": "shechem", "mode": "land", "via": [[37.6, 36.3], [36.6, 35.2], [36.31, 33.52], [35.75, 32.75]] },
+      { "from": "shechem", "to": "bethel", "mode": "land" },
+      { "from": "bethel", "to": "negeb", "mode": "land", "via": [[34.85, 31.1]] },
+      { "from": "negeb", "to": "egypt", "mode": "land", "via": [[33.0, 30.6]] },
+      { "from": "egypt", "to": "negeb", "mode": "land", "via": [[33.0, 30.6]] },
+      { "from": "negeb", "to": "bethel", "mode": "land", "via": [[34.85, 31.1]] },
+      { "from": "bethel", "to": "hebron", "mode": "land" }
+    ]
+  },
+  {
+    "id": "jacob",
+    "name": "Jacob's Flight and Return",
+    "color": "#2e7d32",
+    "stops": [
+      { "id": "beersheba", "name": "Beersheba", "coordinates": [34.840888, 31.244952], "verses": ["GN28_10"] },
+      { "id": "bethel", "name": "Bethel", "coordinates": [35.221032, 31.930539], "verses": ["GN28_19"] },
+      { "id": "haran", "name": "Haran", "coordinates": [39.032196, 36.863864], "verses": ["GN28_10", "GN29_4"] },
+      { "id": "mahanaim", "name": "Mahanaim?", "label": "Mahanaim", "coordinates": [35.632914, 32.214708], "verses": ["GN32_2"] },
+      { "id": "peniel", "name": "Peniel", "coordinates": [35.70287, 32.184372], "verses": ["GN32_30"] },
+      { "id": "succoth", "name": "Succoth", "coordinates": [35.633313, 32.199982], "verses": ["GN33_17"] },
+      { "id": "shechem", "name": "Shechem", "coordinates": [35.281798, 32.213691], "verses": ["GN33_18"] }
+    ],
+    "legs": [
+      { "from": "beersheba", "to": "bethel", "mode": "land", "via": [[35.1, 31.6]] },
+      { "from": "bethel", "to": "haran", "mode": "land", "via": [[35.75, 32.75], [36.31, 33.52], [36.6, 35.2], [37.6, 36.3]] },
+      { "from": "haran", "to": "mahanaim", "mode": "land", "via": [[37.4, 36.2], [36.5, 35.0], [36.2, 33.4], [35.9, 32.7]] },
+      { "from": "mahanaim", "to": "peniel", "mode": "land" },
+      { "from": "peniel", "to": "succoth", "mode": "land" },
+      { "from": "succoth", "to": "shechem", "mode": "land" }
+    ]
+  },
+  {
+    "id": "exodus",
+    "name": "The Exodus",
+    "color": "#ad1457",
+    "stops": [
+      { "id": "rameses", "name": "Rameses", "coordinates": [31.834216, 30.79937], "verses": ["EX12_37"] },
+      { "id": "succoth", "name": "Succoth", "coordinates": [32.258693, 30.620774], "verses": ["EX12_37", "EX13_20"] },
+      { "id": "etham", "name": "Etham", "coordinates": [32.282767, 30.467511], "verses": ["EX13_20"] },
+      { "id": "pi-hahiroth", "name": "Pi-hahiroth?", "label": "Pi-hahiroth", "coordinates": [32.425144, 29.94658], "verses": ["EX14_2"] },
+      { "id": "marah", "name": "Marah", "coordinates": [32.933333, 29.35], "verses": ["EX15_23"] },
+      { "id": "elim", "name": "Elim", "coordinates": [32.980924, 29.306194], "verses": ["EX15_27"] },
+      { "id": "rephidim", "name": "Rephidim", "coordinates": [33.841699, 28.731061], "verses": ["EX17_1", "EX17_8"] },
+      { "id": "sinai", "name": "Sinai", "label": "Mount Sinai", "coordinates": [33.973333, 28.539722], "verses": ["EX19_1", "NU10_12"] },
+      { "id": "hazeroth", "name": "Hazeroth", "coordinates": [34.5, 28.916667], "verses": ["NU11_35", "NU33_17"] },
+      { "id": "kadesh", "name": "Kadesh", "label": "Kadesh-barnea", "coordinates": [34.494795, 30.687712], "verses": ["NU13_26", "NU20_1"] },
+      { "id": "mount-hor", "name": "Mount Hor", "coordinates": [35.407152, 30.317396], "verses": ["NU20_22", "NU33_37"] },
+      { "id": "ezion-geber", "name": "Ezion-geber", "coordinates": [35.030601, 29.758043], "verses": ["NU33_35", "DT2_8"] },
+      { "id": "oboth", "name": "Oboth", "coordinates": [35.782841, 31.496845], "verses": ["NU21_10"] },
+      { "id": "mount-nebo", "name": "Mount Nebo", "coordinates": [35.746148, 31.761357], "verses": ["DT32_49", "DT34_1"] }
+    ],
+    "legs": [
+      { "from": "rameses", "to": "succoth", "mode": "land" },
+      { "from": "succoth", "to": "etham", "mode": "land" },
+      { "from": "etham", "to": "pi-hahiroth", "mode": "land", "via": [[32.35, 30.2]] },
+      { "from": "pi-hahiroth", "to": "marah", "mode": "sea", "via": [[32.6, 29.7]] },
+      { "from": "marah", "to": "elim", "mode": "land" },
+      { "from": "elim", "to": "rephidim", "mode": "land", "via": [[33.2, 29.0], [33.5, 28.85]] },
+      { "from": "rephidim", "to": "sinai", "mode": "land" },
+      { "from": "sinai", "to": "hazeroth", "mode": "land" },
+      { "from": "hazeroth", "to": "kadesh", "mode": "land", "via": [[34.4, 29.8], [34.4, 30.3]] },
+      { "from": "kadesh", "to": "mount-hor", "mode": "land", "via": [[35.0, 30.4]] },
+      { "from": "mount-hor", "to": "ezion-geber", "mode": "land", "via": [[35.2, 29.95]] },
+      { "from": "ezion-geber", "to": "oboth", "mode": "land", "via": [[35.35, 30.5], [35.6, 31.0]] },
+      { "from": "oboth", "to": "mount-nebo", "mode": "land" }
+    ]
+  },
+  {
+    "id": "ark",
+    "name": "The Wanderings of the Ark",
+    "color": "#6d4c41",
+    "stops": [
+      { "id": "shiloh", "name": "Shiloh", "coordinates": [35.289528, 32.0557], "verses": ["S14_3", "S14_4"] },
+      { "id": "aphek", "name": "Aphek", "coordinates": [34.931979, 32.104712], "verses": ["S14_1"] },
+      { "id": "ashdod", "name": "Ashdod", "coordinates": [34.635114, 31.802999], "verses": ["S15_1"] },
+      { "id": "gath", "name": "Gath", "coordinates": [34.843882, 31.693529], "verses": ["S15_8"] },
+      { "id": "ekron", "name": "Ekron", "coordinates": [34.852145, 31.777614], "verses": ["S15_10"] },
+      { "id": "beth-shemesh", "name": "Beth-shemesh", "coordinates": [34.976609, 31.752748], "verses": ["S16_12"] },
+      { "id": "kiriath-jearim", "name": "Kiriath-jearim?", "label": "Kiriath-jearim", "coordinates": [34.993812, 31.771104], "verses": ["S16_21", "S17_1"] }
+    ],
+    "legs": [
+      { "from": "shiloh", "to": "aphek", "mode": "land" },
+      { "from": "aphek", "to": "ashdod", "mode": "land", "via": [[34.68, 31.95]] },
+      { "from": "ashdod", "to": "gath", "mode": "land" },
+      { "from": "gath", "to": "ekron", "mode": "land" },
+      { "from": "ekron", "to": "beth-shemesh", "mode": "land" },
+      { "from": "beth-shemesh", "to": "kiriath-jearim", "mode": "land" }
+    ]
+  },
+  {
+    "id": "elijah",
+    "name": "Elijah's Travels",
+    "color": "#c62828",
+    "stops": [
+      { "id": "cherith", "name": "Cherith", "label": "Brook Cherith", "coordinates": [35.5599, 32.309099], "verses": ["K117_3"] },
+      { "id": "zarephath", "name": "Zarephath", "coordinates": [35.3, 33.4333], "verses": ["K117_9"] },
+      { "id": "carmel", "name": "Mount Carmel", "coordinates": [35.049789, 32.72935], "verses": ["K118_19", "K118_42"] },
+      { "id": "jezreel", "name": "Jezreel", "coordinates": [35.330789, 32.555963], "verses": ["K118_45", "K118_46"] },
+      { "id": "beersheba", "name": "Beersheba", "coordinates": [34.840888, 31.244952], "verses": ["K119_3"] },
+      { "id": "horeb", "name": "Horeb", "label": "Mount Horeb", "coordinates": [33.973333, 28.539722], "verses": ["K119_8"] }
+    ],
+    "legs": [
+      { "from": "cherith", "to": "zarephath", "mode": "land", "via": [[35.45, 32.9]] },
+      { "from": "zarephath", "to": "carmel", "mode": "land", "via": [[35.1, 33.05]] },
+      { "from": "carmel", "to": "jezreel", "mode": "land" },
+      { "from": "jezreel", "to": "beersheba", "mode": "land", "via": [[35.2, 32.0]] },
+      { "from": "beersheba", "to": "horeb", "mode": "land", "via": [[34.55, 30.4], [34.2, 29.4]] }
+    ]
+  },
+  {
+    "id": "exile",
+    "name": "The Exile and Return",
+    "color": "#546e7a",
+    "stops": [
+      { "id": "jerusalem", "name": "Jerusalem", "coordinates": [35.234935, 31.777444], "verses": ["K225_1", "ER8_32"] },
+      { "id": "riblah", "name": "Riblah", "coordinates": [36.545259, 34.431703], "verses": ["K225_6"] },
+      { "id": "babylon", "name": "Babylon", "coordinates": [44.420882, 32.536503], "verses": ["K224_15", "K225_7"] },
+      { "id": "ahava", "name": "Ahava", "coordinates": [42.786647, 33.625197], "verses": ["ER8_15", "ER8_31"] }
+    ],
+    "legs": [
+      { "from": "jerusalem", "to": "riblah", "mode": "land", "via": [[35.65, 33.2], [36.2, 33.9]] },
+      { "from": "riblah", "to": "babylon", "mode": "land", "via": [[37.5, 35.3], [39.0, 35.9], [41.0, 35.0], [42.8, 34.0]] },
+      { "from": "babylon", "to": "ahava", "mode": "land" },
+      { "from": "ahava", "to": "jerusalem", "mode": "land", "via": [[41.0, 35.4], [39.2, 36.3], [37.2, 36.2], [36.2, 34.6], [35.7, 33.3]] }
+    ]
+  },
+  {
+    "id": "nativity",
+    "name": "The Nativity and Flight to Egypt",
+    "color": "#00838f",
+    "stops": [
+      { "id": "nazareth", "name": "Nazareth", "coordinates": [35.301528, 32.706745], "verses": ["LK2_4", "MT2_23"] },
+      { "id": "bethlehem", "name": "Bethlehem", "coordinates": [35.210266, 31.705361], "verses": ["LK2_4", "MT2_1"] },
+      { "id": "jerusalem", "name": "Jerusalem", "coordinates": [35.234935, 31.777444], "verses": ["LK2_22"] },
+      { "id": "egypt", "name": "Egypt", "coordinates": [31.33822, 30.108086], "verses": ["MT2_14"] }
+    ],
+    "legs": [
+      { "from": "nazareth", "to": "bethlehem", "mode": "land", "via": [[35.28, 32.2], [35.25, 31.95]] },
+      { "from": "bethlehem", "to": "jerusalem", "mode": "land" },
+      { "from": "jerusalem", "to": "bethlehem", "mode": "land" },
+      { "from": "bethlehem", "to": "egypt", "mode": "land", "via": [[34.8, 31.4], [34.2, 31.15], [33.3, 31.0], [32.3, 30.8]] },
+      { "from": "egypt", "to": "nazareth", "mode": "land", "via": [[32.4, 30.9], [33.5, 31.1], [34.4, 31.3], [34.95, 32.05]] }
+    ]
+  },
+  {
+    "id": "paul1",
+    "name": "Paul's First Journey",
+    "color": "#7b3294",
+    "stops": [
+      { "id": "antioch-syria", "name": "Antioch", "label": "Antioch (Syria)", "coordinates": [36.162387, 36.20233], "verses": ["AC13_1", "AC14_26"] },
+      { "id": "seleucia", "name": "Seleucia", "coordinates": [35.926807, 36.111017], "verses": ["AC13_4"] },
+      { "id": "salamis", "name": "Salamis", "coordinates": [33.907552, 35.177246], "verses": ["AC13_5"] },
+      { "id": "paphos", "name": "Paphos", "coordinates": [32.400162, 34.754105], "verses": ["AC13_6"] },
+      { "id": "perga", "name": "Perga", "coordinates": [30.904945, 37.005208], "verses": ["AC13_13", "AC14_25"] },
+      { "id": "pisidian-antioch", "name": "Antioch", "label": "Antioch of Pisidia", "coordinates": [31.179486, 38.31643], "verses": ["AC13_14", "AC14_21"] },
+      { "id": "iconium", "name": "Iconium", "coordinates": [32.494262, 37.88353], "verses": ["AC13_51", "AC14_21"] },
+      { "id": "lystra", "name": "Lystra", "coordinates": [32.453182, 37.578134], "verses": ["AC14_6", "AC14_21"] },
+      { "id": "derbe", "name": "Derbe", "coordinates": [33.271417, 37.35092], "verses": ["AC14_20"] },
+      { "id": "attalia", "name": "Attalia", "coordinates": [30.694565, 36.880825], "verses": ["AC14_25"] }
+    ],
+    "legs": [
+      { "from": "antioch-syria", "to": "seleucia", "mode": "land" },
+      { "from": "seleucia", "to": "salamis", "mode": "sea", "via": [[35.2, 35.85], [34.5, 35.35]] },
+      { "from": "salamis", "to": "paphos", "mode": "land", "via": [[33.2, 34.98]] },
+      { "from": "paphos", "to": "perga", "mode": "sea", "via": [[31.8, 35.8], [31.0, 36.6]] },
+      { "from": "perga", "to": "pisidian-antioch", "mode": "land", "via": [[30.95, 37.6], [31.25, 38.0]] },
+      { "from": "pisidian-antioch", "to": "iconium", "mode": "land" },
+      { "from": "iconium", "to": "lystra", "mode": "land" },
+      { "from": "lystra", "to": "derbe", "mode": "land" },
+      { "from": "derbe", "to": "lystra", "mode": "land" },
+      { "from": "lystra", "to": "iconium", "mode": "land" },
+      { "from": "iconium", "to": "pisidian-antioch", "mode": "land" },
+      { "from": "pisidian-antioch", "to": "perga", "mode": "land", "via": [[31.25, 38.0], [30.95, 37.6]] },
+      { "from": "perga", "to": "attalia", "mode": "land" },
+      { "from": "attalia", "to": "antioch-syria", "mode": "sea", "via": [[31.5, 36.55], [32.9, 35.95], [34.3, 36.25], [35.5, 36.05]] }
+    ]
+  },
+  {
+    "id": "paul2",
+    "name": "Paul's Second Journey",
+    "color": "#00796b",
+    "stops": [
+      { "id": "antioch-syria", "name": "Antioch", "label": "Antioch (Syria)", "coordinates": [36.162387, 36.20233], "verses": ["AC15_35", "AC18_22"] },
+      { "id": "tarsus", "name": "Tarsus", "coordinates": [34.891533, 36.918026] },
+      { "id": "derbe", "name": "Derbe", "coordinates": [33.271417, 37.35092], "verses": ["AC16_1"] },
+      { "id": "lystra", "name": "Lystra", "coordinates": [32.453182, 37.578134], "verses": ["AC16_1", "AC16_2"] },
+      { "id": "iconium", "name": "Iconium", "coordinates": [32.494262, 37.88353], "verses": ["AC16_2"] },
+      { "id": "troas", "name": "Troas", "coordinates": [26.080592, 39.506643], "verses": ["AC16_8", "AC16_11"] },
+      { "id": "samothrace", "name": "Samothrace", "coordinates": [25.486069, 40.467279], "verses": ["AC16_11"] },
+      { "id": "neapolis", "name": "Neapolis", "coordinates": [24.417679, 40.944131], "verses": ["AC16_11"] },
+      { "id": "philippi", "name": "Philippi", "coordinates": [24.28619, 41.011959], "verses": ["AC16_12"] },
+      { "id": "amphipolis", "name": "Amphipolis", "coordinates": [23.838631, 40.823225], "verses": ["AC17_1"] },
+      { "id": "apollonia", "name": "Apollonia", "coordinates": [23.353351, 40.587632], "verses": ["AC17_1"] },
+      { "id": "thessalonica", "name": "Thessalonica", "coordinates": [22.932086, 40.632155], "verses": ["AC17_1"] },
+      { "id": "berea", "name": "Berea", "coordinates": [22.2, 40.5167], "verses": ["AC17_10"] },
+      { "id": "athens", "name": "Athens", "coordinates": [23.733333, 37.983333], "verses": ["AC17_15"] },
+      { "id": "corinth", "name": "Corinth", "coordinates": [22.877881, 37.905957], "verses": ["AC18_1"] },
+      { "id": "cenchreae", "name": "Cenchreae", "coordinates": [22.993359, 37.884603], "verses": ["AC18_18"] },
+      { "id": "ephesus", "name": "Ephesus", "coordinates": [27.367825, 37.953314], "verses": ["AC18_19"] },
+      { "id": "caesarea", "name": "Caesarea", "coordinates": [34.892184, 32.499544], "verses": ["AC18_22"] },
+      { "id": "jerusalem", "name": "Jerusalem", "coordinates": [35.234935, 31.777444] }
+    ],
+    "legs": [
+      { "from": "antioch-syria", "to": "tarsus", "mode": "land", "via": [[36.15, 36.55], [35.6, 36.75]] },
+      { "from": "tarsus", "to": "derbe", "mode": "land", "via": [[34.65, 37.25], [34.0, 37.3]] },
+      { "from": "derbe", "to": "lystra", "mode": "land" },
+      { "from": "lystra", "to": "iconium", "mode": "land" },
+      { "from": "iconium", "to": "troas", "mode": "land", "via": [[31.2, 38.35], [30.0, 38.9], [28.5, 39.2], [27.3, 39.5]] },
+      { "from": "troas", "to": "samothrace", "mode": "sea" },
+      { "from": "samothrace", "to": "neapolis", "mode": "sea" },
+      { "from": "neapolis", "to": "philippi", "mode": "land" },
+      { "from": "philippi", "to": "amphipolis", "mode": "land" },
+      { "from": "amphipolis", "to": "apollonia", "mode": "land" },
+      { "from": "apollonia", "to": "thessalonica", "mode": "land" },
+      { "from": "thessalonica", "to": "berea", "mode": "land" },
+      { "from": "berea", "to": "athens", "mode": "sea", "via": [[22.75, 40.3], [23.6, 39.7], [24.3, 39.0], [24.75, 38.15], [24.05, 37.6], [23.68, 37.9]] },
+      { "from": "athens", "to": "corinth", "mode": "land", "via": [[23.2, 38.03]] },
+      { "from": "corinth", "to": "cenchreae", "mode": "land" },
+      { "from": "cenchreae", "to": "ephesus", "mode": "sea", "via": [[23.6, 37.5], [25.0, 37.2], [26.5, 37.5]] },
+      { "from": "ephesus", "to": "caesarea", "mode": "sea", "via": [[27.8, 36.8], [29.5, 35.8], [32.5, 34.3]] },
+      { "from": "caesarea", "to": "jerusalem", "mode": "land" },
+      { "from": "jerusalem", "to": "antioch-syria", "mode": "land", "via": [[35.4, 32.9], [35.9, 34.4], [36.4, 35.5]] }
+    ]
+  },
+  {
+    "id": "paul3",
+    "name": "Paul's Third Journey",
+    "color": "#e66101",
+    "stops": [
+      { "id": "antioch-syria", "name": "Antioch", "label": "Antioch (Syria)", "coordinates": [36.162387, 36.20233], "verses": ["AC18_22"] },
+      { "id": "tarsus", "name": "Tarsus", "coordinates": [34.891533, 36.918026] },
+      { "id": "ephesus", "name": "Ephesus", "coordinates": [27.367825, 37.953314], "verses": ["AC19_1", "AC19_35"] },
+      { "id": "troas", "name": "Troas", "coordinates": [26.080592, 39.506643], "verses": ["C22_12", "AC20_6"] },
+      { "id": "philippi", "name": "Philippi", "coordinates": [24.28619, 41.011959], "verses": ["AC20_6"] },
+      { "id": "corinth", "name": "Corinth", "coordinates": [22.877881, 37.905957], "verses": ["AC19_1"] },
+      { "id": "assos", "name": "Assos", "coordinates": [26.335867, 39.48955], "verses": ["AC20_13"] },
+      { "id": "mitylene", "name": "Mitylene", "coordinates": [26.551804, 39.100335], "verses": ["AC20_14"] },
+      { "id": "chios", "name": "Chios", "coordinates": [26.063302, 38.44484], "verses": ["AC20_15"] },
+      { "id": "samos", "name": "Samos", "coordinates": [26.934167, 37.715172], "verses": ["AC20_15"] },
+      { "id": "miletus", "name": "Miletus", "coordinates": [27.3, 37.5], "verses": ["AC20_15", "AC20_17"] },
+      { "id": "cos", "name": "Cos", "coordinates": [27.08994, 36.80467], "verses": ["AC21_1"] },
+      { "id": "rhodes", "name": "Rhodes", "coordinates": [28.226721, 36.441926], "verses": ["AC21_1"] },
+      { "id": "patara", "name": "Patara", "coordinates": [29.318637, 36.274717], "verses": ["AC21_1"] },
+      { "id": "tyre", "name": "Tyre", "coordinates": [35.192574, 33.275827], "verses": ["AC21_3"] },
+      { "id": "ptolemais", "name": "Ptolemais", "coordinates": [35.081555, 32.927583], "verses": ["AC21_7"] },
+      { "id": "caesarea", "name": "Caesarea", "coordinates": [34.892184, 32.499544], "verses": ["AC21_8"] },
+      { "id": "jerusalem", "name": "Jerusalem", "coordinates": [35.234935, 31.777444], "verses": ["AC21_15", "AC21_17"] }
+    ],
+    "legs": [
+      { "from": "antioch-syria", "to": "tarsus", "mode": "land", "via": [[36.15, 36.55], [35.6, 36.75]] },
+      { "from": "tarsus", "to": "ephesus", "mode": "land", "via": [[34.65, 37.25], [33.271417, 37.35092], [32.453182, 37.578134], [32.494262, 37.88353], [31.179486, 38.31643], [29.8, 38.45], [28.5, 38.2]] },
+      { "from": "ephesus", "to": "troas", "mode": "sea", "via": [[26.9, 38.4], [26.4, 39.0]] },
+      { "from": "troas", "to": "philippi", "mode": "sea", "via": [[25.5, 40.35], [24.45, 40.9]] },
+      { "from": "philippi", "to": "corinth", "mode": "land", "via": [[23.84, 40.82], [22.93, 40.63], [22.2, 40.52], [22.3, 39.6], [22.6, 38.8]] },
+      { "from": "corinth", "to": "philippi", "mode": "land", "via": [[22.6, 38.8], [22.3, 39.6], [22.2, 40.52], [22.93, 40.63], [23.84, 40.82]] },
+      { "from": "philippi", "to": "troas", "mode": "sea", "via": [[24.45, 40.9], [25.5, 40.35]] },
+      { "from": "troas", "to": "assos", "mode": "land" },
+      { "from": "assos", "to": "mitylene", "mode": "sea" },
+      { "from": "mitylene", "to": "chios", "mode": "sea", "via": [[26.35, 38.75]] },
+      { "from": "chios", "to": "samos", "mode": "sea", "via": [[26.5, 38.0]] },
+      { "from": "samos", "to": "miletus", "mode": "sea" },
+      { "from": "miletus", "to": "cos", "mode": "sea" },
+      { "from": "cos", "to": "rhodes", "mode": "sea", "via": [[27.6, 36.6]] },
+      { "from": "rhodes", "to": "patara", "mode": "sea" },
+      { "from": "patara", "to": "tyre", "mode": "sea", "via": [[31.5, 35.3], [33.5, 34.3]] },
+      { "from": "tyre", "to": "ptolemais", "mode": "sea" },
+      { "from": "ptolemais", "to": "caesarea", "mode": "land" },
+      { "from": "caesarea", "to": "jerusalem", "mode": "land" }
+    ]
+  },
+  {
+    "id": "rome",
+    "name": "Paul's Voyage to Rome",
+    "color": "#283593",
+    "stops": [
+      { "id": "caesarea", "name": "Caesarea", "coordinates": [34.892184, 32.499544], "verses": ["AC25_4"] },
+      { "id": "sidon", "name": "Sidon", "coordinates": [35.366346, 33.563167], "verses": ["AC27_3"] },
+      { "id": "myra", "name": "Myra", "coordinates": [30.011458, 36.230771], "verses": ["AC27_5"] },
+      { "id": "cnidus", "name": "Cnidus", "coordinates": [27.374394, 36.685022], "verses": ["AC27_7"] },
+      { "id": "fair-havens", "name": "Fair Havens", "label": "Fair Havens, Crete", "coordinates": [24.731141, 34.921384], "verses": ["AC27_8"] },
+      { "id": "malta", "name": "Malta", "coordinates": [14.532436, 35.852826], "verses": ["AC28_1"] },
+      { "id": "syracuse", "name": "Syracuse", "coordinates": [15.294823, 37.068232], "verses": ["AC28_12"] },
+      { "id": "rhegium", "name": "Rhegium", "coordinates": [15.643279, 38.11158], "verses": ["AC28_13"] },
+      { "id": "puteoli", "name": "Puteoli", "coordinates": [14.267743, 40.83563], "verses": ["AC28_13"] },
+      { "id": "three-taverns", "name": "Three Taverns", "coordinates": [12.828636, 41.59132], "verses": ["AC28_15"] },
+      { "id": "rome", "name": "Rome", "coordinates": [12.483333, 41.9], "verses": ["AC28_14", "AC28_16"] }
+    ],
+    "legs": [
+      { "from": "caesarea", "to": "sidon", "mode": "sea", "via": [[34.95, 33.0]] },
+      { "from": "sidon", "to": "myra", "mode": "sea", "via": [[35.0, 34.7], [33.5, 35.6], [32.0, 36.0]] },
+      { "from": "myra", "to": "cnidus", "mode": "sea", "via": [[28.8, 36.1]] },
+      { "from": "cnidus", "to": "fair-havens", "mode": "sea", "via": [[26.45, 35.4], [26.35, 35.05], [25.7, 34.88]] },
+      { "from": "fair-havens", "to": "malta", "mode": "sea", "via": [[24.09, 34.84], [21.0, 35.0], [18.0, 35.3], [16.0, 35.6]] },
+      { "from": "malta", "to": "syracuse", "mode": "sea", "via": [[15.0, 36.4]] },
+      { "from": "syracuse", "to": "rhegium", "mode": "sea", "via": [[15.35, 37.5]] },
+      { "from": "rhegium", "to": "puteoli", "mode": "sea", "via": [[15.2, 38.8], [14.6, 40.0]] },
+      { "from": "puteoli", "to": "three-taverns", "mode": "land", "via": [[14.0, 41.2], [13.4, 41.3]] },
+      { "from": "three-taverns", "to": "rome", "mode": "land" }
+    ]
+  }
+]

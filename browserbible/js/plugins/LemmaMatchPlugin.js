@@ -14,9 +14,17 @@ function getLangPrefix(verseid) {
 }
 
 function highlightStrong(strong, langPrefix, verseid) {
-  const scope = verseid ? `.${verseid} ` : '';
-  const selector = `${scope}l[s*="${strong}"], ${scope}l[s*="${langPrefix}${strong}"]`;
-  document.querySelectorAll(selector).forEach(el => el.classList.add('lemma-highlight'));
+  const scope = verseid ? `.${CSS.escape(verseid)} ` : '';
+  const target = strong.toUpperCase();
+  const prefixed = `${langPrefix}${target}`;
+
+  document.querySelectorAll(`${scope}l[s]`).forEach(el => {
+    const matches = el.getAttribute('s').toUpperCase().split(/\s+/).some(token => {
+      const bare = token.replace(/[A-Z]$/, '');
+      return bare === target || bare === prefixed || bare.replace(/^[GH]/, '') === target;
+    });
+    if (matches) el.classList.add('lemma-highlight');
+  });
 }
 
 function handleLemmaHover(e) {

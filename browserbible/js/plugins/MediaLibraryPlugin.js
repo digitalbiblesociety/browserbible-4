@@ -198,7 +198,12 @@ export const MediaLibraryPlugin = () => {
       if (typeof content === 'string') {
         const temp = document.createElement('div');
         temp.innerHTML = content;
-        contentEl = temp;
+        const sectionEl = temp.querySelector('.section') ?? temp.firstElementChild;
+        const sectionid = sectionEl?.getAttribute('data-id');
+        contentEl = sectionid
+          ? document.querySelector(`.BibleWindow .section[data-id="${CSS.escape(sectionid)}"]`)
+          : null;
+        if (!contentEl) continue;
       } else {
         contentEl = content;
       }

@@ -119,6 +119,12 @@ class Window {
 
     this.node.addEventListener('mouseenter', this._handleFocus.bind(this));
     this.node.addEventListener('touchstart', this._handleFocus.bind(this));
+    // mouseenter only fires on a real pointer boundary crossing, so after the
+    // browser app loses and regains focus (hover state resets, pointer hasn't
+    // moved) no window has focus and scroll sync stalls. Wheel and pointerdown
+    // both imply the pointer is inside this window, so use them to re-focus.
+    this.node.addEventListener('wheel', this._handleFocus.bind(this), { passive: true });
+    this.node.addEventListener('pointerdown', this._handleFocus.bind(this));
     this.node.addEventListener('mouseleave', this._handleBlur.bind(this));
     this.node.addEventListener('windowblur', this._handleBlur.bind(this));
 
@@ -152,6 +158,7 @@ class Window {
   }
 
   _handleFocus() {
+    if (this.node.classList.contains('focused')) return;
     this.controller?.trigger?.('focus', {});
     this.node.classList.add('focused');
     Array.from(this.node.parentNode?.children || [])

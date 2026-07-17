@@ -146,8 +146,10 @@ export class BaseWindow extends HTMLElement {
   addListener(target, event, handler, options = {}) {
     if (!target || !this._abortController) return;
 
+    const normalized = typeof options === 'boolean' ? { capture: options } : options;
+
     const opts = {
-      ...options,
+      ...normalized,
       signal: this._abortController.signal
     };
 

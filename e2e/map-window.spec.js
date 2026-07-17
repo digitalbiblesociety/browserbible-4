@@ -108,21 +108,88 @@ test.describe('map window', () => {
     await expect(detail).toBeHidden();
   });
 
+  test('journeys mode swaps in a journey dropdown and draws the route', async ({ page, makeUrl, profile }) => {
+    test.skip(profile !== 'local', 'journeys.json is not yet deployed to the remote content server');
+
+    await page.goto(makeUrl({ w1: 'map' }));
+
+    const map = page.locator('.window.MapWindow');
+    await expect(map).toBeVisible({ timeout: 15_000 });
+
+    // Mode button unhides once journeys.json loads
+    const journeysBtn = map.locator('.map-mode-btn[data-mode="journeys"]');
+    await expect(journeysBtn).toBeVisible({ timeout: 15_000 });
+    await journeysBtn.click();
+
+    // The search box gives way to the journey dropdown, and the first
+    // journey (Abraham's) is auto-selected
+    await expect(map.locator('.map-nav')).toBeHidden();
+    const trigger = map.locator('.map-journey-list');
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toContainText('Abraham');
+
+    // No location/stop count in the header while in journeys mode
+    await expect(map.locator('.map-location-count')).toHaveText('');
+
+    // Switch to Paul's first journey via the dropdown
+    await trigger.click();
+    const menu = map.locator('.map-journey-menu');
+    await expect(menu).toBeVisible();
+    await menu.locator('.map-journey-menu-item[data-journey-id="paul1"]').click();
+    await expect(menu).toBeHidden();
+    await expect(trigger).toContainText("Paul's First Journey");
+
+    // Single-select: only paul1's route (14 legs, 10 stops) is rendered
+    await expect.poll(() => map.locator('path.journey-route').count()).toBe(14);
+    // Sea legs are dashed via CSS (screen-space under non-scaling-stroke)
+    await expect(map.locator('path.journey-route-sea').first())
+      .toHaveCSS('stroke-dasharray', /8.*6/);
+    await expect(map.locator('.journey-stop')).toHaveCount(10);
+
+    // Regular pins give way to the numbered stop badges
+    await expect(map.locator('.map-marker:not(.filtered-out)')).toHaveCount(0);
+
+    // Ordered stop list shows in the detail area
+    const detail = map.locator('.map-detail');
+    await expect(detail).toBeVisible();
+    await expect(detail.locator('.map-journey-stop-row')).toHaveCount(10);
+
+    // Clicking stop badge 4 opens Paphos; Back returns to the stop list
+    await map.locator('.journey-stop', { hasText: '4' }).click();
+    await expect(detail.locator('.map-detail-header h2')).toHaveText('Paphos');
+    await map.locator('.map-detail-back').click();
+    await expect(detail.locator('.map-journey-stop-row')).toHaveCount(10);
+  });
+
+  test('journey deep link restores journeys mode', async ({ page, makeUrl, profile }) => {
+    test.skip(profile !== 'local', 'journeys.json is not yet deployed to the remote content server');
+
+    await page.goto(makeUrl({ w1: 'map', j1: 'paul1' }));
+
+    const map = page.locator('.window.MapWindow');
+    await expect(map).toBeVisible({ timeout: 15_000 });
+
+    await expect(map.locator('.map-mode-btn[data-mode="journeys"]')).toHaveClass(/active/, { timeout: 15_000 });
+    await expect(map.locator('.map-journey-list')).toContainText("Paul's First Journey");
+    await expect(map.locator('.journey-stop')).toHaveCount(10);
+  });
+
   test('clicking a highlighted place name in the Bible text opens it on the map', async ({ page, makeUrl }) => {
     await page.goto(makeUrl({ w1: 'bible', t1: 'ENGWEB', v1: 'MT2_1', w2: 'map' }));
 
     const map = page.locator('.window.MapWindow');
     await expect(map).toBeVisible({ timeout: 15_000 });
 
-    // MapPanel highlights place names in the Bible text once data + text are loaded
-    const linked = page.locator('.window.BibleWindow .linked-location').first();
+    // MapPanel highlights place names in the Bible text once data + text are
+    // loaded. Names highlight progressively as sections stream in, so pin a
+    // known name instead of racing whichever span happens to be first.
+    const linked = page.locator(
+      '.window.BibleWindow .linked-location[data-location-name="Bethlehem"]').first();
     await expect(linked).toBeVisible({ timeout: 20_000 });
-
-    const name = await linked.getAttribute('data-location-name');
     await linked.click();
 
     const heading = map.locator('.map-detail-header h2');
     await expect(heading).toBeVisible();
-    await expect(heading).toHaveText(name);
+    await expect(heading).toHaveText('Bethlehem');
   });
 });

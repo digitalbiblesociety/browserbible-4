@@ -307,7 +307,8 @@ export function TextChooser() {
   function storeRecentlyUsed(textInfo) {
     if (textType !== 'bible') return;
 
-    const textid = (typeof textInfo === 'string') ? textInfo : textInfo.id;
+    const textid = (typeof textInfo === 'string') ? textInfo : textInfo?.id;
+    if (!textid) return;
     recentlyUsed.recent = recentlyUsed.recent.filter(t => t !== textid);
     recentlyUsed.recent.unshift(textid);
     while (recentlyUsed.recent.length > 5) {
@@ -473,7 +474,9 @@ export function TextChooser() {
 
   function setTextInfo(text) {
     selectedTextInfo = text;
-    storeRecentlyUsed(selectedTextInfo);
+    if (selectedTextInfo != null) {
+      storeRecentlyUsed(selectedTextInfo);
+    }
     scheduleRender();
   }
 

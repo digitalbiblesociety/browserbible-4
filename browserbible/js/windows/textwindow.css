@@ -7,6 +7,7 @@
 
 .window .scroller-main {
 	overflow: auto;
+	overflow-anchor: none;
 	position: absolute;
 	font-size: 18px;
 	padding: 0 30px;

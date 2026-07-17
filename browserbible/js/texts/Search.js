@@ -7,6 +7,7 @@ import { EventEmitterMixin } from '../common/EventEmitter.js';
 import { BOOK_DATA } from '../bible/BibleData.js';
 import { getShowApocrypha, isApocryphalSection } from '../bible/Apocrypha.js';
 import { loadSection, getText } from './TextLoader.js';
+import { escapeRegExp, highlightTextMatches } from '../lib/textHighlighter.js';
 
 export const SearchTools = {
   isAsciiRegExp: /^[\x20-\x7E]*$/gi,
@@ -21,12 +22,12 @@ export const SearchTools = {
 
       for (const part of strongNumbers) {
         searchTermsRegExp.push(
-          new RegExp(`s=["'](\\w\\d{1,4}[a-z]?\\s)?(G|H)?${part.substr(1)}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?["']`, 'gi')
+          new RegExp(`s=["'](\\w\\d{1,4}[a-z]?\\s)?(G|H)?${escapeRegExp(part.substr(1))}[a-z]?(\\s\\w\\d{1,4}[a-z]?)?["']`, 'gi')
         );
       }
     } else if (searchText.substring(0, 1) === '"' && searchText.substring(searchText.length - 1) === '"') {
       // Check for quoted search "jesus christ"
-      let withoutQuotes = searchText.substring(1, searchText.length - 1);
+      let withoutQuotes = escapeRegExp(searchText.substring(1, searchText.length - 1));
       withoutQuotes = withoutQuotes.replace(/\s/g, '(\\s?(<(.|\\n)*?>)?\\s?)?');
 
       // Use native RegExp with word boundary
@@ -43,13 +44,13 @@ export const SearchTools = {
         andSearchParts = andSearchParts.filter((item, index, arr) => arr.indexOf(item) === index);
 
         for (const part of andSearchParts) {
-          searchTermsRegExp.push(new RegExp(`\\b(${part})\\b`, 'gi'));
+          searchTermsRegExp.push(new RegExp(`\\b(${escapeRegExp(part)})\\b`, 'gi'));
         }
       } else {
         const words = SearchTools.splitWords(searchText);
 
         for (const word of words) {
-          searchTermsRegExp.push(new RegExp(word, 'gi'));
+          searchTermsRegExp.push(new RegExp(escapeRegExp(word), 'gi'));
         }
       }
     }
@@ -215,6 +216,7 @@ class SearchIndexLoader {
     let key = '';
     let hash = '';
     let stem = '';
+    let useStem = false;
 
     if (this.isLemmaSearch) {
       key = searchTerm.toUpperCase();
@@ -223,19 +225,16 @@ class SearchIndexLoader {
       indexUrl = `${this.baseContentPath}${this.textInfo.id}/indexlemma/_${letter.toUpperCase()}${firstNumber}000.json`;
     } else {
       key = searchTerm.toLowerCase();
+      stem = this.isStemEnabled && this.stemmingData != null ? this.stemmingData[key] : null;
+      useStem = stem != null;
 
-      if (this.isStemEnabled && this.stemmingData != null) {
-        stem = this.stemmingData[key];
+      if (useStem) {
         hash = SearchTools.hashWord(stem);
         indexUrl = `${this.baseContentPath}${this.textInfo.id}/index/_stems_${hash}.json`;
       } else {
         hash = SearchTools.hashWord(key);
         indexUrl = `${this.baseContentPath}${this.textInfo.id}/index/_${hash}.json`;
       }
-    }
-
-    if (searchTerm === 'undefined') {
-      return;
     }
 
     fetch(indexUrl)
@@ -246,21 +245,24 @@ class SearchIndexLoader {
       .then(data => {
         let fragments = null;
 
-        if (this.isStemEnabled && this.stemmingData != null) {
-          fragments = data[stem].fragmentids;
-          this.stemInfo.push({
-            word: key,
-            stem,
-            words: data[stem].words
-          });
+        if (useStem) {
+          fragments = data[stem]?.fragmentids;
+          if (data[stem]?.words) {
+            this.stemInfo.push({
+              word: key,
+              stem,
+              words: data[stem].words
+            });
+          }
         } else {
           fragments = data[key];
         }
 
-        this.loadedIndexes.push(fragments);
+        this.loadedIndexes.push(fragments ?? []);
         this.loadNextIndex();
       })
       .catch(() => {
+        this.loadedIndexes.push(null);
         this.loadNextIndex();
       });
   }
@@ -310,6 +312,12 @@ class SearchIndexLoader {
   processIndexes() {
     let fragmentids = [];
     this.loadedResults = [];
+
+    if (this.loadedIndexes.length > 0 && this.loadedIndexes.every(idx => idx == null)) {
+      this.loadedIndexes = [];
+    } else {
+      this.loadedIndexes = this.loadedIndexes.map(idx => idx ?? []);
+    }
 
     if (this.loadedIndexes.length > 0) {
       fragmentids = this.searchType === 'OR' ? this.mergeOrIndexes() : this.intersectAndIndexes();
@@ -454,6 +462,17 @@ export class TextSearch {
       .catch(error => {
         console.error('error:serverSearch', error);
         this.isSearching = false;
+
+        this.trigger('complete', {
+          type: 'complete',
+          target: this,
+          data: {
+            results: null,
+            searchIndexesData: this.searchIndexesData,
+            searchTermsRegExp: this.searchTermsRegExp,
+            isLemmaSearch: this.isLemmaSearch
+          }
+        });
       });
   }
 
@@ -476,6 +495,7 @@ export class TextSearch {
 
     if (e.data.loadedIndexes.length === 0) {
       this.searchIndexesData = this.buildBruteForceIndex();
+      this.searchIndexesCurrentIndex = -1;
       this.loadNextSectionid();
       return;
     }
@@ -536,7 +556,12 @@ export class TextSearch {
 
       loadSection(this.textInfo, sectionid, (content) => {
         const temp = document.createElement('div');
-        temp.innerHTML = content;
+        if (typeof content === 'string') {
+          temp.innerHTML = content;
+        } else {
+          const contentEl = content?.nodeType ? content : content?.[0];
+          if (contentEl) temp.appendChild(contentEl.cloneNode(true));
+        }
 
         for (const fragmentid of fragmentids) {
           const fragmentNodes = temp.querySelectorAll(`.${fragmentid}`);
@@ -572,23 +597,24 @@ export class TextSearch {
     let foundMatch = false;
     const regMatches = new Array(this.searchTermsRegExp.length);
 
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const text = temp.textContent;
+
     for (let j = 0, jl = this.searchTermsRegExp.length; j < jl; j++) {
       this.searchTermsRegExp[j].lastIndex = 0;
 
       if (this.isLemmaSearch) {
-        // Lemma matches are highlighted in the DOM (by adding the `highlight`
-        // class to the matched <l> element), so only detect the match here and
-        // leave the markup untouched.
         if (this.searchTermsRegExp[j].test(processedHtml)) {
           regMatches[j] = true;
           foundMatch = true;
         }
       } else {
-        processedHtml = processedHtml.replace(this.searchTermsRegExp[j], (match) => {
+        if (this.searchTermsRegExp[j].test(text)) {
           regMatches[j] = true;
           foundMatch = true;
-          return `<span class="highlight">${match}</span>`;
-        });
+        }
+        this.searchTermsRegExp[j].lastIndex = 0;
       }
     }
 
@@ -601,6 +627,11 @@ export class TextSearch {
         }
       }
       foundMatch = foundAll;
+    }
+
+    if (foundMatch && !this.isLemmaSearch) {
+      highlightTextMatches(temp, this.searchTermsRegExp);
+      processedHtml = temp.innerHTML;
     }
 
     return { html: processedHtml, foundMatch };

@@ -11,6 +11,7 @@ import { Reference } from '../bible/BibleReference.js';
 import { mixinEventEmitter } from '../common/EventEmitter.js';
 import { PlaceKeeper } from '../common/PlaceKeeper.js';
 import { TextNavigation } from '../common/TextNavigation.js';
+import { getText, loadSection } from '../texts/TextLoader.js';
 
 // Store global handlers for cross-plugin communication
 let handleBibleRefClick = null;
@@ -64,11 +65,12 @@ export const CrossReferencePopupPlugin = () => {
     const link = this;
     const newfragmentid = getFragmentidFromNode(link);
 
-    // where are we?
     const currentLocationData = PlaceKeeper.getFirstLocation();
 
     // store the current one
-    TextNavigation.locationChange(currentLocationData.fragmentid);
+    if (currentLocationData?.fragmentid) {
+      TextNavigation.locationChange(currentLocationData.fragmentid);
+    }
 
     if (newfragmentid != null && newfragmentid !== '') {
       TextNavigation.locationChange(newfragmentid);
@@ -106,23 +108,25 @@ export const CrossReferencePopupPlugin = () => {
         }
       }
 
-      // Get TextLoader from global if available
-      const TextLoader = window.TextLoader;
-
-      if (TextLoader) {
-        TextLoader.getText(textid, (textInfo) => {
-          TextLoader.loadSection(textInfo, sectionid, (contentNode) => {
+      if (textid) {
+        getText(textid, (textInfo) => {
+          if (!textInfo) return;
+          loadSection(textInfo, sectionid, (contentNode) => {
             const contentEl = typeof contentNode === 'string'
               ? elem('div', { innerHTML: contentNode })
               : contentNode;
+            if (!contentEl?.querySelectorAll) return;
 
             const verseEls = contentEl.querySelectorAll(`.${fragmentid}`);
             let html = '';
 
             for (const verse of verseEls) {
-              removeNotesFromVerse(verse);
-              html += verse.innerHTML;
+              const clone = verse.cloneNode(true);
+              removeNotesFromVerse(clone);
+              html += clone.innerHTML;
             }
+
+            if (html === '') return;
 
             referencePopup.body.innerHTML = html;
             referencePopup.show();

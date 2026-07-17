@@ -13,6 +13,7 @@ import { Reference } from '../bible/BibleReference.js';
 import { getGlobalTextChooser } from '../ui/TextChooser.js';
 import { getText, loadTexts, startSearch, displayAbbr } from '../texts/TextLoader.js';
 import { SearchTools } from '../texts/Search.js';
+import { highlightTextMatches } from '../lib/textHighlighter.js';
 
 const getTextAsync = (textId) => AsyncHelpers.promisify(getText, textId);
 const loadTextsAsync = () => AsyncHelpers.promisify(loadTexts);
@@ -203,7 +204,10 @@ class SearchWindowComponent extends BaseWindow {
     }
 
     super.cleanup();
-    this.textChooser.hide();
+
+    if (this.textChooser.getTarget() === this.refs.textlistui) {
+      this.textChooser.hide();
+    }
   }
 
   handleTextListClick() {
@@ -267,7 +271,7 @@ class SearchWindowComponent extends BaseWindow {
     if (!bookInfo) return;
 
     const bookName = bookInfo.names?.[this.state.textInfo?.lang]?.[0] ??
-                     bookInfo.names?.en?.[0] ??
+                     bookInfo.names?.eng?.[0] ??
                      dbsBookCode;
 
     const visualWidth = this.refs.topVisual.offsetWidth;
@@ -430,7 +434,8 @@ class SearchWindowComponent extends BaseWindow {
   }
 
   doSearch() {
-    this.state.textInfo = this.textChooser.getTextInfo();
+    this.state.textInfo = this.state.selectedTextInfo ?? this.textChooser.getTextInfo();
+    if (!this.state.textInfo) return;
 
     const text = this.refs.input.value.trim();
     const textid = this.state.textInfo.id;
@@ -559,7 +564,7 @@ class SearchWindowComponent extends BaseWindow {
         emittedBooks.add(dbsBookCode);
         const bookInfo = BOOK_DATA[dbsBookCode];
         const bookName = bookInfo?.names?.[langCode]?.[0] ??
-                         bookInfo?.names?.en?.[0] ??
+                         bookInfo?.names?.eng?.[0] ??
                          dbsBookCode;
         const count = divisionCount[dbsBookCode];
         html += `<div class="search-result-book-header divisionid-${dbsBookCode}">${this.escapeHtml(bookName)} <span class="search-result-book-count">${count}</span></div>`;
@@ -645,10 +650,7 @@ class SearchWindowComponent extends BaseWindow {
     if (!this.state.searchTermsRegExp?.length) return;
 
     this.refs.resultsBlock.querySelectorAll('.search-result-text').forEach((el) => {
-      for (let j = 0, jl = this.state.searchTermsRegExp.length; j < jl; j++) {
-        this.state.searchTermsRegExp[j].lastIndex = 0;
-        el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `<span class="highlight">${match}</span>`);
-      }
+      highlightTextMatches(el, this.state.searchTermsRegExp);
     });
   }
 
@@ -663,6 +665,8 @@ class SearchWindowComponent extends BaseWindow {
 
     if (e.data.results?.length > 0) {
       this.renderSearchResultsContent(e.data.results);
+    } else if (e.data.results == null) {
+      this.refs.resultsBlock.innerHTML = 'Search failed. Please check your connection and try again.';
     } else {
       this.refs.resultsBlock.innerHTML = 'No results';
     }
@@ -699,7 +703,7 @@ class SearchWindowComponent extends BaseWindow {
     const strongsNumber = strongs.substr(1);
     const strongLang = strongs.substr(0, 1);
     const langCode = (strongLang === 'H' ? 'he' : 'el');
-    const dir = langCode === 'he' ? 'ltr' : 'rtl';
+    const dir = langCode === 'he' ? 'rtl' : 'ltr';
 
     fetch(`${this.config.baseContentUrl}content/lexicons/strongs/entries/${strongs}.json`)
       .then((response) => {
@@ -809,10 +813,7 @@ class SearchWindowComponent extends BaseWindow {
           return;
         }
 
-        for (let j = 0, jl = this.state.searchTermsRegExp.length; j < jl; j++) {
-          this.state.searchTermsRegExp[j].lastIndex = 0;
-          el.innerHTML = el.innerHTML.replace(this.state.searchTermsRegExp[j], (match) => `<span class="highlight">${match}</span>`);
-        }
+        highlightTextMatches(el, this.state.searchTermsRegExp);
       });
     }
   }
@@ -903,7 +904,7 @@ class SearchWindowComponent extends BaseWindow {
 registerWindowComponent('search-window', SearchWindowComponent, {
   windowType: 'search',
   displayName: 'Search',
-  paramKeys: { textid: 't', searchtext: 's' }
+  paramKeys: { textid: 't', searchtext: 's', divisions: 'd' }
 });
 
 export { SearchWindowComponent as SearchWindow };

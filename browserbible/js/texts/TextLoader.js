@@ -25,6 +25,7 @@ export function registerTextProvider(name, provider) {
 
 export function loadSection(textInfo, sectionid, successCallback, errorCallback) {
   if (sectionid == 'null' || sectionid == null) {
+    errorCallback?.(textInfo?.id ?? '', sectionid, { message: 'No section id given.' });
     return;
   }
 

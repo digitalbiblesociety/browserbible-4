@@ -315,7 +315,7 @@ export const Eng2pPlugin = () => {
       const verseid = verse.getAttribute('data-id');
 
       if (eng2p.secondPersonPlurals.indexOf(verseid) > -1) {
-        // Add the eng2p-verbs class to mark this verse
+        if (verse.classList.contains('eng2p-verbs')) return;
         verse.classList.add('eng2p-verbs');
 
         let html = verse.innerHTML;
@@ -373,7 +373,7 @@ export const Eng2pPlugin = () => {
   ext.on('message', (e) => {
     if (e.data.messagetype === 'textload' && e.data.type === 'bible') {
       const contentEl = e.data.content;
-      if (!contentEl || eng2pSetting.eng2p === 'none') return;
+      if (!contentEl || typeof contentEl === 'string' || eng2pSetting.eng2p === 'none') return;
 
       // Helper to check if a lang attribute indicates English
       const isEnglishLang = (lang) => {

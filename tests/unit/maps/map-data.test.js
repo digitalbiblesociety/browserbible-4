@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   loadLocationData,
+  loadJourneyData,
+  resolveStopLocation,
   indexLocationsByVerse,
   getLocationsForReference
 } from '@windows/MapWindow/map-data.js';
@@ -69,5 +71,51 @@ describe('loadLocationData', () => {
   it('throws on non-OK response', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 404 })));
     await expect(loadLocationData()).rejects.toThrow(/404/);
+  });
+});
+
+describe('loadJourneyData', () => {
+  beforeEach(() => vi.unstubAllGlobals());
+
+  it('fetches and returns parsed JSON', async () => {
+    const journeys = [{ id: 'paul1', stops: [], legs: [] }];
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: true,
+      json: async () => journeys
+    })));
+    expect(await loadJourneyData()).toEqual(journeys);
+  });
+
+  it('throws on non-OK response', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 404 })));
+    await expect(loadJourneyData()).rejects.toThrow(/404/);
+  });
+});
+
+describe('resolveStopLocation', () => {
+  const antiochSyria = { name: 'Antioch', coordinates: [36.162, 36.202], verses: ['AC13_1'] };
+  const antiochPisidia = { name: 'Antioch', coordinates: [31.179, 38.316], verses: ['AC13_14'] };
+  const data = [antiochSyria, antiochPisidia];
+
+  it('disambiguates same-named locations by coordinates', () => {
+    expect(resolveStopLocation({ name: 'Antioch', coordinates: [31.179, 38.316] }, data))
+      .toBe(antiochPisidia);
+    expect(resolveStopLocation({ name: 'Antioch', coordinates: [36.162, 36.202] }, data))
+      .toBe(antiochSyria);
+  });
+
+  it('falls back to a synthetic record for stops absent from maps.json', () => {
+    const stop = { name: 'Appii Forum', label: 'Forum of Appius', coordinates: [13.0, 41.4], verses: ['AC28_15'] };
+    expect(resolveStopLocation(stop, data)).toEqual({
+      name: 'Forum of Appius',
+      coordinates: [13.0, 41.4],
+      verses: ['AC28_15'],
+      type: 'city'
+    });
+  });
+
+  it('handles missing location data', () => {
+    const stop = { name: 'Derbe', coordinates: [33.27, 37.35] };
+    expect(resolveStopLocation(stop, null).name).toBe('Derbe');
   });
 });

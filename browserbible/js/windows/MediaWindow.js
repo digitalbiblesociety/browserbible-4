@@ -285,6 +285,8 @@ class MediaWindowComponent extends BaseWindow {
     if (oldVideo) oldVideo.pause();
 
     const mediaEl = await this.createMediaElement(item);
+    if (this.state.currentGalleryIndex !== index) return;
+
     this.clearGalleryContent();
     if (mediaEl) {
       this.refs.galleryContent.appendChild(mediaEl);
@@ -553,7 +555,8 @@ class MediaWindowComponent extends BaseWindow {
 
   buildMediaUrls(mediaLibrary, mediaInfo) {
     if (mediaLibrary.baseUrl) {
-      const largeSuffix = mediaLibrary.largeSuffix || `.${mediaInfo.exts}`;
+      const ext = Array.isArray(mediaInfo.exts) ? mediaInfo.exts[0] : mediaInfo.exts;
+      const largeSuffix = mediaLibrary.largeSuffix || `.${ext}`;
       const thumbSuffix = mediaLibrary.thumbSuffix || '-thumb.jpg';
       return {
         fullUrl: `${mediaLibrary.baseUrl}${mediaInfo.filename}${largeSuffix}`,

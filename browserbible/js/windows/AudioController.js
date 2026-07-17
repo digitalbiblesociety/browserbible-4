@@ -94,7 +94,6 @@ export function AudioController(id, container, toggleButton, scroller) {
     }
 
     if (!clickedOnOptions) {
-      e.preventDefault();
       options.style.display = 'none';
       document.removeEventListener('click', docClick);
     }
@@ -127,7 +126,8 @@ export function AudioController(id, container, toggleButton, scroller) {
 
     if (!audio.paused && !audio.ended) {
       audio.pause();
-      audio.src = '';
+      audio.removeAttribute('src');
+      audio.load();
     }
 
     audio.addEventListener('loadeddata', playWhenLoaded);
@@ -159,7 +159,10 @@ export function AudioController(id, container, toggleButton, scroller) {
     }
 
     if (audio.paused || audio.ended) {
-      audio.play();
+      audio.play().catch(() => {
+        playButton.innerHTML = playSvg;
+        playButton.classList.remove('playing');
+      });
     } else {
       audio.pause();
     }
@@ -225,6 +228,7 @@ export function AudioController(id, container, toggleButton, scroller) {
             // New chapter (or no audio): drop the previous chapter's verse highlight.
             setReadingVerse(null);
             if (!newFragmentAudioData || newFragmentAudioData.url == null) {
+              audio.removeEventListener('loadeddata', playWhenLoaded);
               audio.removeAttribute('src');
               title.innerHTML = '[No audio]';
 
@@ -260,7 +264,10 @@ export function AudioController(id, container, toggleButton, scroller) {
   };
 
   const playWhenLoaded = () => {
-    audio.play();
+    audio.play().catch(() => {
+      playButton.innerHTML = playSvg;
+      playButton.classList.remove('playing');
+    });
     audio.removeEventListener('loadeddata', playWhenLoaded);
   };
 
@@ -298,6 +305,20 @@ export function AudioController(id, container, toggleButton, scroller) {
 
   audio.addEventListener('loadedmetadata', () => {
     duration.innerHTML = secondsToTimeCode(audio.duration);
+  });
+
+  audio.addEventListener('error', () => {
+    if (!audio.getAttribute('src')) return;
+
+    audio.removeEventListener('loadeddata', playWhenLoaded);
+    playButton.innerHTML = playSvg;
+    playButton.classList.remove('playing');
+    title.innerHTML = '[Audio unavailable]';
+
+    audio.removeAttribute('src');
+    if (fragmentAudioData?.url != null) {
+      loadAudioWhenPlayIsPressed = true;
+    }
   });
 
   audio.addEventListener('ended', () => {
@@ -361,8 +382,11 @@ export function AudioController(id, container, toggleButton, scroller) {
           const verseTop = offset(verseEl).top;
           const verseTopAdjusted = verseTop - paneTop + scrollTop;
 
-          scroller.setFocus?.(true);
-          pane.scrollTop = verseTopAdjusted;
+          if (scroller.setScrollTop) {
+            scroller.setScrollTop(verseTopAdjusted);
+          } else {
+            pane.scrollTop = verseTopAdjusted;
+          }
         }
       }
       return;
@@ -388,41 +412,49 @@ export function AudioController(id, container, toggleButton, scroller) {
 
     if (scrollOffset <= 0) scrollOffset = 0;
 
-    scroller.setFocus?.(true);
-    pane.scrollTop = nodeTopAdjusted + scrollOffset;
+    const targetScrollTop = nodeTopAdjusted + scrollOffset;
+    if (Math.abs(targetScrollTop - pane.scrollTop) > 4) {
+      if (scroller.setScrollTop) {
+        scroller.setScrollTop(targetScrollTop);
+      } else {
+        pane.scrollTop = targetScrollTop;
+      }
+    }
   });
 
-  const documentMouseUp = (e) => {
-    isDraggingSliderHandle = false;
-    document.removeEventListener('mousemove', documentMouseMove);
-    document.removeEventListener('mouseup', documentMouseUp);
-  };
+  const seekToClientX = (clientX) => {
+    if (!isFinite(audio.duration) || audio.duration <= 0) return;
 
-  const documentMouseMove = (e) => {
     const width = audioSlider.offsetWidth;
-    const pos = offset(audioSlider);
-    const clientX = e.clientX;
-    const offsetX = clientX - pos.left;
-    const percent = offsetX / width;
-    const newTime = percent * audio.duration;
+    if (width <= 0) return;
 
+    const percent = Math.min(1, Math.max(0, (clientX - offset(audioSlider).left) / width));
     audioSliderHandle.style.left = `${percent * 100}%`;
-    audio.currentTime = newTime;
+    audio.currentTime = percent * audio.duration;
   };
 
-  audioSliderHandle.addEventListener('mousedown', (e) => {
+  const documentPointerUp = () => {
+    isDraggingSliderHandle = false;
+    document.removeEventListener('pointermove', documentPointerMove);
+    document.removeEventListener('pointerup', documentPointerUp);
+    document.removeEventListener('pointercancel', documentPointerUp);
+  };
+
+  const documentPointerMove = (e) => {
+    seekToClientX(e.clientX);
+  };
+
+  audioSliderHandle.style.touchAction = 'none';
+  audioSliderHandle.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
     isDraggingSliderHandle = true;
-    document.addEventListener('mousemove', documentMouseMove);
-    document.addEventListener('mouseup', documentMouseUp);
+    document.addEventListener('pointermove', documentPointerMove);
+    document.addEventListener('pointerup', documentPointerUp);
+    document.addEventListener('pointercancel', documentPointerUp);
   });
 
   audioSlider.addEventListener('click', (e) => {
-    const width = audioSlider.offsetWidth;
-    const offsetX = e.offsetX;
-    const percent = offsetX / width;
-    const newTime = percent * audio.duration;
-
-    audio.currentTime = newTime;
+    seekToClientX(e.clientX);
   });
 
   const configureFcbhDramaOptions = (info) => {
@@ -468,6 +500,7 @@ export function AudioController(id, container, toggleButton, scroller) {
   const handleAudioInfoResult = (newAudioInfo) => {
     if (newAudioInfo == null) {
       hasAudio = false;
+      audio.removeEventListener('loadeddata', playWhenLoaded);
       if (toggleButtonEl) {
         toggleButtonEl.style.display = 'none';
         block.style.display = 'none';
@@ -506,7 +539,7 @@ export function AudioController(id, container, toggleButton, scroller) {
       duration.innerHTML = secondsToTimeCode(0);
 
       textInfo = newTextInfo;
-      audioRequestId++;
+      const requestId = ++audioRequestId;
 
       if (!audio.paused && !audio.ended) {
         try {
@@ -515,11 +548,15 @@ export function AudioController(id, container, toggleButton, scroller) {
           // ignore
         }
       }
+      audio.removeEventListener('loadeddata', playWhenLoaded);
       audio.removeAttribute('src');
       audio.load();
 
       if (textInfo.type == 'bible') {
-        audioDataManager.getAudioInfo(textInfo, handleAudioInfoResult);
+        audioDataManager.getAudioInfo(textInfo, (newAudioInfo) => {
+          if (block == null || requestId !== audioRequestId) return;
+          handleAudioInfoResult(newAudioInfo);
+        });
       }
     }
   };
@@ -532,8 +569,9 @@ export function AudioController(id, container, toggleButton, scroller) {
     ext.clearListeners();
     document.removeEventListener('click', docClick);
     isDraggingSliderHandle = false;
-    document.removeEventListener('mousemove', documentMouseMove);
-    document.removeEventListener('mouseup', documentMouseUp);
+    document.removeEventListener('pointermove', documentPointerMove);
+    document.removeEventListener('pointerup', documentPointerUp);
+    document.removeEventListener('pointercancel', documentPointerUp);
 
     if (block?.parentNode) {
       block.parentNode.removeChild(block);
