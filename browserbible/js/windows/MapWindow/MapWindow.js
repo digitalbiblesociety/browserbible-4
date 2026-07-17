@@ -401,11 +401,9 @@ class MapWindowComponent extends BaseWindow {
     this.refs.detailContent._hydrateObserver = null;
 
     this.refs.detailContent.innerHTML = `
-      <div class="map-detail-header">
+      <div class="map-detail-header map-journey-list-header">
         <h2><span class="map-journey-swatch" style="--journey-color:${this.escapeHtml(journey.color)}"></span>${this.escapeHtml(this.journeyName(journey))}</h2>
-        <div class="map-detail-meta">
-          <span class="map-detail-count">${this.escapeHtml(i18n.t('windows.map.journeystops', { count: journey.stops.length }))}</span>
-        </div>
+        <span class="map-detail-count">${this.escapeHtml(i18n.t('windows.map.journeystops', { count: journey.stops.length }))}</span>
       </div>
       <div class="map-journey-stops">${rows}</div>
     `;
@@ -489,6 +487,27 @@ class MapWindowComponent extends BaseWindow {
     this.refs.detailContent._hydrateObserver = null;
     this.mapPanel?.resetMarkerOpacity();
     if (hadFocusInside) this.refs.mapContainer.focus();
+  }
+
+  /**
+   * Retry verse snippets in an open location detail. Rows that previously failed
+   * (marked "not available") are reset to pending so hydrateVerseTexts fetches
+   * them again against the now-known Bible text. No-op for the journey stop list
+   * (it has no snippet rows) or a closed detail (reopening rebuilds it fresh).
+   */
+  rehydrateOpenDetail() {
+    if (this.refs.detail.classList.contains('hidden')) return;
+
+    const content = this.refs.detailContent;
+    content.querySelectorAll('.verse-text-missing').forEach(el => {
+      el.classList.remove('verse-text-missing');
+      el.classList.add('verse-text-pending');
+      el.textContent = '…';
+    });
+
+    if (content.querySelector('.verse-text-pending')) {
+      hydrateVerseTexts(content, this.state.currentTextid);
+    }
   }
 
   // --- Search ---
@@ -618,9 +637,20 @@ class MapWindowComponent extends BaseWindow {
   handleMessage(e) {
     if (e.data.messagetype !== 'textload') return;
 
+    const prevTextid = this.state.currentTextid;
     if (e.data.textid) {
       this.state.currentTextid = e.data.textid;
       if (this.mapPanel) this.mapPanel._detailTextid = e.data.textid;
+    }
+
+    // The Bible text a detail hydrates from can arrive AFTER a detail is already
+    // open — most often when this map is the leftmost window, created before the
+    // Bible window replies to its content request. A detail opened in that gap
+    // hydrates against a fallback (or absent) text and its verse rows can end up
+    // stuck on "not available". When the real text id first becomes known, or it
+    // later changes, retry those rows so they resolve against the right text.
+    if (e.data.textid && e.data.textid !== prevTextid) {
+      this.rehydrateOpenDetail();
     }
 
     // Scope the text walk to the newly loaded section; wrapping is idempotent,

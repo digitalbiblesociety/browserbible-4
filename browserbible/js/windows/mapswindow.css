@@ -84,10 +84,20 @@
 .map-marker[data-tier="3"] .map-marker-icon { width: 18px; height: 18px; }
 .map-marker[data-tier="4"] .map-marker-icon { width: 14px; height: 14px; }
 
-/* Icon color by importance tier; highlighted (mentioned in current passage) wins */
-.map-marker .map-marker-icon { color: #e08080; }
-.map-marker[data-tier="1"] .map-marker-icon { color: #c41e3a; }
-.map-marker[data-tier="2"] .map-marker-icon { color: #d45a5a; }
+.map-marker .map-marker-icon { color: #455a64; } /* fallback */
+.map-marker[data-type="city"]     .map-marker-icon { color: #c0392b; } /* brick red */
+.map-marker[data-type="building"] .map-marker-icon { color: #8e44ad; } /* purple */
+.map-marker[data-type="mountain"] .map-marker-icon { color: #6d4c41; } /* brown */
+.map-marker[data-type="river"]    .map-marker-icon { color: #2980b9; } /* blue */
+.map-marker[data-type="sea"]      .map-marker-icon { color: #0d5c8f; } /* deep blue */
+.map-marker[data-type="spring"]   .map-marker-icon { color: #17a2b8; } /* teal-cyan */
+.map-marker[data-type="valley"]   .map-marker-icon { color: #9e9d24; } /* olive */
+.map-marker[data-type="desert"]   .map-marker-icon { color: #e67e22; } /* orange */
+.map-marker[data-type="island"]   .map-marker-icon { color: #00897b; } /* teal */
+.map-marker[data-type="region"]   .map-marker-icon { color: #607d8b; } /* blue-gray */
+.map-marker[data-type="other"]    .map-marker-icon { color: #455a64; } /* slate */
+
+/* In the current passage → stands out green, overriding the type color */
 .map-marker.highlighted .map-marker-icon { color: #135c13; }
 
 .map-marker-icon {
@@ -256,7 +266,8 @@ map-window .svg-map-container {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 4px 12px;
+	min-height: 30px;
+	padding: 0 12px;
 	border-top: 1px solid var(--color-border);
 	background: var(--color-background);
 }
@@ -291,6 +302,8 @@ map-window .svg-map-container {
 
 .map-mode-toggle {
 	display: flex;
+	align-self: stretch;
+	margin-left: auto;
 	border: 1px solid var(--color-border);
 	border-radius: 4px;
 	overflow: hidden;
@@ -298,11 +311,14 @@ map-window .svg-map-container {
 }
 
 .map-mode-btn {
-	padding: 2px 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 12px;
 	border: none;
 	background: transparent;
 	color: var(--color-text-muted);
-	font-size: 12px;
+	font-size: 14.4px;
 	cursor: pointer;
 	transition: background 0.15s ease, color 0.15s ease;
 }
@@ -323,6 +339,7 @@ map-window .svg-map-container {
 
 .map-era-filter {
 	display: flex;
+	align-self: stretch;
 	border: 1px solid var(--color-border);
 	border-radius: 4px;
 	overflow: hidden;
@@ -334,11 +351,14 @@ map-window .svg-map-container {
 }
 
 .map-era-btn {
-	padding: 2px 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 12px;
 	border: none;
 	background: transparent;
 	color: var(--color-text-muted);
-	font-size: 12px;
+	font-size: 14.4px;
 	cursor: pointer;
 	transition: background 0.15s ease, color 0.15s ease;
 }
@@ -351,9 +371,6 @@ map-window .svg-map-container {
 	background: var(--color-primary);
 	color: #fff;
 }
-
-
-/* === Journey Dropdown (replaces the search box in journeys mode) === */
 
 .map-nav.hidden {
 	display: none;
@@ -500,6 +517,25 @@ map-window .svg-map-container {
 	margin-right: 6px;
 }
 
+/* Journey stop list header: title on the left, "N stops" floated to its right */
+.map-journey-list-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.map-journey-list-header h2 {
+	margin-bottom: 0;
+}
+
+.map-journey-list-header .map-detail-count {
+	flex-shrink: 0;
+	white-space: nowrap;
+	font-size: 12px;
+	color: var(--color-text-muted);
+}
+
 .map-journey-stops {
 	padding: 4px 0;
 }
@@ -556,10 +592,9 @@ map-window .svg-map-container {
 
 .map-location-count {
 	color: var(--color-text-muted);
-	font-size: 11px;
+	font-size: 13.2px;
 	white-space: nowrap;
 	flex-shrink: 0;
-	margin-left: auto;
 }
 
 

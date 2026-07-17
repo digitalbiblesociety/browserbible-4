@@ -45,7 +45,8 @@
 }
 
 .movable-window .close-button {
-	position: static;
+	position: relative;
+	inset: auto;
 	border-radius: 4px;
 	transition: background-color 0.2s;
 }

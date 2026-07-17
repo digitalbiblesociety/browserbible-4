@@ -57,8 +57,10 @@ const createMarker = (location, x, y, tier, onLocationClick) => {
   marker.locationData = location;
 
   const iconSize = ICON_SIZES[tier] || 14;
+  // Pins anchor on their tip (bottom-center of the 24x24 pin), so the point of
+  // the pin sits on the location rather than the pin's middle.
   marker._anchorX = iconSize / 2;
-  marker._anchorY = iconSize / 2;
+  marker._anchorY = iconSize;
 
   marker.appendChild(createLocationIcon(location.type || 'other'));
   marker.appendChild(elem('div', { className: 'map-marker-label', textContent: location.name }));
