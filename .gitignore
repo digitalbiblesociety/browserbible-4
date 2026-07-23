@@ -4,9 +4,14 @@ dist/
 browserbible/public/content/texts/
 !browserbible/public/content/texts/README.md
 
+# Generated commentary content (~230MB): built by the tools/*-to-browserbible.py
+# converters (SWORD, OSIS, Sefaria, Wikisource, Utley), deployed to the CDN like texts.
+browserbible/public/content/commentaries/
+
 downloads/*
 
 **/node_modules/
+**/__pycache__/
 playwright-report/*
 test-results/*
 coverage/

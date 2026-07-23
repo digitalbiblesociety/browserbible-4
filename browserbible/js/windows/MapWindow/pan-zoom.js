@@ -239,7 +239,7 @@ export function setupPanZoom(component) {
 
   // Double-click zoom (markers, clusters, and controls handle their own clicks)
   component.addListener(mapContainer, 'dblclick', (e) => {
-    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop')) return;
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop, .map-empty-state')) return;
     e.preventDefault();
     const rect = mapContainer.getBoundingClientRect();
     zoomAtPoint(component, e.clientX - rect.left, e.clientY - rect.top, 1 / ZOOM_STEP, { rect });
@@ -249,7 +249,10 @@ export function setupPanZoom(component) {
   // Mouse drag panning. The container rect can't change mid-gesture, so it's
   // measured once on pointer-down rather than per mousemove.
   component.addListener(mapContainer, 'mousedown', (e) => {
-    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop')) return;
+    // Left button only: a right-click's mouseup can be swallowed by the context
+    // menu, which would leave isPanning stuck on.
+    if (e.button !== 0) return;
+    if (e.target.closest('.map-marker, .map-cluster, .map-zoom-controls, .journey-stop, .map-empty-state')) return;
     component.state.isPanning = true;
     component.panStart = { x: e.clientX, y: e.clientY };
     component._gestureRect = mapContainer.getBoundingClientRect();
@@ -292,6 +295,9 @@ export function setupPanZoom(component) {
   let lastTouchDist = 0;
 
   component.addListener(mapContainer, 'touchstart', (e) => {
+    // The empty-state overlay is pointer-events: none except for its button;
+    // a press on the button must not also drag the map underneath.
+    if (e.target.closest('.map-empty-state')) return;
     component._gestureRect = mapContainer.getBoundingClientRect();
     if (e.touches.length === 1) {
       component.state.isPanning = true;

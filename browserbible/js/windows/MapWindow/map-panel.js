@@ -20,11 +20,16 @@ import { ensureJourneyLayer, renderJourney, removeJourney } from './journey-laye
 import { journeyBoundsLocations } from './route-geometry.js';
 import { setupPanZoom, centerOn, centerOnBounds, constrainViewBox, updateViewBox, setViewBoxSize, refit, zoomBy, isAtMinZoom, isAtMaxZoom } from './pan-zoom.js';
 import { createDetailPanel, openDetailPanel, destroyDetailPanel } from './detail-panel.js';
-import { highlightLocations, removeHighlights } from './highlight.js';
+import { highlightLocations, removeTextHighlights, removeMarkerHighlights } from './highlight.js';
 import { computeClusters, renderClusters, applyClusterVisibility } from './clustering.js';
 
 // Trailing delay before clusters/labels recompute after a burst of zoom input
 const DECORATION_SETTLE_MS = 150;
+
+// The .linked-location spans in Bible window text are document-wide and shared
+// by every live panel that has highlighted. Each such panel holds a claim here;
+// the spans are only stripped when the last claimant releases (close/destroy).
+const _textHighlightOwners = new Set();
 
 // Map assets never change, so panels share one fetch across open/close
 // cycles. Failures aren't cached; a later open retries.
@@ -253,20 +258,24 @@ export class MapPanel {
   /**
    * Highlight location names in Bible window text and their map markers.
    * @param {string|null} [sectionid] - Scope the text walk to one loaded section
+   * @returns {boolean} Whether the walk ran (false while pins are still loading)
    */
   highlight(sectionid = null) {
-    if (this.locationDataByVerse) {
-      highlightLocations(this.markersOverlay, this.locationDataByVerse, sectionid);
-      // reposition skips hidden markers, so freshly unhidden ones sit stale
-      if (this.markersOverlay) {
-        MarkerRenderer.repositionAllMarkers(
-          this.markersOverlay, this.viewBox, this.container.getBoundingClientRect());
-      }
+    if (!this.locationDataByVerse) return false;
+    _textHighlightOwners.add(this);
+    highlightLocations(this.markersOverlay, this.locationDataByVerse, sectionid);
+    // reposition skips hidden markers, so freshly unhidden ones sit stale
+    if (this.markersOverlay) {
+      MarkerRenderer.repositionAllMarkers(
+        this.markersOverlay, this.viewBox, this.container.getBoundingClientRect());
     }
+    return true;
   }
 
   removeHighlights() {
-    removeHighlights(this.markersOverlay);
+    _textHighlightOwners.delete(this);
+    removeMarkerHighlights(this.markersOverlay);
+    if (_textHighlightOwners.size === 0) removeTextHighlights();
   }
 
   resetMarkerOpacity() {
@@ -280,7 +289,7 @@ export class MapPanel {
     clearTimeout(this._settleTimer);
     clearTimeout(this._decorTimer);
     destroyDetailPanel(this.detailPanel);
-    removeHighlights(this.markersOverlay);
+    this.removeHighlights();
     this._eventListeners.forEach(({ el, event, handler }) => {
       el.removeEventListener(event, handler);
     });
@@ -528,15 +537,13 @@ export class MapPanel {
     const isPassageMode = this.state.mode === 'passage';
     const isJourneysMode = this.state.mode === 'journeys';
     this.markersOverlay.querySelectorAll('.map-marker').forEach((marker) => {
-      if (marker.classList.contains('highlighted')) {
-        marker.classList.remove('filtered-out');
-        return;
-      }
-
       let show = !isPassageMode;
       if (isJourneysMode) {
-        // Numbered journey badges replace the regular pins
+        // Numbered journey badges replace the regular pins, highlighted or not
         show = false;
+      } else if (marker.classList.contains('highlighted')) {
+        // Pins named in the rendered Bible text stay visible through passage/era filters
+        show = true;
       } else if (isPassageMode && this.state.currentReference && marker.locationData) {
         // Verse IDs are always BOOKCH_V — require the separator so "PS1" can't match "PS119_5"
         show = marker.locationData.verses.some(v => v.startsWith(this.state.currentReference + '_'));

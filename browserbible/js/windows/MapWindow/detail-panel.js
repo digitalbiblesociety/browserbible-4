@@ -274,7 +274,9 @@ export function openDetailPanel(panel, location, anchorRect, verseTextLookup = n
     panel.style.left = `${left}px`;
   }
 
-  panel.showPopover();
+  // Keyboard activation reaches here without the pointerdown that would
+  // light-dismiss an open popover; showPopover on a showing popover throws.
+  if (!panel.matches(':popover-open')) panel.showPopover();
 }
 
 /**

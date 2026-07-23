@@ -125,10 +125,11 @@ export function highlightLocations(markersGroup, locationDataByVerse, sectionid 
 }
 
 /**
- * Remove all location highlights from Bible window text and map markers
- * @param {HTMLElement} markersGroup - The markers overlay element
+ * Remove the .linked-location spans from Bible window text. Document-wide:
+ * the spans are shared by every live map panel, so only call this when the
+ * last panel that highlighted releases them (see MapPanel.removeHighlights).
  */
-export function removeHighlights(markersGroup) {
+export function removeTextHighlights() {
   const parents = new Set();
   document.querySelectorAll('.BibleWindow .linked-location').forEach((el) => {
     if (el.tagName.toLowerCase() === 'l') {
@@ -141,10 +142,25 @@ export function removeHighlights(markersGroup) {
   });
   // Merge the text nodes back together so repeated highlight cycles don't fragment the DOM
   parents.forEach(p => p.normalize());
+}
 
+/**
+ * Remove the highlighted class from one panel's own markers.
+ * @param {HTMLElement} markersGroup - The markers overlay element
+ */
+export function removeMarkerHighlights(markersGroup) {
   if (markersGroup) {
     markersGroup.querySelectorAll('.map-marker.highlighted').forEach((marker) => {
       marker.classList.remove('highlighted');
     });
   }
+}
+
+/**
+ * Remove all location highlights from Bible window text and map markers
+ * @param {HTMLElement} markersGroup - The markers overlay element
+ */
+export function removeHighlights(markersGroup) {
+  removeTextHighlights();
+  removeMarkerHighlights(markersGroup);
 }

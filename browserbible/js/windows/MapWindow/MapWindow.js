@@ -328,7 +328,10 @@ class MapWindowComponent extends BaseWindow {
       this.hideSuggestions();
     } else {
       this.toggleJourneyMenu(false);
-      if (this._journeyListShowing) this.hideDetail();
+      // Close the journey stop list or a stop's location detail; both are
+      // journey-scoped UI (Back returns to the stop list) and must not
+      // outlive journeys mode.
+      if (this._journeyListShowing || this._detailFromJourney) this.hideDetail();
     }
 
     this.mapPanel?.setMode(mode);
@@ -443,8 +446,10 @@ class MapWindowComponent extends BaseWindow {
     const showEmpty = isPassage && visibleCount === 0;
     this.refs.emptyState.classList.toggle('visible', showEmpty);
     if (showEmpty && this.mapPanel.state.currentReference) {
-      this.refs.emptyMessage.textContent =
-        `No locations found in ${this.mapPanel.state.currentReference}`;
+      // currentReference is an internal section id ("JN3"); show "John 3"
+      const ref = Reference(this.mapPanel.state.currentReference);
+      const display = ref?.isValid() ? ref.toString() : this.mapPanel.state.currentReference;
+      this.refs.emptyMessage.textContent = `No locations found in ${display}`;
     }
   }
 
@@ -551,7 +556,9 @@ class MapWindowComponent extends BaseWindow {
       this.selectSuggestion(Math.min(this.state.selectedSuggestionIndex + 1, this.state.currentSuggestions.length - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      this.selectSuggestion(Math.max(this.state.selectedSuggestionIndex - 1, 0));
+      // Index -1 selects the reference row when one is shown
+      const min = this.state.referenceSuggestion ? -1 : 0;
+      this.selectSuggestion(Math.max(this.state.selectedSuggestionIndex - 1, min));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       // No explicit selection: a reference suggestion wins, then the top hit
@@ -617,6 +624,11 @@ class MapWindowComponent extends BaseWindow {
   }
 
   selectSuggestion(index) {
+    const reference = this.refs.searchSuggestions.querySelector('.map-suggestion-reference');
+    if (reference) {
+      reference.classList.toggle('selected', index === -1);
+      reference.setAttribute('aria-selected', String(index === -1));
+    }
     this.refs.searchSuggestions.querySelectorAll('.map-suggestion-item').forEach((item, i) => {
       item.classList.toggle('selected', i === index);
       item.setAttribute('aria-selected', String(i === index));
@@ -660,8 +672,11 @@ class MapWindowComponent extends BaseWindow {
     // so highlight comes first.
     if (!this._seenTextids) this._seenTextids = new Set();
     const scoped = e.data.textid && this._seenTextids.has(e.data.textid);
-    if (e.data.textid) this._seenTextids.add(e.data.textid);
-    this.mapPanel?.highlight(scoped ? e.data.sectionid : null);
+    // highlight() reports false while pins are still loading. Only a textid
+    // whose walk actually ran counts as seen; otherwise the next textload
+    // does the full walk that covers the sections this one missed.
+    const walked = this.mapPanel?.highlight(scoped ? e.data.sectionid : null);
+    if (walked && e.data.textid) this._seenTextids.add(e.data.textid);
 
     if (e.data.sectionid) {
       this.mapPanel?.filterBySection(e.data.sectionid);
